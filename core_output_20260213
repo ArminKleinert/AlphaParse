@@ -1,0 +1,175 @@
+/usr/lib/jvm/java-25-openjdk-amd64/bin/java -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow -Dclojure.compile.path=/home/tpk/Desktop/programming/instasoap/target/classes -Dinstarun.version=0.1.0-SNAPSHOT -Dclojure.debug=false -Dclojure.main.report=none -javaagent:/snap/intellij-idea-community/709/lib/idea_rt.jar=43625 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath /home/tpk/Desktop/programming/instasoap/test:/home/tpk/Desktop/programming/instasoap/src/main/clojure:/home/tpk/Desktop/programming/instasoap/dev-resources:/home/tpk/Desktop/programming/instasoap/resources:/home/tpk/Desktop/programming/instasoap/target/classes:/home/tpk/.m2/repository/org/clojure/clojure/1.11.1/clojure-1.11.1.jar:/home/tpk/.m2/repository/org/clojure/spec.alpha/0.3.218/spec.alpha-0.3.218.jar:/home/tpk/.m2/repository/org/clojure/core.specs.alpha/0.2.62/core.specs.alpha-0.2.62.jar:/home/tpk/.m2/repository/org/clojure/data.json/2.5.0/data.json-2.5.0.jar:/home/tpk/.m2/repository/com/formdev/flatlaf/3.6/flatlaf-3.6.jar:/home/tpk/.m2/repository/org/jetbrains/annotations/23.0.0/annotations-23.0.0.jar:/home/tpk/.m2/repository/nrepl/nrepl/1.0.0/nrepl-1.0.0.jar:/home/tpk/.m2/repository/org/nrepl/incomplete/0.1.0/incomplete-0.1.0.jar clojure.main -i /tmp/form-init15444414220146685920.clj
+WARNING: println already refers to: #'clojure.core/println in namespace: instarun.core, being replaced by: #'instarun.core/println
+[:S, 1, 1]
+[0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a1, []]
+[0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a, []]
+[:S, 1, 1]
+[0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a1, []]
+[0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a, []]
+[:S, 1, 1]
+[0, [{tag=:regex, expecting=\d, fuldl=false}], 1, 1, a1, []]
+[0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a, []]
+Preparing performance tests...
+
+----------------------------------
+--- Standard performance tests ---
+----------------------------------
+Make parser: {:lowest 52.239, :highest 64.242, :average 55.384, :mid 53.760, :median 56.033, :total 1107.688}
+Last Clj:    {:lowest 59.582, :highest 74.739, :average 65.015, :mid 64.846, :median 63.972, :total 1300.317}
+Old II:      {:lowest 108.780, :highest 221.089, :average 145.901, :mid 126.475, :median 157.120, :total 2918.036}
+First parse: {:lowest 1.304, :highest 3.341, :average 1.351, :mid 1.336, :median 1.336, :total 2701.281}
+Last Clj:    {:lowest 1.330, :highest 4.323, :average 1.499, :mid 1.443, :median 1.473, :total 2998.924}
+Old II:      {:lowest 2.749, :highest 12.445, :average 3.083, :mid 2.942, :median 2.993, :total 6167.700}
+All parses:  {:lowest 1.309, :highest 3.676, :average 1.349, :mid 1.336, :median 1.337, :total 2697.247}
+Last Clj:    {:lowest 1.324, :highest 3.914, :average 1.494, :mid 1.416, :median 1.437, :total 2989.904}
+Old II:      {:lowest 2.745, :highest 5.329, :average 2.985, :mid 2.888, :median 2.926, :total 5971.108}
+Vec parses:  {:lowest 60.033, :highest 87.687, :average 65.503, :mid 65.453, :median 65.479, :total 32751.615}
+Last Clj:    {:lowest 66.228, :highest 97.553, :average 70.562, :mid 70.422, :median 70.480, :total 35281.444}
+Old II:      {:lowest 20.236, :highest 32.395, :average 22.033, :mid 21.793, :median 21.905, :total 22033.985}
+ALst parses: {:lowest 90.133, :highest 113.094, :average 95.094, :mid 95.225, :median 95.145, :total 47546.843}
+Last Clj:    {                                                                                               }
+Old II:      {                                                                                               }
+List parses: {:lowest 56.421, :highest 68.371, :average 60.399, :mid 60.349, :median 60.317, :total 30199.697}
+Last Clj:    {                                                                                               }
+Old II:      {                                                                                               }
+4096
+
+----------------------------------
+---   Memory optimized tests   ---
+----------------------------------
+Make parser: {:lowest 52.136, :highest 62.006, :average 54.549, :mid 52.463, :median 55.460, :total 1090.989}
+Last Clj:    {:lowest 59.727, :highest 74.121, :average 64.325, :mid 63.853, :median 63.850, :total 1286.501}
+Old II:      {:lowest 108.780, :highest 221.089, :average 145.901, :mid 126.475, :median 157.120, :total 2918.036}
+First parse: {:lowest 1.310, :highest 3.397, :average 1.351, :mid 1.339, :median 1.340, :total 2702.179}
+Last Clj:    {:lowest 1.327, :highest 3.754, :average 1.485, :mid 1.397, :median 1.424, :total 2971.923}
+Old II:      {:lowest 2.749, :highest 12.445, :average 3.083, :mid 2.942, :median 2.993, :total 6167.700}
+All parses:  {:lowest 1.311, :highest 3.268, :average 1.351, :mid 1.339, :median 1.339, :total 2702.521}
+Last Clj:    {:lowest 1.331, :highest 3.293, :average 1.499, :mid 1.410, :median 1.459, :total 2998.392}
+Old II:      {:lowest 2.745, :highest 5.329, :average 2.985, :mid 2.888, :median 2.926, :total 5971.108}
+Vec parses: {:lowest 59.235, :highest 69.048, :average 65.446, :mid 65.441, :median 65.435, :total 32722.896}
+Last Clj:    {:lowest 63.415, :highest 78.490, :average 70.842, :mid 70.784, :median 70.741, :total 35421.400}
+Old II:      {:lowest 20.236, :highest 32.395, :average 22.033, :mid 21.793, :median 21.905, :total 22033.985}
+ALst parses: {:lowest 89.992, :highest 101.942, :average 94.857, :mid 95.019, :median 94.903, :total 47428.476}
+Last Clj:    {                                                                                               }
+Old II:      {                                                                                               }
+List parses: {:lowest 55.206, :highest 69.217, :average 60.289, :mid 60.372, :median 60.167, :total 30144.367}
+Last Clj:    {                                                                                               }
+Old II:      {                                                                                               }
+4096
+
+----------------------------------
+---   Number of parses tests   ---
+----------------------------------
+Parses for 0: 0 (Correct? true)
+Parses for 1: 2 (Correct? true)
+Parses for 2: 4 (Correct? true)
+Parses for 3: 8 (Correct? true)
+Parses for 4: 16 (Correct? true)
+Parses for 5: 32 (Correct? true)
+Parses for 6: 64 (Correct? true)
+Parses for 7: 128 (Correct? true)
+Parses for 8: 256 (Correct? true)
+Parses for 9: 512 (Correct? true)
+Parses for 10: 1024 (Correct? true)
+Parses for 11: 2048 (Correct? true)
+Parses for 12: 4096 (Correct? true)
+Parses for 13: 8192 (Correct? true)
+Parses for 14: 16384 (Correct? true)
+Parses for 15: 32768 (Correct? true)
+
+----------------------------------
+---    Partial/Total tests     ---
+----------------------------------
+[[:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r1, a]]]]
+[[:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r1, a]]]]
+[[:S, [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r1, a]]]]
+[[:S, [:T, [:r3, [:failure "c"]]]], [:S, [:T, [:r1, [:failure "c"]]]], [:S, [:T, [:r2, [:failure "c"]]]]]
+class instarun.parser.ParseTreeNode
+[:S, [:T, [:r3, [:failure "c"]]]]
+
+----------------------------------
+---        Other tests         ---
+----------------------------------
+[[:S, 11]]
+[[:S, 1111], [:S, 111], [:S, 11], [:S, 1]]
+[:S, 1, 1]
+[:S, 1, 1, 1]
+Parse error at line 1, column 4;
+1111
+   ^
+Expected one of:
+\s+ (follow by end-of-string)
+:end-of-string
+
+[:S, 11]
+[:S, 111]
+Parse error at line 1, column 4;
+1111
+   ^
+Expected one of:
+\s+ (follow by end-of-string)
+:end-of-string
+
+Parse error at line 1, column 1;
+21
+^
+Expected one of:
+NOT <whitespace?> 2
+\s+
+
+[:S, 1, 1]
+[:S, 1, 1, 1]
+[:S, 1, 1, 1, 1]
+
+----------------------------------
+---  Failure attribute tests   ---
+----------------------------------
+2 3 1 ["{tag=:optional, expecting=:end-of-string, full=false}" "{tag=:regex, expecting=\\s+, full=true}" "{tag=:string, expecting=1, full=false}" "{tag=:regex, expecting=\\s+, full=false}"] 112 []
+Attribute: Index  Column Line   Text   List   Result
+Correct?   true   true   true   true   true   true
+Attribute: Index  Column Line   Text   List   Result
+Correct?   true   true   true   true   true   true
+
+----------------------------------
+--- Version compatibility test ---
+----------------------------------
+Count:            4096
+Count of Set:     4096
+Old Count:        4096
+Count of old Set: 4096
+Quasi-equals:     true
+First equals:     true
+Equals:           true
+Time taken (ms):  59.527194
+Count:            64
+Count of Set:     64
+Old Count:        64
+Count of old Set: 64
+Quasi-equals:     true
+First equals:     true
+Equals:           true IF NOT: CHECK WHERE AND WHY!!!
+Time taken (ms):  56.572872
+
+----------------------------------
+--- Total/partial/memory tests ---
+----------------------------------
+true
+[[:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]]]
+[[:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]]]
+[[:S, [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]]]
+[[:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]]]
+[[:S, [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]]]
+
+[:S, [:T, [:r1, a]], [:T, [:r2, b]]]
+[:S, [:T, [:r1, a]]]
+[:S, [:T, [:r1, a]], [:T, [:r2, b]]]
+[:S, [:T, [:r1, a]]]
+
+----------------------------------
+---      Big input test 1      ---
+----------------------------------
+2
+class instarun.parser.ParseTreeNode
+Time taken (ms):  373.765865 (Consider 257.67ms good)
+
+Process finished with exit code 0

@@ -1,0 +1,1414 @@
+[:S
+ [:translation_unit
+  [:external_declaration
+   [:function_definition
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "void"]]]]
+    [:declarator
+     [:direct_declarator
+      [:direct_declarator [:identifier "drawPoint"]]
+      [:BRACE_OPEN "("]
+      [:parameter_type_list
+       [:parameter_list
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier
+           [:typedef_name [:identifier "SDL_Renderer"]]]]
+         [:declarator
+          [:pointer [:STAR "*"]]
+          [:direct_declarator [:identifier "renderer"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator
+          [:direct_declarator [:identifier "zoom_factor"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "x"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "y"]]]]]]
+      [:BRACE_CLOSE ")"]]]
+    [:compound_statement
+     [:BLOCK_OPEN "{"]
+     [:block_item_list
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_x"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "x"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_y"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "y"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:statement
+        [:expression_statement
+         [:expression
+          [:assignment_expression
+           [:conditional_expression
+            [:logical_OR_expression
+             [:logical_AND_expression
+              [:inclusive_OR_expression
+               [:exclusive_OR_expression
+                [:AND_expression
+                 [:equality_expression
+                  [:relational_expression
+                   [:shift_expression
+                    [:additive_expression
+                     [:multiplicative_expression
+                      [:cast_expression
+                       [:unary_expression
+                        [:postfix_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier "SDL_RenderDrawPoint"]]]]]
+                         [:BRACE_OPEN "("]
+                         [:argument_expression_list
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "renderer"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_x"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_y"]]]]]]]]]]]]]]]]]]]]
+                         [:BRACE_CLOSE ")"]]]]]]]]]]]]]]]]]
+         [:SEMICOLON ";"]]]]]
+     [:BLOCK_CLOSE "}"]]]]
+  [:external_declaration
+   [:function_definition
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "void"]]]]
+    [:declarator
+     [:direct_declarator
+      [:direct_declarator [:identifier "drawPoint"]]
+      [:BRACE_OPEN "("]
+      [:parameter_type_list
+       [:parameter_list
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier
+           [:typedef_name [:identifier "SDL_Renderer"]]]]
+         [:declarator
+          [:pointer [:STAR "*"]]
+          [:direct_declarator [:identifier "renderer"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator
+          [:direct_declarator [:identifier "zoom_factor"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "x"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "y"]]]]]]
+      [:BRACE_CLOSE ")"]]]
+    [:compound_statement
+     [:BLOCK_OPEN "{"]
+     [:block_item_list
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_x"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "x"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_y"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "y"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:statement
+        [:expression_statement
+         [:expression
+          [:assignment_expression
+           [:conditional_expression
+            [:logical_OR_expression
+             [:logical_AND_expression
+              [:inclusive_OR_expression
+               [:exclusive_OR_expression
+                [:AND_expression
+                 [:equality_expression
+                  [:relational_expression
+                   [:shift_expression
+                    [:additive_expression
+                     [:multiplicative_expression
+                      [:cast_expression
+                       [:unary_expression
+                        [:postfix_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier "SDL_RenderDrawPoint"]]]]]
+                         [:BRACE_OPEN "("]
+                         [:argument_expression_list
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "renderer"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_x"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_y"]]]]]]]]]]]]]]]]]]]]
+                         [:BRACE_CLOSE ")"]]]]]]]]]]]]]]]]]
+         [:SEMICOLON ";"]]]]]
+     [:BLOCK_CLOSE "}"]]]]
+  [:external_declaration
+   [:function_definition
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "void"]]]]
+    [:declarator
+     [:direct_declarator
+      [:direct_declarator [:identifier "drawPoint"]]
+      [:BRACE_OPEN "("]
+      [:parameter_type_list
+       [:parameter_list
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier
+           [:typedef_name [:identifier "SDL_Renderer"]]]]
+         [:declarator
+          [:pointer [:STAR "*"]]
+          [:direct_declarator [:identifier "renderer"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator
+          [:direct_declarator [:identifier "zoom_factor"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "x"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "y"]]]]]]
+      [:BRACE_CLOSE ")"]]]
+    [:compound_statement
+     [:BLOCK_OPEN "{"]
+     [:block_item_list
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_x"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "x"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_y"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "y"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:statement
+        [:expression_statement
+         [:expression
+          [:assignment_expression
+           [:conditional_expression
+            [:logical_OR_expression
+             [:logical_AND_expression
+              [:inclusive_OR_expression
+               [:exclusive_OR_expression
+                [:AND_expression
+                 [:equality_expression
+                  [:relational_expression
+                   [:shift_expression
+                    [:additive_expression
+                     [:multiplicative_expression
+                      [:cast_expression
+                       [:unary_expression
+                        [:postfix_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier "SDL_RenderDrawPoint"]]]]]
+                         [:BRACE_OPEN "("]
+                         [:argument_expression_list
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "renderer"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_x"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_y"]]]]]]]]]]]]]]]]]]]]
+                         [:BRACE_CLOSE ")"]]]]]]]]]]]]]]]]]
+         [:SEMICOLON ";"]]]]]
+     [:BLOCK_CLOSE "}"]]]]
+  [:external_declaration
+   [:function_definition
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "void"]]]]
+    [:declarator
+     [:direct_declarator
+      [:direct_declarator [:identifier "drawPoint"]]
+      [:BRACE_OPEN "("]
+      [:parameter_type_list
+       [:parameter_list
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier
+           [:typedef_name [:identifier "SDL_Renderer"]]]]
+         [:declarator
+          [:pointer [:STAR "*"]]
+          [:direct_declarator [:identifier "renderer"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator
+          [:direct_declarator [:identifier "zoom_factor"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "x"]]]]
+        [:COMMA ","]
+        [:parameter_declaration
+         [:declaration_specifiers
+          [:type_specifier [:typedef_name [:identifier "double"]]]]
+         [:declarator [:direct_declarator [:identifier "y"]]]]]]
+      [:BRACE_CLOSE ")"]]]
+    [:compound_statement
+     [:BLOCK_OPEN "{"]
+     [:block_item_list
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_x"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "x"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:declaration
+        [:declaration_specifiers
+         [:type_specifier [:typedef_name [:identifier "int"]]]]
+        [:init_declarator_list
+         [:init_declarator
+          [:declarator
+           [:direct_declarator [:identifier "translated_y"]]]
+          [:ASSIGN "="]
+          [:initializer
+           [:assignment_expression
+            [:conditional_expression
+             [:logical_OR_expression
+              [:logical_AND_expression
+               [:inclusive_OR_expression
+                [:exclusive_OR_expression
+                 [:AND_expression
+                  [:equality_expression
+                   [:relational_expression
+                    [:shift_expression
+                     [:additive_expression
+                      [:multiplicative_expression
+                       [:multiplicative_expression
+                        [:cast_expression
+                         [:unary_expression
+                          [:postfix_expression
+                           [:primary_expression
+                            [:BRACE_OPEN "("]
+                            [:expression
+                             [:assignment_expression
+                              [:conditional_expression
+                               [:logical_OR_expression
+                                [:logical_AND_expression
+                                 [:inclusive_OR_expression
+                                  [:exclusive_OR_expression
+                                   [:AND_expression
+                                    [:equality_expression
+                                     [:relational_expression
+                                      [:shift_expression
+                                       [:additive_expression
+                                        [:additive_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:constant
+                                               [:enumeration_constant
+                                                [:identifier
+                                                 "y"]]]]]]]]]
+                                        [:PLUS "+"]
+                                        [:multiplicative_expression
+                                         [:multiplicative_expression
+                                          [:cast_expression
+                                           [:unary_expression
+                                            [:postfix_expression
+                                             [:primary_expression
+                                              [:BRACE_OPEN "("]
+                                              [:expression
+                                               [:assignment_expression
+                                                [:conditional_expression
+                                                 [:logical_OR_expression
+                                                  [:logical_AND_expression
+                                                   [:inclusive_OR_expression
+                                                    [:exclusive_OR_expression
+                                                     [:AND_expression
+                                                      [:equality_expression
+                                                       [:relational_expression
+                                                        [:shift_expression
+                                                         [:additive_expression
+                                                          [:multiplicative_expression
+                                                           [:multiplicative_expression
+                                                            [:cast_expression
+                                                             [:unary_expression
+                                                              [:postfix_expression
+                                                               [:primary_expression
+                                                                [:constant
+                                                                 [:integer_constant
+                                                                  "1000"]]]]]]]
+                                                           [:SLASH "/"]
+                                                           [:cast_expression
+                                                            [:unary_expression
+                                                             [:postfix_expression
+                                                              [:primary_expression
+                                                               [:constant
+                                                                [:integer_constant
+                                                                 "2"]]]]]]]]]]]]]]]]]]]
+                                              [:BRACE_CLOSE ")"]]]]]]
+                                         [:STAR "*"]
+                                         [:cast_expression
+                                          [:unary_expression
+                                           [:postfix_expression
+                                            [:primary_expression
+                                             [:constant
+                                              [:enumeration_constant
+                                               [:identifier
+                                                "zoom_factor"]]]]]]]]]]]]]]]]]]]]
+                            [:BRACE_CLOSE ")"]]]]]]
+                       [:SLASH "/"]
+                       [:cast_expression
+                        [:unary_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier
+                              "zoom_factor"]]]]]]]]]]]]]]]]]]]]]]
+        [:SEMICOLON ";"]]]
+      [:block_item
+       [:statement
+        [:expression_statement
+         [:expression
+          [:assignment_expression
+           [:conditional_expression
+            [:logical_OR_expression
+             [:logical_AND_expression
+              [:inclusive_OR_expression
+               [:exclusive_OR_expression
+                [:AND_expression
+                 [:equality_expression
+                  [:relational_expression
+                   [:shift_expression
+                    [:additive_expression
+                     [:multiplicative_expression
+                      [:cast_expression
+                       [:unary_expression
+                        [:postfix_expression
+                         [:postfix_expression
+                          [:primary_expression
+                           [:constant
+                            [:enumeration_constant
+                             [:identifier "SDL_RenderDrawPoint"]]]]]
+                         [:BRACE_OPEN "("]
+                         [:argument_expression_list
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "renderer"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_x"]]]]]]]]]]]]]]]]]]]
+                          [:COMMA ","]
+                          [:assignment_expression
+                           [:conditional_expression
+                            [:logical_OR_expression
+                             [:logical_AND_expression
+                              [:inclusive_OR_expression
+                               [:exclusive_OR_expression
+                                [:AND_expression
+                                 [:equality_expression
+                                  [:relational_expression
+                                   [:shift_expression
+                                    [:additive_expression
+                                     [:multiplicative_expression
+                                      [:cast_expression
+                                       [:unary_expression
+                                        [:postfix_expression
+                                         [:primary_expression
+                                          [:constant
+                                           [:enumeration_constant
+                                            [:identifier
+                                             "translated_y"]]]]]]]]]]]]]]]]]]]]
+                         [:BRACE_CLOSE ")"]]]]]]]]]]]]]]]]]
+         [:SEMICOLON ";"]]]]]
+     [:BLOCK_CLOSE "}"]]]]
+  [:external_declaration
+   [:declaration
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "typedef"]]]
+     [:type_specifier [:typedef_name [:identifier "uint_fast32_t"]]]]
+    [:init_declarator_list
+     [:init_declarator
+      [:declarator [:direct_declarator [:identifier "index"]]]]]
+    [:SEMICOLON ";"]]]
+  [:external_declaration
+   [:declaration
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "typedef"]]]
+     [:type_specifier [:typedef_name [:identifier "uint_fast32_t"]]]]
+    [:init_declarator_list
+     [:init_declarator
+      [:declarator [:direct_declarator [:identifier "index"]]]]]
+    [:SEMICOLON ";"]]]
+  [:external_declaration
+   [:declaration
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "typedef"]]]
+     [:type_specifier [:typedef_name [:identifier "uint_fast32_t"]]]]
+    [:init_declarator_list
+     [:init_declarator
+      [:declarator [:direct_declarator [:identifier "index"]]]]]
+    [:SEMICOLON ";"]]]
+  [:external_declaration
+   [:declaration
+    [:declaration_specifiers
+     [:type_specifier [:typedef_name [:identifier "typedef"]]]
+     [:type_specifier [:typedef_name [:identifier "uint_fast32_t"]]]]
+    [:init_declarator_list
+     [:init_declarator
+      [:declarator [:direct_declarator [:identifier "index"]]]]]
+    [:SEMICOLON ";"]]]]]

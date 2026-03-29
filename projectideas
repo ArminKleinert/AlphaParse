@@ -1,0 +1,15 @@
+Scannerless Generalized Parsing with Regex Terminals
+- Comparison between GLL, Insta, GLR, modified Earley, ...
+- Wie wirkt es sich auf SPPFs und Output-Größe aus?
+
+Lazy generation of ASTs
+- With/without SPPFs
+- Varianz in Zeit von komplett Lazy (pure empty or only compressed SPPF), 1 parse, all parses
+- Umgang mit Fehlern?
+- Bessere Ideen für zukünftigen Research
+
+Usefullness of Runtime Parser Generation vs Precompiled Parsers
+- Libraries
+- Usage
+- Code-generated / Table-driven / Interpreter
+- Startup, Memory, Throughput

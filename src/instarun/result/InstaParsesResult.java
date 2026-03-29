@@ -1,0 +1,203 @@
+package instarun.result;
+
+import instarun.list.LazySupplierList;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.function.Supplier;
+
+public sealed interface InstaParsesResult
+        extends List<ParseTree>
+        permits InstaParsesResult.InstaParsesResultList, InstaParsesResult.LazyResultList, InstaParsesResult.NoParsesResult, TotalParsesFailureNode {
+    static @NotNull InstaParsesResult make(final @NotNull Object o) {
+        return switch (o) {
+            case TotalParsesFailureNode tpfn -> tpfn;
+            case LazyResultList lrl -> lrl;
+            //case InstaParsesResult ipr -> ipr;
+            default -> throw new IllegalArgumentException(o.getClass().toString());
+        };
+    }
+
+    default @NotNull InstaParsesResult castToParsesSuccess() {
+        if (this instanceof TotalParsesFailureNode)
+            throw new ClassCastException("Cannot cast failure to success.");
+        return this;
+    }
+
+    default TotalParsesFailureNode castToParsesFailure() {
+        return (TotalParsesFailureNode) this;
+    }
+
+    default List<?> hiccup() {
+        if (this instanceof TotalParsesFailureNode)
+            throw new ClassCastException("Cannot cast failure to success.");
+        return stream().map(ParseTree::hiccup).toList();
+    }
+
+//    default List<?> enlive() {
+//        if (this instanceof TotalParsesFailureNode)
+//            throw new ClassCastException("Cannot cast failure to success.");
+//        return stream().map(ParseTree::enlive).toList();
+//    }
+
+    final class LazyResultList extends LazySupplierList<ParseTree> implements InstaParsesResult {
+        public LazyResultList(final @NotNull Supplier<ParseTree> nextFn, final int maxResults) {
+            super(nextFn, maxResults);
+        }
+    }
+
+    final class InstaParsesResultList implements InstaParsesResult {
+        private final @NotNull List<ParseTree> inner;
+
+        public InstaParsesResultList(final @NotNull List<ParseTree> inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean equals(final @NotNull Object o) {
+            if (!(o instanceof List<?>)) return false;
+            return Objects.equals(inner, o);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(inner);
+        }
+
+        @Override
+        public String toString() {
+            return inner.toString();
+        }
+
+        @Override
+        public int size() {
+            return inner.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return inner.isEmpty();
+        }
+
+        @Override
+        public boolean contains(final Object o) {
+            return inner.contains(o);
+        }
+
+        @Override
+        public @NotNull Iterator<ParseTree> iterator() {
+            return inner.iterator();
+        }
+
+        @Override
+        public @NotNull Object @NotNull [] toArray() {
+            return inner.toArray();
+        }
+
+        @Override
+        public <T1> @NotNull T1 @NotNull [] toArray(final @NotNull T1 @NotNull [] ts) {
+            return inner.toArray(ts);
+        }
+
+        @Override
+        public boolean add(final @NotNull ParseTree o) {
+            return inner.add(o);
+        }
+
+        @Override
+        public boolean remove(final @NotNull Object o) {
+            return inner.remove(o);
+        }
+
+        @Override
+        public boolean containsAll(@NotNull Collection<?> collection) {
+            return new HashSet<>(inner).containsAll(collection);
+        }
+
+        @Override
+        public boolean addAll(final @NotNull Collection<? extends @NotNull ParseTree> collection) {
+            return inner.addAll(collection);
+        }
+
+        @Override
+        public boolean addAll(final int i, @NotNull Collection<? extends @NotNull ParseTree> collection) {
+            return inner.addAll(i, collection);
+        }
+
+        @Override
+        public boolean removeAll(@NotNull Collection<?> collection) {
+            return inner.removeAll(collection);
+        }
+
+        @Override
+        public boolean retainAll(@NotNull Collection<?> collection) {
+            return inner.retainAll(collection);
+        }
+
+        @Override
+        public void clear() {
+            inner.clear();
+        }
+
+        @Override
+        public ParseTree get(final int i) {
+            return inner.get(i);
+        }
+
+        @Override
+        public ParseTree set(final int i, final @NotNull ParseTree o) {
+            return inner.set(i, o);
+        }
+
+        @Override
+        public void add(final int i, final @NotNull ParseTree o) {
+            inner.add(o);
+        }
+
+        @Override
+        public ParseTree remove(final int i) {
+            return inner.remove(i);
+        }
+
+        @Override
+        public int indexOf(final @NotNull Object o) {
+            return inner.indexOf(o);
+        }
+
+        @Override
+        public int lastIndexOf(final @NotNull Object o) {
+            return inner.lastIndexOf(o);
+        }
+
+        @Override
+        public @NotNull ListIterator<ParseTree> listIterator() {
+            return inner.listIterator();
+        }
+
+        @Override
+        public @NotNull ListIterator<ParseTree> listIterator(final int i) {
+            return inner.listIterator(i);
+        }
+
+        @Override
+        public @NotNull List<ParseTree> subList(final int i, final int i1) {
+            return inner.subList(i, i1);
+        }
+    }
+
+    final class NoParsesResult extends AbstractList<ParseTree> implements InstaParsesResult {
+        public NoParsesResult(List<?> ptl) {
+            if (!(ptl.isEmpty())) throw new IllegalStateException();
+        }
+        @Override
+        public ParseTree get(final int i) {
+            Objects.checkIndex(i, 0);
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+    }
+}

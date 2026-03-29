@@ -1,0 +1,60 @@
+package instarun.reduction;
+
+import instarun.Keyword;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+public final class ReductionType {
+
+    public enum ReductionTypesAvailable {
+        NONE, HICCUP, RAW, ENLIVE;
+        public static final ReductionTypesAvailable defaultType = HICCUP;
+    }
+
+    private final @NotNull Keyword key;
+    private final @NotNull ReductionTypesAvailable type;
+    private final boolean hiddenOrRaw;
+
+    public ReductionType(final @NotNull Keyword key, final @NotNull ReductionTypesAvailable type) {
+        this(key, type, false);
+    }
+
+    public ReductionType(final @NotNull Keyword key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
+        this.key = key;
+        this.type = type;
+        this.hiddenOrRaw = hiddenOrRaw;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ReductionType that = (ReductionType) o;
+        return Objects.equals(key, that.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(key);
+    }
+
+    public @NotNull Keyword getKey() {
+        return key;
+    }
+
+    public @NotNull ReductionTypesAvailable getReductionType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "key=" + key +
+                ", type=" + type +
+                '}';
+    }
+
+    public boolean isHiddenOrRaw() {
+        return hiddenOrRaw;
+    }
+}
