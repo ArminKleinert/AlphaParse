@@ -1,11 +1,10 @@
 package alphaparse.trampoline;
 
-import alphaparse.IO2;
 import alphaparse.parser.Grammar;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
-import alphaparse.result.AlphaFailure;
-import alphaparse.result.success.InstaSuccess;
+import alphaparse.result.AlphaParseFailure;
+import alphaparse.result.success.AlphaParseSuccess;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +12,7 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import java.util.*;
 
-public final class InstaTramp {
+public final class Tramp {
     private final @NotNull Grammar grammar;
     private final @NotNull String text;
     private final @NotNull CharSequence segment;
@@ -21,25 +20,25 @@ public final class InstaTramp {
     private final @NotNull List<@NotNull Procedure> stack;
     private final @NotNull List<@NotNull Procedure> nextStack;
     private int generation;
-    private final @NotNull Map<@NotNull Integer, @NotNull List<@NotNull NegativeListener>> negativeListeners;
+    private final @NotNull Map<@NotNull Integer, @NotNull NegativeListener> negativeListeners;
     private final @NotNull Map<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
     private final @NotNull Map<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
-    private @Nullable InstaSuccess success; // TODO change to Optional.
-    private @Nullable AlphaFailure failure; // TODO change to Optional.
+    private @Nullable AlphaParseSuccess success;
+    private @Nullable AlphaParseFailure failure;
 
-    public InstaTramp(final @NotNull Grammar grammar, final @NotNull String text) {
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text) {
         this(grammar, text, text, -1);
     }
 
-    public InstaTramp(final @NotNull Grammar grammar, final @NotNull String text, final int failIndex) {
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final int failIndex) {
         this(grammar, text, text, failIndex);
     }
 
-    public InstaTramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull CharSequence segment) {
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull CharSequence segment) {
         this(grammar, text, segment, -1);
     }
 
-    public InstaTramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull CharSequence segment, final int failIndex) {
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull CharSequence segment, final int failIndex) {
         this.grammar = grammar;
         this.text = text;
         this.segment = segment;
@@ -74,19 +73,11 @@ public final class InstaTramp {
         return stack;
     }
 
-    public boolean isStackEmpty() {
-        return stack.isEmpty();
-    }
-
-    public @NotNull List<@NotNull Procedure> getNextStack() {
-        return nextStack;
-    }
-
     public int getGeneration() {
         return generation;
     }
 
-    public @NotNull Map<@NotNull Integer, @NotNull List<@NotNull NegativeListener>> getNegativeListeners() {
+    public @NotNull Map<@NotNull Integer, @NotNull NegativeListener> getNegativeListeners() {
         return negativeListeners;
     }
 
@@ -94,11 +85,11 @@ public final class InstaTramp {
         return nodes;
     }
 
-    public @Nullable InstaSuccess getSuccess() {
+    public @Nullable AlphaParseSuccess getSuccess() {
         return success;
     }
 
-    public @Nullable AlphaFailure getFailure() {
+    public @Nullable AlphaParseFailure getFailure() {
         return failure;
     }
 
@@ -132,19 +123,20 @@ public final class InstaTramp {
         msgCache.put(key, defaultVal);
     }
 
-    public void setFailure(final @NotNull AlphaFailure failure) {
+    public void setFailure(final @NotNull AlphaParseFailure failure) {
         this.failure = failure;
     }
 
-    public void setSuccess(final @Nullable InstaSuccess success) {
+    public void setSuccess(final @Nullable AlphaParseSuccess success) {
         this.success = success;
     }
 
-    public @Nullable TrampolineListenerNode getNode(final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
+    public @Nullable TrampolineListenerNode getNode(final @NotNull TrampolineListenerKey nodeKey) {
         return nodes.get(nodeKey);
     }
 
-    public void addToNodes(final @NotNull TrampolineListenerNode.TrampolineListenerKey key, final @NotNull TrampolineListenerNode node) {
+    public void addToNodes(final @NotNull TrampolineListenerKey key,
+                           final @NotNull TrampolineListenerNode node) {
         nodes.put(key, node);
     }
 }

@@ -2,7 +2,7 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -18,7 +18,7 @@ public final class StarCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         Gll.pushListener(
@@ -29,7 +29,7 @@ public final class StarCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         if (index == tramp.getText().length()) {

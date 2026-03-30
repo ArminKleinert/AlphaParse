@@ -12,14 +12,16 @@ import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import alphaparse.result.TotalParsesFailureNode;
 import alphaparse.result.failure.FailureUtil;
-import alphaparse.result.AlphaFailure;
+import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.ParseFailureNode;
-import alphaparse.result.success.InstaSuccess;
-import alphaparse.result.failure.failureReason.InstaFailureReason;
+import alphaparse.result.success.AlphaParseSuccess;
+import alphaparse.result.failure.failureReason.ParseFailureReason;
 import alphaparse.trampoline.TrampolineMsgCacheKey;
 import alphaparse.trampoline.TrampolineListenerNode;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+
+import alphaparse.trampoline.Tramp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class Gll {
     private static @NotNull TrampolineListenerNode nodeGet(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         @Nullable TrampolineListenerNode node = tramp.getNode(nodeKey);
 
@@ -41,7 +43,7 @@ public final class Gll {
     }
 
     private static boolean listenerExists_Q(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         TrampolineListenerNode node = tramp.getNode(nodeKey);
         if (node == null) return false;
@@ -49,7 +51,7 @@ public final class Gll {
     }
 
     private static boolean fullListenerExists_Q(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         final TrampolineListenerNode node = tramp.getNode(nodeKey);
         if (node == null) return false;
@@ -57,7 +59,7 @@ public final class Gll {
     }
 
     public static boolean resultExists_Q(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         final TrampolineListenerNode node = tramp.getNode(nodeKey);
 
@@ -68,7 +70,7 @@ public final class Gll {
     }
 
     private static boolean fullResultExists_Q(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         final Map<TrampolineListenerKey, TrampolineListenerNode> nodes = tramp.getNodes();
         final TrampolineListenerNode node = nodes.get(nodeKey);
@@ -80,8 +82,8 @@ public final class Gll {
     }
 
     private static boolean totalSuccess_Q(
-            final @NotNull InstaTramp tramp,
-            final @NotNull InstaSuccess success) {
+            final @NotNull Tramp tramp,
+            final @NotNull AlphaParseSuccess success) {
         return tramp.getText().length() == success.getIndex();
     }
 
@@ -99,16 +101,16 @@ public final class Gll {
     }
 
     public static void pushNegativeListener(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey creator,
             final @NotNull NegativeListener negativeListener) {
-        tramp.getNegativeListeners().put(creator.index(), List.of(negativeListener));
+        tramp.getNegativeListeners().put(creator.index(), negativeListener);
     }
 
     private static void pushMessage(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull Listener listener,
-            final @NotNull InstaSuccess result) {
+            final @NotNull AlphaParseSuccess result) {
         final int i = result.getIndex();
         final TrampolineMsgCacheKey k = new TrampolineMsgCacheKey(i, listener);
         final int c = tramp.getFromMsgCache(k, 0);
@@ -121,39 +123,39 @@ public final class Gll {
         tramp.addToMsgCache(k, c + 1);
     }
 
-    private static void pushStack(final @NotNull InstaTramp tramp,
+    private static void pushStack(final @NotNull Tramp tramp,
                                   final @NotNull Procedure item) {
         tramp.addToStack(item);
     }
 
-    private static void step(final @NotNull InstaTramp tramp) {
+    private static void step(final @NotNull Tramp tramp) {
         final Procedure top = tramp.getStack().getLast();
         tramp.popStack();
         top.execute();
     }
 
     private static @NotNull AlphaParsesResult.LazyResultList run(
-            final @NotNull InstaTramp tramp) {
+            final @NotNull Tramp tramp) {
         return run(tramp, Integer.MAX_VALUE);
     }
 
     private static @NotNull AlphaParsesResult.LazyResultList run(
-            final @NotNull InstaTramp tramp, final int maxResults) {
+            final @NotNull Tramp tramp, final int maxResults) {
         final var foundResult = new AtomicBoolean(false);
         return new AlphaParsesResult.LazyResultList(() -> run(tramp, foundResult), maxResults);
     }
 
     private static @Nullable ParseTree run(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull AtomicBoolean foundResult) {
         do {
             if (tramp.getSuccess() != null) {
-                final Object successResult = tramp.getSuccess();
-                if (!(successResult instanceof InstaSuccess.InstaSuccessParseResult))
+                final var successResult = tramp.getSuccess();
+                if (!(successResult instanceof AlphaParseSuccess.AlphaParseSuccessParseResult))
                     throw new IllegalStateException();
                 tramp.setSuccess(null);
                 foundResult.set(true);
-                return ((InstaSuccess.InstaSuccessParseResult) successResult).getResult();
+                return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult();
             }
             final List<Procedure> stack = tramp.getStack();
             if (!stack.isEmpty()) {
@@ -161,20 +163,15 @@ public final class Gll {
                 continue; // Take it to the top.
             }
             if (!tramp.getNegativeListeners().isEmpty()) {
-                final @NotNull Iterator<Map.Entry<Integer, List<NegativeListener>>> iter =
-                        tramp.getNegativeListeners().entrySet().iterator();
-                final @NotNull Map.Entry<Integer, List<NegativeListener>> a = iter.next();
+                final @NotNull var iter = tramp.getNegativeListeners().entrySet().iterator();
+                final @NotNull var a = iter.next();
                 final @NotNull Integer index = a.getKey();
-                final @NotNull List<NegativeListener> listeners = a.getValue();
-                final @NotNull NegativeListener listener = listeners.getLast();
+                final @NotNull NegativeListener listener = a.getValue();
 
                 listener.execute();
 
-                if (listeners.size() == 1) {
-                    tramp.getNegativeListeners().remove(index);
-                } else {
-                    listeners.removeLast();
-                }
+                tramp.getNegativeListeners().remove(index);
+
                 continue; // Take it to the top.
             }
             if (foundResult.get()) {
@@ -188,17 +185,17 @@ public final class Gll {
     }
 
     public static void pushListener(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         final boolean listenerAlreadyExists = listenerExists_Q(tramp, nodeKey);
         final @NotNull TrampolineListenerNode node = nodeGet(tramp, nodeKey);
         final @NotNull List<Listener> listeners = node.listeners();
         listeners.add(listener);
-        for (final @NotNull InstaSuccess result : node.results()) {
+        for (final @NotNull AlphaParseSuccess result : node.results()) {
             pushMessage(tramp, listener, result);
         }
-        for (final @NotNull InstaSuccess fullResult : node.fullResults()) {
+        for (final @NotNull AlphaParseSuccess fullResult : node.fullResults()) {
             pushMessage(tramp, listener, fullResult);
         }
         if (!listenerAlreadyExists) {
@@ -207,7 +204,7 @@ public final class Gll {
     }
 
     public static void pushFullListener(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         //GllParsers.pushFullListenerCallback.invoke(tramp, nodeKey, listener);
@@ -215,7 +212,7 @@ public final class Gll {
         final @NotNull var node = nodeGet(tramp, nodeKey);
         final @NotNull var listeners = node.fullListeners();
         listeners.add(listener);
-        for (final @NotNull InstaSuccess fullResult : node.fullResults()) {
+        for (final @NotNull AlphaParseSuccess fullResult : node.fullResults()) {
             pushMessage(tramp, listener, fullResult);
         }
         if (!fullListenerAlreadyExists) {
@@ -230,9 +227,9 @@ public final class Gll {
      * (Full listeners only get notified about full results)
      */
     public static void pushResult(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            @NotNull InstaSuccess result) {
+            @NotNull AlphaParseSuccess result) {
         final @NotNull TrampolineListenerNode node = nodeGet(tramp, nodeKey);
         final @NotNull Combinator parser = nodeKey.parser();
         result = parser.isHidden()
@@ -242,10 +239,10 @@ public final class Gll {
             final var resultR = Reduction.applyReduction(
                     parser.getReduction(),
                     Objects.requireNonNull(result.getResult()));
-            result = InstaSuccess.create(result.getIndex(), resultR);
+            result = AlphaParseSuccess.create(result.getIndex(), resultR);
         }
         final boolean isTotal = totalSuccess_Q(tramp, result);
-        final @NotNull Set<@NotNull InstaSuccess> results = isTotal ? node.fullResults() : node.results();
+        final @NotNull Set<@NotNull AlphaParseSuccess> results = isTotal ? node.fullResults() : node.results();
 
         var resultExisted = !results.add(result);
         if (resultExisted) {
@@ -266,7 +263,7 @@ public final class Gll {
     }
 
     private static void startParser(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull Combinator parser,
             final boolean partial) {
         if (partial) {
@@ -281,7 +278,7 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new InstaTramp(grammar, text);
+        var tramp = new Tramp(grammar, text);
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp);
@@ -293,7 +290,7 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new InstaTramp(grammar, text);
+        var tramp = new Tramp(grammar, text);
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp);
@@ -310,7 +307,7 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new InstaTramp(grammar, text);
+        var tramp = new Tramp(grammar, text);
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp, 1);
@@ -323,18 +320,18 @@ public final class Gll {
     }
 
     public static void success(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final Object result,
             final int end) {
-        pushResult(tramp, nodeKey, InstaSuccess.create(end, result));
+        pushResult(tramp, nodeKey, AlphaParseSuccess.create(end, result));
     }
 
     public static void fail(
-            final @NotNull InstaTramp tramp,
+            final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final int index,
-            final @NotNull InstaFailureReason reason) {
+            final @NotNull ParseFailureReason reason) {
         //Objects.requireNonNull(tramp.getFailure());
         tramp.setFailure(FailureUtil.modifyFailureByIndex(tramp.getFailure(), reason, index));
         if (index == tramp.getFailIndex()) {
@@ -367,7 +364,7 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new InstaTramp(grammar, text, 0);
+        var tramp = new Tramp(grammar, text, 0);
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp);
@@ -390,7 +387,7 @@ public final class Gll {
             final @NotNull String text,
             final int failIndex,
             final boolean partial) {
-        var tramp = new InstaTramp(grammar, text, failIndex);
+        var tramp = new Tramp(grammar, text, failIndex);
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp, 1);
@@ -405,7 +402,7 @@ public final class Gll {
             final @NotNull String text,
             final boolean partial) {
         var result = parse(grammar, start, text, partial);
-        if (!(result instanceof AlphaFailure)) return result;
-        return parseTotalAfterFail(grammar, start, text, ((AlphaFailure) result).getIndex(), partial);
+        if (!(result instanceof AlphaParseFailure)) return result;
+        return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).getIndex(), partial);
     }
 }

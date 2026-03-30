@@ -3,10 +3,9 @@ package alphaparse;
 import alphaparse.parser.Grammar;
 import alphaparse.parser.Parser;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.AlphaFailure;
+import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
-import alphaparse.util.KeywordSetup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +33,6 @@ public final class Alpha {
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
-        KeywordSetup.initKeywords();
         var startProduction = options.getStartOrDefault(parser.getStartProduction());
         var usePartial = options.usePartial();
         //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
@@ -46,7 +44,7 @@ public final class Alpha {
             parsingResult = AlphaParseResult.make(Gll.parseTotal(unhiddenParser.getGrammar(), startProduction, text, usePartial));
         } else if (options.isOptimizeMemory() && !usePartial) {
             var result = Repeat.tryRepeatingParseStrategy(parser, text, startProduction);
-            if (result instanceof AlphaFailure)
+            if (result instanceof AlphaParseFailure)
                 result = Gll.parse(parser.getGrammar(), startProduction, text, false);
             parsingResult = AlphaParseResult.make(result);
         } else {
@@ -64,7 +62,6 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
-        KeywordSetup.initKeywords();
         var startProduction = options.getStartOrDefault(parser.getStartProduction());
         var usePartial = options.usePartial();
         var doUnhide = options.getUnhide();
@@ -86,7 +83,6 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
                                                              final @NotNull String text,
                                                              final @NotNull ParsingOptions options) {
-        KeywordSetup.initKeywords();
         var startProduction = options.getStartOrDefault(parser.getStartProduction());
         var usePartial = options.usePartial();
         var doUnhide = options.getUnhide();

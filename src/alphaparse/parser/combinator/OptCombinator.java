@@ -3,9 +3,9 @@ package alphaparse.parser.combinator;
 import alphaparse.Keyword;
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.InstaFailureReasonOptional;
+import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,7 @@ public final class OptCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt = new TrampolineListenerKey(index, this);
         Gll.pushListener(
@@ -30,14 +30,14 @@ public final class OptCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator parser = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey thisNodeKey = new TrampolineListenerKey(index, this);
         Gll.pushFullListener(tramp, new TrampolineListenerKey(index, parser), GllParserListeners.nodeListener(thisNodeKey, tramp));
         if (index == tramp.getText().length()) {
             Gll.success(tramp, thisNodeKey, null, index);
         } else {
-            Gll.fail(tramp, thisNodeKey, index, new InstaFailureReasonOptional(Keyword.intern("end-of-string")));
+            Gll.fail(tramp, thisNodeKey, index, new ParseFailureReasonOptional(Keyword.intern("end-of-string")));
         }
     }
 

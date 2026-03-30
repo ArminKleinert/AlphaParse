@@ -3,12 +3,11 @@ package alphaparse.result;
 import org.jetbrains.annotations.NotNull;
 
 public sealed interface AlphaParseResult
-        permits ParseTree, AlphaFailure, ParseFailureNode {
+        permits ParseTree, AlphaParseFailure, ParseFailureNode {
     static @NotNull AlphaParseResult make(final @NotNull Object o) {
         return switch (o) {
             case ParseTree objects -> objects.flattenRawProductions();
-            case AlphaFailure objects -> objects;
-            //case TotalParsesFailure objects -> objects;
+            case AlphaParseFailure objects -> objects;
             default -> throw new IllegalArgumentException(o.getClass().toString());
         };
     }
@@ -17,7 +16,7 @@ public sealed interface AlphaParseResult
         return (ParseTree) this;
     }
 
-    default @NotNull AlphaFailure castToParseFailure() {
-        return (AlphaFailure) this;
+    default @NotNull AlphaParseFailure castToParseFailure() {
+        return (AlphaParseFailure) this;
     }
 }

@@ -3,9 +3,9 @@ package alphaparse.parser.combinator;
 import alphaparse.Keyword;
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.InstaFailureReasonLookahead;
+import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
 import org.jetbrains.annotations.NotNull;
 
 public final class LookaheadCombinator extends CombinatorWithParser {
@@ -18,14 +18,14 @@ public final class LookaheadCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
         Gll.pushListener(tramp, new TrampolineListenerKey(index, combinator),
                 GllParserListeners.lookListener(new TrampolineListenerKey(index, this), tramp));
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         if (index == tramp.getText().length()) {
             parse(index, tramp);
         } else {
@@ -33,7 +33,7 @@ public final class LookaheadCombinator extends CombinatorWithParser {
                     tramp,
                     new TrampolineListenerKey(index, this),
                     index,
-                    new InstaFailureReasonLookahead(Keyword.intern("end-of-string")));
+                    new ParseFailureReasonLookahead(Keyword.intern("end-of-string")));
         }
     }
 

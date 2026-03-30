@@ -1,9 +1,9 @@
 package alphaparse.result.failure;
 
 import alphaparse.Keyword;
-import alphaparse.result.AlphaFailure;
-import alphaparse.result.failure.failureReason.InstaFailureReason;
-import alphaparse.result.failure.failureReason.InstaFailureReasonCharRange;
+import alphaparse.result.AlphaParseFailure;
+import alphaparse.result.failure.failureReason.ParseFailureReason;
+import alphaparse.result.failure.failureReason.AlphaFailureReasonCharRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +18,8 @@ public final class FailureUtil {
      * and accounts for horizontal tabs which might change
      * the alignment of the '^' to the error location.
      */
-    public static @NotNull AlphaFailure augmentFailure(final @NotNull AlphaFailure failure1,
-                                                       final @NotNull String text) {
+    public static @NotNull AlphaParseFailure augmentFailure(final @NotNull AlphaParseFailure failure1,
+                                                            final @NotNull String text) {
         int line = 1;
         int col = 1;
 
@@ -42,7 +42,7 @@ public final class FailureUtil {
 //        if (lineText.isEmpty())
 //            throw new IllegalStateException();
 
-        return new AlphaFailure(index, failure1.getReasonList(), line, col, lineText.orElse(null)
+        return new AlphaParseFailure(index, failure1.getReasonList(), line, col, lineText.orElse(null)
         );
     }
 
@@ -60,24 +60,24 @@ public final class FailureUtil {
         return markerText.substring(0, n - 1) + '^';
     }
 
-    public static @NotNull AlphaFailure modifyFailureByIndex(final @Nullable AlphaFailure failure,
-                                                             final InstaFailureReason newReason,
-                                                             final int nextIndex) {
+    public static @NotNull AlphaParseFailure modifyFailureByIndex(final @Nullable AlphaParseFailure failure,
+                                                                  final ParseFailureReason newReason,
+                                                                  final int nextIndex) {
         final int currentIndex = failure == null ? 0 : failure.getIndex();
         if (nextIndex > currentIndex)
-            return new AlphaFailure(nextIndex, new ArrayList<>(Collections.singletonList(newReason)));
+            return new AlphaParseFailure(nextIndex, new ArrayList<>(Collections.singletonList(newReason)));
         if (nextIndex < currentIndex) return Objects.requireNonNull(failure);
 
-        final List<InstaFailureReason> newReasonList = new ArrayList<>(failure == null ? List.of() : failure.getReasonList());
+        final List<ParseFailureReason> newReasonList = new ArrayList<>(failure == null ? List.of() : failure.getReasonList());
         newReasonList.add(newReason);
-        return new AlphaFailure(nextIndex, newReasonList);
+        return new AlphaParseFailure(nextIndex, newReasonList);
     }
 
-    public static @NotNull String pprintFailure(final @NotNull AlphaFailure failure) {
+    public static @NotNull String pprintFailure(final @NotNull AlphaParseFailure failure) {
         final int line = ((Number) failure.getLine()).intValue();
         final int column = ((Number) failure.getColumn()).intValue();
         final String text = failure.getText();
-        final List<InstaFailureReason> reason = failure.getReasonList();
+        final List<ParseFailureReason> reason = failure.getReasonList();
 
         final StringBuilder sb = new StringBuilder();
         sb.append("Parse error at line ").append(line).append(", column ").append(column).append(";\n");
@@ -89,13 +89,13 @@ public final class FailureUtil {
         }
 
         final List<String> fullReasons = reason.stream()
-                .filter(InstaFailureReason::isFull)
-                .map(InstaFailureReason::failureReasonString)
+                .filter(ParseFailureReason::isFull)
+                .map(ParseFailureReason::failureReasonString)
                 .distinct().toList();
         final List<String> partialReasons =
                 reason.stream()
-                        .filter(Predicate.not(InstaFailureReason::isFull))
-                        .map(InstaFailureReason::failureReasonString)
+                        .filter(Predicate.not(ParseFailureReason::isFull))
+                        .map(ParseFailureReason::failureReasonString)
                         .distinct().toList();
 
         final int total = fullReasons.size() + partialReasons.size();
@@ -123,7 +123,7 @@ public final class FailureUtil {
                 return "NOT " + exp.get(Keyword.intern("NOT"));
             }
             throw new IllegalArgumentException();
-        } else if (expected instanceof InstaFailureReasonCharRange) {
+        } else if (expected instanceof AlphaFailureReasonCharRange) {
             return expected.toString();
         } else if (expected instanceof Pattern) {
             return expected.toString();

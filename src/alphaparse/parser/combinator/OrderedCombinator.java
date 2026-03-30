@@ -4,7 +4,7 @@ import alphaparse.Gll;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +32,7 @@ public final class OrderedCombinator extends Combinator {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator1 = getParser1();
         final @NotNull Combinator combinator2 = getParser2();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForComb1 = new TrampolineListenerKey(index, combinator1);
@@ -44,7 +44,7 @@ public final class OrderedCombinator extends Combinator {
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator1 = getParser1();
         final @NotNull Combinator combinator2 = getParser2();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForComb1 = new TrampolineListenerKey(index, combinator1);

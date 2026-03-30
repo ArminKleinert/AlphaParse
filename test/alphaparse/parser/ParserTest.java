@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 class ParserTest {
 
     @Test
-    void parse() {
+    void parseWithOptions() {
     }
 
     @Test
-    void testParse() {
+    void parse() {
     }
 
     @Test
@@ -17,7 +17,7 @@ class ParserTest {
     }
 
     @Test
-    void testParses() {
+    void parsesWithOptions() {
     }
 
     @Test

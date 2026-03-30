@@ -3,15 +3,15 @@ package alphaparse;
 import alphaparse.parser.Parser;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.ParseTree;
-import alphaparse.result.AlphaFailure;
-import alphaparse.result.failure.failureReason.InstaFailureReasonEpsilon;
+import alphaparse.result.AlphaParseFailure;
+import alphaparse.result.failure.failureReason.ParseFailureReasonEpsilon;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class Repeat {
-    public static AlphaFailure failureSignal = new AlphaFailure(-1, new ArrayList<>());
+    public static AlphaParseFailure failureSignal = new AlphaParseFailure(-1, new ArrayList<>());
 
     private static boolean isEmptyResult(final @NotNull Object result) {
         if (result instanceof ParseTree) return ((ParseTree) result).getContent().isEmpty();
@@ -22,6 +22,6 @@ public final class Repeat {
             final @NotNull Parser parser,
             final @NotNull String text,
             final Keyword startProduction) {
-        return new AlphaFailure(0, List.of(new InstaFailureReasonEpsilon()));
+        return new AlphaParseFailure(0, List.of(new ParseFailureReasonEpsilon()));
     }
 }

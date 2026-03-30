@@ -5,15 +5,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
-public final class InstaFailureReasonRegex extends InstaFailureReason {
+public final class ParseFailureReasonRegex extends ParseFailureReason {
     private final @NotNull Pattern expecting;
 
-    public InstaFailureReasonRegex(final @NotNull Pattern expecting, final boolean full) {
+    public ParseFailureReasonRegex(final @NotNull Pattern expecting, final boolean full) {
         super(full);
         this.expecting = expecting;
     }
 
-    public InstaFailureReasonRegex(final @NotNull Pattern expecting) {
+    public ParseFailureReasonRegex(final @NotNull Pattern expecting) {
         this(expecting, false);
     }
 

@@ -2,11 +2,11 @@ package alphaparse;
 
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.AlphaFailure;
+import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.FormatUtils;
-import alphaparse.result.failure.failureReason.InstaFailureReasonOptional;
-import alphaparse.result.failure.failureReason.InstaFailureReasonRegex;
-import alphaparse.result.failure.failureReason.InstaFailureReasonString;
+import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
+import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
+import alphaparse.result.failure.failureReason.ParseFailureReasonString;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
@@ -31,48 +31,6 @@ public final class Main {
     public static void main(String[] args) {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
         var i = 0;
-
-        /**/
-//        {
-//            var p = Insta.parser("S : A | B\nA :E #'\\d'*\nB : A D A #'\\d'*");
-//            IO2.println(p.getGrammar().values());
-//            IO2.println(p.getGrammar().analyze());
-//            IO2.println();
-//        }
-
-//        System.exit(0);
-
-        /**/
-//        {
-//            var p = Insta.parser(c99GrammarText, Insta.ParserCreationOptions.newWithStandardWhitespace());
-//            var text = "struct test ttt;\nint a(int r){return \"\\\"\"|r(77)+1+0.9f+.8;}";
-//            InstaParseResult parseTree = Insta.parse(p, text, Insta.ParsingOptions.DEFAULT);
-//            IO2.println(parseTree);
-//            //IO2.println(Viztool.dumpParseTreeHelp(System.out, parseTree.castToParseSuccess(), new AtomicInteger(0)));
-//            try {
-//                IO2.println(Viztool.dumpParseTree("dottest", parseTree.castToParseSuccess()));
-//            } catch (InterruptedException | IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//            IO2.println();
-//        }
-
-//        System.exit(0);
-
-//        {
-//            var grammar = """
-//                    S : T+
-//                    T : r1 | r2 | r3
-//                    r1 : 'a'
-//                    r2 : 'b'
-//                    r3 : 'a'
-//                    """;
-//            var text = "aba";
-//            var p = Insta.parser(grammar);
-//            IO2.println(FormatUtils.parserToMap(p));
-//        }
-//
-//        System.exit(0);
 
         /**/
         {
@@ -111,8 +69,8 @@ public final class Main {
         {
             var p = Alpha.parser("S : #'\\d'+");
             IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
-            IO2.println(((AlphaFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println(((AlphaFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
             IO2.println();
         }
 
@@ -120,8 +78,8 @@ public final class Main {
         {
             var p = Alpha.parser("S : #'\\d'*");
             IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
-            IO2.println(((AlphaFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println(((AlphaFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
             IO2.println();
         }
 
@@ -129,8 +87,8 @@ public final class Main {
         {
             var p = Alpha.parser("S : 1*3 #'\\d'");
             IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
-            IO2.println(((AlphaFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println(((AlphaFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
             IO2.println();
         }
 
@@ -200,10 +158,10 @@ public final class Main {
             IO2.println(failIndex + " " + failColumn + " " + failLine + " " + failReasonList + " " + failText + " " + failResult);
 
             IO2.println(parse.checkCorrectness(2, 3, 1, "112",
-                    List.of(new InstaFailureReasonOptional(Keyword.intern("end-of-string")),
-                            new InstaFailureReasonRegex(Pattern.compile("\\s+"), true),
-                            new InstaFailureReasonString("1"),
-                            new InstaFailureReasonRegex(Pattern.compile("\\s+"))
+                    List.of(new ParseFailureReasonOptional(Keyword.intern("end-of-string")),
+                            new ParseFailureReasonRegex(Pattern.compile("\\s+"), true),
+                            new ParseFailureReasonString("1"),
+                            new ParseFailureReasonRegex(Pattern.compile("\\s+"))
                     )));
         }
 
@@ -309,18 +267,5 @@ public final class Main {
             IO2.println(c.getClass());
             IO2.println("Time taken (ms): " + (endTime - startTime) / 1000000.0 + " (Consider 15000.000ms good)");
         }
-
-        IO2.println("AutoFlattenSeq.instancesEver    = "+AutoFlattenSeq.instancesEver);
-        IO2.println("AutoFlattenSeq.highestSize      = "+AutoFlattenSeq.highestSize);
-        IO2.println("AutoFlattenSeq.emptyInstances   = "+AutoFlattenSeq.emptyInstances);
-        IO2.println("AutoFlattenSeq.toNodesCalls     = "+AutoFlattenSeq.toNodesCalls);
-        IO2.println("AutoFlattenSeq.iteratorCalls    = "+AutoFlattenSeq.iteratorCalls);
-        IO2.println("AutoFlattenSeq.totalEqualsCalls = "+AutoFlattenSeq.totalEqualsCalls);
-        IO2.println("AutoFlattenSeq.afsEqualsCalls   = "+AutoFlattenSeq.afsEqualsCalls);
-        IO2.println("AutoFlattenSeq.singleAdditions  = "+AutoFlattenSeq.singleAdditions);
-        IO2.println("AutoFlattenSeq.multiAdditions   = "+AutoFlattenSeq.multiAdditions);
-        IO2.println("AutoFlattenSeq.nullAdditions    = "+AutoFlattenSeq.nullAdditions);
-        IO2.println("AutoFlattenSeq.hashCodeCalls    = "+AutoFlattenSeq.hashCodeCalls);
-        IO2.println("AutoFlattenSeq.hashCodeCalcs    = "+AutoFlattenSeq.hashCodeCalcs);
     }
 }

@@ -3,17 +3,17 @@ package alphaparse.result.failure.failureReason;
 import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
-public final class InstaFailureReasonChar extends InstaFailureReason {
+public final class ParseFailureReasonChar extends ParseFailureReason {
     final int lo;
     final int hi;
 
-    public InstaFailureReasonChar(final int lo, final int hi, final boolean full) {
+    public ParseFailureReasonChar(final int lo, final int hi, final boolean full) {
         super(full);
         this.lo = lo;
         this.hi = hi;
     }
 
-    public InstaFailureReasonChar(final int lo, final int hi) {
+    public ParseFailureReasonChar(final int lo, final int hi) {
         this(lo, hi, false);
     }
 
@@ -31,5 +31,5 @@ public final class InstaFailureReasonChar extends InstaFailureReason {
     }
 
     @Override
-    public @NotNull InstaFailureReasonCharRange getExpecting() {return new InstaFailureReasonCharRange(lo, hi);}
+    public @NotNull AlphaFailureReasonCharRange getExpecting() {return new AlphaFailureReasonCharRange(lo, hi);}
 }

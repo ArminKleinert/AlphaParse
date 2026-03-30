@@ -6,10 +6,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class InstaFailureReason {
+public abstract class ParseFailureReason {
     private final boolean full;
 
-    protected InstaFailureReason( final boolean full) {
+    protected ParseFailureReason(final boolean full) {
         this.full = full;
     }
 
@@ -29,7 +29,7 @@ public abstract class InstaFailureReason {
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        final @NotNull InstaFailureReason that = (InstaFailureReason) o;
+        final @NotNull ParseFailureReason that = (ParseFailureReason) o;
         return full == that.isFull() &&
                 Objects.equals(getTag(), that.getTag()) &&
                 Objects.equals(Objects.toString(getExpecting()), Objects.toString(that.getExpecting()));

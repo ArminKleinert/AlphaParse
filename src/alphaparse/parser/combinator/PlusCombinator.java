@@ -2,7 +2,7 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ public final class PlusCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator parser = getParser();
         Gll.pushListener(
                 tramp, new TrampolineListenerKey(index, parser),
@@ -26,7 +26,7 @@ public final class PlusCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator parser = getParser();
         Gll.pushListener(
                 tramp, new TrampolineListenerKey(index, parser),

@@ -1,32 +1,32 @@
 package alphaparse.result;
 
 import alphaparse.result.failure.FailureUtil;
-import alphaparse.result.failure.failureReason.InstaFailureReason;
+import alphaparse.result.failure.failureReason.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public final class AlphaFailure implements InstaIntermediateResult, AlphaParseResult {
+public final class AlphaParseFailure implements AlphaIntermediateResult, AlphaParseResult {
     private final int index;
-    private final @NotNull List<InstaFailureReason> reason;
+    private final @NotNull List<ParseFailureReason> reason;
     private final int line;
     private final int column;
     private final @Nullable String text;
     private final @NotNull Object result;
 
-    public AlphaFailure(final int index, final @NotNull List<InstaFailureReason> reason) {
+    public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason) {
         this(index, reason, -1, -1, null);
     }
 
-    public AlphaFailure(final int index, final @NotNull List<InstaFailureReason> reason,
-                        final int line, final int column, final @Nullable String text) {
+    public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason,
+                             final int line, final int column, final @Nullable String text) {
         this(index, reason, line, column, text, List.of());
     }
 
-    public AlphaFailure(final int index, final @NotNull List<InstaFailureReason> reason,
-                        final int line, final int column, final @Nullable String text,
-                        final @NotNull Object result) {
+    public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason,
+                             final int line, final int column, final @Nullable String text,
+                             final @NotNull Object result) {
         this.index = index;
         this.reason = reason;
         this.line = line;
@@ -35,7 +35,7 @@ public final class AlphaFailure implements InstaIntermediateResult, AlphaParseRe
         this.result = result;
     }
 
-    public @NotNull List<InstaFailureReason> getReasonList() {
+    public @NotNull List<ParseFailureReason> getReasonList() {
         return reason;
     }
 
@@ -53,7 +53,7 @@ public final class AlphaFailure implements InstaIntermediateResult, AlphaParseRe
             final int failColumn,
             final int failLine,
             final String failText,
-            final @NotNull List<InstaFailureReason> failReasonList) {
+            final @NotNull List<ParseFailureReason> failReasonList) {
         final @NotNull StringBuilder sb;
         sb = new StringBuilder();
         sb.append("Attribute: Index  Column Line   Text   List \n");
@@ -87,7 +87,7 @@ public final class AlphaFailure implements InstaIntermediateResult, AlphaParseRe
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        AlphaFailure that = (AlphaFailure) o;
+        AlphaParseFailure that = (AlphaParseFailure) o;
         return index == that.index
                 && line == that.line
                 && column == that.column

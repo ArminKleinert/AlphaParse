@@ -2,9 +2,9 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.InstaFailureReasonChar;
+import alphaparse.result.failure.failureReason.ParseFailureReasonChar;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,14 +30,14 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull String text = tramp.getText();
         final int lo = getLo();
         final int hi = getHi();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
-            Gll.fail(tramp, nodeKey, index, new InstaFailureReasonChar(lo, hi));
+            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonChar(lo, hi));
             return;
         }
 
@@ -46,7 +46,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
             if (lo >= code && code >= hi) {
                 Gll.success(tramp, nodeKey, Objects.toString(code), index + 1);
             } else {
-                Gll.fail(tramp, nodeKey, index, new InstaFailureReasonChar(lo, hi));
+                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonChar(lo, hi));
             }
             return;
         }
@@ -56,31 +56,11 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         if (lo >= codePoint && codePoint >= hi) {
             Gll.success(tramp, nodeKey, charString, index + charString.length());
         } else {
-            Gll.fail(tramp, nodeKey, index, new InstaFailureReasonChar(lo, hi));
+            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonChar(lo, hi));
         }
     }
-
-    /*
-(defn char-range-full-parse
-  [^UnicodeCharTerminal this index ^InstaTramp tramp]
-  (let [lo (.getLo this)
-        hi (.getHi this)
-        text (.getText tramp)
-        end (count text)]
-    (cond
-      (>= index (count text)) (Gll1/fail tramp (InstaNodeKey. index this) index(InstaFailureReasonChar. lo hi))
-      (<= hi 0xFFFF) (let [code (single-char-code-at text index)]
-                       (if (and (= (inc index) end) (<= lo code hi))
-                         (Gll1/success tramp (InstaNodeKey. index this) (str (char code)) end)
-                         (Gll1/fail tramp (InstaNodeKey. index this) index(InstaFailureReasonChar. lo hi))))
-      :else (let [code-point (unicode-code-point-at text index)
-                  char-string (code-point->chars code-point)]
-              (if (and (= (+ index (count char-string)) end) (<= lo code-point hi))
-                (Gll1/success tramp (InstaNodeKey. index this) char-string end)
-                (Gll1/fail tramp (InstaNodeKey. index this) index(InstaFailureReasonChar. lo hi true)))))))
-     */
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull String text = tramp.getText();
         final int lo = getLo();
         final int hi = getHi();
@@ -88,7 +68,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
-            Gll.fail(tramp, nodeKeyForThis, index, new InstaFailureReasonChar(lo, hi));
+            Gll.fail(tramp, nodeKeyForThis, index, new ParseFailureReasonChar(lo, hi));
             return;
         }
 
@@ -98,7 +78,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
             if (index + 1 == end && lo <= code && code <= hi) {
                 Gll.success(tramp, nodeKeyForThis, Character.toString(c), end);
             } else {
-                Gll.fail(tramp, nodeKeyForThis, index, new InstaFailureReasonChar(lo, hi));
+                Gll.fail(tramp, nodeKeyForThis, index, new ParseFailureReasonChar(lo, hi));
             }
             return;
         }
@@ -109,7 +89,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         if ((index + charString.length()) == end && lo <= codePoint && codePoint <= hi) {
             Gll.success(tramp, nodeKeyForThis, charString, end);
         } else {
-            Gll.fail(tramp, nodeKeyForThis, index, new InstaFailureReasonChar(lo, hi, true));
+            Gll.fail(tramp, nodeKeyForThis, index, new ParseFailureReasonChar(lo, hi, true));
         }
     }
 

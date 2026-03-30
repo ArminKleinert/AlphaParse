@@ -19,7 +19,7 @@ public class PerfTest {
         if (!doRun)
             return;
 
-            /* Instaparse statistics:
+            /* Old statistics:
 
 Make parser:     {:min 105.916, :max 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000
 First parse:     {:min 3.238, :max 9.338, :diff 6.100, :average 3.299, :mid 3.279, :median 3.280, :sum 65981.479} // n=20000
@@ -153,7 +153,7 @@ Count of parses: {:lowest 13.937, :highest 18.469, :average 14.255, :mid 14.182,
 
 //        IO2.println("---");
 //        IO2.println("Vector:      " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-//                () -> clojure.lang.PersistentVector.create(Insta.parses(p, text))));
+//                () -> clojure.lang.PersistentVector.create(Alpha.parses(p, text))));
 //        IO2.println("Previous:    {:lowest 13.935, :highest 20.012, :diff 6.077, :average 14.226, :mid 14.152, :median 14.151, :total 284512.227}");
 //        IO2.println("Original:    {:lowest 37.259, :highest 50.422, :diff 13.162, :average 38.018, :mid 37.843, :median 37.843, :sum 760355.614} // n=20000");
 
@@ -207,7 +207,7 @@ Count of parses: {:lowest 13.937, :highest 18.469, :average 14.255, :mid 14.182,
 
 //        IO2.println("---");
 //        IO2.println("Vector:      " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-//                () -> clojure.lang.LazilyPersistentVector.create(Insta.parses(p, text, Insta.ParsingOptions.optMemory()))));
+//                () -> clojure.lang.LazilyPersistentVector.create(Alpha.parses(p, text, Alpha.ParsingOptions.optMemory()))));
 //        IO2.println("Std prev:    {:lowest 13.935, :highest 20.012, :diff 6.077, :average 14.226, :mid 14.152, :median 14.151, :total 284512.227}");
 //        IO2.println("Previous:    -");
 //        IO2.println("Original:    {:lowest 37.282, :highest 45.358, :diff 8.076, :average 38.025, :mid 37.864, :median 37.862, :sum 760506.577} // n=20000");

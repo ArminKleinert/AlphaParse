@@ -4,21 +4,24 @@ import alphaparse.Gll;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.functions.Listener;
 import alphaparse.parser.Reduction;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+
+import alphaparse.trampoline.Tramp;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
- final class GllParserListeners {
+final class GllParserListeners {
     static @NotNull Listener nodeListener(final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                          final @NotNull InstaTramp tramp) {
+                                          final @NotNull Tramp tramp) {
         return result -> Gll.pushResult(tramp, nodeKey, result);
     }
 
     static @NotNull Listener lookListener(final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                          final @NotNull InstaTramp tramp) {
+                                          final @NotNull Tramp tramp) {
         return ignored -> Gll.success(tramp, nodeKey, null, nodeKey.index());
     }
 
@@ -26,17 +29,17 @@ import java.util.List;
                                           final @NotNull Combinator parser,
                                           final int prevIndex,
                                           final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                          final @NotNull InstaTramp tramp) {
+                                          final @NotNull Tramp tramp) {
         return result -> {
-            Object parsedResult = result.getResult();
-            int continueIndex = result.getIndex();
+            final @Nullable Object parsedResult = result.getResult();
+            final int continueIndex = result.getIndex();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty()) {
                     Gll.success(tramp, nodeKey, null, continueIndex);
                 }
                 return;
             }
-            AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+            final AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             Gll.pushListener(tramp, new TrampolineListenerKey(continueIndex, parser), plusListener(newResultsSoFar, parser, continueIndex, nodeKey, tramp));
@@ -47,10 +50,9 @@ import java.util.List;
     static @NotNull Listener catListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
                                          final @NotNull List<Combinator> parserSequence,
                                          final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                         final @NotNull InstaTramp tramp) {
+                                         final @NotNull Tramp tramp) {
         return result -> {
-            assert result.getResult() != null;
-            final @NotNull Object parsedResult = result.getResult();
+            final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.getIndex();
             final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
@@ -75,10 +77,9 @@ import java.util.List;
     static @NotNull Listener repListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
                                          final int nResultsSoFar,
                                          final @NotNull RepetitionCombinator parser,
-                                         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey, final @NotNull InstaTramp tramp) {
+                                         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey, final @NotNull Tramp tramp) {
         return result -> {
-            assert result.getResult() != null;
-            final @NotNull Object parsedResult = result.getResult();
+            final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.getIndex();
 
             final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
@@ -104,9 +105,9 @@ import java.util.List;
                                               final @NotNull Combinator parser,
                                               final int prevIndex,
                                               final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                              final @NotNull InstaTramp tramp) {
+                                              final @NotNull Tramp tramp) {
         return result -> {
-            var parsedResult = result.getResult();
+            final @Nullable var parsedResult = result.getResult();
             var continueIndex = result.getIndex();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty())
@@ -128,9 +129,9 @@ import java.util.List;
     static @NotNull Listener catFullListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
                                              final @NotNull List<Combinator> parserSequence,
                                              final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                             final @NotNull InstaTramp tramp) {
+                                             final @NotNull Tramp tramp) {
         return result -> {
-            final var parsedResult = result.getResult();
+            final @Nullable var parsedResult = result.getResult();
             final var continueIndex = result.getIndex();
             final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
@@ -155,9 +156,9 @@ import java.util.List;
                                              final int n,
                                              final int prevIndex,
                                              final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-                                             final @NotNull InstaTramp tramp) {
+                                             final @NotNull Tramp tramp) {
         return result -> {
-            final var parsedResult = result.getResult();
+            final @Nullable var parsedResult = result.getResult();
             final int continueIndex = result.getIndex();
             final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)

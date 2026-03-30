@@ -6,15 +6,15 @@ import alphaparse.parser.combinator.Combinator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class InstaFailureReasonNegative extends InstaFailureReason {
+public final class ParseFailureReasonNegative extends ParseFailureReason {
     private final @Nullable Combinator expecting;
 
-    public InstaFailureReasonNegative(final @Nullable Combinator expecting, final boolean full) {
+    public ParseFailureReasonNegative(final @Nullable Combinator expecting, final boolean full) {
         super(full);
         this.expecting = expecting;
     }
 
-    public InstaFailureReasonNegative(final @Nullable Combinator expecting) {
+    public ParseFailureReasonNegative(final @Nullable Combinator expecting) {
         this(expecting, false);
     }
 

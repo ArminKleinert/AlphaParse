@@ -14,7 +14,6 @@ public sealed interface AlphaParsesResult
             case TotalParsesFailureNode tpfn -> tpfn;
             case LazyResultList lrl -> lrl;
             case ParsesFailureResult lrl -> lrl;
-            //case InstaParsesResult ipr -> ipr;
             default -> throw new IllegalArgumentException(o.getClass().toString());
         };
     }
@@ -187,13 +186,13 @@ public sealed interface AlphaParsesResult
     }
 
     final class ParsesFailureResult implements AlphaParsesResult, PretenderList<ParseTree> {
-        final @NotNull AlphaFailure ifail;
+        final @NotNull AlphaParseFailure ifail;
 
-        public ParsesFailureResult(final @NotNull AlphaFailure ifail) {
+        public ParsesFailureResult(final @NotNull AlphaParseFailure ifail) {
             this.ifail = ifail;
         }
 
-        public @NotNull AlphaFailure asFailure() {
+        public @NotNull AlphaParseFailure asFailure() {
             return ifail;
         }
 

@@ -1,15 +1,47 @@
 package alphaparse;
 
+import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.reduction.ReductionType;
+import alphaparse.result.AlphaParseFailure;
+import alphaparse.result.FormatUtils;
+import alphaparse.result.ParseTree;
+import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
+import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
+import alphaparse.result.failure.failureReason.ParseFailureReasonString;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.regex.Pattern;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 class AlphaTest {
 
     @Test
     void parse() {
+        var p = Alpha.parser("S : 'A'|'B'|'C'");
+        var res = Alpha.parse(p, "A");
+        Assertions.assertEquals(
+                new ParseTree(Keyword.intern("S"), List.of("A")),
+                res
+        );
     }
-
     @Test
-    void testParse() {
+    void parsePartial() {
+    }
+    @Test
+    void parseFailure() {
+    }
+    @Test
+    void parseWithOptions() {
+    }
+    @Test
+    void parseTotal() {
     }
 
     @Test
@@ -17,30 +49,46 @@ class AlphaTest {
     }
 
     @Test
-    void testParses() {
+    void parsesWithOptions() {
     }
 
     @Test
-    void parsesOrFailure() {
+    void parsesTotalSuccess() {
+    }
+    @Test
+    void parsesTotalFailure() {
+    }
+
+
+    @Test
+    void parsesOrFailureSuccess() {
+    }
+    @Test
+    void parsesOrFailureFailure() {
     }
 
     @Test
-    void parser() {
+    void parserFrom() {
     }
 
     @Test
-    void testParser() {
+    void parserFromString() {
     }
 
     @Test
-    void testParser1() {
+    void parserFromFile() {
     }
 
     @Test
-    void testParser2() {
+    void parserFromStringWithOptions() {
+    }
+
+
+    @Test
+    void parserFromFileWithOptions() {
     }
 
     @Test
-    void testParser3() {
+    void parserFromGrammarWithOptions() {
     }
 }

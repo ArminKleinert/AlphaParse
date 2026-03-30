@@ -2,7 +2,7 @@ package alphaparse.result;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface InstaIntermediateResult {
+public interface AlphaIntermediateResult {
     int getIndex();
 
     @Nullable Object getResult();

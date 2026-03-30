@@ -6,7 +6,7 @@ import alphaparse.result.ParseTree;
 import alphaparse.parser.Parser;
 import alphaparse.parser.Reduction;
 import alphaparse.parser.combinator.*;
-import alphaparse.result.AlphaFailure;
+import alphaparse.result.AlphaParseFailure;
 import alphaparse.util.StrParser;
 import org.jetbrains.annotations.NotNull;
 
@@ -168,7 +168,7 @@ public final class Cfg {
     static @NotNull Parser buildParser(final @NotNull String spec,
                                        final @NotNull Alpha.ParserCreationOptions options) {
         var rules = Gll.parse(EbnfG.makeCfg(), Keyword.intern("rules"), spec, false);
-        if (rules instanceof AlphaFailure) {
+        if (rules instanceof AlphaParseFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }
         @NotNull var productions = new ArrayList<Map.Entry<Keyword, Combinator>>();

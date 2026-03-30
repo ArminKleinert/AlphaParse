@@ -2,9 +2,9 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.InstaFailureReasonRegex;
+import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public final class RegexpTerminal extends CombinatorTerminal {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Pattern regexp = getRegexp();
         final @NotNull String text = tramp.getText();
         final @NotNull CharSequence subString = Gll.subSequence(text, index);
@@ -43,12 +43,12 @@ public final class RegexpTerminal extends CombinatorTerminal {
         if (match != null) {
             Gll.success(tramp, nodeKey, match, index + match.length());
         } else {
-            Gll.fail(tramp, nodeKey, index, new InstaFailureReasonRegex(regexp));
+            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonRegex(regexp));
         }
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Pattern regexp = this.getRegexp();
         final @NotNull CharSequence text = tramp.getSegment();
         final @NotNull CharSequence substring = Gll.subSequence(text, index);
@@ -58,7 +58,7 @@ public final class RegexpTerminal extends CombinatorTerminal {
         if (match != null && match.length() == desiredLength) {
             Gll.success(tramp, nodeKey, match, text.length());
         } else {
-            Gll.fail(tramp, nodeKey, index, new InstaFailureReasonRegex(regexp, true));
+            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonRegex(regexp, true));
         }
     }
 

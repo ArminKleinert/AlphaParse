@@ -18,10 +18,10 @@ public final class Parser {
     private final @NotNull Keyword startProduction;
     private final @NotNull ReductionType.ReductionTypesAvailable outputFormat;
 
-    public Parser(final @NotNull Map<Keyword, Combinator> grammar,
+    public Parser(final @NotNull Grammar grammar,
                   final @NotNull Keyword startProduction,
                   final @NotNull ReductionType.ReductionTypesAvailable outputFormat) {
-        this.grammar = new Grammar(grammar);
+        this.grammar = grammar;
         this.startProduction = startProduction;
         this.outputFormat = outputFormat;
     }

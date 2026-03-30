@@ -2,9 +2,9 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.InstaFailureReasonString;
+import alphaparse.result.failure.failureReason.ParseFailureReasonString;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +20,7 @@ public final class StringTerminal extends CombinatorStringTerminal {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull String string = getString();
         final @NotNull String text = tramp.getText();
         final int end = Integer.min(text.length(), index + string.length());
@@ -28,12 +28,12 @@ public final class StringTerminal extends CombinatorStringTerminal {
         if (string.contentEquals(head)) {
             Gll.success(tramp, new TrampolineListenerKey(index, this), string, end);
         } else {
-            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new InstaFailureReasonString(string));
+            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new ParseFailureReasonString(string));
         }
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull String string = getString();
         final @NotNull String text = tramp.getText();
         final int end = Integer.min(text.length(), string.length() + index);
@@ -42,7 +42,7 @@ public final class StringTerminal extends CombinatorStringTerminal {
         if (text.length() == end && Objects.equals(string, head.toString())) {
             Gll.success(tramp, nodeKey, string, end);
         } else {
-            Gll.fail(tramp, nodeKey, index, new InstaFailureReasonString(string, true));
+            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string, true));
         }
     }
 

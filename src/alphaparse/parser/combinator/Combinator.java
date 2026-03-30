@@ -1,6 +1,6 @@
 package alphaparse.parser.combinator;
 
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.Print;
 import alphaparse.parser.Reduction;
 import alphaparse.reduction.ReductionType;
@@ -20,9 +20,9 @@ public abstract class Combinator {
         red = Reduction.nullReduction;
     }
 
-    public abstract void parse(final int index, final @NotNull InstaTramp tramp);
+    public abstract void parse(final int index, final @NotNull Tramp tramp);
 
-    public abstract void fullParse(final int index, final @NotNull InstaTramp tramp);
+    public abstract void fullParse(final int index, final @NotNull Tramp tramp);
 
     public final boolean isHidden() {
         return hide;

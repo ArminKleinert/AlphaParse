@@ -3,14 +3,14 @@ package alphaparse.result.failure.failureReason;
 import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
-public final class InstaFailureReasonEpsilon extends InstaFailureReason {
+public final class ParseFailureReasonEpsilon extends ParseFailureReason {
     private final @NotNull Keyword expecting;
 
-    public InstaFailureReasonEpsilon(final @NotNull Keyword expecting, final boolean full) {
+    public ParseFailureReasonEpsilon(final @NotNull Keyword expecting, final boolean full) {
         super(full);this.expecting = expecting;
     }
 
-    public InstaFailureReasonEpsilon() {
+    public ParseFailureReasonEpsilon() {
         this(Keyword.intern("end-of-string"), false);
     }
 

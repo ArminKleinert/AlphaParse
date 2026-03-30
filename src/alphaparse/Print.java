@@ -80,7 +80,7 @@ public final class Print {
             }
             case CatCombinator catCombinator -> {
                 final @NotNull List<Combinator> parsers = catCombinator.getParsers();
-                final @NotNull  Predicate<Combinator> ks = (c) -> c instanceof AlternationCombinator || c instanceof OrderedCombinator;
+                final @NotNull Predicate<Combinator> ks = (c) -> c instanceof AlternationCombinator || c instanceof OrderedCombinator;
                 final @NotNull Iterable<String> parserStrings =
                         parsers.stream().map(p -> parenForTags(ks, hidden, p)).toList();
                 return String.join(" ", parserStrings);

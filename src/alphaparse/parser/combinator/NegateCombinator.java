@@ -2,9 +2,9 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.InstaFailureReasonNegative;
+import alphaparse.result.failure.failureReason.ParseFailureReasonNegative;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.Tramp;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,22 +18,18 @@ public final class NegateCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull InstaTramp tramp) {
+    public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, combinator);
 
         if (Gll.resultExists_Q(tramp, nodeKey)) {
-            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new InstaFailureReasonNegative(null));
+            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new ParseFailureReasonNegative(null));
             return;
         }
 
-//        final @NotNull Delay failSend = new Delay(() -> Gll.fail(
-//                tramp, new InstaNodeKey(index, this), index,
-//                new InstaFailureReasonNegative(combinator)));
-//        Gll.pushListener(tramp, nodeKey, ignored -> failSend.execute());
         Gll.pushListener(tramp, nodeKey, ignored -> Gll.fail(
                 tramp, new TrampolineListenerKey(index, this), index,
-                new InstaFailureReasonNegative(combinator)));
+                new ParseFailureReasonNegative(combinator)));
 
         final @NotNull Combinator p = this;
         Gll.pushNegativeListener(tramp, nodeKey, () -> {
@@ -44,7 +40,7 @@ public final class NegateCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
         parse(index, tramp);
     }
 

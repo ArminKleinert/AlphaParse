@@ -97,13 +97,13 @@ public final class StrParser {
     }
 
     private static int readUnicodeChar(final @NotNull PushbackReader r,
-                                       final int initch,
+                                       final int initChar,
                                        final int base,
                                        final int length,
                                        final boolean exact) throws IOException {
-        int uc = Character.digit(initch, base);
+        int uc = Character.digit(initChar, base);
         if (uc == -1) {
-            throw new IllegalArgumentException("Invalid digit: " + (char) initch);
+            throw new IllegalArgumentException("Invalid digit: " + (char) initChar);
         } else {
             int i;
             for (i = 1; i < length; ++i) {
