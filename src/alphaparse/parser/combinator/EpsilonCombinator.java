@@ -1,7 +1,7 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonEpsilon;
@@ -22,15 +22,15 @@ public final class EpsilonCombinator extends CombinatorTerminal {
 
     @Override
     public void parse(final int index, final @NotNull InstaTramp tramp) {
-        Gll.success(tramp, new TrampolineListenerNodeKey(index, this), null, index);
+        Gll.success(tramp, new TrampolineListenerKey(index, this), null, index);
     }
 
     @Override
     public void fullParse(final int index, final @NotNull InstaTramp tramp) {
         if (index == tramp.getText().length())
-            Gll.success(tramp, new TrampolineListenerNodeKey(index, this), null, index);
+            Gll.success(tramp, new TrampolineListenerKey(index, this), null, index);
         else
-            Gll.fail(tramp, new TrampolineListenerNodeKey(index, this), index,
+            Gll.fail(tramp, new TrampolineListenerKey(index, this), index,
                     new InstaFailureReasonEpsilon());
     }
 

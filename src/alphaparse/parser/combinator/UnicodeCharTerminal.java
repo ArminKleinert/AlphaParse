@@ -1,10 +1,11 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonChar;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -33,7 +34,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         final @NotNull String text = tramp.getText();
         final int lo = getLo();
         final int hi = getHi();
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
             Gll.fail(tramp, nodeKey, index, new InstaFailureReasonChar(lo, hi));
@@ -84,7 +85,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         final int lo = getLo();
         final int hi = getHi();
         final int end = text.length();
-        final @NotNull TrampolineListenerNodeKey nodeKeyForThis = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
             Gll.fail(tramp, nodeKeyForThis, index, new InstaFailureReasonChar(lo, hi));

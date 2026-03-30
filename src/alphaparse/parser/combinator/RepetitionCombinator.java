@@ -2,10 +2,11 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import alphaparse.parser.Reduction;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -28,8 +29,8 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     @Override
     public void parse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator combinator = getParser();
-        final @NotNull TrampolineListenerNodeKey parserNodeKey = new TrampolineListenerNodeKey(index, this);
-        final @NotNull TrampolineListenerNodeKey combinatorNodeKey = new TrampolineListenerNodeKey(index, combinator);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey parserNodeKey = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey combinatorNodeKey = new TrampolineListenerKey(index, combinator);
         if (getMin() == 0) {
             Gll.success(tramp, combinatorNodeKey, null, index);
             if (getMax() >= 1) {
@@ -47,11 +48,11 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         final @NotNull Combinator parser = getParser();
         final int m = getMin();
         final int n = getMax();
-        final @NotNull TrampolineListenerNodeKey nodeKeyForParser = new TrampolineListenerNodeKey(index, parser);
-        final @NotNull TrampolineListenerNodeKey nodeKeyForThis = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForParser = new TrampolineListenerKey(index, parser);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull var emptyResults = AutoFlattenSeq.make();
         if (m == 0) {
-            Gll.success(tramp, new TrampolineListenerNodeKey(index, this), null, index);
+            Gll.success(tramp, new TrampolineListenerKey(index, this), null, index);
             if (n >= 1) {
                 Gll.pushListener(
                         tramp, nodeKeyForParser,

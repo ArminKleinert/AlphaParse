@@ -1,10 +1,11 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonRegex;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +38,7 @@ public final class RegexpTerminal extends CombinatorTerminal {
         final @NotNull Pattern regexp = getRegexp();
         final @NotNull String text = tramp.getText();
         final @NotNull CharSequence subString = Gll.subSequence(text, index);
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         final @Nullable String match = reMatchAtFront(regexp, subString);
         if (match != null) {
             Gll.success(tramp, nodeKey, match, index + match.length());
@@ -53,7 +54,7 @@ public final class RegexpTerminal extends CombinatorTerminal {
         final @NotNull CharSequence substring = Gll.subSequence(text, index);
         final @Nullable String match = reMatchAtFront(regexp, substring);
         final int desiredLength = text.length() - index;
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (match != null && match.length() == desiredLength) {
             Gll.success(tramp, nodeKey, match, text.length());
         } else {

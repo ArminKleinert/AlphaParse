@@ -1,7 +1,7 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +25,8 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
         for (Combinator combinator : parsers) {
             Gll.pushListener(
                     tramp,
-                    new TrampolineListenerNodeKey(index, combinator),
-                    GllParserListeners.nodeListener(new TrampolineListenerNodeKey(index, this), tramp)
+                    new TrampolineListenerKey(index, combinator),
+                    GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp)
             );
         }
     }
@@ -36,8 +36,8 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
         for (final @NotNull Combinator parser : getParsers()) {
             Gll.pushFullListener(
                     tramp,
-                    new TrampolineListenerNodeKey(index, parser),
-                    GllParserListeners.nodeListener(new TrampolineListenerNodeKey(index, this), tramp)
+                    new TrampolineListenerKey(index, parser),
+                    GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp)
             );
         }
     }

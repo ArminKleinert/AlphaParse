@@ -3,8 +3,9 @@ package alphaparse.parser.combinator;
 import alphaparse.Gll;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonNegative;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 public final class NegateCombinator extends CombinatorWithParser {
@@ -19,10 +20,10 @@ public final class NegateCombinator extends CombinatorWithParser {
     @Override
     public void parse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator combinator = getParser();
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, combinator);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, combinator);
 
         if (Gll.resultExists_Q(tramp, nodeKey)) {
-            Gll.fail(tramp, new TrampolineListenerNodeKey(index, this), index, new InstaFailureReasonNegative(null));
+            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new InstaFailureReasonNegative(null));
             return;
         }
 
@@ -31,13 +32,13 @@ public final class NegateCombinator extends CombinatorWithParser {
 //                new InstaFailureReasonNegative(combinator)));
 //        Gll.pushListener(tramp, nodeKey, ignored -> failSend.execute());
         Gll.pushListener(tramp, nodeKey, ignored -> Gll.fail(
-                tramp, new TrampolineListenerNodeKey(index, this), index,
+                tramp, new TrampolineListenerKey(index, this), index,
                 new InstaFailureReasonNegative(combinator)));
 
         final @NotNull Combinator p = this;
         Gll.pushNegativeListener(tramp, nodeKey, () -> {
             if (!Gll.resultExists_Q(tramp, nodeKey)) {
-                Gll.success(tramp, new TrampolineListenerNodeKey(index, p), null, index);
+                Gll.success(tramp, new TrampolineListenerKey(index, p), null, index);
             }
         });
     }

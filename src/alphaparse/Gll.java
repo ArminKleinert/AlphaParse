@@ -18,7 +18,7 @@ import alphaparse.result.success.InstaSuccess;
 import alphaparse.result.failure.failureReason.InstaFailureReason;
 import alphaparse.trampoline.TrampolineMsgCacheKey;
 import alphaparse.trampoline.TrampolineListenerNode;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class Gll {
     private static @NotNull TrampolineListenerNode nodeGet(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey) {
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         @Nullable TrampolineListenerNode node = tramp.getNode(nodeKey);
 
         if (node != null)
@@ -42,7 +42,7 @@ public final class Gll {
 
     private static boolean listenerExists_Q(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey) {
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         TrampolineListenerNode node = tramp.getNode(nodeKey);
         if (node == null) return false;
         return !node.listeners().isEmpty();
@@ -50,7 +50,7 @@ public final class Gll {
 
     private static boolean fullListenerExists_Q(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey) {
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         final TrampolineListenerNode node = tramp.getNode(nodeKey);
         if (node == null) return false;
         return !node.listeners().isEmpty() || !node.fullListeners().isEmpty();
@@ -58,7 +58,7 @@ public final class Gll {
 
     public static boolean resultExists_Q(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey) {
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         final TrampolineListenerNode node = tramp.getNode(nodeKey);
 
         if (node == null)
@@ -69,8 +69,8 @@ public final class Gll {
 
     private static boolean fullResultExists_Q(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey) {
-        final Map<TrampolineListenerNodeKey, TrampolineListenerNode> nodes = tramp.getNodes();
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
+        final Map<TrampolineListenerKey, TrampolineListenerNode> nodes = tramp.getNodes();
         final TrampolineListenerNode node = nodes.get(nodeKey);
 
         if (node == null)
@@ -100,7 +100,7 @@ public final class Gll {
 
     public static void pushNegativeListener(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey creator,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey creator,
             final @NotNull NegativeListener negativeListener) {
         tramp.getNegativeListeners().put(creator.index(), List.of(negativeListener));
     }
@@ -189,7 +189,7 @@ public final class Gll {
 
     public static void pushListener(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         final boolean listenerAlreadyExists = listenerExists_Q(tramp, nodeKey);
         final @NotNull TrampolineListenerNode node = nodeGet(tramp, nodeKey);
@@ -208,7 +208,7 @@ public final class Gll {
 
     public static void pushFullListener(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         //GllParsers.pushFullListenerCallback.invoke(tramp, nodeKey, listener);
         final var fullListenerAlreadyExists = fullListenerExists_Q(tramp, nodeKey);
@@ -231,7 +231,7 @@ public final class Gll {
      */
     public static void pushResult(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             @NotNull InstaSuccess result) {
         final @NotNull TrampolineListenerNode node = nodeGet(tramp, nodeKey);
         final @NotNull Combinator parser = nodeKey.parser();
@@ -270,9 +270,9 @@ public final class Gll {
             final @NotNull Combinator parser,
             final boolean partial) {
         if (partial) {
-            pushListener(tramp, new TrampolineListenerNodeKey(0, parser), tramp::setSuccess);
+            pushListener(tramp, new TrampolineListenerKey(0, parser), tramp::setSuccess);
         } else {
-            pushFullListener(tramp, new TrampolineListenerNodeKey(0, parser), tramp::setSuccess);
+            pushFullListener(tramp, new TrampolineListenerKey(0, parser), tramp::setSuccess);
         }
     }
 
@@ -324,7 +324,7 @@ public final class Gll {
 
     public static void success(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final Object result,
             final int end) {
         pushResult(tramp, nodeKey, InstaSuccess.create(end, result));
@@ -332,7 +332,7 @@ public final class Gll {
 
     public static void fail(
             final @NotNull InstaTramp tramp,
-            final @NotNull TrampolineListenerNodeKey nodeKey,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final int index,
             final @NotNull InstaFailureReason reason) {
         //Objects.requireNonNull(tramp.getFailure());

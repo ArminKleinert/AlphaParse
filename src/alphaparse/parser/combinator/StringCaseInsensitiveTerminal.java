@@ -1,10 +1,11 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonString;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 public final class StringCaseInsensitiveTerminal extends CombinatorStringTerminal {
@@ -25,7 +26,7 @@ public final class StringCaseInsensitiveTerminal extends CombinatorStringTermina
         final int end = Integer.min(text.length(), index + string.length());
         @NotNull CharSequence head = Gll.subSequence(text, index, end);
         head = (head instanceof String) ? (String) head : head.toString();
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (string.equalsIgnoreCase((String) head)) {
             Gll.success(tramp, nodeKey, string, end);
         } else {
@@ -39,7 +40,7 @@ public final class StringCaseInsensitiveTerminal extends CombinatorStringTermina
         final @NotNull var text = tramp.getText();
         final var end = Integer.min(text.length(), index + string.length());
         final @NotNull var head = Gll.subSequence(text, index, end);
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (end == text.length() && string.equalsIgnoreCase(head.toString()))
             Gll.success(tramp, nodeKey, string, end);
         else

@@ -1,7 +1,7 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
@@ -20,8 +20,8 @@ public final class PlusCombinator extends CombinatorWithParser {
     public void parse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator parser = getParser();
         Gll.pushListener(
-                tramp, new TrampolineListenerNodeKey(index, parser),
-                GllParserListeners.plusListener(AutoFlattenSeq.make(), parser, index, new TrampolineListenerNodeKey(index, this), tramp)
+                tramp, new TrampolineListenerKey(index, parser),
+                GllParserListeners.plusListener(AutoFlattenSeq.make(), parser, index, new TrampolineListenerKey(index, this), tramp)
         );
     }
 
@@ -29,8 +29,8 @@ public final class PlusCombinator extends CombinatorWithParser {
     public void fullParse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator parser = getParser();
         Gll.pushListener(
-                tramp, new TrampolineListenerNodeKey(index, parser),
-                GllParserListeners.plusFullListener(AutoFlattenSeq.make(), parser, index, new TrampolineListenerNodeKey(index, this), tramp)
+                tramp, new TrampolineListenerKey(index, parser),
+                GllParserListeners.plusFullListener(AutoFlattenSeq.make(), parser, index, new TrampolineListenerKey(index, this), tramp)
         );
     }
 

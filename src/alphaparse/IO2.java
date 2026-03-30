@@ -8,4 +8,7 @@ public class IO2 {
     public static void println() {
         System.out.println();
     }
+    public static void errln(String s) {
+        System.err.println(s);
+    }
 }

@@ -1,7 +1,7 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
@@ -22,16 +22,16 @@ public final class CatCombinator extends CombinatorWithManyParsers {
     public void parse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull List<@NotNull Combinator> parsers = getParsers();
         Gll.pushListener(
-                tramp, new TrampolineListenerNodeKey(index, parsers.getFirst()),
-                GllParserListeners.catListener(AutoFlattenSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerNodeKey(index, this), tramp));
+                tramp, new TrampolineListenerKey(index, parsers.getFirst()),
+                GllParserListeners.catListener(AutoFlattenSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), tramp));
     }
 
     @Override
     public void fullParse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull List<@NotNull Combinator> parsers = getParsers();
         Gll.pushListener(
-                tramp, new TrampolineListenerNodeKey(index, parsers.getFirst()),
-                GllParserListeners.catFullListener(AutoFlattenSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerNodeKey(index, this), tramp));
+                tramp, new TrampolineListenerKey(index, parsers.getFirst()),
+                GllParserListeners.catFullListener(AutoFlattenSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), tramp));
     }
 
     @Override

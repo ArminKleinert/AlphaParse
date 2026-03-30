@@ -135,7 +135,7 @@ public final class Main {
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
+        PerfTest.fullTest(true, c99GrammarText, 10, 100);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);

@@ -2,7 +2,7 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Keyword;
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonLookahead;
@@ -20,8 +20,8 @@ public final class LookaheadCombinator extends CombinatorWithParser {
     @Override
     public void parse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator combinator = getParser();
-        Gll.pushListener(tramp, new TrampolineListenerNodeKey(index, combinator),
-                GllParserListeners.lookListener(new TrampolineListenerNodeKey(index, this), tramp));
+        Gll.pushListener(tramp, new TrampolineListenerKey(index, combinator),
+                GllParserListeners.lookListener(new TrampolineListenerKey(index, this), tramp));
     }
 
     @Override
@@ -31,7 +31,7 @@ public final class LookaheadCombinator extends CombinatorWithParser {
         } else {
             Gll.fail(
                     tramp,
-                    new TrampolineListenerNodeKey(index, this),
+                    new TrampolineListenerKey(index, this),
                     index,
                     new InstaFailureReasonLookahead(Keyword.intern("end-of-string")));
         }

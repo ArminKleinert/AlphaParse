@@ -1,10 +1,11 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonString;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -25,9 +26,9 @@ public final class StringTerminal extends CombinatorStringTerminal {
         final int end = Integer.min(text.length(), index + string.length());
         final @NotNull CharSequence head = Gll.subSequence(text, index, end);
         if (string.contentEquals(head)) {
-            Gll.success(tramp, new TrampolineListenerNodeKey(index, this), string, end);
+            Gll.success(tramp, new TrampolineListenerKey(index, this), string, end);
         } else {
-            Gll.fail(tramp, new TrampolineListenerNodeKey(index, this), index, new InstaFailureReasonString(string));
+            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new InstaFailureReasonString(string));
         }
     }
 
@@ -37,7 +38,7 @@ public final class StringTerminal extends CombinatorStringTerminal {
         final @NotNull String text = tramp.getText();
         final int end = Integer.min(text.length(), string.length() + index);
         final @NotNull CharSequence head = Gll.subSequence(text, index, end);
-        final @NotNull TrampolineListenerNodeKey nodeKey = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (text.length() == end && Objects.equals(string, head.toString())) {
             Gll.success(tramp, nodeKey, string, end);
         } else {

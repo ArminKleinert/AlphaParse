@@ -2,10 +2,11 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Keyword;
 import alphaparse.Gll;
-import alphaparse.trampoline.TrampolineListenerNodeKey;
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.InstaTramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.InstaFailureReasonOptional;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 public final class OptCombinator extends CombinatorWithParser {
@@ -20,9 +21,9 @@ public final class OptCombinator extends CombinatorWithParser {
     @Override
     public void parse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator combinator = getParser();
-        final @NotNull TrampolineListenerNodeKey nodeKeyForOpt = new TrampolineListenerNodeKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt = new TrampolineListenerKey(index, this);
         Gll.pushListener(
-                tramp, new TrampolineListenerNodeKey(index, combinator),
+                tramp, new TrampolineListenerKey(index, combinator),
                 GllParserListeners.nodeListener(nodeKeyForOpt, tramp)
         );
         Gll.success(tramp, nodeKeyForOpt, null, index);
@@ -31,8 +32,8 @@ public final class OptCombinator extends CombinatorWithParser {
     @Override
     public void fullParse(final int index, final @NotNull InstaTramp tramp) {
         final @NotNull Combinator parser = getParser();
-        final @NotNull TrampolineListenerNodeKey thisNodeKey = new TrampolineListenerNodeKey(index, this);
-        Gll.pushFullListener(tramp, new TrampolineListenerNodeKey(index, parser), GllParserListeners.nodeListener(thisNodeKey, tramp));
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey thisNodeKey = new TrampolineListenerKey(index, this);
+        Gll.pushFullListener(tramp, new TrampolineListenerKey(index, parser), GllParserListeners.nodeListener(thisNodeKey, tramp));
         if (index == tramp.getText().length()) {
             Gll.success(tramp, thisNodeKey, null, index);
         } else {

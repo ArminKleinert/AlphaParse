@@ -1,5 +1,6 @@
 package alphaparse.trampoline;
 
+import alphaparse.IO2;
 import alphaparse.parser.Grammar;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
@@ -7,6 +8,8 @@ import alphaparse.result.AlphaFailure;
 import alphaparse.result.success.InstaSuccess;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import java.util.*;
 
@@ -20,7 +23,7 @@ public final class InstaTramp {
     private int generation;
     private final @NotNull Map<@NotNull Integer, @NotNull List<@NotNull NegativeListener>> negativeListeners;
     private final @NotNull Map<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
-    private final @NotNull Map<@NotNull TrampolineListenerNodeKey, @NotNull TrampolineListenerNode> nodes;
+    private final @NotNull Map<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
     private @Nullable InstaSuccess success; // TODO change to Optional.
     private @Nullable AlphaFailure failure; // TODO change to Optional.
 
@@ -87,7 +90,7 @@ public final class InstaTramp {
         return negativeListeners;
     }
 
-    public @NotNull Map<@NotNull TrampolineListenerNodeKey, @NotNull TrampolineListenerNode> getNodes() {
+    public @NotNull Map<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> getNodes() {
         return nodes;
     }
 
@@ -137,11 +140,11 @@ public final class InstaTramp {
         this.success = success;
     }
 
-    public @Nullable TrampolineListenerNode getNode(final @NotNull TrampolineListenerNodeKey nodeKey) {
+    public @Nullable TrampolineListenerNode getNode(final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         return nodes.get(nodeKey);
     }
 
-    public void addToNodes(final @NotNull TrampolineListenerNodeKey key, final @NotNull TrampolineListenerNode node) {
+    public void addToNodes(final @NotNull TrampolineListenerNode.TrampolineListenerKey key, final @NotNull TrampolineListenerNode node) {
         nodes.put(key, node);
     }
 }
