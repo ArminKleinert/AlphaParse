@@ -1,5 +1,6 @@
 package instarun.parser;
 
+import instarun.CombinatorsSource;
 import instarun.Keyword;
 import instarun.parser.combinator.*;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 
     public Combinator getProduction(final @NotNull Keyword key) {
         return getOrDefault(key, null);
+    }
+
+    public @NotNull Combinator getOrMakeNonTerm(final @NotNull Keyword key) {
+        final @NotNull Combinator p = getProduction(key);
+        if (p == null) return CombinatorsSource.staticMakeNonTerminal(key);
+        return p;
     }
 
     @Override

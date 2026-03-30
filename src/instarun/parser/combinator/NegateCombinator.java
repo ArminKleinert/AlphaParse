@@ -1,7 +1,6 @@
 package instarun.parser.combinator;
 
 import instarun.Gll;
-import instarun.delay.Delay;
 import instarun.reduction.ReductionType;
 import instarun.result.failure.failureReason.InstaFailureReasonNegative;
 import instarun.trampoline.InstaNodeKey;
@@ -27,10 +26,13 @@ public final class NegateCombinator extends CombinatorWithParser {
             return;
         }
 
-        final @NotNull Delay failSend = new Delay(() -> Gll.fail(
+//        final @NotNull Delay failSend = new Delay(() -> Gll.fail(
+//                tramp, new InstaNodeKey(index, this), index,
+//                new InstaFailureReasonNegative(combinator)));
+//        Gll.pushListener(tramp, nodeKey, ignored -> failSend.execute());
+        Gll.pushListener(tramp, nodeKey, ignored -> Gll.fail(
                 tramp, new InstaNodeKey(index, this), index,
                 new InstaFailureReasonNegative(combinator)));
-        Gll.pushListener(tramp, nodeKey, ignored -> failSend.execute());
 
         final @NotNull Combinator p = this;
         Gll.pushNegativeListener(tramp, nodeKey, () -> {

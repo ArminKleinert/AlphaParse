@@ -2,7 +2,6 @@ package instarun.parser.combinator;
 
 import instarun.Keyword;
 import instarun.Gll;
-import instarun.GllParserListeners;
 import instarun.trampoline.InstaNodeKey;
 import instarun.trampoline.InstaTramp;
 import instarun.reduction.ReductionType;
@@ -25,7 +24,7 @@ public final class NonTerminal extends Combinator {
 
     @Override
     public void parse(final int index, final @NotNull InstaTramp tramp) {
-        final @NotNull Combinator combinator = Gll.getParser(tramp.getGrammar(), this.getKeyword());
+        final @NotNull Combinator combinator = tramp.getGrammar().getOrMakeNonTerm(this.getKeyword());
         Gll.pushListener(
                 tramp,
                 new InstaNodeKey(index, combinator),
@@ -35,10 +34,10 @@ public final class NonTerminal extends Combinator {
 
     @Override
     public void fullParse(final int index, final @NotNull InstaTramp tramp) {
-        var parser = Gll.getParser(tramp.getGrammar(), getKeyword());
+        final @NotNull Combinator combinator = tramp.getGrammar().getOrMakeNonTerm(this.getKeyword());
         Gll.pushFullListener(
                 tramp,
-                new InstaNodeKey(index, parser),
+                new InstaNodeKey(index, combinator),
                 GllParserListeners.nodeListener(new InstaNodeKey(index, this), tramp));
     }
 

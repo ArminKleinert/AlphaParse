@@ -1,7 +1,6 @@
 package instarun.parser.combinator;
 
 import instarun.Gll;
-import instarun.GllParserListeners;
 import instarun.trampoline.InstaNodeKey;
 import instarun.trampoline.InstaTramp;
 import instarun.flat.AutoFlattenSeq;

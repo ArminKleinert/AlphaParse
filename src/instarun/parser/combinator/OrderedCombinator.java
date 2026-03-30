@@ -1,7 +1,6 @@
 package instarun.parser.combinator;
 
 import instarun.Gll;
-import instarun.GllParserListeners;
 import instarun.functions.Listener;
 import instarun.reduction.ReductionType;
 import instarun.trampoline.InstaNodeKey;

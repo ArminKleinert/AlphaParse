@@ -27,14 +27,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class Gll {
-    public static @NotNull Combinator getParser(
-            final @NotNull Grammar grammar,
-            final @NotNull Keyword key) {
-        final @NotNull Combinator p = grammar.getProduction(key);
-        if (p == null) return CombinatorsSource.staticMakeNonTerminal(key);
-        return p;
-    }
-
     private static @NotNull InstaNode nodeGet(
             final @NotNull InstaTramp tramp,
             final @NotNull InstaNodeKey nodeKey) {
@@ -195,15 +187,6 @@ public final class Gll {
         } while (true);
     }
 
-    /**
-     * Pushes a listener into the trampoline's node.
-     * Schedules notification to listener of all existing results.
-     * Initiates parse if necessary.
-     *
-     * @param tramp
-     * @param nodeKey
-     * @param listener
-     */
     public static void pushListener(
             final @NotNull InstaTramp tramp,
             final @NotNull InstaNodeKey nodeKey,
@@ -246,7 +229,7 @@ public final class Gll {
      * Schedules notification to all existing listeners of result
      * (Full listeners only get notified about full results)
      */
-    static void pushResult(
+    public static void pushResult(
             final @NotNull InstaTramp tramp,
             final @NotNull InstaNodeKey nodeKey,
             @NotNull InstaSuccess result) {
@@ -287,9 +270,9 @@ public final class Gll {
             final @NotNull Combinator parser,
             final boolean partial) {
         if (partial) {
-            pushListener(tramp, new InstaNodeKey(0, parser), GllParserListeners.topListener(tramp));
+            pushListener(tramp, new InstaNodeKey(0, parser), tramp::setSuccess);
         } else {
-            pushFullListener(tramp, new InstaNodeKey(0, parser), GllParserListeners.topListener(tramp));
+            pushFullListener(tramp, new InstaNodeKey(0, parser), tramp::setSuccess);
         }
     }
 
@@ -383,9 +366,8 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Keyword start,
             final @NotNull String text,
-            final int failIndex,
             final boolean partial) {
-        var tramp = new InstaTramp(grammar, text, failIndex);
+        var tramp = new InstaTramp(grammar, text, 0);
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp);
@@ -399,7 +381,7 @@ public final class Gll {
             final boolean partial) {
         var allParses = parses(grammar, start, text, partial);
         if (allParses.castToParsesSuccess().iterator().hasNext()) return InstaParsesResult.make(allParses);
-        return parsesTotalAfterFail(grammar, start, text, 0, partial);
+        return parsesTotalAfterFail(grammar, start, text, partial);
     }
 
     private static @NotNull InstaParseResult parseTotalAfterFail(

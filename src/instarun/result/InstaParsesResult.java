@@ -193,6 +193,10 @@ public sealed interface InstaParsesResult
             this.ifail = ifail;
         }
 
+        public @NotNull InstaFailure asFailure() {
+            return ifail;
+        }
+
         @Override
         public ParseTree get(final int i) {
             Objects.checkIndex(i, 0);

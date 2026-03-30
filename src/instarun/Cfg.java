@@ -29,9 +29,9 @@ public final class Cfg {
         };
     }
 
-    public static @NotNull Combinator buildRepRule(final @NotNull ParseTree tree,
-                                                   final @NotNull CombinatorsSource combinatorsSource,
-                                                   final @NotNull Insta.ParserCreationOptions options) {
+    private static @NotNull Combinator buildRepRule(final @NotNull ParseTree tree,
+                                                    final @NotNull CombinatorsSource combinatorsSource,
+                                                    final @NotNull Insta.ParserCreationOptions options) {
         final var partsUncut = (String) tree.getContent().getFirst().content();
         var parts = partsUncut.split("\\*");
         if (parts.length == 0 || parts.length > 2) {
@@ -142,7 +142,7 @@ public final class Cfg {
                     continue;
                 }
             }
-            throw new UnsupportedOperationException(tag.toString());
+            throw new UnsupportedOperationException(tag);
         } while (true);
     }
 
@@ -155,21 +155,23 @@ public final class Cfg {
         return g;
     }
 
-    public static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammarMap,
-                                                             final @NotNull Insta.ParserCreationOptions options) {
+    static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammarMap,
+                                                      final @NotNull Insta.ParserCreationOptions options) {
         if (options.startProduction() == null)
             throw new IllegalArgumentException("No start production provided.");
-        return new Parser(Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)), options.startProduction(), options.outputFormat());
+        return new Parser(
+                Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)),
+                options.startProduction(),
+                options.outputFormat());
     }
 
-    public static @NotNull Parser buildParser(final @NotNull String spec,
-                                              final @NotNull Insta.ParserCreationOptions options) {
+    static @NotNull Parser buildParser(final @NotNull String spec,
+                                       final @NotNull Insta.ParserCreationOptions options) {
         var rules = Gll.parse(EbnfG.makeCfg(), Keyword.intern("rules"), spec, false);
         if (rules instanceof InstaFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }
         @NotNull var productions = new ArrayList<Map.Entry<Keyword, Combinator>>();
-        // System.out.println(rules);
         final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
         for (final Node rule : rules.castToParseSuccess().getContent()) {
             productions.add(buildRuleRule((ParseTree) rule.content(), combinatorsSource, options));
@@ -190,9 +192,6 @@ public final class Cfg {
             );
         }
 
-        return new Parser(
-                grammar,
-                startProduction,
-                options.outputFormat());
+        return new Parser(grammar, startProduction, options.outputFormat());
     }
 }

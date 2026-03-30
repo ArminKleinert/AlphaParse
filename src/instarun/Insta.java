@@ -15,8 +15,8 @@ import java.nio.file.Files;
 import java.util.Map;
 
 public final class Insta {
-    public static @NotNull Parser unhideParser(final @NotNull Parser parser,
-                                               final @NotNull Insta.UnhideOptions unhide) {
+    private static @NotNull Parser unhideParser(final @NotNull Parser parser,
+                                                final @NotNull Insta.UnhideOptions unhide) {
         final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
         if (unhide == UnhideOptions.none) {
             return parser;
@@ -31,42 +31,6 @@ public final class Insta {
         }
     }
 
-    /*
-(defn parse
-  "Use parser to parse the text.  Returns first parse tree found
-   that completely parses the text.  If no parse tree is possible, returns
-   a Failure object.
-   
-   Optional keyword arguments:
-   :start :keyword  (where :keyword is name of starting production rule)
-   :partial true    (parses that don't consume the whole string are okay)
-   :total true      (if parse fails, embed failure node in tree)
-   :unhide <:tags or :content or :all> (for this parse, disable hiding)
-   :optimize :memory   (when possible, employ strategy to use less memory)"
-  [parser text & {:as options}]
-  {:pre [(contains? #{:tags :content :all nil} (get options :unhide))
-         (contains? #{:memory nil} (get options :optimize))]}
-  (KeywordSetup/initKeywords)
-  (try
-    (let [start-production (get options :start (.getStartProduction parser)),
-          partial? (get options :partial false)
-          optimize? (get options :optimize false)
-          unhide (get options :unhide)
-          parser ^Parser (Insta/unhideParser parser unhide)]
-      (cond
-        (:total options)
-        (Gll1/parseTotal (.getGrammar parser) start-production text partial?)
-
-        ;(and optimize? (not partial?))
-        ;(let [result (repeat/try-repeating-parse-strategy parser text start-production)]
-        ;  (if (instance? InstaFailure1 result)
-        ;    (Gll1/parse (.getGrammar parser) start-production text partial?)
-        ;    result))
-
-        :else
-        (Gll1/parse (.getGrammar parser) start-production text partial?)))
-    (catch Exception e (.printStackTrace e) (throw e))))
-     */
     public static @NotNull InstaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
@@ -97,36 +61,6 @@ public final class Insta {
         return parse(parser, text, ParsingOptions.DEFAULT);
     }
 
-    /*
-(defn ^Collection parses
-  "Use parser to parse the text.  Returns lazy seq of all parse trees
-   that completely parse the text.  If no parse tree is possible, returns
-   () with a Failure object attached as metadata.
-
-   Optional keyword arguments:
-   :start :keyword  (where :keyword is name of starting production rule)
-   :partial true    (parses that don't consume the whole string are okay)
-   :total true      (if parse fails, embed failure node in tree)
-   :unhide <:tags or :content or :all> (for this parse, disable hiding)
-
-   Clj only:
-   :trace true      (print diagnostic trace while parsing)"
-  [parser text & {:as options}]
-  {:pre [(contains? #{:tags :content :all nil} (get options :unhide))]}
-  (KeywordSetup/initKeywords)
-  (try (let [start-production (get options :start (.getStartProduction parser)),
-             partial? (get options :partial false)
-             unhide (get options :unhide)
-             parser ^Parser (Insta/unhideParser parser unhide)]
-         (cond
-           (:total options)
-           (Gll1/parsesTotal (.getGrammar parser) start-production text
-                             partial?)
-
-           :else
-           (Gll1/parses (.getGrammar parser) start-production text partial?)))
-       (catch Exception e (.printStackTrace e) (throw e))))
-     */
     public static @NotNull InstaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
@@ -166,46 +100,21 @@ public final class Insta {
         }
     }
 
-    public static Parser parser(final @NotNull String grammar) {
+    public static @NotNull Parser parser(final @NotNull String grammar) {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
-    public static Parser parser(final @NotNull File grammar) throws IOException {
+    public static @NotNull Parser parser(final @NotNull File grammar) throws IOException {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
-    /**
-     * Takes a string specification of a context-free grammar,
-     * or a URI for a text file containing such a specification (Clj only),
-     * or a map of parser combinators and returns a parser for that grammar.
-     * <p>
-     * Optional keyword arguments:
-     * <p>
-     * :output-format :enlive
-     * or
-     * :output-format :hiccup
-     * <p>
-     * :start :keyword (where :keyword is name of starting production rule)
-     * <p>
-     * :string-ci true (treat all string literals as case insensitive)
-     * <p>
-     * :auto-whitespace (:standard or :comma)
-     * or
-     * :auto-whitespace custom-whitespace-parser
-     *
-     * @param grammar
-     * @return
-     */
-    public static Parser parser(final @NotNull String grammar,
-                                final @NotNull Insta.ParserCreationOptions options) {
-        Parser parser = Cfg.buildParser(grammar, options);
-//        if (options.startProduction() != null) parser = parser.withStartProduction(options.startProduction());
-//        if (options.whitespaceParser() != null) parser = parser.withWhitespaceParser(options.whitespaceParser());
-        return parser;
+    public static @NotNull Parser parser(final @NotNull String grammar,
+                                         final @NotNull Insta.ParserCreationOptions options) {
+        return Cfg.buildParser(grammar, options);
     }
 
-    public static Parser parser(final @NotNull File grammar,
-                                final @NotNull Insta.ParserCreationOptions options) throws IOException {
+    public static @NotNull Parser parser(final @NotNull File grammar,
+                                         final @NotNull Insta.ParserCreationOptions options) throws IOException {
         final @NotNull String contents = Files.readString(grammar.toPath());
         @NotNull Parser parser = parser(contents, options);
         return parser;
@@ -223,12 +132,7 @@ public final class Insta {
         return parser;
     }
 
-//    public static Parser parser(final @NotNull Map<Keyword, Combinator> grammar,
-//                                final @NotNull Insta.ParserCreationOptions options) throws IOException {
-//        return parser(new Grammar(grammar), options);
-//    }
-
-    public static enum UnhideOptions {
+    public enum UnhideOptions {
         content, tags, all, none
     }
 

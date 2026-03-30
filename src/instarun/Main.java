@@ -78,6 +78,8 @@ public final class Main {
         {
             var p = Insta.parser("S : 'ABC'");
             IO2.println(Insta.parses(p, "ABD", new Insta.ParsingOptions(null, false, Insta.UnhideOptions.content, true, false)));
+            IO2.println(Insta.parsesOrFailure(p, "ABD", Insta.ParsingOptions.DEFAULT).castToParsesFailure().asFailure().contentsToString());
+            IO2.println(Insta.parse(p, "ABD", Insta.ParsingOptions.DEFAULT).castToParseFailure().contentsToString());
             IO2.println(Insta.parses(p, "ABD"));
             IO2.println();
         }
@@ -133,7 +135,7 @@ public final class Main {
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 10, 100);
+        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);
