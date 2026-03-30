@@ -1,0 +1,54 @@
+package alphaparse.parser.combinator;
+
+import alphaparse.Keyword;
+import alphaparse.Gll;
+import alphaparse.trampoline.TrampolineListenerNodeKey;
+import alphaparse.trampoline.InstaTramp;
+import alphaparse.reduction.ReductionType;
+import alphaparse.result.failure.failureReason.InstaFailureReasonLookahead;
+import org.jetbrains.annotations.NotNull;
+
+public final class LookaheadCombinator extends CombinatorWithParser {
+    public LookaheadCombinator(final @NotNull Combinator parser) {
+        super(parser);
+    }
+
+    public LookaheadCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
+        super(parser, hide, red);
+    }
+
+    @Override
+    public void parse(final int index, final @NotNull InstaTramp tramp) {
+        final @NotNull Combinator combinator = getParser();
+        Gll.pushListener(tramp, new TrampolineListenerNodeKey(index, combinator),
+                GllParserListeners.lookListener(new TrampolineListenerNodeKey(index, this), tramp));
+    }
+
+    @Override
+    public void fullParse(final int index, final @NotNull InstaTramp tramp) {
+        if (index == tramp.getText().length()) {
+            parse(index, tramp);
+        } else {
+            Gll.fail(
+                    tramp,
+                    new TrampolineListenerNodeKey(index, this),
+                    index,
+                    new InstaFailureReasonLookahead(Keyword.intern("end-of-string")));
+        }
+    }
+
+    @Override
+    public @NotNull LookaheadCombinator withHideTag(final boolean hide1) {
+        return isHidden() == hide1 ? this : new LookaheadCombinator(getParser(), hide1, getReduction());
+    }
+
+    @Override
+    public @NotNull LookaheadCombinator withReduction(final @NotNull ReductionType red1) {
+        return getReduction() == red1 ? this : new LookaheadCombinator(getParser(), isHidden(), red1);
+    }
+
+    @Override
+    public @NotNull LookaheadCombinator withParser(final @NotNull Combinator parser) {
+        return new LookaheadCombinator(parser, isHidden(), getReduction());
+    }
+}

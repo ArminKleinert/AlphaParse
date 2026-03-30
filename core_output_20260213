@@ -1,5 +1,5 @@
 /usr/lib/jvm/java-25-openjdk-amd64/bin/java -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow -Dclojure.compile.path=/home/tpk/Desktop/programming/instasoap/target/classes -Dinstarun.version=0.1.0-SNAPSHOT -Dclojure.debug=false -Dclojure.main.report=none -javaagent:/snap/intellij-idea-community/709/lib/idea_rt.jar=43625 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath /home/tpk/Desktop/programming/instasoap/test:/home/tpk/Desktop/programming/instasoap/src/main/clojure:/home/tpk/Desktop/programming/instasoap/dev-resources:/home/tpk/Desktop/programming/instasoap/resources:/home/tpk/Desktop/programming/instasoap/target/classes:/home/tpk/.m2/repository/org/clojure/clojure/1.11.1/clojure-1.11.1.jar:/home/tpk/.m2/repository/org/clojure/spec.alpha/0.3.218/spec.alpha-0.3.218.jar:/home/tpk/.m2/repository/org/clojure/core.specs.alpha/0.2.62/core.specs.alpha-0.2.62.jar:/home/tpk/.m2/repository/org/clojure/data.json/2.5.0/data.json-2.5.0.jar:/home/tpk/.m2/repository/com/formdev/flatlaf/3.6/flatlaf-3.6.jar:/home/tpk/.m2/repository/org/jetbrains/annotations/23.0.0/annotations-23.0.0.jar:/home/tpk/.m2/repository/nrepl/nrepl/1.0.0/nrepl-1.0.0.jar:/home/tpk/.m2/repository/org/nrepl/incomplete/0.1.0/incomplete-0.1.0.jar clojure.main -i /tmp/form-init15444414220146685920.clj
-WARNING: println already refers to: #'clojure.core/println in namespace: instarun.core, being replaced by: #'instarun.core/println
+WARNING: println already refers to: #'clojure.core/println in namespace: alphaparse.core, being replaced by: #'alphaparse.core/println
 [:S, 1, 1]
 [0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a1, []]
 [0, [{tag=:regex, expecting=\d, full=false}], 1, 1, a, []]
@@ -84,7 +84,7 @@ Parses for 15: 32768 (Correct? true)
 [[:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r1, a]]]]
 [[:S, [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r3, a]]], [:S, [:T, [:r3, a]], [:T, [:r2, b]], [:T, [:r1, a]]], [:S, [:T, [:r1, a]], [:T, [:r2, b]], [:T, [:r1, a]]]]
 [[:S, [:T, [:r3, [:failure "c"]]]], [:S, [:T, [:r1, [:failure "c"]]]], [:S, [:T, [:r2, [:failure "c"]]]]]
-class instarun.parser.ParseTreeNode
+class alphaparse.parser.ParseTreeNode
 [:S, [:T, [:r3, [:failure "c"]]]]
 
 ----------------------------------
@@ -169,7 +169,7 @@ true
 ---      Big input test 1      ---
 ----------------------------------
 2
-class instarun.parser.ParseTreeNode
+class alphaparse.parser.ParseTreeNode
 Time taken (ms):  373.765865 (Consider 257.67ms good)
 
 Process finished with exit code 0
