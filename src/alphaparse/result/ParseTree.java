@@ -12,8 +12,8 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     private final @NotNull List<Node> content;
     private int hashCode = 0;
 
-    public ParseTree(final @NotNull String tag, final @NotNull List<Object> content) {
-        this(new Node.NodeTreeTag(Keyword.intern(tag)), content.stream().map(Node::of).toList());
+    public ParseTree(final @NotNull String tag, final @NotNull Object... content) {
+        this(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
     }
 
     public ParseTree(final @NotNull Keyword tag, final @NotNull List<Object> content) {

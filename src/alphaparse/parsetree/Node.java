@@ -17,7 +17,7 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
             case ParseTree nodes -> new NodeParseTree(nodes);
             case String s -> new NodeString(s);
             case ParseFailureNode parseFailureNode -> new NodeFail(parseFailureNode);
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalArgumentException("Cannot handle input type " + o.getClass());
         };
     }
 
