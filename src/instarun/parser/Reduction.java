@@ -47,7 +47,7 @@ public final class Reduction {
 
     public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final @NotNull Object result) {
         final @NotNull List<Node> afs = switch (result) {
-            case AutoFlattenSeq<?> objects -> objects.stream().map(Node::of).toList();
+            case AutoFlattenSeq<?> objects -> objects.toNodes();
             case String ignored -> List.of(Node.of(result));
             case TotalParsesFailureNode ignored -> List.of(Node.of(result));
             case ParseFailureNode ignored -> List.of(Node.of(result));

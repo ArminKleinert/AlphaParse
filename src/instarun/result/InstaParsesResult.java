@@ -8,11 +8,12 @@ import java.util.function.Supplier;
 
 public sealed interface InstaParsesResult
         extends List<ParseTree>
-        permits InstaParsesResult.InstaParsesResultList, InstaParsesResult.LazyResultList, InstaParsesResult.NoParsesResult, TotalParsesFailureNode {
+        permits InstaParsesResult.InstaParsesResultList, InstaParsesResult.LazyResultList, InstaParsesResult.NoParsesResult, InstaParsesResult.ParsesFailureResult, TotalParsesFailureNode {
     static @NotNull InstaParsesResult make(final @NotNull Object o) {
         return switch (o) {
             case TotalParsesFailureNode tpfn -> tpfn;
             case LazyResultList lrl -> lrl;
+            case ParsesFailureResult lrl -> lrl;
             //case InstaParsesResult ipr -> ipr;
             default -> throw new IllegalArgumentException(o.getClass().toString());
         };
@@ -24,8 +25,8 @@ public sealed interface InstaParsesResult
         return this;
     }
 
-    default TotalParsesFailureNode castToParsesFailure() {
-        return (TotalParsesFailureNode) this;
+    default ParsesFailureResult castToParsesFailure() {
+        return (ParsesFailureResult) this;
     }
 
     default List<?> hiccup() {
@@ -185,10 +186,47 @@ public sealed interface InstaParsesResult
         }
     }
 
+    final class ParsesFailureResult implements InstaParsesResult, PretenderList<ParseTree> {
+        final @NotNull InstaFailure ifail;
+
+        public ParsesFailureResult(final @NotNull InstaFailure ifail) {
+            this.ifail = ifail;
+        }
+
+        @Override
+        public ParseTree get(final int i) {
+            Objects.checkIndex(i, 0);
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ParsesFailureResult that)) return false;
+            if (!super.equals(o)) return false;
+            return Objects.equals(ifail, that.ifail);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(ifail);
+        }
+
+        @Override
+        public String toString() {
+            return ifail.toString();
+        }
+    }
+
     final class NoParsesResult extends AbstractList<ParseTree> implements InstaParsesResult {
         public NoParsesResult(List<?> ptl) {
             if (!(ptl.isEmpty())) throw new IllegalStateException();
         }
+
         @Override
         public ParseTree get(final int i) {
             Objects.checkIndex(i, 0);

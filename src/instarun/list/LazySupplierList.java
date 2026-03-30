@@ -1,5 +1,6 @@
 package instarun.list;
 
+import instarun.IO2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +74,10 @@ public class LazySupplierList<T> implements List<T> {
         if (!(o instanceof List<?> c)) {
             return false;
         }
+
+        if (o == this)
+            return true;
+
         var otherIter = c.iterator();
         if (!otherIter.hasNext()) return false;
 
@@ -187,8 +192,7 @@ public class LazySupplierList<T> implements List<T> {
             final T next = evalutePart();
             if (cursor == i) return next;
             cursor++;
-        } while (cursor == i);
-        return null;
+        } while (true);
     }
 
     @Override

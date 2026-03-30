@@ -264,11 +264,11 @@ public final class Gll {
         final boolean isTotal = totalSuccess_Q(tramp, result);
         final @NotNull Set<@NotNull InstaSuccess> results = isTotal ? node.getFullResults() : node.getResults();
 
-        if (results.contains(result)) {
+        var resultExisted = !results.add(result);
+        if (resultExisted) {
             return;
         }
 
-        results.add(result);
         for (final @NotNull Listener listener : node.getListeners()) {
             pushMessage(tramp, listener, result);
         }
@@ -302,6 +302,23 @@ public final class Gll {
         var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
         var allParses = run(tramp);
+        return InstaParsesResult.make(allParses);
+    }
+
+    public static @NotNull InstaParsesResult parsesOrFailure(
+            final @NotNull Grammar grammar,
+            final @NotNull Keyword start,
+            final @NotNull String text,
+            final boolean partial) {
+        var tramp = new InstaTramp(grammar, text);
+        var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        startParser(tramp, parser, partial);
+        var allParses = run(tramp);
+        if (allParses.isEmpty()) {
+            if (tramp.getFailure() == null)
+                throw new IllegalStateException();
+            return new InstaParsesResult.ParsesFailureResult(FailureUtil.augmentFailure(tramp.getFailure(), text));
+        }
         return InstaParsesResult.make(allParses);
     }
 

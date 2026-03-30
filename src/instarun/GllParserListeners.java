@@ -40,7 +40,9 @@ public final class GllParserListeners {
                 }
                 return;
             }
-            AutoFlattenSeq<Object> newResultsSoFar = resultsSoFar.conjFlat(parsedResult);
+            AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                    : resultsSoFar.append(parsedResult);
             Gll.pushListener(tramp, new InstaNodeKey(continueIndex, parser), plusListener(newResultsSoFar, parser, continueIndex, nodeKey, tramp));
             Gll.success(tramp, nodeKey, newResultsSoFar, continueIndex);
         };
@@ -54,7 +56,10 @@ public final class GllParserListeners {
             assert result.getResult() != null;
             final @NotNull Object parsedResult = result.getResult();
             final int continueIndex = result.getIndex();
-            final @NotNull AutoFlattenSeq<Object> newResultsSoFar = resultsSoFar.conjFlat(parsedResult);
+            final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                    : resultsSoFar.append(parsedResult);
+
             if (parserSequence.isEmpty()) {
                 Gll.success(tramp, nodeKey, newResultsSoFar, continueIndex);
             } else {
@@ -80,8 +85,9 @@ public final class GllParserListeners {
             final @NotNull Object parsedResult = result.getResult();
             final int continueIndex = result.getIndex();
 
-            final @NotNull AutoFlattenSeq<Object> newResultsSoFar =
-                    resultsSoFar.conjFlat(parsedResult);
+            final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                    : resultsSoFar.append(parsedResult);
 
             final int newNResultsSoFar = nResultsSoFar + 1;
 
@@ -110,7 +116,9 @@ public final class GllParserListeners {
                 if (resultsSoFar.isEmpty())
                     Gll.success(tramp, nodeKey, null, continueIndex);
             } else {
-                var newResultsSoFar = resultsSoFar.conjFlat(parsedResult);
+                var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                        ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                        : resultsSoFar.append(parsedResult);
                 if (continueIndex == tramp.getText().length()) {
                     Gll.success(tramp, nodeKey, newResultsSoFar, continueIndex);
                 } else {
@@ -128,7 +136,9 @@ public final class GllParserListeners {
         return result -> {
             final var parsedResult = result.getResult();
             final var continueIndex = result.getIndex();
-            final @NotNull var newResultsSoFar = resultsSoFar.conjFlat(parsedResult);
+            final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                    : resultsSoFar.append(parsedResult);
 
             if (Reduction.isSingleton(parserSequence)) {
                 Gll.pushFullListener(tramp, new InstaNodeKey(continueIndex, parserSequence.getFirst()),
@@ -153,7 +163,9 @@ public final class GllParserListeners {
         return result -> {
             final var parsedResult = result.getResult();
             final int continueIndex = result.getIndex();
-            final @NotNull var newResultsSoFar = resultsSoFar.conjFlat(parsedResult);
+            final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                    : resultsSoFar.append(parsedResult);
             final int newNResultsSoFar = nResultsSoFar + 1;
             if (continueIndex == tramp.getText().length()) {
                 if (m <= newNResultsSoFar && newNResultsSoFar <= n)

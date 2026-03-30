@@ -39,19 +39,15 @@ public abstract class InstaSuccess implements InstaIntermediateResult {
     }
 
     public static final class InstaSuccessList extends InstaSuccess {
-        private final List<Object> result; // TODO Do not use raw objects
+        private final AutoFlattenSeq<Object> result; // TODO Do not use raw objects
 
-        public InstaSuccessList(final int index, final @NotNull List<Object> result) {
+        public InstaSuccessList(final int index, final @NotNull AutoFlattenSeq<Object> result) {
             super(index);
             this.result = result;
-            if (!(result instanceof AutoFlattenSeq<Object>)) {
-                IO2.println("HERE: " + result.getClass());
-                throw new RuntimeException();
-            }
         }
 
         @Override
-        public @NotNull List<Object> getResult() {
+        public @NotNull AutoFlattenSeq<Object> getResult() {
             return result;
         }
     }
@@ -112,7 +108,7 @@ public abstract class InstaSuccess implements InstaIntermediateResult {
             case String s -> new InstaSuccessString(index, s);
             case ParseTree nodes -> new InstaSuccessParseResult(index, nodes);
             case TotalParsesFailureNode parseTrees -> new InstaSuccessWithTotalFailure(index, parseTrees);
-            case List<?> objects -> new InstaSuccessList(index, (List<Object>) objects);
+            case AutoFlattenSeq<?> objects -> new InstaSuccessList(index, (AutoFlattenSeq<Object>) objects);
             case ParseFailureNode parseFailureNode -> new InstaSuccessWithFailure(index, parseFailureNode);
             default ->
                     throw new UnsupportedOperationException("Cannot create success node from type " + result.getClass());

@@ -2,7 +2,6 @@ package instarun;
 
 import instarun.parser.Grammar;
 import instarun.parsetree.Node;
-import instarun.reduction.ReductionType;
 import instarun.result.ParseTree;
 import instarun.parser.Parser;
 import instarun.parser.Reduction;
@@ -23,7 +22,7 @@ public final class Cfg {
             final @NotNull String s, final boolean caseInsensitiveByDefault,
             final @NotNull CombinatorsSource combinatorsSource,
             final @NotNull Insta.ParserCreationOptions options) {
-        return switch (options.isStringCaseInsensitive()) {
+        return switch (options.stringCaseInsensitive()) {
             case TRUE -> combinatorsSource.stringOrStringCiTerminal(s, true);
             case FALSE -> combinatorsSource.stringOrStringCiTerminal(s, false);
             default -> combinatorsSource.stringOrStringCiTerminal(s, caseInsensitiveByDefault);
@@ -78,51 +77,70 @@ public final class Cfg {
                                              final @NotNull CombinatorsSource combinatorsSource,
                                              final @NotNull Insta.ParserCreationOptions options) {
         do {
-            final var tag = tree.getTag().content();
-            if (Objects.equals(tag, Keyword.intern("rule"))) {
-                return buildRuleRule(tree, combinatorsSource, options);
-            } else if (Objects.equals(tag, Keyword.intern("nt"))) {
-                return combinatorsSource.makeNonTerminal(Keyword.intern((String) tree.getContent().getFirst().content()));
-            } else if (Objects.equals(tag, Keyword.intern("alt"))) {
-                return combinatorsSource.alternationCombinator(tree.getContent()
-                        .stream().map((c) -> (Combinator) buildRule((ParseTree) c.content(), combinatorsSource, options))
-                        .toList());
-            } else if (Objects.equals(tag, Keyword.intern("ord"))) {
-                return combinatorsSource.orderedChoiceCombinator(tree.getContent()
-                        .stream().map((c) -> (Combinator) buildRule((ParseTree) c.content(), combinatorsSource, options))
-                        .toList());
-            } else if (Objects.equals(tag, Keyword.intern("hide"))) {
-                return ((Combinator) tree.getContent().getFirst().content()).enableHideTag();
-            } else if (Objects.equals(tag, Keyword.intern("cat"))) {
-                return combinatorsSource.catCombinator(tree.getContent()
-                        .stream().map((c) -> (Combinator) buildRule((ParseTree) c.content(), combinatorsSource, options))
-                        .toList());
-            } else if (Objects.equals(tag, Keyword.intern("string"))) {
-                return stringOrStringCaseInsensitiveCombinator(StrParser.processString((String) tree.getContent().getFirst().content()), false, combinatorsSource, options);
-            } else if (Objects.equals(tag, Keyword.intern("string-ci"))) {
-                return stringOrStringCaseInsensitiveCombinator(StrParser.processString((String) tree.getContent().getFirst().content()), true, combinatorsSource, options);
-            } else if (Objects.equals(tag, Keyword.intern("regexp"))) {
-                return combinatorsSource.createRegexTerminal(StrParser.processRegexp((String) tree.getContent().getFirst().content()));
-            } else if (Objects.equals(tag, Keyword.intern("neg"))) {
-                return combinatorsSource.negateRule((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
-            } else if (Objects.equals(tag, Keyword.intern("opt"))) {
-                return combinatorsSource.optionalCombinator((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
-            } else if (Objects.equals(tag, Keyword.intern("star"))) {
-                return combinatorsSource.starCombinator((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
-            } else if (Objects.equals(tag, Keyword.intern("plus"))) {
-                return combinatorsSource.plusCombinator((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
-            } else if (Objects.equals(tag, Keyword.intern("look"))) {
-                return combinatorsSource.makeLookahead((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
-            } else if (Objects.equals(tag, Keyword.intern("rep"))) {
-                return buildRepRule(tree, combinatorsSource, options);
-            } else if (Objects.equals(tag, Keyword.intern("epsilon"))) {
-                return CombinatorsSource.epsilon;
-            } else if (Objects.equals(tag, Keyword.intern("paren"))) {
-                tree = (ParseTree) tree.getContent().getFirst().content();
-                continue; // Tail recursion (somewhat)
-            } else if (Objects.equals(tag, Keyword.intern("\0\0\0\0"))) {
-                tree = (ParseTree) tree.getContent().getFirst().content();
-                continue;
+            final var tag = tree.getTag().content().sym;
+            switch (tag) {
+                case "rule" -> {
+                    return buildRuleRule(tree, combinatorsSource, options);
+                }
+                case "nt" -> {
+                    return combinatorsSource.makeNonTerminal(Keyword.intern((String) tree.getContent().getFirst().content()));
+                }
+                case "alt" -> {
+                    return combinatorsSource.alternationCombinator(tree.getContent()
+                            .stream().map((c) -> (Combinator) buildRule((ParseTree) c.content(), combinatorsSource, options))
+                            .toList());
+                }
+                case "ord" -> {
+                    return combinatorsSource.orderedChoiceCombinator(tree.getContent()
+                            .stream().map((c) -> (Combinator) buildRule((ParseTree) c.content(), combinatorsSource, options))
+                            .toList());
+                }
+                case "hide" -> {
+                    return ((Combinator) tree.getContent().getFirst().content()).enableHideTag();
+                }
+                case "cat" -> {
+                    return combinatorsSource.catCombinator(tree.getContent()
+                            .stream().map((c) -> (Combinator) buildRule((ParseTree) c.content(), combinatorsSource, options))
+                            .toList());
+                }
+                case "string" -> {
+                    return stringOrStringCaseInsensitiveCombinator(StrParser.processString((String) tree.getContent().getFirst().content()), false, combinatorsSource, options);
+                }
+                case "string-ci" -> {
+                    return stringOrStringCaseInsensitiveCombinator(StrParser.processString((String) tree.getContent().getFirst().content()), true, combinatorsSource, options);
+                }
+                case "regexp" -> {
+                    return combinatorsSource.createRegexTerminal(StrParser.processRegexp((String) tree.getContent().getFirst().content()));
+                }
+                case "neg" -> {
+                    return combinatorsSource.negateRule((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                }
+                case "opt" -> {
+                    return combinatorsSource.optionalCombinator((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                }
+                case "star" -> {
+                    return combinatorsSource.starCombinator((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                }
+                case "plus" -> {
+                    return combinatorsSource.plusCombinator((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                }
+                case "look" -> {
+                    return combinatorsSource.makeLookahead((Combinator) buildRule((ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                }
+                case "rep" -> {
+                    return buildRepRule(tree, combinatorsSource, options);
+                }
+                case "epsilon" -> {
+                    return CombinatorsSource.epsilon;
+                }
+                case "paren" -> {
+                    tree = (ParseTree) tree.getContent().getFirst().content();
+                    continue; // Tail recursion (somewhat)
+                }
+                case "\0\0\0\0" -> {
+                    tree = (ParseTree) tree.getContent().getFirst().content();
+                    continue;
+                }
             }
             throw new UnsupportedOperationException(tag.toString());
         } while (true);
@@ -139,7 +157,9 @@ public final class Cfg {
 
     public static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammarMap,
                                                              final @NotNull Insta.ParserCreationOptions options) {
-        return new Parser(Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)), options.getStartProduction(), options.getOutputFormat());
+        if (options.startProduction() == null)
+            throw new IllegalArgumentException("No start production provided.");
+        return new Parser(Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)), options.startProduction(), options.outputFormat());
     }
 
     public static @NotNull Parser buildParser(final @NotNull String spec,
@@ -154,10 +174,25 @@ public final class Cfg {
         for (final Node rule : rules.castToParseSuccess().getContent()) {
             productions.add(buildRuleRule((ParseTree) rule.content(), combinatorsSource, options));
         }
-        var startProduction = productions.getFirst().getKey();
+        final @NotNull var startProduction = options.startProduction() != null
+                ? options.startProduction()
+                : productions.getFirst().getKey();
+
+        @NotNull var grammar =
+                checkGrammarValidity(Reduction.applyStandardReductions(Grammar.fromProductions(productions)));
+
+        if (options.whitespaceParser() != null) {
+            grammar = combinatorsSource.autoWhitespace(
+                    grammar,
+                    startProduction,
+                    options.whitespaceParser().getGrammar(),
+                    options.whitespaceParser().getStartProduction()
+            );
+        }
+
         return new Parser(
-                checkGrammarValidity(Reduction.applyStandardReductions(Grammar.fromProductions(productions))),
+                grammar,
                 startProduction,
-                options.getOutputFormat());
+                options.outputFormat());
     }
 }

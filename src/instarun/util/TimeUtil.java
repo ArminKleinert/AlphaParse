@@ -19,7 +19,7 @@ public final class TimeUtil {
         }).limit(n).sorted().toArray();
 
         final double min = stream[0];
-        final double max = stream[stream.length - 1];;
+        final double max = stream[stream.length - 1];
         final double diff = max - min;
         final double sum = Arrays.stream(stream).sum();
         final double avg = sum / n;

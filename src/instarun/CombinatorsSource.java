@@ -208,13 +208,13 @@ public final class CombinatorsSource {
                                            final @NotNull Keyword startWS) {
         final @NotNull Combinator wsParser = optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
 
-        final @NotNull Map<@NotNull Keyword, @NotNull Combinator> modifiedGrammar = new HashMap<>();
+        final @NotNull Map<@NotNull Keyword, @NotNull Combinator> modifiedGrammar = new LinkedHashMap<>();
         grammar.forEach((nt, parser) -> modifiedGrammar.put(nt, autoWhitespaceParser(parser, wsParser)));
 
         final @NotNull Combinator startWithoutReduction = buffer.getOrAdd(modifiedGrammar.get(start).withReduction(Reduction.nullReduction));
         final @NotNull Combinator newComb = catCombinator(List.of(startWithoutReduction, wsParser)).withReduction(modifiedGrammar.get(start).getReduction());
 
-        final @NotNull Map<@NotNull Keyword, @NotNull Combinator> finalGrammar = new HashMap<>(modifiedGrammar);
+        final @NotNull Map<@NotNull Keyword, @NotNull Combinator> finalGrammar = new LinkedHashMap<>(modifiedGrammar);
         finalGrammar.put(start, newComb);
         finalGrammar.put(startWS, hideTag(grammarWS.getProduction(startWS)));
         return new Grammar(finalGrammar);

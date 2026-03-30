@@ -1,200 +1,122 @@
 package instarun.flat;
 
 
+import instarun.parsetree.Node;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class AutoFlattenSeq<T extends @NotNull Object>
-        implements List<T> {
+public class AutoFlattenSeq<T> {
+    private static final AutoFlattenSeq<Object> EMPTY = new AutoFlattenSeq<>(new Object[0]);
 
-    private final List<T> v;
+    private final Object[] v;
     private int hashCode = 0;
 
-    public static @NotNull <T> AutoFlattenSeq<T> make() {
-        return new AutoFlattenSeq<>(List.of());
+    public static long instancesEver = 0;
+    public static long highestSize = 0;
+    public static long emptyInstances = 0;
+    public static long toNodesCalls = 0;
+    public static long iteratorCalls = 0;
+    public static long totalEqualsCalls = 0;
+    public static long afsEqualsCalls = 0;
+    public static long singleAdditions = 0;
+    public static long multiAdditions = 0;
+    public static long nullAdditions = 0;
+    public static long hashCodeCalls = 0;
+    public static long hashCodeCalcs = 0;
+
+    public static @NotNull <T> AutoFlattenSeq<@NotNull T> make() {
+        return (AutoFlattenSeq<T>) EMPTY;
     }
 
-    //public static <T> AutoFlattenSeq<T> make(PersistentVector v) {return new AutoFlattenSeq<>(v);}
-    public static @NotNull <T> AutoFlattenSeq<T> make(final @NotNull List<T> v) {
-        if (v instanceof AutoFlattenSeq<?>)
-            return (AutoFlattenSeq<T>) v;
-        return new AutoFlattenSeq<>(new ArrayList<>(v));
-    }
-
-    //public static <T> AutoFlattenSeq<T> make(PersistentVector v) {return new AutoFlattenSeq<>(v);}
-    public static @NotNull <T> AutoFlattenSeq<T> makeUnsafe(final @NotNull List<T> v) {
-        if (v instanceof AutoFlattenSeq<?>)
-            return (AutoFlattenSeq<T>) v;
-        return new AutoFlattenSeq<>(v);
-    }
-
-    private AutoFlattenSeq(final @NotNull List<T> v) {
+    private AutoFlattenSeq(final @NotNull Object @NotNull [] v) {
+//        instancesEver++;
+//        if (v.length > highestSize) highestSize = v.length;
+//        if (v.length==0) emptyInstances++;
         this.v = v;
     }
 
-    @Override
-    public @NotNull Iterator<T> iterator() {
-        return v.iterator();
+    public @NotNull List<@NotNull Node> toNodes() {
+//        toNodesCalls++;
+        var result = new ArrayList<Node>();
+        var iter = iterator();
+        while (iter.hasNext())
+            result.add(Node.of(iter.next()));
+        return result;
     }
 
-    @Override
+    public @NotNull Iterator<@NotNull T> iterator() {
+//        iteratorCalls++;
+        return new Iterator<>() {
+            private int pos = 0;
+
+            public boolean hasNext() {
+                return v.length > pos;
+            }
+
+            public T next() {
+                return (T) v[pos++];
+            }
+        };
+    }
+
     public int size() {
-        return v.size();
+        return v.length;
     }
 
-    @Override
     public boolean isEmpty() {
-        return v.isEmpty();
-    }
-
-    @Override
-    public boolean contains(final Object o) {
-        return v.contains(o);
-    }
-
-    @Override
-    public Object @NotNull [] toArray() {
-        return v.toArray();
-    }
-
-    @Override
-    public <T1> T1 @NotNull [] toArray(final @NotNull T1 @NotNull [] objects) {
-        return v.toArray(objects);
-    }
-
-    @Override
-    public boolean containsAll(final @NotNull Collection collection) {
-        for (Object o : collection)
-            if (!contains(o)) return false;
-        return true;
+        return v.length==0;
     }
 
     @Override
     public @NotNull String toString() {
-        return v.toString();
+        return Arrays.toString(v);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof List<?> c)){
+//        totalEqualsCalls++;
+
+        if (!(o instanceof AutoFlattenSeq<?> c)) {
             return false;
         }
-        var otherIter = c.iterator();
-        if (!otherIter.hasNext()) return false;
+//        afsEqualsCalls++;
 
-        for (var thisNext : this) {
-            if (!otherIter.hasNext()) return false;
-            var otherNext = otherIter.next();
-            if (!Objects.equals(thisNext, otherNext)) return false;
-        }
-
-        return !otherIter.hasNext();
+        return Arrays.equals(v, c.v);
     }
 
     @Override
     public int hashCode() {
+//        hashCodeCalls++;
         if (hashCode != 0)
             return hashCode;
-        int hc = 1;
-        for (final T e : this)
-            hc = hc * 31 + Objects.hashCode(e);
+//        hashCodeCalcs++;
+        int hc = Arrays.hashCode(v);
         hashCode = hc;
         return hc;
     }
 
-    @Override
-    public T get(final int i) {
-        return (T) v.get(i);
-    }
-
-    @Override
-    public T set(int i, T t) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void add(int i, T t) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public T remove(int i) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int indexOf(Object o) {
-        return v.indexOf(o);
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        return v.lastIndexOf(o);
-    }
-
-    @Override
-    public @NotNull ListIterator<T> listIterator() {
-        return v.listIterator();
-    }
-
-    @Override
-    public @NotNull ListIterator<T> listIterator(int i) {
-        return v.listIterator(i);
-    }
-
-    @Override
-    public @NotNull List<T> subList(int i, int i1) {
-        return v.subList(i, i1);
-    }
-
-    @Override
-    public boolean add(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(int i, @NotNull Collection<? extends T> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(@NotNull Collection collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(@NotNull Collection collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(@NotNull Collection collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    public @NotNull AutoFlattenSeq<T> conjFlat(Object obj) {
-        if (obj == null) return this;
-        if (!(obj instanceof AutoFlattenSeq)) {
-            List<T> l = new ArrayList<>(v);
-            l.add((T) obj);
-            return new AutoFlattenSeq<>(l);
+    public @NotNull AutoFlattenSeq<@NotNull T> append(final T obj) {
+        if (obj == null) {
+//            nullAdditions++;
+            return this;
         }
+//        singleAdditions++;
 
-        if (isEmpty()) return (AutoFlattenSeq<T>) obj;
+        final @NotNull Object[] newV = Arrays.copyOf(v, v.length+1);
+        newV[newV.length-1] = obj;
 
-        List<T> l = new ArrayList<>(v);
-        l.addAll((Collection<T>) obj);
-        return new AutoFlattenSeq<>(l);
+        return new AutoFlattenSeq<>(newV);
+    }
+
+    public @NotNull AutoFlattenSeq<@NotNull T> concat(final @NotNull AutoFlattenSeq<?> obj) {
+        if (size() == 0) return (AutoFlattenSeq<T>) obj;
+
+//        multiAdditions++;
+
+        final @NotNull Object[] newV = Arrays.copyOf(v, v.length+obj.v.length);
+        System.arraycopy(obj.v, 0, newV, v.length, obj.v.length);
+
+        return new AutoFlattenSeq<>(newV);
     }
 }

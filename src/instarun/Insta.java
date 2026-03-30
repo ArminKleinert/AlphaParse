@@ -1,6 +1,5 @@
 package instarun;
 
-import instarun.parser.combinator.Combinator;
 import instarun.parser.Grammar;
 import instarun.parser.Parser;
 import instarun.reduction.ReductionType;
@@ -13,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 
 public final class Insta {
@@ -151,6 +149,23 @@ public final class Insta {
         return parses(parser, text, ParsingOptions.DEFAULT);
     }
 
+    public static @NotNull InstaParsesResult parsesOrFailure(final @NotNull Parser parser,
+                                                             final @NotNull String text,
+                                                             final @NotNull ParsingOptions options) {
+        KeywordSetup.initKeywords();
+        var startProduction = options.getStartOrDefault(parser.getStartProduction());
+        var usePartial = options.usePartial();
+        var doUnhide = options.getUnhide();
+        var unhiddenParser = unhideParser(parser, doUnhide);
+
+        var useParseTotal = options.isTotal();
+        if (useParseTotal) {
+            return Gll.parsesTotal(unhiddenParser.getGrammar(), startProduction, text, usePartial);
+        } else {
+            return Gll.parsesOrFailure(unhiddenParser.getGrammar(), startProduction, text, usePartial);
+        }
+    }
+
     public static Parser parser(final @NotNull String grammar) {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
@@ -184,46 +199,40 @@ public final class Insta {
     public static Parser parser(final @NotNull String grammar,
                                 final @NotNull Insta.ParserCreationOptions options) {
         Parser parser = Cfg.buildParser(grammar, options);
-        if (options.getStartProduction() != null) parser = parser.withStartProduction(options.getStartProduction());
-        if (options.getWhitespaceParser() != null) parser = parser.withWhitespaceParser(options.getWhitespaceParser());
+//        if (options.startProduction() != null) parser = parser.withStartProduction(options.startProduction());
+//        if (options.whitespaceParser() != null) parser = parser.withWhitespaceParser(options.whitespaceParser());
         return parser;
     }
 
     public static Parser parser(final @NotNull File grammar,
                                 final @NotNull Insta.ParserCreationOptions options) throws IOException {
         final @NotNull String contents = Files.readString(grammar.toPath());
-        @NotNull Parser  parser = Cfg.buildParser(contents, options);
-        if (options.getStartProduction() != null) parser = parser.withStartProduction(options.getStartProduction());
-        if (options.getWhitespaceParser() != null) parser = parser.withWhitespaceParser(options.getWhitespaceParser());
+        @NotNull Parser parser = parser(contents, options);
         return parser;
     }
 
     public static Parser parser(final @NotNull Grammar grammar,
                                 final @NotNull Insta.ParserCreationOptions options) throws IOException {
-        if (options.getStartProduction() == null)
+        if (options.startProduction() == null)
             throw new IllegalArgumentException();
 
         @NotNull Parser parser = Cfg.buildParserFromCombinators(grammar, options);
-        if (options.getWhitespaceParser() != null) {
-            parser = parser.withWhitespaceParser(options.getWhitespaceParser());
-        }
-        if (options.isStringCaseInsensitive() != Cfg.GlobalCaseInsensitivity.DEFAULT) {
-            // TODO
+        if (options.whitespaceParser() != null) {
+            parser = parser.withWhitespaceParser(options.whitespaceParser());
         }
         return parser;
     }
 
-    public static Parser parser(final @NotNull Map<Keyword, Combinator> grammar,
-                                final @NotNull Insta.ParserCreationOptions options) throws IOException {
-        return parser(new Grammar(grammar), options);
-    }
+//    public static Parser parser(final @NotNull Map<Keyword, Combinator> grammar,
+//                                final @NotNull Insta.ParserCreationOptions options) throws IOException {
+//        return parser(new Grammar(grammar), options);
+//    }
 
     public static enum UnhideOptions {
         content, tags, all, none
     }
 
     public static class ParsingOptions {
-
         private final @Nullable Keyword start;
         private final boolean partial;
         private final @NotNull Insta.UnhideOptions unhide;
@@ -273,33 +282,29 @@ public final class Insta {
         }
     }
 
-    public static class ParserCreationOptions {
+    public record ParserCreationOptions(@Nullable Parser whitespaceParser,
+                                        @Nullable Keyword startProduction,
+                                        @NotNull Cfg.GlobalCaseInsensitivity stringCaseInsensitive,
+                                        @NotNull ReductionType.ReductionTypesAvailable outputFormat) {
         private static final @NotNull ParserCreationOptions DEFAULT =
-                new ParserCreationOptions(null, null, Cfg.GlobalCaseInsensitivity.DEFAULT,ReductionType.ReductionTypesAvailable.defaultType);
+                new ParserCreationOptions(null, null, Cfg.GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
 
         public static @NotNull ParserCreationOptions getDefault() {
             return DEFAULT;
         }
 
-        private final @Nullable Parser whitespaceParser;
-        private final @Nullable Keyword startProduction;
-        private final @NotNull Cfg.GlobalCaseInsensitivity stringCaseInsensitive;
-
-        private final @NotNull ReductionType.ReductionTypesAvailable outputFormat;
-
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
-                                     final @Nullable Cfg.GlobalCaseInsensitivity stringCaseInsensitive, final@NotNull ReductionType.ReductionTypesAvailable outputFormat) {
+                                     final @Nullable Cfg.GlobalCaseInsensitivity stringCaseInsensitive,
+                                     final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             this.whitespaceParser = whitespaceParser;
             this.startProduction = startProduction;
             this.stringCaseInsensitive = stringCaseInsensitive == null
                     ? Cfg.GlobalCaseInsensitivity.DEFAULT
                     : stringCaseInsensitive;
-            this.outputFormat = outputFormat;
-        }
-
-        public ParserCreationOptions(final @Nullable Keyword whitespaceParser) {
-            this(getPredefinedWhitespaceParser(whitespaceParser), null, Cfg.GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
+            this.outputFormat = outputFormat == null
+                    ? ReductionType.ReductionTypesAvailable.defaultType
+                    : outputFormat;
         }
 
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
@@ -308,22 +313,6 @@ public final class Insta {
                     null,
                     Cfg.GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType);
-        }
-
-        public @NotNull ReductionType.ReductionTypesAvailable getOutputFormat() {
-            return outputFormat;
-        }
-
-        public @Nullable Parser getWhitespaceParser() {
-            return whitespaceParser;
-        }
-
-        public @Nullable Keyword getStartProduction() {
-            return startProduction;
-        }
-
-        public @NotNull Cfg.GlobalCaseInsensitivity isStringCaseInsensitive() {
-            return stringCaseInsensitive;
         }
     }
 

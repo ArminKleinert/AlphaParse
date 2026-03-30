@@ -1,5 +1,6 @@
 package instarun;
 
+import instarun.flat.AutoFlattenSeq;
 import instarun.reduction.ReductionType;
 import instarun.result.InstaFailure;
 import instarun.result.FormatUtils;
@@ -27,19 +28,9 @@ public final class Main {
         return text;
     }
 
-    private static Object cljNestedVecChangeKeywordType(Object pv) {
-//        if (pv instanceof List v)
-//            return v.stream().map(Main::cljNestedVecChangeKeywordType).toList();
-//        if (pv instanceof Keyword)
-//            return Keyword.intern(((Keyword) pv).sym);
-        return pv;
-    }
-
     public static void main(String[] args) {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
         var i = 0;
-//
-//        System.exit(0);
 
         /**/
 //        {
@@ -215,7 +206,7 @@ public final class Main {
         }
 
         /**/
-        while (i == 0) {
+        if (i != 0) {
             IO2.println("\n----------------------------------\n--- Version compatibility test ---\n----------------------------------");
 
             {
@@ -316,5 +307,18 @@ public final class Main {
             IO2.println(c.getClass());
             IO2.println("Time taken (ms): " + (endTime - startTime) / 1000000.0 + " (Consider 15000.000ms good)");
         }
+
+        IO2.println("AutoFlattenSeq.instancesEver    = "+AutoFlattenSeq.instancesEver);
+        IO2.println("AutoFlattenSeq.highestSize      = "+AutoFlattenSeq.highestSize);
+        IO2.println("AutoFlattenSeq.emptyInstances   = "+AutoFlattenSeq.emptyInstances);
+        IO2.println("AutoFlattenSeq.toNodesCalls     = "+AutoFlattenSeq.toNodesCalls);
+        IO2.println("AutoFlattenSeq.iteratorCalls    = "+AutoFlattenSeq.iteratorCalls);
+        IO2.println("AutoFlattenSeq.totalEqualsCalls = "+AutoFlattenSeq.totalEqualsCalls);
+        IO2.println("AutoFlattenSeq.afsEqualsCalls   = "+AutoFlattenSeq.afsEqualsCalls);
+        IO2.println("AutoFlattenSeq.singleAdditions  = "+AutoFlattenSeq.singleAdditions);
+        IO2.println("AutoFlattenSeq.multiAdditions   = "+AutoFlattenSeq.multiAdditions);
+        IO2.println("AutoFlattenSeq.nullAdditions    = "+AutoFlattenSeq.nullAdditions);
+        IO2.println("AutoFlattenSeq.hashCodeCalls    = "+AutoFlattenSeq.hashCodeCalls);
+        IO2.println("AutoFlattenSeq.hashCodeCalcs    = "+AutoFlattenSeq.hashCodeCalcs);
     }
 }
