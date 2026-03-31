@@ -1,12 +1,12 @@
 package alphaparse;
 
-import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.FormatUtils;
 import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
 import alphaparse.result.failure.failureReason.ParseFailureReasonString;
+import alphaparse.viz.Viztool;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
@@ -28,9 +28,27 @@ public final class Main {
         return text;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
         var i = 0;
+
+
+//        /**/
+//        //while (i != 0)
+//        {
+//            IO2.println("\n----------------------------------\n---      Big input test 2     ---\n----------------------------------");
+//
+//            @NotNull String text = readFile("ctest1.c");
+//            var p = Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace());
+//            var startTime = System.nanoTime();
+//            var c = Alpha.parse(p, text);
+//            var endTime = System.nanoTime();
+//            IO2.println(c.getClass());
+//            IO2.println("Time taken (ms): " + (endTime - startTime) / 1000000.0 + " (Consider 15000.000ms good)");
+//            IO2.println(Viztool.dumpParseTree("vizoutput", c.castToParseSuccess()));
+//        }
+//
+//        System.exit(0);
 
         /**/
         {
@@ -93,7 +111,7 @@ public final class Main {
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 10, 100);
+        PerfTest.fullTest(true, c99GrammarText, 1000, 10000);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);

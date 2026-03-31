@@ -13,9 +13,13 @@ public sealed interface AlphaParsesResult
         return switch (o) {
             case TotalParsesFailureNode tpfn -> tpfn;
             case LazyResultList lrl -> lrl;
-            case ParsesFailureResult lrl -> lrl;
+            case ParsesFailureResult pfr -> pfr;
             default -> throw new IllegalArgumentException(o.getClass().toString());
         };
+    }
+
+    default boolean isSuccess() {
+        return this instanceof LazyResultList;
     }
 
     default @NotNull AlphaParsesResult castToParsesSuccess() {

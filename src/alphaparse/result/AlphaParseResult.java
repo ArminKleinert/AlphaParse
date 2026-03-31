@@ -12,6 +12,10 @@ public sealed interface AlphaParseResult
         };
     }
 
+    default boolean isSuccess() {
+        return this instanceof ParseTree;
+    }
+
     default @NotNull ParseTree castToParseSuccess() {
         return (ParseTree) this;
     }
