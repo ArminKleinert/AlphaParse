@@ -152,7 +152,7 @@ public final class Gll {
             if (tramp.getSuccess() != null) {
                 final var successResult = tramp.getSuccess();
                 if (!(successResult instanceof AlphaParseSuccess.AlphaParseSuccessParseResult))
-                    throw new IllegalStateException();
+                    throw new IllegalStateException(successResult.toString());
                 tramp.setSuccess(null);
                 foundResult.set(true);
                 return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult();
@@ -238,7 +238,7 @@ public final class Gll {
         if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.NONE) {
             final var resultR = Reduction.applyReduction(
                     parser.getReduction(),
-                    Objects.requireNonNull(result.getResult()));
+                    result.getResult());
             result = AlphaParseSuccess.create(result.getIndex(), resultR);
         }
         final boolean isTotal = totalSuccess_Q(tramp, result);

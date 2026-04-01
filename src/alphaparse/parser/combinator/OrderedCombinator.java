@@ -39,8 +39,7 @@ public final class OrderedCombinator extends Combinator {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForComb2 = new TrampolineListenerKey(index, combinator2);
         final @NotNull Listener listener = GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp);
         Gll.pushListener(tramp, nodeKeyForComb1, listener);
-        Gll.pushNegativeListener(tramp, nodeKeyForComb1,
-                () -> Gll.pushListener(tramp, nodeKeyForComb2, listener));
+        Gll.pushNegativeListener(tramp, nodeKeyForComb1, () -> Gll.pushListener(tramp, nodeKeyForComb2, listener));
     }
 
     @Override

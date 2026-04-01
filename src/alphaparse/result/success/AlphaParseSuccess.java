@@ -23,7 +23,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
     }
 
     public static final class AlphaParseSuccessString extends AlphaParseSuccess {
-        private final String result;
+        private final @NotNull String result;
 
         public AlphaParseSuccessString(final int index, final @NotNull String result) {
             super(index);
@@ -38,7 +38,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
     }
 
     public static final class AlphaParseSuccessList extends AlphaParseSuccess {
-        private final AutoFlattenSeq<Object> result; // TODO Do not use raw objects
+        private final @NotNull AutoFlattenSeq<Object> result; // TODO Do not use raw objects
 
         public AlphaParseSuccessList(final int index, final @NotNull AutoFlattenSeq<Object> result) {
             super(index);
@@ -52,7 +52,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
     }
 
     public static final class AlphaParseSuccessParseResult extends AlphaParseSuccess {
-        private final ParseTree result;
+        private final @NotNull ParseTree result;
 
         public AlphaParseSuccessParseResult(final int index, final @NotNull ParseTree result) {
             super(index);
@@ -67,7 +67,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
     }
 
     public static final class AlphaParseSuccessWithTotalFailure extends AlphaParseSuccess {
-        private final TotalParsesFailureNode result;
+        private final @NotNull TotalParsesFailureNode result;
 
         public AlphaParseSuccessWithTotalFailure(final int index, final @NotNull TotalParsesFailureNode result) {
             super(index);
@@ -81,7 +81,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
     }
 
     public static final class AlphaParseSuccessWithFailure extends AlphaParseSuccess {
-        private final ParseFailureNode result;
+        private final @NotNull ParseFailureNode result;
 
         public AlphaParseSuccessWithFailure(final int index, final @NotNull ParseFailureNode result) {
             super(index);
@@ -101,7 +101,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
         this.index = index;
     }
 
-    public static AlphaParseSuccess create(int index, final @Nullable Object result) {
+    public static @NotNull AlphaParseSuccess create(int index, final @Nullable Object result) {
         return switch (result) {
             case null -> new AlphaParseSuccessNull(index);
             case String s -> new AlphaParseSuccessString(index, s);

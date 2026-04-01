@@ -1,5 +1,3 @@
-- Scannerless (vs Tokens | Char-based)
-
 - PWD Clojure -> Java
   - Story: Why Parsing With Derivatives?
   - Why convert anything to anything else?
@@ -9,7 +7,7 @@
   - Expectations & Actual results
   - Choices for conversion
   - Optimization techniques
-  - Problems
+  - Problems / Challenges
   - Surprises
   - Possible future works
   - ...

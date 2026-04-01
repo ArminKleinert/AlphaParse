@@ -21,8 +21,7 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
 
     @Override
     public void parse(final int index, final @NotNull Tramp tramp) {
-        final @NotNull List<Combinator> parsers = getParsers();
-        for (Combinator combinator : parsers) {
+        for (final @NotNull Combinator combinator : getParsers()) {
             Gll.pushListener(
                     tramp,
                     new TrampolineListenerKey(index, combinator),

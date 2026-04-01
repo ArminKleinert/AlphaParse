@@ -139,4 +139,22 @@ public final class Tramp {
                            final @NotNull TrampolineListenerNode node) {
         nodes.put(key, node);
     }
+
+    @Override
+    public String toString() {
+        return "Tramp{" +
+                "grammar=" + grammar +
+                ", text='" + text + '\'' +
+                ", segment=" + segment +
+                ", failIndex=" + failIndex +
+                ", stack=" + stack +
+                ", nextStack=" + nextStack +
+                ", generation=" + generation +
+                ", negativeListeners=" + negativeListeners +
+                ", msgCache=" + msgCache +
+                ", nodes=" + nodes +
+                ", success=" + success +
+                ", failure=" + failure +
+                '}';
+    }
 }

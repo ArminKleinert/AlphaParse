@@ -1,6 +1,7 @@
 package alphaparse.viz;
 
 import alphaparse.parsetree.Node;
+import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
@@ -15,20 +16,17 @@ public class Viztool {
                                         final @NotNull AtomicInteger count) {
         final int currentId = count.getAndIncrement();
         final @NotNull String label = getLabel(parseRes);
-        /*
-         */
+
         printer.print(currentId + "[shape=box, label=\"" + label + "\"];");
-        parseRes.stream().skip(1).forEach((child) -> {
-                    int childId = dumpParseTreeHelp(
-                            printer,
-                            child instanceof Node.NodeParseTree ? ((Node.NodeParseTree) child).content() : List.of(child),
-                            count);
-                    printer.append(String.valueOf(currentId))
-                            .append(" -> ")
-                            .append(String.valueOf(childId))
-                            .append(";");
-                }
-        );
+        parseRes.stream().skip(1)
+                .mapToInt(child -> dumpParseTreeHelp(
+                        printer,
+                        child instanceof Node.NodeParseTree ? ((Node.NodeParseTree) child).content() : List.of(child),
+                        count))
+                .forEach(childId -> printer.append(String.valueOf(currentId))
+                        .append(" -> ")
+                        .append(String.valueOf(childId))
+                        .append(";"));
         return currentId;
     }
 
@@ -40,14 +38,14 @@ public class Viztool {
             case Node.NodeFail ignored1 ->
                     throw new IllegalStateException("Cannot create parse-tree visualization " + fpr.getClass() + " (TODO).");
             case Node.NodeParseTree ignored2 ->
-                    throw new IllegalStateException("Cannot create parse-tree visualization " + fpr.getClass() + " (TODO).");
+                    throw new IllegalStateException("This case should be handled in dumpParseTreeHelp.");
         };
         return label.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     public static int dumpParseTree(
             final @NotNull String dotFileNamePrefix,
-            final @NotNull List<Node> parseRes) throws IOException, InterruptedException {
+            final @NotNull ParseTree parseRes) throws IOException, InterruptedException {
         final @NotNull var dotFileName = dotFileNamePrefix + ".dot";
         final @NotNull var pngFileName = dotFileNamePrefix + ".png";
         final @NotNull var args = new String[]{"dot", "-Tpng", dotFileName, "-o", pngFileName};

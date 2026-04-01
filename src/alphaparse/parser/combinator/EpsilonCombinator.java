@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public final class EpsilonCombinator extends CombinatorTerminal {
-    private long bufferedHashCode = Long.MIN_VALUE;
-
     public EpsilonCombinator() {
         super();
     }
@@ -54,8 +52,6 @@ public final class EpsilonCombinator extends CombinatorTerminal {
 
     @Override
     public int hashCode() {
-        if (bufferedHashCode == Long.MIN_VALUE)
-            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden());
-        return (int) bufferedHashCode;
+        return Objects.hash(isHidden(), getReduction());
     }
 }

@@ -45,8 +45,9 @@ public final class Reduction {
         return m;
     }
 
-    public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final @NotNull Object result) {
+    public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
         final @NotNull List<Node> afs = switch (result) {
+            case null -> List.of();
             case AutoFlattenSeq<?> objects -> objects.toNodes();
             case String ignored -> List.of(Node.of(result));
             case TotalParsesFailureNode ignored -> List.of(Node.of(result));

@@ -35,7 +35,7 @@ public final class ReductionType {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(key);
+        return Objects.hash(key, type, hiddenOrRaw);
     }
 
     public @NotNull Keyword getKey() {
