@@ -97,7 +97,6 @@ class AlphaTest {
     void parsesWithChoiceEps() {
         {
             var p = Alpha.parser("S : eps | A | B | C\nA : C \nB : C \nC : eps");
-            IO2.println(Alpha.parses(p, ""));
             var possibleTrees = Set.of(
                     new ParseTree("S"),
                     new ParseTree("S", new ParseTree("C")),
@@ -131,8 +130,7 @@ class AlphaTest {
             Assertions.assertEquals(possibleResults, res);
         }
         {
-            var p = Alpha.parser("S : eps / A / B / C\nA : C \nB : C \nC : eps");
-            IO2.println(Alpha.parses(p, ""));
+            var p = Alpha.parser("S : A / B / eps / C\nA : C \nB : C \nC : eps");
             var possibleTrees = Set.of(
                     new ParseTree("S"),
                     new ParseTree("S", new ParseTree("C")),
@@ -140,6 +138,16 @@ class AlphaTest {
                     new ParseTree("S", new ParseTree("B", new ParseTree("C")))
             );
             Assertions.assertEquals(possibleTrees, new HashSet<>(Alpha.parses(p, "")));
+        }
+        {
+            var p = Alpha.parser("S : 'a' / eps / 'a'");
+            var possibleTrees = Set.of(new ParseTree("S", "a"));
+            Assertions.assertEquals(possibleTrees, new HashSet<>(Alpha.parses(p, "a")));
+        }
+        {
+            var p = Alpha.parser("S : eps / 'a' / 'a' / eps");
+            var possibleTrees = Set.of(new ParseTree("S", "a"));
+            Assertions.assertEquals(possibleTrees, new HashSet<>(Alpha.parses(p, "a")));
         }
     }
 

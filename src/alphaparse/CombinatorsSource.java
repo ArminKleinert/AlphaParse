@@ -44,19 +44,37 @@ public final class CombinatorsSource {
     }
 
     public @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
-        final List<Combinator> parserStream = new ArrayList<>(
-                parsers.stream()
-                        .filter(p -> !p.equals(epsilon))
-                        .distinct()
-                        .toList());
-        if (parserStream.isEmpty()) return epsilon;
-        int lastIndex = parserStream.size() - 1;
-        Combinator result = parserStream.get(lastIndex);
-        while (lastIndex > 0) {
-            lastIndex--;
-            result = buffer.getOrAdd(new OrderedCombinator(parserStream.get(lastIndex), result));
+//        final List<Combinator> parserStream = new ArrayList<>(
+//                parsers.stream()
+//                        .filter(p -> !p.equals(epsilon))
+//                        .distinct()
+//                        .toList());
+//        if (parserStream.isEmpty()) return epsilon;
+//        int lastIndex = parserStream.size() - 1;
+//        Combinator result = parserStream.get(lastIndex);
+//        while (lastIndex > 0) {
+//            lastIndex--;
+//            result = buffer.getOrAdd(new OrderedCombinator(parserStream.get(lastIndex), result));
+//        }
+//        return result;
+        if (parsers.isEmpty())
+            return epsilon;
+
+        final var firstComb = parsers.getFirst();
+        int sublistStartIndex = 1;
+
+        if (firstComb.equals(epsilon)) {
+            while (sublistStartIndex < parsers.size() && parsers.get(sublistStartIndex).equals(epsilon)) {
+                sublistStartIndex++;
+            }
         }
-        return result;
+
+        if (sublistStartIndex == parsers.size())
+            return firstComb;
+
+        var restParsers = parsers.subList(sublistStartIndex, parsers.size());
+
+        return buffer.getOrAdd(new OrderedCombinator(firstComb, orderedChoiceCombinator(restParsers)));
     }
 
     public @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
