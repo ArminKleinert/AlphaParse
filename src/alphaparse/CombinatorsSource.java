@@ -169,7 +169,7 @@ public final class CombinatorsSource {
 
     public @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
         final var res = new Grammar();
-        for (Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull ReductionType reduction = Reduction.defaultNonRawReduction(key);
             final @NotNull Combinator comb = buffer.getOrAdd(keywordCombinatorEntry.getValue().unhideContent().withReduction(reduction));
@@ -191,7 +191,7 @@ public final class CombinatorsSource {
                 return buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
             }
             case CombinatorWithManyParsers combWithParsers -> {
-                final List<Combinator> parsers = combWithParsers.getParsers().stream()
+                final @NotNull List<Combinator> parsers = combWithParsers.getParsers().stream()
                         .map(p -> autoWhitespaceParser(p, wsParser))
                         .toList();
                 return buffer.getOrAdd(combWithParsers.withParsers(parsers));
@@ -202,9 +202,9 @@ public final class CombinatorsSource {
                         autoWhitespaceParser(ordComb.getParser2(), wsParser)));
             }
             case CombinatorTerminal ignored -> {
-                final List<Combinator> parsers = new ArrayList<>();
+                final @NotNull List<Combinator> parsers = new ArrayList<>();
                 parsers.add(wsParser);
-                final Combinator result;
+                final @NotNull Combinator result;
                 if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.NONE) {
                     parsers.add(parser.withReduction(Reduction.nullReduction));
                     result = catCombinator(parsers).withReduction(parser.getReduction());
