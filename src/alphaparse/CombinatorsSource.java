@@ -99,18 +99,12 @@ public final class CombinatorsSource {
 
     public @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string, final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
-        if (caseInsensitive) return buffer.getOrAdd(new StringCaseInsensitiveTerminal(string));
-        return buffer.getOrAdd(new StringTerminal(string));
+        return buffer.getOrAdd(new CombinatorStringTerminal(string, caseInsensitive));
     }
 
     public @NotNull Combinator stringTerminal(final @NotNull String string) {
         if (string.isEmpty()) return epsilon;
-        return buffer.getOrAdd(new StringTerminal(string));
-    }
-
-    public @NotNull Combinator stringCaseInsensitive(final @NotNull String string) {
-        if (string.isEmpty()) return epsilon;
-        return buffer.getOrAdd(new StringCaseInsensitiveTerminal(string));
+        return buffer.getOrAdd(new CombinatorStringTerminal(string, false));
     }
 
     public @NotNull Combinator unicodeChar(final int lohi) {
@@ -214,9 +208,7 @@ public final class CombinatorsSource {
                 }
                 return result;
             }
-            default -> {
-                throw new IllegalArgumentException("Unknown parser type " + parser.getClass().getName() + " on parser " + parser);
-            }
+            default -> throw new IllegalArgumentException("Unknown parser type " + parser.getClass().getName() + " on parser " + parser);
         }
     }
 

@@ -83,8 +83,9 @@ public class FormatUtils {
             case RegexpTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("regexp"), c.getRegexp());
             case RepetitionCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser(), Keyword.intern("min"), c.getMin(), Keyword.intern("max"), c.getMax());
             case StarCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
-            case StringCaseInsensitiveTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
-            case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
+//            case StringCaseInsensitiveTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
+//            case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
+            case CombinatorStringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
             case UnicodeCharTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("lo"), c.getLo(), Keyword.intern("hi"), c.getHi());
             default -> throw new IllegalArgumentException(
                     "Unhandled combinator type: " + combinator.getClass());
@@ -106,8 +107,9 @@ public class FormatUtils {
                     case RegexpTerminal ignored -> "regex";
                     case RepetitionCombinator ignored -> "rep";
                     case StarCombinator ignored -> "star";
-                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
-                    case StringTerminal ignored -> "string";
+//                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
+//                    case StringTerminal ignored -> "string";
+                    case CombinatorStringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
                     default -> throw new IllegalArgumentException(
                             "Unhandled combinator type: " + combinator1.getClass());
@@ -130,8 +132,9 @@ public class FormatUtils {
                     case RegexpTerminal ignored -> "regex";
                     case RepetitionCombinator ignored -> "rep";
                     case StarCombinator ignored -> "star";
-                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
-                    case StringTerminal ignored -> "string";
+//                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
+//                    case StringTerminal ignored -> "string";
+                    case CombinatorStringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
                     default -> throw new IllegalArgumentException(
                             "Unhandled combinator type: " + combinator1.getClass());

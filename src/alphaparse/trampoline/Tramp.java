@@ -15,7 +15,7 @@ import java.util.*;
 public final class Tramp {
     private final @NotNull Grammar grammar;
     private final @NotNull String text;
-    private final @NotNull CharSequence segment;
+    private final @NotNull String segment;
     private final int failIndex;
     private final @NotNull List<@NotNull Procedure> stack;
     private final @NotNull List<@NotNull Procedure> nextStack;
@@ -34,11 +34,11 @@ public final class Tramp {
         this(grammar, text, text, failIndex);
     }
 
-    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull CharSequence segment) {
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment) {
         this(grammar, text, segment, -1);
     }
 
-    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull CharSequence segment, final int failIndex) {
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment, final int failIndex) {
         this.grammar = grammar;
         this.text = text;
         this.segment = segment;
@@ -61,7 +61,7 @@ public final class Tramp {
         return text;
     }
 
-    public @NotNull CharSequence getSegment() {
+    public @NotNull String getSegment() {
         return segment;
     }
 

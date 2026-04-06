@@ -16,8 +16,7 @@ public abstract class Combinator {
     }
 
     public Combinator() {
-        hide = false;
-        red = Reduction.nullReduction;
+        this(false, Reduction.nullReduction);
     }
 
     public abstract void parse(final int index, final @NotNull Tramp tramp);

@@ -5,7 +5,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
-import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,8 +36,8 @@ public final class RegexpTerminal extends CombinatorTerminal {
     public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Pattern regexp = getRegexp();
         final @NotNull String text = tramp.getText();
-        final @NotNull CharSequence subString = Gll.subSequence(text, index);
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
+        final @NotNull String subString = text.substring(index);
+        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         final @Nullable String match = reMatchAtFront(regexp, subString);
         if (match != null) {
             Gll.success(tramp, nodeKey, match, index + match.length());
@@ -50,11 +49,11 @@ public final class RegexpTerminal extends CombinatorTerminal {
     @Override
     public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Pattern regexp = this.getRegexp();
-        final @NotNull CharSequence text = tramp.getSegment();
-        final @NotNull CharSequence substring = Gll.subSequence(text, index);
+        final @NotNull String text = tramp.getSegment();
+        final @NotNull String substring = text.substring(index);
         final @Nullable String match = reMatchAtFront(regexp, substring);
         final int desiredLength = text.length() - index;
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (match != null && match.length() == desiredLength) {
             Gll.success(tramp, nodeKey, match, text.length());
         } else {

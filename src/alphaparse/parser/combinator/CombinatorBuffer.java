@@ -17,8 +17,9 @@ public class CombinatorBuffer {
         return switch (combinator) {
             case NonTerminal that -> getOrAdd(that);
             case RegexpTerminal that -> getOrAdd(that);
-            case StringTerminal that -> getOrAdd(that);
-            case StringCaseInsensitiveTerminal that -> getOrAdd(that);
+            case CombinatorStringTerminal that -> getOrAdd(that);
+//            case StringTerminal that -> getOrAdd(that);
+//            case StringCaseInsensitiveTerminal that -> getOrAdd(that);
             case AlternationCombinator that -> getOrAdd(that);
             case CatCombinator that -> getOrAdd(that);
             case OptCombinator that -> getOrAdd(that);
@@ -47,17 +48,23 @@ public class CombinatorBuffer {
         return buffer(regexpTerminalSet, combinator);
     }
 
-    private final @NotNull Map<@NotNull StringTerminal, @NotNull StringTerminal> stringTerminalSet = new HashMap<>();
+    private final @NotNull Map<@NotNull CombinatorStringTerminal, @NotNull CombinatorStringTerminal> combStringTerminalSet = new HashMap<>();
 
-    public final @NotNull StringTerminal getOrAdd(final @NotNull StringTerminal combinator) {
-        return buffer(stringTerminalSet, combinator);
+    public final @NotNull CombinatorStringTerminal getOrAdd(final @NotNull CombinatorStringTerminal combinator) {
+        return buffer(combStringTerminalSet, combinator);
     }
 
-    private final @NotNull Map<@NotNull StringCaseInsensitiveTerminal, @NotNull StringCaseInsensitiveTerminal> stringCaseInsensitiveTerminalSet = new HashMap<>();
-
-    public final @NotNull StringCaseInsensitiveTerminal getOrAdd(final @NotNull StringCaseInsensitiveTerminal combinator) {
-        return buffer(stringCaseInsensitiveTerminalSet, combinator);
-    }
+//    private final @NotNull Map<@NotNull StringTerminal, @NotNull StringTerminal> stringTerminalSet = new HashMap<>();
+//
+//    public final @NotNull StringTerminal getOrAdd(final @NotNull StringTerminal combinator) {
+//        return buffer(stringTerminalSet, combinator);
+//    }
+//
+//    private final @NotNull Map<@NotNull StringCaseInsensitiveTerminal, @NotNull StringCaseInsensitiveTerminal> stringCaseInsensitiveTerminalSet = new HashMap<>();
+//
+//    public final @NotNull StringCaseInsensitiveTerminal getOrAdd(final @NotNull StringCaseInsensitiveTerminal combinator) {
+//        return buffer(stringCaseInsensitiveTerminalSet, combinator);
+//    }
 
     private final @NotNull Map<@NotNull AlternationCombinator, @NotNull AlternationCombinator> alternationCombinatorSet = new HashMap<>();
 

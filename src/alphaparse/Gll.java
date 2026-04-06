@@ -87,17 +87,17 @@ public final class Gll {
         return tramp.getText().length() == success.getIndex();
     }
 
-    public static @NotNull CharSequence subSequence(
-            final @NotNull CharSequence text,
+    public static @NotNull String subSequence(
+            final @NotNull String text,
             final int start) {
-        return text.subSequence(start, text.length());
+        return text.substring(start);
     }
 
-    public static @NotNull CharSequence subSequence(
-            final @NotNull CharSequence text,
+    public static @NotNull String subSequence(
+            final @NotNull String text,
             final int start,
             final int end) {
-        return text.subSequence(start, end);
+        return text.substring(start, end);
     }
 
     public static void pushNegativeListener(
@@ -335,7 +335,7 @@ public final class Gll {
         //Objects.requireNonNull(tramp.getFailure());
         tramp.setFailure(FailureUtil.modifyFailureByIndex(tramp.getFailure(), reason, index));
         if (index == tramp.getFailIndex()) {
-            final @NotNull String subSeq = subSequence(tramp.getText(), index).toString();
+            final @NotNull String subSeq = tramp.getText().substring(index).toString();
             final int textLen = tramp.getText().length();
             success(tramp,
                     nodeKey,
