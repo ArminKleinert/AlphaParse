@@ -63,20 +63,16 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 case NonTerminal nonTerminal -> result.add(nonTerminal);
                 case CombinatorTerminal ignored -> {
                 }
-                case CombinatorWithManyParsers combinatorWithManyParsers -> {
-                    combinatorStack.addAll(combinatorWithManyParsers.getParsers());
-                }
-                case CombinatorWithParser combinatorWithParser -> {
-                    combinatorStack.add(combinatorWithParser.getParser());
-                }
+                case CombinatorWithManyParsers combinatorWithManyParsers ->
+                        combinatorStack.addAll(combinatorWithManyParsers.getParsers());
+                case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
                 case OrderedCombinator orderedCombinator -> {
                     combinatorStack.add(orderedCombinator.getParser1());
                     combinatorStack.add(orderedCombinator.getParser2());
                     // Tail-recursion
                 }
-                default -> {
-                    throw new IllegalArgumentException("Unhandled parser class: " + parser.getClass() + " of parser " + parser);
-                }
+                default ->
+                        throw new IllegalArgumentException("Unhandled parser class: " + parser.getClass() + " of parser " + parser);
             }
         } while (!combinatorStack.isEmpty());
 

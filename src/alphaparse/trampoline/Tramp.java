@@ -81,10 +81,6 @@ public final class Tramp {
         return negativeListeners;
     }
 
-    public @NotNull Map<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> getNodes() {
-        return nodes;
-    }
-
     public @Nullable AlphaParseSuccess getSuccess() {
         return success;
     }

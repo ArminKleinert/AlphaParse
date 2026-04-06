@@ -44,19 +44,6 @@ public final class CombinatorsSource {
     }
 
     public @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
-//        final List<Combinator> parserStream = new ArrayList<>(
-//                parsers.stream()
-//                        .filter(p -> !p.equals(epsilon))
-//                        .distinct()
-//                        .toList());
-//        if (parserStream.isEmpty()) return epsilon;
-//        int lastIndex = parserStream.size() - 1;
-//        Combinator result = parserStream.get(lastIndex);
-//        while (lastIndex > 0) {
-//            lastIndex--;
-//            result = buffer.getOrAdd(new OrderedCombinator(parserStream.get(lastIndex), result));
-//        }
-//        return result;
         if (parsers.isEmpty())
             return epsilon;
 
@@ -99,12 +86,12 @@ public final class CombinatorsSource {
 
     public @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string, final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
-        return buffer.getOrAdd(new CombinatorStringTerminal(string, caseInsensitive));
+        return buffer.getOrAdd(new StringTerminal(string, caseInsensitive));
     }
 
     public @NotNull Combinator stringTerminal(final @NotNull String string) {
         if (string.isEmpty()) return epsilon;
-        return buffer.getOrAdd(new CombinatorStringTerminal(string, false));
+        return buffer.getOrAdd(new StringTerminal(string, false));
     }
 
     public @NotNull Combinator unicodeChar(final int lohi) {

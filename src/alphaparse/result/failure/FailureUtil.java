@@ -39,9 +39,6 @@ public final class FailureUtil {
         }
 
         final @NotNull Optional<String> lineText = text.lines().skip(line - 1).findFirst();
-//        if (lineText.isEmpty())
-//            throw new IllegalStateException();
-
         return new AlphaParseFailure(index, failure1.getReasonList(), line, col, lineText.orElse(null)
         );
     }
@@ -117,7 +114,7 @@ public final class FailureUtil {
 
     // TODO HERE DONT USE GENERIC MAP
     private static @NotNull String reasonString(final Object expected) {
-        if (expected instanceof Map) {
+        if (expected instanceof Map<?, ?>) {
             final Map<Object, Object> exp = (Map<Object, Object>) expected;
             if (exp.containsKey(Keyword.intern("NOT"))) {
                 return "NOT " + exp.get(Keyword.intern("NOT"));

@@ -47,7 +47,7 @@ public class AutoFlattenSeq<T> {
     }
 
     public boolean isEmpty() {
-        return v.length==0;
+        return v.length == 0;
     }
 
     @Override
@@ -77,15 +77,15 @@ public class AutoFlattenSeq<T> {
             return this;
         }
 
-        final @NotNull Object[] newV = Arrays.copyOf(v, v.length+1);
-        newV[newV.length-1] = obj;
+        final @NotNull Object[] newV = Arrays.copyOf(v, v.length + 1);
+        newV[newV.length - 1] = obj;
 
         return new AutoFlattenSeq<>(newV);
     }
 
     public @NotNull AutoFlattenSeq<@NotNull T> concat(final @NotNull AutoFlattenSeq<?> obj) {
         if (size() == 0) return (AutoFlattenSeq<T>) obj;
-        final @NotNull Object[] newV = Arrays.copyOf(v, v.length+obj.v.length);
+        final @NotNull Object[] newV = Arrays.copyOf(v, v.length + obj.v.length);
         System.arraycopy(obj.v, 0, newV, v.length, obj.v.length);
 
         return new AutoFlattenSeq<>(newV);

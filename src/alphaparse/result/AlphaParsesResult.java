@@ -11,7 +11,7 @@ public sealed interface AlphaParsesResult
         permits AlphaParsesResult.AlphaParsesResultList, AlphaParsesResult.LazyResultList, AlphaParsesResult.NoParsesResult, AlphaParsesResult.ParsesFailureResult, TotalParsesFailureNode {
     static @NotNull AlphaParsesResult make(final @NotNull Object o) {
         return switch (o) {
-            case TotalParsesFailureNode tpfn -> tpfn;
+            case TotalParsesFailureNode node -> node;
             case LazyResultList lrl -> lrl;
             case ParsesFailureResult pfr -> pfr;
             default -> throw new IllegalArgumentException(o.getClass().toString());
@@ -37,12 +37,6 @@ public sealed interface AlphaParsesResult
             throw new ClassCastException("Cannot cast failure to success.");
         return stream().map(ParseTree::hiccup).toList();
     }
-
-//    default List<?> enlive() {
-//        if (this instanceof TotalParsesFailureNode)
-//            throw new ClassCastException("Cannot cast failure to success.");
-//        return stream().map(ParseTree::enlive).toList();
-//    }
 
     final class LazyResultList extends LazySupplierList<ParseTree> implements AlphaParsesResult {
         public LazyResultList(final @NotNull Supplier<ParseTree> nextFn, final int maxResults) {
@@ -190,14 +184,14 @@ public sealed interface AlphaParsesResult
     }
 
     final class ParsesFailureResult implements AlphaParsesResult, PretenderList<ParseTree> {
-        final @NotNull AlphaParseFailure ifail;
+        final @NotNull AlphaParseFailure alphaParseFailure;
 
-        public ParsesFailureResult(final @NotNull AlphaParseFailure ifail) {
-            this.ifail = ifail;
+        public ParsesFailureResult(final @NotNull AlphaParseFailure alphaParseFailure) {
+            this.alphaParseFailure = alphaParseFailure;
         }
 
         public @NotNull AlphaParseFailure asFailure() {
-            return ifail;
+            return alphaParseFailure;
         }
 
         @Override
@@ -215,17 +209,17 @@ public sealed interface AlphaParsesResult
         public boolean equals(Object o) {
             if (!(o instanceof ParsesFailureResult that)) return false;
             if (!super.equals(o)) return false;
-            return Objects.equals(ifail, that.ifail);
+            return Objects.equals(alphaParseFailure, that.alphaParseFailure);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(ifail);
+            return Objects.hash(alphaParseFailure);
         }
 
         @Override
         public String toString() {
-            return ifail.toString();
+            return alphaParseFailure.toString();
         }
     }
 

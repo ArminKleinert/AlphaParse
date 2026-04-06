@@ -1,64 +1,107 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+import alphaparse.reduction.ReductionType;
+import alphaparse.result.failure.failureReason.ParseFailureReasonString;
+import alphaparse.trampoline.Tramp;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
-import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonString;
-import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class StringTerminal extends CombinatorStringTerminal {
-    public StringTerminal(final @NotNull String string) {
-        super(string, false);
+public class StringTerminal extends CombinatorTerminal {
+    private long bufferedHashCode = Long.MIN_VALUE;
+    private final @NotNull String string;
+    private final boolean caseInsensitive;
+
+    public StringTerminal(final @NotNull String string, final boolean caseInsensitive) {
+        super();
+        this.string = string;
+        this.caseInsensitive = caseInsensitive;
     }
 
-    public StringTerminal(final @NotNull String string,
-                          final boolean hide,
-                          final @NotNull ReductionType red) {
-        super(hide, red, string, false);
+    public StringTerminal(final boolean hide, final @NotNull ReductionType red, final @NotNull String string, final boolean caseInsensitive) {
+        super(hide, red);
+        this.string = string;
+        this.caseInsensitive = caseInsensitive;
     }
 
-//    @Override
-//    public void parse(final int index, final @NotNull Tramp tramp) {
-//        final @NotNull String string = getString();
-//        final @NotNull String text = tramp.getText();
-//        final int end = Integer.min(text.length(), index + string.length());
-//        final @NotNull CharSequence head = Gll.subSequence(text, index, end);
-//
-//        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-//        if (string.contentEquals(head)) {
-//            Gll.success(tramp, nodeKey, string, end);
-//        } else {
-//            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string));
-//        }
-//    }
-//
-//    @Override
-//    public void fullParse(final int index, final @NotNull Tramp tramp) {
-//        final @NotNull var string = getString();
-//        final @NotNull var text = tramp.getText();
-//        final var end = Integer.min(text.length(), string.length() + index);
-//        final @NotNull var head = Gll.subSequence(text, index, end);
-//        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-//        if (text.length() == end && Objects.equals(string, head.toString())) {
-//            Gll.success(tramp, nodeKey, string, end);
-//        } else {
-//            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string, true));
-//        }
-//    }
+    @Override
+    public void parse(final int index, final @NotNull Tramp tramp) {
+        final @NotNull String string = getString();
+        final @NotNull String text = tramp.getText();
+        final int end = Integer.min(text.length(), index + string.length());
+        final @NotNull String head = text.substring(index, end);
+
+        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
+        if (caseInsensitive) {
+            if (string.equalsIgnoreCase(head))
+                Gll.success(tramp, nodeKey, string, end);
+            else
+                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string));
+        } else {
+            if (string.contentEquals(head))
+                Gll.success(tramp, nodeKey, string, end);
+            else
+                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string));
+        }
+    }
+
+    @Override
+    public void fullParse(final int index, final @NotNull Tramp tramp) {
+        final @NotNull var string = getString();
+        final @NotNull var text = tramp.getText();
+        final var end = Integer.min(text.length(), string.length() + index);
+        final @NotNull var head = text.substring(index, end);
+        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
+        if (caseInsensitive) {
+            if (end == text.length() && string.equalsIgnoreCase(head))
+                Gll.success(tramp, nodeKey, string, end);
+            else
+                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string, true));
+        } else {
+            if (text.length() == end && Objects.equals(string, head))
+                Gll.success(tramp, nodeKey, string, end);
+            else
+                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string, true));
+        }
+    }
+
+    public final @NotNull String getString() {
+        return string;
+    }
+
+    public boolean isCaseInsensitive() {
+        return caseInsensitive;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!getClass().equals(o.getClass())) return false;
+        if (hashCode() != o.hashCode()) return false;
+        var that = (StringTerminal) o;
+        if (caseInsensitive != that.caseInsensitive) return false;
+        if (!Objects.equals(getReduction(), that.getReduction())) return false;
+        if (!Objects.equals(isHidden(), that.isHidden())) return false;
+        return Objects.equals(getString(), that.getString());
+    }
+
+    @Override
+    public int hashCode() {
+        if (bufferedHashCode == Long.MIN_VALUE)
+            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), getString());
+        return (int) bufferedHashCode;
+    }
 
     @Override
     public @NotNull StringTerminal withHideTag(final boolean hide1) {
-        return isHidden() == hide1 ? this : new StringTerminal(getString(), hide1, this.getReduction());
+        return isHidden() == hide1 ? this : new StringTerminal(hide1, this.getReduction(), getString(), caseInsensitive);
     }
 
     @Override
     public @NotNull StringTerminal withReduction(final @NotNull ReductionType red1) {
-        return getReduction() == red1 ? this : new StringTerminal(getString(), isHidden(), red1);
+        return getReduction() == red1 ? this : new StringTerminal(isHidden(), red1, getString(), caseInsensitive);
     }
 }

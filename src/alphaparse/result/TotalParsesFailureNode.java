@@ -9,7 +9,7 @@ public record TotalParsesFailureNode(
         implements AlphaParsesResult, PretenderList<ParseTree> {
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "[" + key + ", could not parse \"" + text + "\"]";
     }
 }

@@ -17,7 +17,7 @@ public class CombinatorBuffer {
         return switch (combinator) {
             case NonTerminal that -> getOrAdd(that);
             case RegexpTerminal that -> getOrAdd(that);
-            case CombinatorStringTerminal that -> getOrAdd(that);
+            case StringTerminal that -> getOrAdd(that);
 //            case StringTerminal that -> getOrAdd(that);
 //            case StringCaseInsensitiveTerminal that -> getOrAdd(that);
             case AlternationCombinator that -> getOrAdd(that);
@@ -48,9 +48,9 @@ public class CombinatorBuffer {
         return buffer(regexpTerminalSet, combinator);
     }
 
-    private final @NotNull Map<@NotNull CombinatorStringTerminal, @NotNull CombinatorStringTerminal> combStringTerminalSet = new HashMap<>();
+    private final @NotNull Map<@NotNull StringTerminal, @NotNull StringTerminal> combStringTerminalSet = new HashMap<>();
 
-    public final @NotNull CombinatorStringTerminal getOrAdd(final @NotNull CombinatorStringTerminal combinator) {
+    public final @NotNull StringTerminal getOrAdd(final @NotNull StringTerminal combinator) {
         return buffer(combStringTerminalSet, combinator);
     }
 

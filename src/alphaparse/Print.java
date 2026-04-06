@@ -91,7 +91,7 @@ public final class Print {
 //            case StringCaseInsensitiveTerminal stringCaseInsensitiveTerminal -> {
 //                return escape(stringCaseInsensitiveTerminal.getString());
 //            }
-            case CombinatorStringTerminal stringTerminal -> {
+            case StringTerminal stringTerminal -> {
                 return escape(stringTerminal.getString());
             }
             case UnicodeCharTerminal unicodeCharTerminal -> {

@@ -16,8 +16,8 @@ public interface PretenderList<T> extends List<T> {
     @Override default boolean isEmpty() { throw new UnsupportedOperationException(); }
     @Override default boolean contains(Object o) { throw new UnsupportedOperationException(); }
     @Override default @NotNull Iterator<T> iterator() { throw new UnsupportedOperationException(); }
-    @Override default @NotNull T[] toArray() { throw new UnsupportedOperationException(); }
-    @Override default @NotNull <T1> T1[] toArray(@NotNull T1[] ts) { throw new UnsupportedOperationException(); }
+    @Override default @NotNull T @NotNull [] toArray() { throw new UnsupportedOperationException(); }
+    @Override default @NotNull <T1> T1 @NotNull [] toArray(@NotNull T1 @NotNull [] ts) { throw new UnsupportedOperationException(); }
     @Override default boolean add(T o) { throw new UnsupportedOperationException(); }
     @Override default boolean remove(Object o) { throw new UnsupportedOperationException(); }
     @Override default boolean containsAll(@NotNull Collection<?> collection) { throw new UnsupportedOperationException(); }

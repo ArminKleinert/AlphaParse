@@ -85,7 +85,7 @@ public class FormatUtils {
             case StarCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
 //            case StringCaseInsensitiveTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
 //            case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
-            case CombinatorStringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
+            case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
             case UnicodeCharTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("lo"), c.getLo(), Keyword.intern("hi"), c.getHi());
             default -> throw new IllegalArgumentException(
                     "Unhandled combinator type: " + combinator.getClass());
@@ -109,7 +109,7 @@ public class FormatUtils {
                     case StarCombinator ignored -> "star";
 //                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
 //                    case StringTerminal ignored -> "string";
-                    case CombinatorStringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
+                    case StringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
                     default -> throw new IllegalArgumentException(
                             "Unhandled combinator type: " + combinator1.getClass());
@@ -134,7 +134,7 @@ public class FormatUtils {
                     case StarCombinator ignored -> "star";
 //                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
 //                    case StringTerminal ignored -> "string";
-                    case CombinatorStringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
+                    case StringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
                     default -> throw new IllegalArgumentException(
                             "Unhandled combinator type: " + combinator1.getClass());

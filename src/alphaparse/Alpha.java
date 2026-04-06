@@ -141,10 +141,6 @@ public final class Alpha {
 
         public static final @NotNull ParsingOptions DEFAULT = new ParsingOptions(null, false, UnhideOptions.none, false, false);
 
-        public ParsingOptions() {
-            this(null, false, Alpha.UnhideOptions.none, false, false);
-        }
-
         public ParsingOptions(final @Nullable Keyword start, final boolean partial, final @NotNull Alpha.UnhideOptions unhide, final boolean total, final boolean optimizeMemory) {
             this.start = start;
             this.partial = partial;
@@ -155,10 +151,6 @@ public final class Alpha {
 
         public static @NotNull ParsingOptions optMemory() {
             return new ParsingOptions(null, false, Alpha.UnhideOptions.none, false, true);
-        }
-
-        public @Nullable Keyword getStart() {
-            return start;
         }
 
         public @NotNull Keyword getStartOrDefault(final @NotNull Keyword defaultStart) {

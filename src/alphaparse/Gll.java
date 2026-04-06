@@ -10,7 +10,6 @@ import alphaparse.parser.Grammar;
 import alphaparse.parser.Reduction;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
-import alphaparse.result.TotalParsesFailureNode;
 import alphaparse.result.failure.FailureUtil;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.ParseFailureNode;
@@ -69,35 +68,10 @@ public final class Gll {
         return !node.fullResults().isEmpty() || !node.results().isEmpty();
     }
 
-    private static boolean fullResultExists_Q(
-            final @NotNull Tramp tramp,
-            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
-        final Map<TrampolineListenerKey, TrampolineListenerNode> nodes = tramp.getNodes();
-        final TrampolineListenerNode node = nodes.get(nodeKey);
-
-        if (node == null)
-            return false;
-
-        return !node.fullResults().isEmpty();
-    }
-
     private static boolean totalSuccess_Q(
             final @NotNull Tramp tramp,
             final @NotNull AlphaParseSuccess success) {
         return tramp.getText().length() == success.getIndex();
-    }
-
-    public static @NotNull String subSequence(
-            final @NotNull String text,
-            final int start) {
-        return text.substring(start);
-    }
-
-    public static @NotNull String subSequence(
-            final @NotNull String text,
-            final int start,
-            final int end) {
-        return text.substring(start, end);
     }
 
     public static void pushNegativeListener(
@@ -335,7 +309,7 @@ public final class Gll {
         //Objects.requireNonNull(tramp.getFailure());
         tramp.setFailure(FailureUtil.modifyFailureByIndex(tramp.getFailure(), reason, index));
         if (index == tramp.getFailIndex()) {
-            final @NotNull String subSeq = tramp.getText().substring(index).toString();
+            final @NotNull String subSeq = tramp.getText().substring(index);
             final int textLen = tramp.getText().length();
             success(tramp,
                     nodeKey,
@@ -350,13 +324,6 @@ public final class Gll {
             final int start,
             final int end) {
         return new ParseFailureNode(text, key, start, end);
-    }
-
-    private static @NotNull TotalParsesFailureNode buildTotalFailureNode(
-            final @NotNull Keyword key,
-            final @NotNull String text) {
-        //return buildFailureNode(key, text, 0, text.length());
-        return new TotalParsesFailureNode(text, key, 0, text.length());
     }
 
     private static @NotNull AlphaParsesResult parsesTotalAfterFail(
