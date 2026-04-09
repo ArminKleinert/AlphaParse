@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class StringTerminal extends CombinatorTerminal {
+public final class StringTerminal extends CombinatorTerminal {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull String string;
     private final boolean caseInsensitive;
@@ -69,7 +69,7 @@ public class StringTerminal extends CombinatorTerminal {
         }
     }
 
-    public final @NotNull String getString() {
+    public @NotNull String getString() {
         return string;
     }
 
@@ -81,7 +81,7 @@ public class StringTerminal extends CombinatorTerminal {
     public boolean equals(Object o) {
         if (!getClass().equals(o.getClass())) return false;
         if (hashCode() != o.hashCode()) return false;
-        var that = (StringTerminal) o;
+        final @NotNull var that = (StringTerminal) o;
         if (caseInsensitive != that.caseInsensitive) return false;
         if (!Objects.equals(getReduction(), that.getReduction())) return false;
         if (!Objects.equals(isHidden(), that.isHidden())) return false;

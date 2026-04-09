@@ -20,7 +20,7 @@ public final class ReductionType {
         this(key, type, false);
     }
 
-    public ReductionType(final @NotNull Keyword key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
+    ReductionType(final @NotNull Keyword key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
         this.key = key;
         this.type = type;
         this.hiddenOrRaw = hiddenOrRaw;

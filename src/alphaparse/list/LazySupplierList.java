@@ -50,10 +50,10 @@ public class LazySupplierList<T> implements List<T> {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append('[');
-        var cursor = 0;
-        var first = getOrNull(cursor);
+        int cursor = 0;
+        T first = getOrNull(cursor);
         cursor++;
-        var second = getOrNull(cursor);
+        T second = getOrNull(cursor);
         while (first != null) {
             sb.append(first);
             if (second == null) {
@@ -77,12 +77,12 @@ public class LazySupplierList<T> implements List<T> {
         if (o == this)
             return true;
 
-        var otherIter = c.iterator();
+        final @NotNull var otherIter = c.iterator();
         if (!otherIter.hasNext()) return false;
 
         for (var thisNext : this) {
             if (!otherIter.hasNext()) return false;
-            var otherNext = otherIter.next();
+            final @NotNull var otherNext = otherIter.next();
             if (!Objects.equals(thisNext, otherNext)) return false;
         }
 
@@ -143,7 +143,7 @@ public class LazySupplierList<T> implements List<T> {
 
     @Override
     public <T1> T1 @NotNull [] toArray(T1[] t1s) {
-        var size = size();
+        final var size = size();
         if (t1s.length < size) {
             t1s = (T1[]) new Object[size];
         }
@@ -175,7 +175,7 @@ public class LazySupplierList<T> implements List<T> {
 
     @Override
     public T get(final int i) {
-        var at = getOrNull(i);
+        final var at = getOrNull(i);
         if (at == null)
             throw new IndexOutOfBoundsException("Cannot access index " + i + " because size is " + size());
         return at;

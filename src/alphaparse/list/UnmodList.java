@@ -10,7 +10,7 @@ public final class UnmodList<T> implements List<T> {
 
     public UnmodList(final @NotNull Collection<T> coll) {
         inner = (T[]) new Object[coll.size()];
-        var i = 0;
+        int i = 0;
         for (T t : coll) {
             inner[i] = t;
             i++;
@@ -30,12 +30,12 @@ public final class UnmodList<T> implements List<T> {
             return Arrays.equals(inner, ((UnmodList<?>) o).inner);
         }
 
-        var otherIter = c.iterator();
+        final @NotNull var otherIter = c.iterator();
         if (!otherIter.hasNext() && size() > 0) return false;
 
         for (var thisNext : this) {
             if (!otherIter.hasNext()) return false;
-            var otherNext = otherIter.next();
+            final @NotNull var otherNext = otherIter.next();
             if (!Objects.equals(thisNext, otherNext)) return false;
         }
 

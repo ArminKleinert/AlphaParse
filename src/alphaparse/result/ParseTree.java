@@ -136,12 +136,12 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
         if (o instanceof ParseTree that) {
             return Objects.equals(getTag(), that.getTag()) && Objects.equals(getContent(), that.getContent());
         }
-        var otherIter = c.iterator();
+        final @NotNull var otherIter = c.iterator();
         if (!otherIter.hasNext()) return false;
 
         for (var thisNext : this) {
             if (!otherIter.hasNext()) return false;
-            var otherNext = otherIter.next();
+            final @NotNull var otherNext = otherIter.next();
             if (!Objects.equals(thisNext, otherNext)) return false;
         }
 
@@ -183,14 +183,14 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     @Override
     public int indexOf(final Object o) {
         if (Objects.equals(tag, o)) return 0;
-        var i = content.indexOf(o);
+        int i = content.indexOf(o);
         if (i < 0) return i;
         return i + 1;
     }
 
     @Override
     public int lastIndexOf(final Object o) {
-        var i = content.lastIndexOf(o);
+        int i = content.lastIndexOf(o);
         if (i >= 0) return i + 1;
         if (Objects.equals(tag, o)) return 0;
         return -1;
@@ -236,7 +236,7 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
 
     public @NotNull List<@NotNull Object> hiccup() {
         final @NotNull Object [] l = new Object[content.size() + 1];
-        var i = 0;
+        int i = 0;
 
         l[i++] = tag.content();
 
@@ -246,7 +246,6 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
                 case Node.NodeTreeTag ntt -> l[i++] = ntt.content();
                 case Node.NodeString ns -> l[i++] = ns.content();
                 case Node.NodeFail nf -> l[i++] = nf.content();
-                default -> throw new IllegalArgumentException();
             }
         }
 

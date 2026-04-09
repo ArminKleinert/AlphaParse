@@ -58,7 +58,7 @@ public class Viztool {
             throw new RuntimeException(e);
         }
 
-        var ret = Runtime.getRuntime().exec(args).waitFor();
+        final int ret = Runtime.getRuntime().exec(args).waitFor();
 
         return ret;
     }

@@ -81,13 +81,13 @@ public final class RegexpTerminal extends CombinatorTerminal {
         if (hashCode() != o.hashCode()) return false;
         if (!Objects.equals(getReduction(), that.getReduction())) return false;
         if (!Objects.equals(isHidden(), that.isHidden())) return false;
-        return Objects.equals(getRegexp(), that.getRegexp());
+        return Objects.equals(getRegexp().pattern(), that.getRegexp().pattern());
     }
 
     @Override
     public int hashCode() {
         if (bufferedHashCode == Long.MIN_VALUE)
-            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), regexp);
+            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), regexp.pattern());
         return (int) bufferedHashCode;
     }
 }

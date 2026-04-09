@@ -17,38 +17,34 @@ public final class Alpha {
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Alpha.UnhideOptions unhide) {
         final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
-        if (unhide == UnhideOptions.none) {
-            return parser;
-        } else if (unhide == UnhideOptions.content) {
-            return parser.withGrammar(combinatorsSource.unhideAllContent(parser.getGrammar()));
-        } else if (unhide == UnhideOptions.tags) {
-            return parser.withGrammar(combinatorsSource.unhideTags(parser.getGrammar()));
-        } else if (unhide == UnhideOptions.all) {
-            return parser.withGrammar(combinatorsSource.unhideAll(parser.getGrammar()));
-        } else {
-            throw new IllegalArgumentException();
-        }
+
+        return switch (unhide) {
+            case none -> parser;
+            case content -> parser.withGrammar(combinatorsSource.unhideAllContent(parser.grammar()));
+            case tags -> parser.withGrammar(combinatorsSource.unhideTags(parser.outputFormat(), parser.grammar()));
+            case all -> parser.withGrammar(combinatorsSource.unhideAll(parser.outputFormat(), parser.grammar()));
+        };
     }
 
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
-        var startProduction = options.getStartOrDefault(parser.getStartProduction());
-        var usePartial = options.usePartial();
+        final @NotNull var startProduction = options.getStartOrDefault(parser.startProduction());
+        final var usePartial = options.usePartial();
         //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
-        var doUnhide = options.getUnhide();
-        var unhiddenParser = unhideParser(parser, doUnhide);
+        final @NotNull var doUnhide = options.getUnhide();
+        final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
 
         final @NotNull AlphaParseResult parsingResult;
         if (options.isTotal()) {
-            parsingResult = AlphaParseResult.make(Gll.parseTotal(unhiddenParser.getGrammar(), startProduction, text, usePartial));
+            parsingResult = AlphaParseResult.make(Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, usePartial));
         } else if (options.isOptimizeMemory() && !usePartial) {
-            var result = Repeat.tryRepeatingParseStrategy(parser, text, startProduction);
+            @NotNull var result = Repeat.tryRepeatingParseStrategy(parser, text, startProduction);
             if (result instanceof AlphaParseFailure)
-                result = Gll.parse(parser.getGrammar(), startProduction, text, false);
+                result = Gll.parse(parser.grammar(), startProduction, text, false);
             parsingResult = AlphaParseResult.make(result);
         } else {
-            parsingResult = AlphaParseResult.make(Gll.parse(unhiddenParser.getGrammar(), startProduction, text, usePartial));
+            parsingResult = AlphaParseResult.make(Gll.parse(unhiddenParser.grammar(), startProduction, text, usePartial));
         }
 
         return parsingResult;
@@ -62,16 +58,16 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
-        var startProduction = options.getStartOrDefault(parser.getStartProduction());
-        var usePartial = options.usePartial();
-        var doUnhide = options.getUnhide();
-        var unhiddenParser = unhideParser(parser, doUnhide);
+        final @NotNull var startProduction = options.getStartOrDefault(parser.startProduction());
+        final var usePartial = options.usePartial();
+        final @NotNull var doUnhide = options.getUnhide();
+        final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
 
-        var useParseTotal = options.isTotal();
+        final var useParseTotal = options.isTotal();
         if (useParseTotal) {
-            return Gll.parsesTotal(unhiddenParser.getGrammar(), startProduction, text, usePartial);
+            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial);
         } else {
-            return Gll.parses(unhiddenParser.getGrammar(), startProduction, text, usePartial);
+            return Gll.parses(unhiddenParser.grammar(), startProduction, text, usePartial);
         }
     }
 
@@ -83,16 +79,16 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
                                                              final @NotNull String text,
                                                              final @NotNull ParsingOptions options) {
-        var startProduction = options.getStartOrDefault(parser.getStartProduction());
-        var usePartial = options.usePartial();
-        var doUnhide = options.getUnhide();
-        var unhiddenParser = unhideParser(parser, doUnhide);
+        final @NotNull var startProduction = options.getStartOrDefault(parser.startProduction());
+        final var usePartial = options.usePartial();
+        final @NotNull var doUnhide = options.getUnhide();
+        final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
 
-        var useParseTotal = options.isTotal();
+        final var useParseTotal = options.isTotal();
         if (useParseTotal) {
-            return Gll.parsesTotal(unhiddenParser.getGrammar(), startProduction, text, usePartial);
+            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial);
         } else {
-            return Gll.parsesOrFailure(unhiddenParser.getGrammar(), startProduction, text, usePartial);
+            return Gll.parsesOrFailure(unhiddenParser.grammar(), startProduction, text, usePartial);
         }
     }
 
@@ -112,11 +108,10 @@ public final class Alpha {
     public static @NotNull Parser parser(final @NotNull File grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) throws IOException {
         final @NotNull String contents = Files.readString(grammar.toPath());
-        @NotNull Parser parser = parser(contents, options);
-        return parser;
+        return parser(contents, options);
     }
 
-    public static Parser parser(final @NotNull Grammar grammar,
+    public static @NotNull Parser parser(final @NotNull Grammar grammar,
                                 final @NotNull Alpha.ParserCreationOptions options) throws IOException {
         if (options.startProduction() == null)
             throw new IllegalArgumentException();
@@ -150,7 +145,7 @@ public final class Alpha {
         }
 
         public static @NotNull ParsingOptions optMemory() {
-            return new ParsingOptions(null, false, Alpha.UnhideOptions.none, false, true);
+            return new ParsingOptions(null, false, UnhideOptions.none, false, true);
         }
 
         public @NotNull Keyword getStartOrDefault(final @NotNull Keyword defaultStart) {
@@ -199,6 +194,18 @@ public final class Alpha {
                     : outputFormat;
         }
 
+        public ParserCreationOptions(final @Nullable Parser whitespaceParser) {
+            this(whitespaceParser, null, Cfg.GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
+        }
+
+        public ParserCreationOptions(final @Nullable Keyword startProduction) {
+            this(null, startProduction, Cfg.GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
+        }
+
+        public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
+            this(null, null, Cfg.GlobalCaseInsensitivity.DEFAULT, outputFormat);
+        }
+
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
             return new ParserCreationOptions(
                     getPredefinedWhitespaceParser(Keyword.intern("standard")),
@@ -208,18 +215,18 @@ public final class Alpha {
         }
     }
 
-    private static @Nullable Parser getPredefinedWhitespaceParser(final @Nullable Keyword wsParserName) {
+    public static @Nullable Parser getPredefinedWhitespaceParser(final @Nullable Keyword wsParserName) {
         if (wsParserName == null) {
             return null;
         }
-        if (predefWsParsers == null) {
-            predefWsParsers = Map.of(
+        if (predefinedWsParsers == null) {
+            predefinedWsParsers = Map.of(
                     Keyword.intern("standard"), parser("whitespace = #'\\s+'", ParserCreationOptions.getDefault()),
                     Keyword.intern("comma"), parser("whitespace = #'[,\\s]+'", ParserCreationOptions.getDefault())
             );
         }
-        return predefWsParsers.get(wsParserName);
+        return predefinedWsParsers.get(wsParserName);
     }
 
-    private static Map<Keyword, Parser> predefWsParsers;
+    private static @Nullable Map<Keyword, Parser> predefinedWsParsers = null;
 }

@@ -7,7 +7,7 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.ParseTree;
 import alphaparse.parser.combinator.Combinator;
 import alphaparse.parser.Grammar;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import alphaparse.result.failure.FailureUtil;
@@ -218,7 +218,7 @@ public final class Gll {
         final boolean isTotal = totalSuccess_Q(tramp, result);
         final @NotNull Set<@NotNull AlphaParseSuccess> results = isTotal ? node.fullResults() : node.results();
 
-        var resultExisted = !results.add(result);
+        final var resultExisted = !results.add(result);
         if (resultExisted) {
             return;
         }
@@ -252,10 +252,10 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new Tramp(grammar, text);
-        var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var tramp = new Tramp(grammar, text);
+        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
-        var allParses = run(tramp);
+        final @NotNull var allParses = run(tramp);
         return AlphaParsesResult.make(allParses);
     }
 
@@ -264,10 +264,10 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new Tramp(grammar, text);
-        var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var tramp = new Tramp(grammar, text);
+        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
-        var allParses = run(tramp);
+        final @NotNull var allParses = run(tramp);
         if (allParses.isEmpty()) {
             if (tramp.getFailure() == null)
                 throw new IllegalStateException();
@@ -281,10 +281,10 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new Tramp(grammar, text);
-        var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var tramp = new Tramp(grammar, text);
+        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
-        var allParses = run(tramp, 1);
+        final @NotNull var allParses = run(tramp, 1);
         if (allParses.isEmpty()) {
             if (tramp.getFailure() == null)
                 throw new IllegalStateException();
@@ -331,10 +331,10 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var tramp = new Tramp(grammar, text, 0);
-        var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var tramp = new Tramp(grammar, text, 0);
+        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
-        var allParses = run(tramp);
+        final @NotNull var allParses = run(tramp);
         return AlphaParsesResult.make(allParses);
     }
 
@@ -343,7 +343,7 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var allParses = parses(grammar, start, text, partial);
+        final @NotNull var allParses = parses(grammar, start, text, partial);
         if (allParses.castToParsesSuccess().iterator().hasNext()) return AlphaParsesResult.make(allParses);
         return parsesTotalAfterFail(grammar, start, text, partial);
     }
@@ -354,10 +354,10 @@ public final class Gll {
             final @NotNull String text,
             final int failIndex,
             final boolean partial) {
-        var tramp = new Tramp(grammar, text, failIndex);
-        var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var tramp = new Tramp(grammar, text, failIndex);
+        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
         startParser(tramp, parser, partial);
-        var allParses = run(tramp, 1);
+        final @NotNull var allParses = run(tramp, 1);
         if (!allParses.isEmpty())
             return AlphaParseResult.make(allParses.getFirst());
         return buildFailureNode(start, text, 0, text.length());
@@ -368,7 +368,7 @@ public final class Gll {
             final @NotNull Keyword start,
             final @NotNull String text,
             final boolean partial) {
-        var result = parse(grammar, start, text, partial);
+        final @NotNull var result = parse(grammar, start, text, partial);
         if (!(result instanceof AlphaParseFailure)) return result;
         return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).getIndex(), partial);
     }

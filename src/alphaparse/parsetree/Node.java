@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.NodeString, Node.NodeTreeTag {
-    static Node of(final @Nullable Object o) {
+    static @NotNull Node of(final @Nullable Object o) {
         if (o == null)
             throw new IllegalArgumentException("Input cannot be null.");
         return switch (o) {

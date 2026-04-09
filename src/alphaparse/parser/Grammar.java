@@ -1,9 +1,11 @@
 package alphaparse.parser;
 
 import alphaparse.CombinatorsSource;
+import alphaparse.IO2;
 import alphaparse.Keyword;
 import alphaparse.parser.combinator.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,6 +19,25 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         super();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (! (o instanceof Grammar g)) return false;
+
+        if (g.size() != size())
+            return false;
+
+        for (Map.Entry<@NotNull Keyword, Combinator> keywordCombinatorEntry : entrySet()) {
+            if (!Objects.equals(g.getProduction(keywordCombinatorEntry.getKey()), keywordCombinatorEntry.getValue())) {
+                IO2.println("FAILS HERE");
+                IO2.println("  " + g.getProduction(keywordCombinatorEntry.getKey()));
+                IO2.println("  " + keywordCombinatorEntry.getValue());
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static @NotNull Grammar fromProductions(final @NotNull Iterable<Map.Entry<Keyword, Combinator>> kvs) {
         final @NotNull Map<Keyword, Combinator> m = new HashMap<>();
         for (Map.Entry<Keyword, Combinator> kv : kvs) {
@@ -25,12 +46,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return new Grammar(m);
     }
 
-    public Combinator getProduction(final @NotNull Keyword key) {
+    public @Nullable Combinator getProduction(final @NotNull Keyword key) {
         return getOrDefault(key, null);
     }
 
     public @NotNull Combinator getOrMakeNonTerm(final @NotNull Keyword key) {
-        final @NotNull Combinator p = getProduction(key);
+        final @Nullable Combinator p = getProduction(key);
         if (p == null) return CombinatorsSource.staticMakeNonTerminal(key);
         return p;
     }
@@ -44,7 +65,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     public String toString() {
         return super.toString();
     }
-
 
     private @NotNull Set<NonTerminal> listNonTerminals() {
         final @NotNull Set<NonTerminal> result = new HashSet<>();
@@ -71,8 +91,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                     combinatorStack.add(orderedCombinator.getParser2());
                     // Tail-recursion
                 }
-                default ->
-                        throw new IllegalArgumentException("Unhandled parser class: " + parser.getClass() + " of parser " + parser);
             }
         } while (!combinatorStack.isEmpty());
 

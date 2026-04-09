@@ -1,7 +1,7 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;

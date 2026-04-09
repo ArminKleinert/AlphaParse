@@ -2,11 +2,11 @@ package alphaparse.parser.combinator;
 
 import alphaparse.trampoline.Tramp;
 import alphaparse.Print;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Combinator {
+public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWithManyParsers, CombinatorWithParser, NonTerminal, OrderedCombinator {
     private final boolean hide;
     private final @NotNull ReductionType red;
 

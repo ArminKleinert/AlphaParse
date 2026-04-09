@@ -21,8 +21,8 @@ public class AutoFlattenSeq<T> {
     }
 
     public @NotNull List<@NotNull Node> toNodes() {
-        var result = new ArrayList<Node>();
-        var iter = iterator();
+        final @NotNull var result = new ArrayList<Node>();
+        final @NotNull var iter = iterator();
         while (iter.hasNext())
             result.add(Node.of(iter.next()));
         return result;

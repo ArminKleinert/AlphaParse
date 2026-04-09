@@ -2,7 +2,7 @@ package alphaparse;
 
 import alphaparse.parser.combinator.Combinator;
 import alphaparse.parser.Grammar;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

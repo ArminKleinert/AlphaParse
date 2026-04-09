@@ -1,32 +1,23 @@
 package alphaparse.parser;
 
-import alphaparse.Keyword;
-import alphaparse.CombinatorsSource;
-import alphaparse.Alpha;
-import alphaparse.Print;
-import alphaparse.parser.combinator.Combinator;
+import alphaparse.*;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.Objects;
 
-public final class Parser {
-    private final @NotNull Grammar grammar;
-    private final @NotNull Keyword startProduction;
-    private final @NotNull ReductionType.ReductionTypesAvailable outputFormat;
+public record Parser(@NotNull Grammar grammar,
+                     @NotNull Keyword startProduction,
+                     @NotNull ReductionType.ReductionTypesAvailable outputFormat) {
+    public Parser {
+        if (!grammar.containsKey(startProduction))
+            throw new IllegalArgumentException("Illegal start-production " + startProduction + ": not in grammar.");
 
-    public Parser(final @NotNull Grammar grammar,
-                  final @NotNull Keyword startProduction,
-                  final @NotNull ReductionType.ReductionTypesAvailable outputFormat) {
-        this.grammar = grammar;
-        this.startProduction = startProduction;
-        this.outputFormat = outputFormat;
     }
 
-    public @NotNull AlphaParseResult parse(final @NotNull String text, final Alpha.ParsingOptions options) {
+    public @NotNull AlphaParseResult parse(final @NotNull String text, final @NotNull Alpha.ParsingOptions options) {
         return Alpha.parse(this, text, options);
     }
 
@@ -43,31 +34,25 @@ public final class Parser {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof Parser parser)) return false;
-        if (!super.equals(o)) return false;
-        return Objects.equals(grammar, parser.grammar) && Objects.equals(startProduction, parser.startProduction);
+    public boolean equals(Object o) {
+        if (!(o instanceof Parser(Grammar otherGrammar,
+                                  Keyword otherStartProduction,
+                                  ReductionType.ReductionTypesAvailable otherOutputFormat)))
+            return false;
+        return Objects.equals(grammar, otherGrammar)
+                && Objects.equals(startProduction, otherStartProduction)
+                && outputFormat == otherOutputFormat;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), grammar, startProduction);
+        return Objects.hash(grammar, startProduction);
     }
 
-    public @NotNull Grammar getGrammar() {
-        return grammar;
-    }
-
-    public @NotNull Keyword getStartProduction() {
-        return startProduction;
-    }
-
-    public @NotNull Parser withGrammar(final Grammar grammar) {
+    public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
+        if (this.grammar.equals(grammar))
+            return this;
         return new Parser(grammar, startProduction, outputFormat);
-    }
-
-    public @NotNull Parser withGrammar(final Map<@NotNull Keyword, @NotNull Combinator> grammar) {
-        return new Parser(new Grammar(grammar), startProduction, outputFormat);
     }
 
     public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
@@ -76,15 +61,24 @@ public final class Parser {
 
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
         return withGrammar((new CombinatorsSource()).autoWhitespace(
-                getGrammar(),
-                getStartProduction(),
-                whitespaceParser.getGrammar(),
-                whitespaceParser.getStartProduction()
+                grammar(),
+                startProduction(),
+                whitespaceParser.grammar(),
+                whitespaceParser.startProduction()
         ));
     }
 
+//    @Override
+//    public String toString() {
+//        return Print.parserToString(this);
+//    }
+
     @Override
-    public String toString() {
-        return Print.parserToString(this);
+    public @NotNull String toString() {
+        return "Parser{" +
+                "grammar=" + grammar +
+                ", startProduction=" + startProduction +
+                ", outputFormat=" + outputFormat +
+                '}';
     }
 }

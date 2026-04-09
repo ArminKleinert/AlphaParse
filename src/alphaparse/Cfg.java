@@ -4,7 +4,7 @@ import alphaparse.parser.Grammar;
 import alphaparse.parsetree.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.parser.Parser;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 import alphaparse.parser.combinator.*;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.util.StrParser;
@@ -33,12 +33,12 @@ public final class Cfg {
                                                     final @NotNull CombinatorsSource combinatorsSource,
                                                     final @NotNull Alpha.ParserCreationOptions options) {
         final var partsUncut = (String) tree.getContent().getFirst().content();
-        var parts = partsUncut.split("\\*");
+        @NotNull var parts = partsUncut.split("\\*");
         if (parts.length == 0 || parts.length > 2) {
             throw new IllegalArgumentException("Invalid format for repetition rule: " + partsUncut);
         }
         if (parts.length == 1) {
-            var temp = new String[]{"", ""};
+            final @NotNull var temp = new String[]{"", ""};
             if (partsUncut.charAt(0) == '*') { // Only maximum provided
                 temp[1] = parts[0];
             } else if (partsUncut.charAt(partsUncut.length() - 1) == '*') {// Only minimum provided
@@ -58,12 +58,12 @@ public final class Cfg {
             final @NotNull ParseTree tree,
             final @NotNull CombinatorsSource combinatorsSource,
             final @NotNull Alpha.ParserCreationOptions options) {
-        final var allContents = tree.getContent();
+        final @NotNull var allContents = tree.getContent();
         final var nt = (ParseTree) allContents.getFirst().content();
         final var altOrOrd = (ParseTree) allContents.get(1).content();
 
-        var content = nt.getContent().getFirst();
-        var rule = (Combinator) buildRule(altOrOrd, combinatorsSource, options);
+        @NotNull var content = nt.getContent().getFirst();
+        @NotNull var rule = (Combinator) buildRule(altOrOrd, combinatorsSource, options);
 
         if (Objects.equals(Keyword.intern("hide-nt"), nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
@@ -77,7 +77,7 @@ public final class Cfg {
                                              final @NotNull CombinatorsSource combinatorsSource,
                                              final @NotNull Alpha.ParserCreationOptions options) {
         do {
-            final var tag = tree.getTag().content().sym;
+            final @NotNull var tag = tree.getTag().content().sym;
             switch (tag) {
                 case "rule" -> {
                     return buildRuleRule(tree, combinatorsSource, options);
@@ -167,7 +167,7 @@ public final class Cfg {
 
     static @NotNull Parser buildParser(final @NotNull String spec,
                                        final @NotNull Alpha.ParserCreationOptions options) {
-        var rules = Gll.parse(EbnfG.makeCfg(), Keyword.intern("rules"), spec, false);
+        final @NotNull var rules = Gll.parse(EbnfG.makeCfg(), Keyword.intern("rules"), spec, false);
         if (rules instanceof AlphaParseFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }
@@ -187,8 +187,8 @@ public final class Cfg {
             grammar = combinatorsSource.autoWhitespace(
                     grammar,
                     startProduction,
-                    options.whitespaceParser().getGrammar(),
-                    options.whitespaceParser().getStartProduction()
+                    options.whitespaceParser().grammar(),
+                    options.whitespaceParser().startProduction()
             );
         }
 

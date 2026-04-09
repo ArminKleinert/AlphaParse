@@ -1,7 +1,7 @@
 package alphaparse;
 
 import alphaparse.parser.Grammar;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 import alphaparse.parser.combinator.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public final class CombinatorsSource {
     public static final @NotNull EpsilonCombinator epsilon = new EpsilonCombinator();
-    private final CombinatorBuffer buffer = new CombinatorBuffer();
+    private final @NotNull CombinatorBuffer buffer = new CombinatorBuffer();
 
     public CombinatorsSource() {
     }
@@ -59,7 +59,7 @@ public final class CombinatorsSource {
         if (sublistStartIndex == parsers.size())
             return firstComb;
 
-        var restParsers = parsers.subList(sublistStartIndex, parsers.size());
+        final @NotNull var restParsers = parsers.subList(sublistStartIndex, parsers.size());
 
         return buffer.getOrAdd(new OrderedCombinator(firstComb, orderedChoiceCombinator(restParsers)));
     }
@@ -70,12 +70,12 @@ public final class CombinatorsSource {
         if (!parserStream.hasNext())
             return epsilon;
 
-        var first = parserStream.next();
+        final @NotNull var first = parserStream.next();
 
         if (!parserStream.hasNext())
             return first;
 
-        var parserList = new ArrayList<Combinator>();
+        final @NotNull var parserList = new ArrayList<Combinator>();
         parserList.add(first);
         do {
             parserList.add(parserStream.next());
@@ -131,29 +131,35 @@ public final class CombinatorsSource {
 
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final var res = new Grammar();
-        for (Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
-            res.put(keywordCombinatorEntry.getKey(), buffer.getOrAdd(keywordCombinatorEntry.getValue().unhideContent()));
+        for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+            final @NotNull Keyword key = keywordCombinatorEntry.getKey();
+            final @NotNull Combinator value = keywordCombinatorEntry.getValue();
+            res.put(key, buffer.getOrAdd(value.unhideContent()));
         }
         return res;
     }
 
-    public @NotNull Grammar unhideTags(final @NotNull Grammar grammar) {
+    public @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
+                                       final @NotNull Grammar grammar) {
         final var res = new Grammar();
-        for (Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
-            final @NotNull ReductionType reduction = Reduction.defaultNonRawReduction(key);
-            final @NotNull Combinator comb = buffer.getOrAdd(keywordCombinatorEntry.getValue().withReduction(reduction));
+            final @NotNull Combinator value = keywordCombinatorEntry.getValue();
+            final @NotNull ReductionType reduction = new ReductionType(key, reductionType);
+            final @NotNull Combinator comb = buffer.getOrAdd(value.withReduction(reduction));
             res.put(key, comb);
         }
         return res;
     }
 
-    public @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
+    public @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
+                                      final @NotNull Grammar grammar) {
         final var res = new Grammar();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
-            final @NotNull ReductionType reduction = Reduction.defaultNonRawReduction(key);
-            final @NotNull Combinator comb = buffer.getOrAdd(keywordCombinatorEntry.getValue().unhideContent().withReduction(reduction));
+            final @NotNull Combinator value = keywordCombinatorEntry.getValue();
+            final @NotNull ReductionType reduction = new ReductionType(key, reductionType);
+            final @NotNull Combinator comb = buffer.getOrAdd(value.unhideContent().withReduction(reduction));
             res.put(key, comb);
         }
         return res;
@@ -161,27 +167,19 @@ public final class CombinatorsSource {
 
     private @NotNull Combinator autoWhitespaceParser(final @NotNull Combinator parser,
                                                      final @NotNull Combinator wsParser) {
-        switch (parser) {
-            case NonTerminal ignored -> {
-                return parser;
-            }
-            case EpsilonCombinator ignored2 -> {
-                return parser;
-            }
-            case CombinatorWithParser parser1 -> {
-                return buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
-            }
+        return switch (parser) {
+            case NonTerminal ignored -> parser;
+            case EpsilonCombinator ignored2 -> parser;
+            case CombinatorWithParser parser1 -> buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
-                final @NotNull List<Combinator> parsers = combWithParsers.getParsers().stream()
+                @NotNull List<Combinator> parsers = combWithParsers.getParsers().stream()
                         .map(p -> autoWhitespaceParser(p, wsParser))
                         .toList();
-                return buffer.getOrAdd(combWithParsers.withParsers(parsers));
+                yield buffer.getOrAdd(combWithParsers.withParsers(parsers));
             }
-            case OrderedCombinator ordComb -> {
-                return buffer.getOrAdd(ordComb.withParsers(
-                        autoWhitespaceParser(ordComb.getParser1(), wsParser),
-                        autoWhitespaceParser(ordComb.getParser2(), wsParser)));
-            }
+            case OrderedCombinator ordComb -> buffer.getOrAdd(ordComb.withParsers(
+                    autoWhitespaceParser(ordComb.getParser1(), wsParser),
+                    autoWhitespaceParser(ordComb.getParser2(), wsParser)));
             case CombinatorTerminal ignored -> {
                 final @NotNull List<Combinator> parsers = new ArrayList<>();
                 parsers.add(wsParser);
@@ -193,16 +191,16 @@ public final class CombinatorsSource {
                     parsers.add(parser);
                     result = catCombinator(parsers);
                 }
-                return result;
+                yield result;
             }
-            default -> throw new IllegalArgumentException("Unknown parser type " + parser.getClass().getName() + " on parser " + parser);
-        }
+        };
     }
 
     public @NotNull Grammar autoWhitespace(final @NotNull Grammar grammar,
                                            final @NotNull Keyword start,
                                            final @NotNull Grammar grammarWS,
                                            final @NotNull Keyword startWS) {
+        final @NotNull Combinator wsProd = Objects.requireNonNull(grammarWS.getProduction(startWS));
         final @NotNull Combinator wsParser = optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
 
         final @NotNull Map<@NotNull Keyword, @NotNull Combinator> modifiedGrammar = new LinkedHashMap<>();
@@ -213,7 +211,7 @@ public final class CombinatorsSource {
 
         final @NotNull Map<@NotNull Keyword, @NotNull Combinator> finalGrammar = new LinkedHashMap<>(modifiedGrammar);
         finalGrammar.put(start, newComb);
-        finalGrammar.put(startWS, hideTag(grammarWS.getProduction(startWS)));
+        finalGrammar.put(startWS, hideTag(wsProd));
         return new Grammar(finalGrammar);
     }
 }

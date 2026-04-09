@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public abstract class CombinatorWithManyParsers extends Combinator {
+public sealed abstract class CombinatorWithManyParsers extends Combinator permits AlternationCombinator, CatCombinator {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull List<@NotNull Combinator> parsers;
 
@@ -41,7 +41,7 @@ public abstract class CombinatorWithManyParsers extends Combinator {
     public boolean equals(Object o) {
         if (!getClass().equals(o.getClass())) return false;
         if (hashCode() != o.hashCode()) return false;
-        var that = (CombinatorWithManyParsers) o;
+        final @NotNull var that = (CombinatorWithManyParsers) o;
         if (!Objects.equals(getReduction(), that.getReduction())) return false;
         if (!Objects.equals(isHidden(), that.isHidden())) return false;
         return Objects.equals(getParsers(), that.getParsers());

@@ -111,7 +111,6 @@ public final class Print {
             case NegateCombinator negateCombinator -> {
                 return "!" + parenForCompound(hidden, negateCombinator.getParser());
             }
-            default -> throw new IllegalArgumentException();
         }
     }
 
@@ -124,8 +123,8 @@ public final class Print {
     }
 
     public static @NotNull String parserToString(final @NotNull Parser p) {
-        final @NotNull Grammar grammar = p.getGrammar();
-        final @NotNull Keyword start = p.getStartProduction();
+        final @NotNull Grammar grammar = p.grammar();
+        final @NotNull Keyword start = p.startProduction();
 
         final @NotNull StringBuilder sb = new StringBuilder(
                 Objects.requireNonNull(ruleToString(start, grammar.getProduction(start))));

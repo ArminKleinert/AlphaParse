@@ -1,5 +1,6 @@
 package alphaparse.util;
 
+import alphaparse.IO2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -10,13 +11,15 @@ import java.util.regex.Pattern;
 import static java.lang.Character.isWhitespace;
 
 public final class StrParser {
-    public static @NotNull String escape(final @NotNull CharSequence s) {
+
+    // Converts a single-quoted string to a double-quoted one.
+    private static @NotNull String escape(final @NotNull CharSequence s) {
         final @NotNull StringBuilder sb = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
             if (c == '\\') {
                 if (i + 1 >= s.length())
-                    throw new IllegalArgumentException("Encountered backslash character at emd of string: " + s);
+                    throw new IllegalArgumentException("Encountered backslash character at end of string: " + s);
                 final char c2 = s.charAt(i + 1);
                 i++;
                 if (c2 != '\'') sb.append(c);
@@ -136,7 +139,6 @@ public final class StrParser {
      * @return
      */
     public static @NotNull String processString(final @NotNull CharSequence s) {
-        assert s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'';
         final @NotNull CharSequence stripped = s.subSequence(1, s.length() - 1);
         final @NotNull String removeEscapedSingleQuotes = escape(stripped);
         return parse(removeEscapedSingleQuotes + '"');
@@ -149,7 +151,6 @@ public final class StrParser {
      * @return
      */
     public static @NotNull Pattern processRegexp(final @NotNull CharSequence s) {
-        assert s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'';
         final @NotNull CharSequence stripped = s.subSequence(2, s.length() - 1);
         final @NotNull String removeEscapedSingleQuotes = escape(stripped);
         return Pattern.compile(removeEscapedSingleQuotes);

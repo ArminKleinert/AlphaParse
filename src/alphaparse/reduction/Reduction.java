@@ -1,9 +1,9 @@
-package alphaparse.parser;
+package alphaparse.reduction;
 
 import alphaparse.Keyword;
 import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.parser.Grammar;
 import alphaparse.parsetree.Node;
-import alphaparse.reduction.ReductionType;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.TotalParsesFailureNode;

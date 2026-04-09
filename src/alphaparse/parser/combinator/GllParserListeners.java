@@ -3,7 +3,7 @@ package alphaparse.parser.combinator;
 import alphaparse.Gll;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.functions.Listener;
-import alphaparse.parser.Reduction;
+import alphaparse.reduction.Reduction;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -108,12 +108,12 @@ final class GllParserListeners {
                                               final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
-            var continueIndex = result.getIndex();
+            final var continueIndex = result.getIndex();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty())
                     Gll.success(tramp, nodeKey, null, continueIndex);
             } else {
-                var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
+                final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                         ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
                         : resultsSoFar.append(parsedResult);
                 if (continueIndex == tramp.getText().length()) {

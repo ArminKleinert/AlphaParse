@@ -83,12 +83,8 @@ public class FormatUtils {
             case RegexpTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("regexp"), c.getRegexp());
             case RepetitionCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser(), Keyword.intern("min"), c.getMin(), Keyword.intern("max"), c.getMax());
             case StarCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
-//            case StringCaseInsensitiveTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
-//            case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
             case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
             case UnicodeCharTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("lo"), c.getLo(), Keyword.intern("hi"), c.getHi());
-            default -> throw new IllegalArgumentException(
-                    "Unhandled combinator type: " + combinator.getClass());
         };
     }
 
@@ -111,8 +107,6 @@ public class FormatUtils {
 //                    case StringTerminal ignored -> "string";
                     case StringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
-                    default -> throw new IllegalArgumentException(
-                            "Unhandled combinator type: " + combinator1.getClass());
                 };
         return parserToMap(combinator, classTagLookup);
     }
@@ -136,12 +130,10 @@ public class FormatUtils {
 //                    case StringTerminal ignored -> "string";
                     case StringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
-                    default -> throw new IllegalArgumentException(
-                            "Unhandled combinator type: " + combinator1.getClass());
                 };
-        var start = parser.getStartProduction();
-        var grammar = new LinkedHashMap<>();
-        parser.getGrammar().entrySet().stream().map((kcEntry) ->
+        final @NotNull var start = parser.startProduction();
+        final @NotNull var grammar = new LinkedHashMap<>();
+        parser.grammar().entrySet().stream().map((kcEntry) ->
                         new AbstractMap.SimpleImmutableEntry<>(kcEntry.getKey(), parserToMap(kcEntry.getValue(), classTagLookup))
                 ).forEach(kcEntry ->
                 grammar.put(kcEntry.getKey(), kcEntry.getValue())
