@@ -51,6 +51,13 @@ public final class Main {
 
         /**/
         {
+            final var p = Alpha.parser("S : <'a'>");
+            IO2.println(p.parse("a"));
+        }
+        System.exit(0);
+
+        /**/
+        {
             final @NotNull var p = Alpha.parser("S : 'ABC'");
             IO2.println(Alpha.parses(p, "ABD", new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.content, true, false)));
             IO2.println(Alpha.parsesOrFailure(p, "ABD", Alpha.ParsingOptions.DEFAULT).castToParsesFailure().asFailure().contentsToString());

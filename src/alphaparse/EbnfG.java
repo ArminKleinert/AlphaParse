@@ -346,7 +346,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    public static @NotNull Grammar makeCfg() {
+    static @NotNull Grammar makeCfg() {
         final @NotNull HashMap<Keyword, Combinator> grammarMap = new HashMap<>();
         final @NotNull CombinatorsSource cs = new CombinatorsSource();
         grammarMap.put(Keyword.intern("rules"), makeCfgRulesRhs(cs));

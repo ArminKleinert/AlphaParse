@@ -21,6 +21,12 @@ class AlphaCoreTest {
                     B = 'b'+
                     """);
 
+    final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = new ParseTree(
+            "S",
+            new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("B", "b","b","b")),
+            new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("B", "b","b"))
+    );
+
     final @NotNull Parser as_and_bs_regex = Alpha.parser(
             """
                     S = AB*
@@ -51,7 +57,7 @@ class AlphaCoreTest {
     final @NotNull Parser paren_ab = Alpha.parser(
             """
                     paren-wrapped = '(' seq-of-A-or-B ')'
-                    seq_of-A-or-B = ('a' | 'b')*
+                    seq-of-A-or-B = ('a' | 'b')*
                     """);
 
     final @NotNull Parser paren_ab_hide_parens = Alpha.parser(
@@ -322,7 +328,7 @@ class AlphaCoreTest {
             new Alpha.ParserCreationOptions(whitespace_or_comments));
 
     final @NotNull Parser eat_a = Alpha.parser("Aeater = #'[a]'+",
-            new Alpha.ParserCreationOptions(Keyword.intern("Input")));
+            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
 
     final @NotNull Parser int_or_double = Alpha.parser(
             """
@@ -339,4 +345,11 @@ class AlphaCoreTest {
                     S = #'(?i)a+'
                     """);
 
+    @Test
+    public void test1() {
+        Assertions.assertEquals(
+                as_and_bs_aaaaabbbaaaabb_tree,
+                Alpha.parse(as_and_bs, "aaaaabbbaaaabb")
+        );
+    }
 }

@@ -59,18 +59,23 @@ public final class Cfg {
             final @NotNull CombinatorsSource combinatorsSource,
             final @NotNull Alpha.ParserCreationOptions options) {
         final @NotNull var allContents = tree.getContent();
-        final var nt = (ParseTree) allContents.getFirst().content();
-        final var altOrOrd = (ParseTree) allContents.get(1).content();
-
+        final @NotNull var nt = (ParseTree) allContents.getFirst().content();
+        final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
         @NotNull var content = nt.getContent().getFirst();
-        @NotNull var rule = (Combinator) buildRule(altOrOrd, combinatorsSource, options);
+
+        final @NotNull Keyword key;
+        final @NotNull Combinator rule;
 
         if (Objects.equals(Keyword.intern("hide-nt"), nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
-            rule = combinatorsSource.hideTag(rule);
+            key = Keyword.intern(content.toString());
+            rule = combinatorsSource.hideTag((Combinator) buildRule(altOrOrd, combinatorsSource, options));
+        } else {
+            key = Keyword.intern((String) content.content());
+            rule = (Combinator) buildRule(altOrOrd, combinatorsSource, options);
         }
 
-        return Grammar.entry(Keyword.intern((String) content.content()), rule);
+        return Grammar.entry(key, rule);
     }
 
     private static @NotNull Object buildRule(@NotNull ParseTree tree,
@@ -96,7 +101,7 @@ public final class Cfg {
                             .toList());
                 }
                 case "hide" -> {
-                    return ((Combinator) tree.getContent().getFirst().content()).enableHideTag();
+                    return ((Combinator) buildRule(((Node.NodeParseTree) tree.getContent().getFirst()).content(), combinatorsSource, options)).enableHideTag();
                 }
                 case "cat" -> {
                     return combinatorsSource.catCombinator(tree.getContent()
