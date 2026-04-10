@@ -54,7 +54,6 @@ public final class Main {
             final var p = Alpha.parser("S : <'a'>");
             IO2.println(p.parse("a"));
         }
-        System.exit(0);
 
         /**/
         {
@@ -80,6 +79,7 @@ public final class Main {
         {
             IO2.println(FormatUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")));
             IO2.println(FormatUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")).getClass());
+            IO2.println();
         }
 
         /**/
@@ -118,9 +118,11 @@ public final class Main {
 
         /**/
         PerfTest.fullTest(true, c99GrammarText, 100, 1000);
+//        PerfTest.fullTest(true, c99GrammarText, 1, 1);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);
+//        PerfTest.testNumberOfParses(true, 2);
 
         /**/
         {

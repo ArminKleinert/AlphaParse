@@ -1,23 +1,33 @@
 package alphaparse;
 
+import alphaparse.util.ClassUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Keyword implements Comparable<Keyword> {
     private static final ConcurrentHashMap<String, Reference<Keyword>> table = new ConcurrentHashMap<>();
     private static final ReferenceQueue<Keyword> rq = new ReferenceQueue<>();
-    public final String sym;
+    private static boolean cachingDisabled = false;
 
-    public static Keyword intern(String sym) {
+    public final @NotNull String sym;
+
+    public static void disableCaching() {
+        cachingDisabled = true;
+        table.clear();
+    }
+
+    public static Keyword intern(final @NotNull String sym) {
+        if (cachingDisabled) {
+            return new Keyword(sym);
+        }
         Keyword k = null;
         Reference<Keyword> existingRef = table.get(sym);
         if (existingRef == null) {
-            clearCache();
+            ClassUtil.clearReferenceCache(rq, table);
 
             k = new Keyword(sym);
             existingRef = table.putIfAbsent(sym, new WeakReference<>(k, rq));
@@ -35,7 +45,7 @@ public class Keyword implements Comparable<Keyword> {
         }
     }
 
-    private Keyword(String sym) {
+    private Keyword(final @NotNull String sym) {
         this.sym = sym;
     }
 
@@ -61,7 +71,8 @@ public class Keyword implements Comparable<Keyword> {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Keyword)) return false;
-        return getName().equals(((Keyword) o).getName());
+        if (cachingDisabled) return getName().equals(((Keyword) o).getName());
+        return o == this;
     }
 
     @Override
@@ -69,17 +80,4 @@ public class Keyword implements Comparable<Keyword> {
         return sym.compareTo(keyword.sym);
     }
 
-    private static void clearCache() {
-        if (Keyword.rq.poll() != null) {
-            while(Keyword.rq.poll() != null) {
-            }
-
-            for(Map.Entry<String, Reference<Keyword>> e : Keyword.table.entrySet()) {
-                Reference<Keyword> val = e.getValue();
-                if (val != null && val.get() == null) {
-                    Keyword.table.remove(e.getKey(), val);
-                }
-            }
-        }
-    }
 }
