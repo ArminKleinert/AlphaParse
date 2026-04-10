@@ -1,6 +1,7 @@
 package alphaparse.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,27 +14,32 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassUtil {
-    public static Class<?> mostDerived(Collection<?> objects) {
+    public static @Nullable Class<?> mostDerived(final @NotNull Collection<?> objects) {
         List<Class<?>> common = null;
         Set<Class<?>> checked = objects.size() > 30 ? new HashSet<>() : null;
-        for (Object object : objects) {
+        for (final Object object : objects) {
             if (object == null) {
                 continue;
             }
-            Class<?> clz = object.getClass();
-            if (checked == null || checked.add(clz)) {
-                List<Class<?>> hierarchy = new ArrayList<>();
-                for (; clz != Object.class; clz = clz.getSuperclass()) {
-                    hierarchy.add(clz);
-                }
-                if (common == null) {
-                    common = hierarchy;
-                } else {
-                    common.retainAll(hierarchy);
-                }
+
+            @NotNull Class<?> clz = object.getClass();
+
+            if (checked != null) {
+                var wasNewlyAdded = checked.add(clz);
+                if (!wasNewlyAdded) continue;
+            }
+
+            final @NotNull List<Class<?>> hierarchy = new ArrayList<>();
+            for (; clz != Object.class; clz = clz.getSuperclass()) {
+                hierarchy.add(clz);
+            }
+            if (common == null) {
+                common = hierarchy;
+            } else {
+                common.retainAll(hierarchy);
             }
         }
-        return common != null ? !common.isEmpty() ? common.getFirst() : Object.class : null;
+        return common != null ? (!common.isEmpty() ? common.getFirst() : Object.class) : null;
     }
 
     private static final List<String> uniqueStrings = new ArrayList<>();
@@ -50,7 +56,7 @@ public class ClassUtil {
         }
     }
 
-    public static <K,T> void clearReferenceCache(
+    public static <K, T> void clearReferenceCache(
             final @NotNull ReferenceQueue<T> rq,
             final @NotNull ConcurrentHashMap<K, Reference<T>> table) {
         if (rq.poll() != null) {
@@ -59,8 +65,8 @@ public class ClassUtil {
                 o = rq.poll();
             }
 
-            for (Map.Entry<K, Reference<T>> e : table.entrySet()) {
-                Reference<T> val = e.getValue();
+            for (final @NotNull Map.Entry<K, Reference<T>> e : table.entrySet()) {
+                final @NotNull Reference<T> val = e.getValue();
                 if (val != null && val.get() == null) {
                     table.remove(e.getKey(), val);
                 }

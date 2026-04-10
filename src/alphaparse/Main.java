@@ -117,12 +117,12 @@ public final class Main {
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
-//        PerfTest.fullTest(true, c99GrammarText, 1, 1);
+//        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
+        PerfTest.fullTest(true, c99GrammarText, 1, 1);
 
         /**/
-        PerfTest.testNumberOfParses(true, 23);
-//        PerfTest.testNumberOfParses(true, 2);
+//        PerfTest.testNumberOfParses(true, 23);
+        PerfTest.testNumberOfParses(true, 2);
 
         /**/
         {
