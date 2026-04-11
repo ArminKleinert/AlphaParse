@@ -52,7 +52,7 @@ public final class Alpha {
 
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text) {
-        return parse(parser, text, ParsingOptions.DEFAULT);
+        return parse(parser, text, ParsingOptions.getDefault());
     }
 
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
@@ -73,7 +73,7 @@ public final class Alpha {
 
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text) {
-        return parses(parser, text, ParsingOptions.DEFAULT);
+        return parses(parser, text, ParsingOptions.getDefault());
     }
 
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
@@ -140,8 +140,9 @@ public final class Alpha {
         private final boolean total;
         private final boolean optimizeMemory;
 
-        public static final @NotNull ParsingOptions DEFAULT = new ParsingOptions(
-                DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
+        public static @NotNull ParsingOptions getDefault() {
+            return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
+        }
 
         public ParsingOptions(final @Nullable Keyword start,
                               final boolean partial,
@@ -177,6 +178,26 @@ public final class Alpha {
 
         public boolean isOptimizeMemory() {
             return optimizeMemory;
+        }
+
+        public @NotNull ParsingOptions withStartingProdSetTo(final @Nullable Keyword start) {
+            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+        }
+
+        public @NotNull ParsingOptions withPartialSetTo(final boolean partial) {
+            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+        }
+
+        public @NotNull ParsingOptions withUnhideOptionsSetTo(final @NotNull Alpha.UnhideOptions unhide) {
+            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+        }
+
+        public @NotNull ParsingOptions withTotalParseSetTo(final boolean total) {
+            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+        }
+
+        public ParsingOptions withOptMemorySetTo(final boolean optimizeMemory) {
+            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
         }
     }
 

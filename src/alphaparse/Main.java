@@ -59,8 +59,8 @@ public final class Main {
         {
             final @NotNull var p = Alpha.parser("S : 'ABC'");
             IO2.println(Alpha.parses(p, "ABD", new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.content, true, false)));
-            IO2.println(Alpha.parsesOrFailure(p, "ABD", Alpha.ParsingOptions.DEFAULT).castToParsesFailure().asFailure().contentsToString());
-            IO2.println(Alpha.parse(p, "ABD", Alpha.ParsingOptions.DEFAULT).castToParseFailure().contentsToString());
+            IO2.println(Alpha.parsesOrFailure(p, "ABD", Alpha.ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
+            IO2.println(Alpha.parse(p, "ABD", Alpha.ParsingOptions.getDefault()).castToParseFailure().contentsToString());
             IO2.println(Alpha.parses(p, "ABD"));
             IO2.println();
         }

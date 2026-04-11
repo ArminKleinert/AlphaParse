@@ -356,7 +356,7 @@ class AlphaCoreTest {
                 as_and_bs.parse(text)
         );
 
-        var options = new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.none, false, true);
+        Alpha.ParsingOptions options = Alpha.ParsingOptions.getDefault().withOptMemorySetTo(true);
         Assertions.assertEquals(
                 as_and_bs.parse(text),
                 as_and_bs.parse(text, options)
@@ -504,13 +504,139 @@ class AlphaCoreTest {
         var text = "(aba)";
         var tree = new ParseTree(ParseTree.NULL_TAG_NAME, "a", "b", "a");
 
-        Assertions.assertEquals(List.of("a","b","a"), tree.hiccup());
+        Assertions.assertEquals(List.of("a", "b", "a"), tree.hiccup());
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text));
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text, Alpha.ParsingOptions.optMemory()));
 
         Assertions.assertEquals(Alpha.parse(paren_ab_hide_both_tags, text), paren_ab_hide_both_tags.parse(text));
+    }
+
+    @Test
+    public void parser_as_function() {
+        var text = "aaaa";
+        var grammar = "S = 'a' S / '' ";
+        var tree =
+                new ParseTree("S", "a", new ParseTree("S", "a", new ParseTree("S", "a", new ParseTree("S", "a", new ParseTree("S")))));
+
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, null));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void parser_as_function_2() {
+        var text = "aaaa";
+        var grammar = "S = S 'a' / Epsilon";
+        var tree =
+                new ParseTree("S", new ParseTree("S", new ParseTree("S", new ParseTree("S", new ParseTree("S"), "a"), "a"), "a"), "a");
+
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, null));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void ambiguous_parses() {
+        var text = "aaaaaa";
+
+        var treesAmbiguous = List.of(
+                new ParseTree("S", new ParseTree("A", "a"), new ParseTree("A", "a", "a", "a", "a", "a")),
+                new ParseTree("S", new ParseTree("A", "a", "a", "a", "a", "a", "a"), new ParseTree("A")),
+                new ParseTree("S", new ParseTree("A", "a", "a"), new ParseTree("A", "a", "a", "a", "a")),
+                new ParseTree("S", new ParseTree("A", "a", "a", "a"), new ParseTree("A", "a", "a", "a")),
+                new ParseTree("S", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("A", "a", "a")),
+                new ParseTree("S", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("A", "a")),
+                new ParseTree("S", new ParseTree("A"), new ParseTree("A", "a", "a", "a", "a", "a", "a"))
+        );
+
+        Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text));
+        Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text));
+        Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void unambiguous_parses() {
+        var text = "aaaaaa";
+
+
+        var treesUnambiguous = List.of(
+                new ParseTree("S", new ParseTree("A", text), new ParseTree("A", ""))
+        );
+
+        Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text));
+        Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text));
+        Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void lookahead_example() {
+        var text = "abaaaab";
+        var tree = new ParseTree("S", "a", "b", "a", "a", "a", "a", "b");
+        Assertions.assertEquals(tree, lookahead_example.parse(text));
+        Assertions.assertEquals(tree, lookahead_example.parse(text, Alpha.ParsingOptions.getDefault()));
+        Assertions.assertEquals(tree, lookahead_example.parse(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void lookahead_example_failure() {
+        var text = "bbaaaab";
+
+        Assertions.assertFalse(lookahead_example.parse(text).isSuccess());
+        Assertions.assertTrue(lookahead_example.parse(text).isFailure());
+
+        Assertions.assertEquals(
+                lookahead_example.parse(text),
+                lookahead_example.parse(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void negative_lookahead_example() {
+        var text = "bbaaaab";
+        var tree = new ParseTree("S", "b", "b", "a", "a", "a", "a", "b");
+
+        Assertions.assertEquals(tree, negative_lookahead_example.parse(text));
+
+        Assertions.assertEquals(
+                tree,
+                negative_lookahead_example.parse(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void negative_lookahead_example_failure() {
+        var text = "abaaaab";
+
+        Assertions.assertFalse(negative_lookahead_example.parse(text).isSuccess());
+        Assertions.assertTrue(negative_lookahead_example.parse(text).isFailure());
+
+        Assertions.assertEquals(
+                negative_lookahead_example.parse(text),
+                negative_lookahead_example.parse(text, Alpha.ParsingOptions.optMemory()));
+    }
+
+    @Test
+    public void char_range_example_failure() {
+        // TODO
+
+        /*
+        (insta/parses
+               (insta/parser
+                 "Regex = (CharNonRange | Range) +
+                  Range = Char <'-'> Char
+                  CharNonRange = Char ! ('-' Char)
+                  Char = #'[-x]' | 'c' (! 'd') 'x'")
+               "x-cx")
+         '([:Regex [:Range [:Char "x"] [:Char "c" "x"]]])
+         */
     }
 
 }
