@@ -82,6 +82,11 @@ public final class Cfg {
                                              final @NotNull CombinatorsSource combinatorsSource,
                                              final @NotNull Alpha.ParserCreationOptions options) {
         do {
+            if (tree.getTag().content().equals(ParseTree.NULL_TAG)) {
+                tree = (ParseTree) tree.getContent().getFirst().content();
+                continue;
+            }
+
             final @NotNull var tag = tree.getTag().content().sym;
             switch (tag) {
                 case "rule" -> {
@@ -141,10 +146,6 @@ public final class Cfg {
                 case "paren" -> {
                     tree = (ParseTree) tree.getContent().getFirst().content();
                     continue; // Tail recursion (somewhat)
-                }
-                case "\0\0\0\0" -> {
-                    tree = (ParseTree) tree.getContent().getFirst().content();
-                    continue;
                 }
             }
             throw new UnsupportedOperationException(tag);

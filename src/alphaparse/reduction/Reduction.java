@@ -13,9 +13,9 @@ import java.util.List;
 
 public final class Reduction {
     public static final @NotNull ReductionType rawNonTerminalReduction
-            = new ReductionType(Keyword.intern("\0\0\0\0"), ReductionType.ReductionTypesAvailable.RAW, true);
+            = new ReductionType(ParseTree.NULL_TAG, ReductionType.ReductionTypesAvailable.RAW, true);
     public static final @NotNull ReductionType nullReduction
-            = new ReductionType(Keyword.intern("\0\0\0\0"), ReductionType.ReductionTypesAvailable.NONE, true);
+            = new ReductionType(ParseTree.NULL_TAG, ReductionType.ReductionTypesAvailable.NONE, true);
 
     private Reduction() {
     }
@@ -30,7 +30,7 @@ public final class Reduction {
         return new ReductionType(key, ReductionType.ReductionTypesAvailable.defaultType);
     }
 
-    public static ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
+    public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
         return new ReductionType(key, type);
     }
 

@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public final class ParseTree implements List<Node>, AlphaParseResult {
+    public static @NotNull String NULL_TAG_NAME = "\0\0\0\0";
+    public static @NotNull Keyword NULL_TAG = Keyword.intern(NULL_TAG_NAME);
+
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<Node> content;
     private int hashCode = 0;
@@ -219,13 +222,15 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
 
     public @NotNull ParseTree flattenRawProductions() {
         final @NotNull var entries = new ArrayList<@NotNull Node>();
-        for (var e : content) {
+        for (@NotNull var e : content) {
             if (!(e instanceof Node.NodeParseTree)) {
                 entries.add(e);
                 continue;
             }
-            final @NotNull var e1 = ((Node.NodeParseTree) e).content().flattenRawProductions();
-            if (Objects.equals(((Node.NodeParseTree) e).content().getTag().content(), Keyword.intern("\0\0\0\0"))) {
+
+            final @NotNull var eContent = ((Node.NodeParseTree) e).content();
+            final @NotNull var e1 = eContent.flattenRawProductions();
+            if (Objects.equals(eContent.getTag().content(), NULL_TAG)) {
                 entries.addAll(e1.getContent());
             } else {
                 entries.add(Node.of(e1));
@@ -235,12 +240,17 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     }
 
     public @NotNull List<@NotNull Object> hiccup() {
-        final @NotNull Object [] l = new Object[content.size() + 1];
         int i = 0;
 
-        l[i++] = tag.content();
+        final @NotNull Object[] l;
+        if (tag.content().equals(NULL_TAG)) {
+            l = new Object[content.size()];
+        } else {
+            l = new Object[content.size() + 1];
+            l[i++] = tag.content();
+        }
 
-        for (Node node : content) {
+        for (@NotNull Node node : content) {
             switch (node) {
                 case Node.NodeParseTree npt -> l[i++] = npt.content().hiccup();
                 case Node.NodeTreeTag ntt -> l[i++] = ntt.content();

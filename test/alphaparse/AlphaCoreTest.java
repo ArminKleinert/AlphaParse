@@ -7,9 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 class AlphaCoreTest {
 
@@ -20,12 +18,6 @@ class AlphaCoreTest {
                     A = 'a'+
                     B = 'b'+
                     """);
-
-    final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = new ParseTree(
-            "S",
-            new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("B", "b","b","b")),
-            new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("B", "b","b"))
-    );
 
     final @NotNull Parser as_and_bs_regex = Alpha.parser(
             """
@@ -346,10 +338,179 @@ class AlphaCoreTest {
                     """);
 
     @Test
-    public void test1() {
+    public void as_and_bs() {
+        final @NotNull String text = "aaaaabbbaaaabb";
+        final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = new ParseTree(
+                "S",
+                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("B", "b", "b", "b")),
+                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("B", "b", "b"))
+        );
+
         Assertions.assertEquals(
                 as_and_bs_aaaaabbbaaaabb_tree,
-                Alpha.parse(as_and_bs, "aaaaabbbaaaabb")
+                Alpha.parse(as_and_bs, text)
+        );
+
+        Assertions.assertEquals(
+                Alpha.parse(as_and_bs, text),
+                as_and_bs.parse(text)
+        );
+
+        var options = new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.none, false, true);
+        Assertions.assertEquals(
+                as_and_bs.parse(text),
+                as_and_bs.parse(text, options)
         );
     }
+
+    @Test
+    public void as_and_bs_hiccup() {
+        final @NotNull String text = "aaaaabbbaaaabb";
+        final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = new ParseTree(
+                "S",
+                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("B", "b", "b", "b")),
+                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("B", "b", "b"))
+        );
+        var abTag = Keyword.intern("AB");
+        var aTag = Keyword.intern("A");
+        var bTag = Keyword.intern("B");
+        final @NotNull List<Object> tree = List.of(
+                Keyword.intern("S"),
+                List.of(abTag, List.of(aTag, "a", "a", "a", "a", "a"), List.of(bTag, "b", "b", "b")),
+                List.of(abTag, List.of(aTag, "a", "a", "a", "a"), List.of(bTag, "b", "b"))
+        );
+
+        Assertions.assertEquals(
+                tree,
+                as_and_bs_aaaaabbbaaaabb_tree.hiccup()
+        );
+
+        Assertions.assertEquals(
+                tree,
+                Alpha.parse(as_and_bs, text).castToParseSuccess().hiccup()
+        );
+
+        var options = Alpha.ParsingOptions.optMemory();
+        Assertions.assertEquals(
+                tree,
+                as_and_bs.parse(text, options).castToParseSuccess().hiccup()
+        );
+    }
+
+    @Test
+    public void as_and_bs_enlive_test() {
+        // TODO
+    }
+
+    @Test
+    public void as_and_bs_variation1() {
+        final @NotNull String text = "aaaaabbbaaaabb";
+
+        var res = new ParseTree("S",
+                new ParseTree("AB", "a", "a", "a", "a", "a", "b", "b", "b"),
+                new ParseTree("AB", "a", "a", "a", "a", "b", "b"));
+
+        Assertions.assertEquals(
+                res,
+                as_and_bs_variation1.parse(text));
+
+        var options = Alpha.ParsingOptions.optMemory();
+        Assertions.assertEquals(
+                res,
+                as_and_bs_variation1.parse(text, options));
+    }
+
+    @Test
+    public void as_and_bs_variation2() {
+        final @NotNull String text = "aaaaabbbaaaabb";
+
+        var res = new ParseTree(
+                "S",
+                "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
+        var resList = List.of(
+                Keyword.intern("S"),
+                "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
+
+        Assertions.assertEquals(
+                res,
+                as_and_bs_variation2.parse(text));
+        Assertions.assertEquals(
+                resList,
+                as_and_bs_variation2.parse(text).castToParseSuccess().hiccup());
+
+        var memOpt = Alpha.ParsingOptions.optMemory();
+        Assertions.assertEquals(
+                res,
+                as_and_bs_variation2.parse(text, memOpt));
+        Assertions.assertEquals(
+                resList,
+                as_and_bs_variation2.parse(text, memOpt).castToParseSuccess().hiccup());
+    }
+
+    @Test
+    public void paren_ab_test() {
+        var text = "(aba)";
+        var tree = new ParseTree("paren-wrapped",
+                "(",
+                new ParseTree("seq-of-A-or-B", "a", "b", "a"),
+                ")");
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab, text));
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(Alpha.parse(paren_ab, text), paren_ab.parse(text));
+    }
+
+    @Test
+    public void paren_ab_hide_parens_test() {
+        var text = "(aba)";
+        var tree = new ParseTree("paren-wrapped",
+                new ParseTree("seq-of-A-or-B", "a", "b", "a"));
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text));
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(Alpha.parse(paren_ab_hide_parens, text), paren_ab_hide_parens.parse(text));
+    }
+
+    @Test
+    public void paren_ab_manually_flattened_test() {
+        var text = "(aba)";
+        var tree = new ParseTree("paren-wrapped", "a", "b", "a");
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text));
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(Alpha.parse(paren_ab_manually_flattened, text), paren_ab_manually_flattened.parse(text));
+    }
+
+    @Test
+    public void paren_ab_hide_tag_test() {
+        var text = "(aba)";
+        var tree = new ParseTree("paren-wrapped", "a", "b", "a");
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text));
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(Alpha.parse(paren_ab_hide_tag, text), paren_ab_hide_tag.parse(text));
+    }
+
+    @Test
+    public void paren_ab_hide_both_tags_test() {
+        var text = "(aba)";
+        var tree = new ParseTree(ParseTree.NULL_TAG_NAME, "a", "b", "a");
+
+        Assertions.assertEquals(List.of("a","b","a"), tree.hiccup());
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text));
+
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text, Alpha.ParsingOptions.optMemory()));
+
+        Assertions.assertEquals(Alpha.parse(paren_ab_hide_both_tags, text), paren_ab_hide_both_tags.parse(text));
+    }
+
 }
