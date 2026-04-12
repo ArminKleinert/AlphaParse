@@ -129,7 +129,7 @@ public final class Gll {
                     throw new IllegalStateException(successResult.toString());
                 tramp.setSuccess(null);
                 foundResult.set(true);
-                return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult();
+                return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult().flattenRawProductions();
             }
             final List<Procedure> stack = tramp.getStack();
             if (!stack.isEmpty()) {

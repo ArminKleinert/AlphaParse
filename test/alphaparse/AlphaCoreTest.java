@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 class AlphaCoreTest {
 
@@ -637,6 +639,45 @@ class AlphaCoreTest {
                "x-cx")
          '([:Regex [:Range [:Char "x"] [:Char "c" "x"]]])
          */
+    }
+
+    @Test
+    public void ambiguous_tokenizer_test() {
+        var text = "defn my cond";
+        var trees = Set.of(
+                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier","my"), new ParseTree("identifier","cond")),
+                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier","my"), new ParseTree("identifier","cond")),
+                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier","my"), new ParseTree("keyword","cond")),
+                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier","my"), new ParseTree("keyword","cond"))
+        );
+
+        Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(ambiguous_tokenizer, text)));
+    }
+
+    @Test
+    public void unambiguous_tokenizer_test() {
+        var text = "defn my cond";
+        var trees = List.of(
+                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier","my"), new ParseTree("keyword","cond"))
+        );
+
+        Assertions.assertEquals(trees, Alpha.parses(unambiguous_tokenizer, text));
+    }
+
+    @Test
+    public void preferential_tokenizer_test() {
+        var text = "defn my cond";
+        var trees = Set.of(
+                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier","my"), new ParseTree("keyword","cond")),
+
+                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier","my"), new ParseTree("keyword","cond")),
+
+                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier","my"), new ParseTree("identifier","cond")),
+
+                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier","my"), new ParseTree("identifier","cond"))
+        );
+
+        Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(preferential_tokenizer, text)));
     }
 
 }

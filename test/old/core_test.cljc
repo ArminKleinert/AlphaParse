@@ -520,11 +520,22 @@
                [:sentence [:identifier "defn"] [:identifier "my"] [:keyword "cond"]]
                [:sentence [:keyword "defn"] [:identifier "my"] [:keyword "cond"]])
 
+       ;----------------------------------;
+       ;---            HERE            ---;
+       ;----------------------------------;
+
              (insta/parses unambiguous-tokenizer "defn my cond")
              '([:sentence [:keyword "defn"] [:identifier "my"] [:keyword "cond"]])
 
              (insta/parses preferential-tokenizer "defn my cond")
-             '([:sentence [:keyword "defn"] [:identifier "my"] [:keyword "cond"]] [:sentence [:identifier "defn"] [:identifier "my"] [:keyword "cond"]] [:sentence [:keyword "defn"] [:identifier "my"] [:identifier "cond"]] [:sentence [:identifier "defn"] [:identifier "my"] [:identifier "cond"]])
+             '([:sentence
+                [:keyword "defn"] [:identifier "my"] [:keyword "cond"]]
+               [:sentence
+                [:identifier "defn"] [:identifier "my"] [:keyword "cond"]]
+               [:sentence
+                [:keyword "defn"] [:identifier "my"] [:identifier "cond"]]
+               [:sentence
+                [:identifier "defn"] [:identifier "my"] [:identifier "cond"]])
 
              (insta/parses repeated-a "aaaaaa")
              '([:S "a" "a" "a" "a" "a" "a"])
