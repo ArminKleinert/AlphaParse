@@ -1,5 +1,6 @@
 package alphaparse.result;
 
+import alphaparse.IO2;
 import alphaparse.Keyword;
 import alphaparse.list.UnmodList;
 import alphaparse.parsetree.Node;
@@ -14,6 +15,8 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<Node> content;
     private int hashCode = 0;
+    private final boolean hasNullTag;
+    private final boolean isFlat;
 
     public ParseTree(final @NotNull String tag, final @NotNull Object... content) {
         this(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
@@ -24,9 +27,15 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     }
 
     public ParseTree(final @NotNull Node.NodeTreeTag tag, final @NotNull List<Node> content) {
+        this(tag, content, false);
+    }
+
+    private ParseTree(final @NotNull Node.NodeTreeTag tag, final @NotNull List<Node> content, final boolean isFlat) {
+        this.hasNullTag = tag.content().equals(NULL_TAG);
         this.tag = tag;
         // this.content = flattenRawProductions(content);
         this.content = content;
+        this.isFlat = isFlat;
     }
 
     public @NotNull Node.NodeTreeTag getTag() {
@@ -222,15 +231,10 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     }
 
     public @NotNull ParseTree flattenRawProductions() {
-        boolean needsFlattening = false;
-        for (@NotNull var c : content) {
-            if (c instanceof Node.NodeParseTree) {
-                needsFlattening = true;
-                break;
-            }
-        }
-
-        if (!needsFlattening)
+        if (!hasNullTag && content.stream()
+                .filter(c -> c instanceof Node.NodeParseTree)
+                .map(c -> ((Node.NodeParseTree) c).content())
+                .noneMatch(pt -> pt.hasNullTag))
             return this;
 
         final @NotNull var entries = new ArrayList<@NotNull Node>();
@@ -241,16 +245,16 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
             }
 
             final @NotNull var eContent = ((Node.NodeParseTree) e).content();
-            final @NotNull var e1 = eContent.flattenRawProductions();
-            if (Objects.equals(eContent.getTag().content(), NULL_TAG)) {
+            final @NotNull var e1 = eContent.isFlat ? eContent : eContent.flattenRawProductions();
+            
+            if (eContent.hasNullTag) {
                 entries.addAll(e1.getContent());
             } else {
                 entries.add(Node.of(e1));
             }
         }
-        //IO2.println("HERE: "+this + "\n      "+entries);
 
-        return new ParseTree(tag, entries);
+        return new ParseTree(tag, entries, true);
         //return this;
     }
 

@@ -1,13 +1,14 @@
 package alphaparse.parser;
 
 import alphaparse.CombinatorsSource;
-import alphaparse.IO2;
 import alphaparse.Keyword;
 import alphaparse.parser.combinator.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
@@ -21,7 +22,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 
     @Override
     public boolean equals(Object o) {
-        if (! (o instanceof Grammar g)) return false;
+        if (!(o instanceof Grammar g)) return false;
 
         if (g.size() != size())
             return false;
@@ -177,5 +178,95 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                         Objects.equals(getValue(), that.getValue());
             }
         };
+    }
+
+    @Override
+    public Grammar reversed() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map.Entry<Keyword, Combinator> pollFirstEntry() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map.Entry<Keyword, Combinator> pollLastEntry() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator putFirst(Keyword k, Combinator v) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator putLast(Keyword k, Combinator v) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator put(Keyword key, Combinator value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator remove(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void putAll(Map<? extends @NotNull Keyword, ? extends Combinator> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void replaceAll(BiFunction<? super @NotNull Keyword, ? super Combinator, ? extends Combinator> function) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator putIfAbsent(Keyword key, Combinator value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object key, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean replace(Keyword key, Combinator oldValue, Combinator newValue) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator replace(Keyword key, Combinator value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator computeIfAbsent(@NotNull Keyword key, Function<? super @NotNull Keyword, ? extends Combinator> mappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator computeIfPresent(Keyword key, BiFunction<? super Keyword, ? super Combinator, ? extends Combinator> remappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator compute(Keyword key, BiFunction<? super Keyword, ? super Combinator, ? extends Combinator> remappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Combinator merge(Keyword key, Combinator value, BiFunction<? super Combinator, ? super Combinator, ? extends Combinator> remappingFunction) {
+        throw new UnsupportedOperationException();
     }
 }
