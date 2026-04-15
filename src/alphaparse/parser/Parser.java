@@ -13,14 +13,16 @@ import java.util.function.Function;
 
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
-                     @NotNull ReductionType.ReductionTypesAvailable outputFormat) implements BiFunction<String, Alpha.ParsingOptions, AlphaParseResult> {
+                     @NotNull ReductionType.ReductionTypesAvailable outputFormat)
+        implements BiFunction<String, Alpha.ParsingOptions, AlphaParseResult> {
     public Parser {
         if (!grammar.containsKey(startProduction))
             throw new IllegalArgumentException("Illegal start-production " + startProduction + ": not in grammar.");
 
     }
 
-    public @NotNull AlphaParseResult parse(final @NotNull String text, final @NotNull Alpha.ParsingOptions options) {
+    public @NotNull AlphaParseResult parse(final @NotNull String text,
+                                           final @NotNull Alpha.ParsingOptions options) {
         return Alpha.parse(this, text, options);
     }
 
@@ -28,7 +30,8 @@ public record Parser(@NotNull Grammar grammar,
         return Alpha.parse(this, text, Alpha.ParsingOptions.getDefault());
     }
 
-    public @NotNull AlphaParsesResult parses(final @NotNull String text, final @NotNull Alpha.ParsingOptions options) {
+    public @NotNull AlphaParsesResult parses(final @NotNull String text,
+                                             final @NotNull Alpha.ParsingOptions options) {
         return Alpha.parses(this, text, options);
     }
 

@@ -3,13 +3,17 @@ package alphaparse.reduction;
 import alphaparse.Keyword;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.parser.Grammar;
+import alphaparse.parser.combinator.Combinator;
 import alphaparse.parsetree.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.TotalParsesFailureNode;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class Reduction {
     public static final @NotNull ReductionType rawNonTerminalReduction
@@ -35,14 +39,14 @@ public final class Reduction {
     }
 
     public static @NotNull Grammar applyStandardReductions(final @NotNull Grammar grammar) {
-        final Grammar m = new Grammar();
+        final List<Map.Entry<Keyword, Combinator>> m = new ArrayList<>();
         grammar.forEach((prodKey, pars) -> {
             if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.NONE)
                 pars = pars.withReduction(defaultNonRawReduction(prodKey));
 
-            m.put(prodKey, pars);
+            m.add(Grammar.entry(prodKey, pars));
         });
-        return m;
+        return Grammar.fromProductions(m);
     }
 
     public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {

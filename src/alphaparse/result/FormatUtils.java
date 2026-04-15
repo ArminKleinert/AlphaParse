@@ -103,8 +103,6 @@ public class FormatUtils {
                     case RegexpTerminal ignored -> "regex";
                     case RepetitionCombinator ignored -> "rep";
                     case StarCombinator ignored -> "star";
-//                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
-//                    case StringTerminal ignored -> "string";
                     case StringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
                 };
@@ -126,8 +124,6 @@ public class FormatUtils {
                     case RegexpTerminal ignored -> "regex";
                     case RepetitionCombinator ignored -> "rep";
                     case StarCombinator ignored -> "star";
-//                    case StringCaseInsensitiveTerminal ignored -> "string-ci";
-//                    case StringTerminal ignored -> "string";
                     case StringTerminal st -> st.isCaseInsensitive() ? "string-ci" : "string";
                     case UnicodeCharTerminal ignored -> "char";
                 };

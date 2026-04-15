@@ -520,10 +520,6 @@
                [:sentence [:identifier "defn"] [:identifier "my"] [:keyword "cond"]]
                [:sentence [:keyword "defn"] [:identifier "my"] [:keyword "cond"]])
 
-       ;----------------------------------;
-       ;---            HERE            ---;
-       ;----------------------------------;
-
              (insta/parses unambiguous-tokenizer "defn my cond")
              '([:sentence [:keyword "defn"] [:identifier "my"] [:keyword "cond"]])
 
@@ -634,6 +630,10 @@
 
              (paren-ab-hide-tag "(ababa)" :unhide :all)
              [:paren-wrapped "(" [:seq-of-A-or-B "a" "b" "a" "b" "a"] ")"]
+
+       ;----------------------------------;
+       ;---            HERE            ---;
+       ;----------------------------------;
 
              (insta/parses words-and-numbers "ab 123 cd" :unhide :all)
              '([:sentence [:token [:word "ab"]] [:whitespace " "] [:token [:number "123"]] [:whitespace " "] [:token [:word "cd"]]])

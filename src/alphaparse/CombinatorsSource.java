@@ -130,39 +130,39 @@ public final class CombinatorsSource {
     }
 
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
-        final var res = new Grammar();
+        final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
-            res.put(key, buffer.getOrAdd(value.unhideContent()));
+            res.add(Grammar.entry(key, buffer.getOrAdd(value.unhideContent())));
         }
-        return res;
+        return Grammar.fromProductions(res);
     }
 
     public @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
                                        final @NotNull Grammar grammar) {
-        final var res = new Grammar();
+        final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             final @NotNull ReductionType reduction = new ReductionType(key, reductionType);
             final @NotNull Combinator comb = buffer.getOrAdd(value.withReduction(reduction));
-            res.put(key, comb);
+            res.add(Grammar.entry(key, comb));
         }
-        return res;
+        return Grammar.fromProductions(res);
     }
 
     public @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
                                       final @NotNull Grammar grammar) {
-        final var res = new Grammar();
+        final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             final @NotNull ReductionType reduction = new ReductionType(key, reductionType);
             final @NotNull Combinator comb = buffer.getOrAdd(value.unhideContent().withReduction(reduction));
-            res.put(key, comb);
+            res.add(Grammar.entry(key, comb));
         }
-        return res;
+        return Grammar.fromProductions(res);
     }
 
     private @NotNull Combinator autoWhitespaceParser(final @NotNull Combinator parser,

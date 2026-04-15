@@ -85,12 +85,6 @@ public final class Print {
                         parsers.stream().map(p -> parenForTags(ks, hidden, p)).toList();
                 return String.join(" ", parserStrings);
             }
-//            case StringTerminal stringTerminal -> {
-//                return escape(stringTerminal.getString());
-//            }
-//            case StringCaseInsensitiveTerminal stringCaseInsensitiveTerminal -> {
-//                return escape(stringCaseInsensitiveTerminal.getString());
-//            }
             case StringTerminal stringTerminal -> {
                 return escape(stringTerminal.getString());
             }

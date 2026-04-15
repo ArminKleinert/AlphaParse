@@ -177,11 +177,14 @@ public final class Cfg {
         if (rules instanceof AlphaParseFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }
-        @NotNull var productions = new ArrayList<Map.Entry<Keyword, Combinator>>();
+
+        final @NotNull var productions = new ArrayList<Map.Entry<Keyword, Combinator>>();
         final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
+
         for (final Node rule : rules.castToParseSuccess().getContent()) {
             productions.add(buildRuleRule((ParseTree) rule.content(), combinatorsSource, options));
         }
+
         final @NotNull var startProduction = options.startProduction() != null
                 ? options.startProduction()
                 : productions.getFirst().getKey();

@@ -40,10 +40,6 @@ public sealed interface AlphaParsesResult
 
     final class LazyResultList extends LazySupplierList<ParseTree> implements AlphaParsesResult {
         public LazyResultList(final @NotNull Supplier<ParseTree> nextFn, final int maxResults) {
-//            super(() -> {
-//                var r = nextFn.get();
-//                return r == null ? null : r.flattenRawProductions();
-//            }, maxResults);
             super(nextFn, maxResults);
         }
     }

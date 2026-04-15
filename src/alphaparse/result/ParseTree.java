@@ -1,13 +1,11 @@
 package alphaparse.result;
 
-import alphaparse.IO2;
 import alphaparse.Keyword;
 import alphaparse.list.UnmodList;
 import alphaparse.parsetree.Node;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public final class ParseTree implements List<Node>, AlphaParseResult {
     public static @NotNull String NULL_TAG_NAME = "\0\0\0\0";
@@ -221,32 +219,6 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     @Override
     public String toString() {
         return toList().toString();
-    }
-
-    private static @NotNull List<Node> flattenRawProductions(final @NotNull List<Node> input) {
-        boolean needsFlattening = false;
-        for (@NotNull var c : input) {
-            if (c instanceof Node.NodeParseTree && ((ParseTree)c.content()).getTag().content().equals(NULL_TAG)) {
-                needsFlattening = true;
-                break;
-            }
-        }
-
-        if (!needsFlattening)
-            return input;
-
-        final @NotNull List<Node> entries = new ArrayList<>();
-
-        for (@NotNull var c : input) {
-            if (!(c instanceof Node.NodeParseTree)) {
-                entries.add(c);
-                continue;
-            }
-
-            entries.addAll(flattenRawProductions(((Node.NodeParseTree) c).content()));
-        }
-
-        return entries;
     }
 
     public @NotNull ParseTree flattenRawProductions() {

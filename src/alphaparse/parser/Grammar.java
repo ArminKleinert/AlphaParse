@@ -27,10 +27,9 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
             return false;
 
         for (Map.Entry<@NotNull Keyword, Combinator> keywordCombinatorEntry : entrySet()) {
-            if (!Objects.equals(g.getProduction(keywordCombinatorEntry.getKey()), keywordCombinatorEntry.getValue())) {
-                IO2.println("FAILS HERE");
-                IO2.println("  " + g.getProduction(keywordCombinatorEntry.getKey()));
-                IO2.println("  " + keywordCombinatorEntry.getValue());
+            if (!Objects.equals(
+                    g.getProduction(keywordCombinatorEntry.getKey()),
+                    keywordCombinatorEntry.getValue())) {
                 return false;
             }
         }
@@ -44,6 +43,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
             m.put(kv.getKey(), kv.getValue());
         }
         return new Grammar(m);
+    }
+
+    public static @NotNull Grammar fromProductions(final @NotNull Map<Keyword, Combinator> kvs) {
+        return fromProductions(kvs.entrySet());
     }
 
     public @Nullable Combinator getProduction(final @NotNull Keyword key) {
