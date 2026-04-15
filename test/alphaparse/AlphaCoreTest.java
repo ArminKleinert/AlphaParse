@@ -945,28 +945,9 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
                 new ParseTree("word","def")
         );
 
-
-        final @NotNull Parser whitespace_or_comments = Alpha.parser(
-                """
-                        ws-or-comments = #'\\s+' | comments
-                        comments = comment+
-                        comment = '(*' inside-comment* '*)'
-                        inside-comment =  !'*)' !'(*' #'.' | comment
-                        """);
-
-        final @NotNull Parser p = Alpha.parser(
-                """
-                        sentence = token*
-                        <token> = word | number
-                        word = #'[a-zA-Z]+'
-                        number = #'[0-9]+'
-                        """,
-                new Alpha.ParserCreationOptions(whitespace_or_comments));
-        IO2.println(p);
-        IO2.println(p.grammar().analyze());
-        IO2.println(whitespace_or_comments.parse("a (**)"));
+        final @NotNull Parser p = words_and_numbers_auto_whitespace_and_comments;
 
         Assertions.assertEquals(tree, p.parse(" abc 123  def "));
-        Assertions.assertEquals(tree, p.parse(" abc 123 (* def *) def"));
+        Assertions.assertEquals(tree, p.parse(" abc 123 (* (*de*)f *) def"));
     }
 }

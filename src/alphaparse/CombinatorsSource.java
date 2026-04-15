@@ -200,6 +200,35 @@ public final class CombinatorsSource {
                                            final @NotNull Keyword start,
                                            final @NotNull Grammar grammarWS,
                                            final @NotNull Keyword startWS) {
+
+        /*
+(defn auto-whitespace
+  [grammar start grammar-ws start-ws]
+  (let [ws-parser (enable-hide-tag (optional-combinator (make-non-terminal start-ws)))
+        grammar-ws (assoc grammar-ws start-ws (hide-tag (grammar-ws start-ws)))
+        modified-grammar (into {}
+                               (for [[nt parser] grammar]
+                                 [nt (auto-whitespace-parser parser ws-parser)]))
+        final-grammar (assoc modified-grammar start
+                             (assoc (cat-combinator (dissoc (modified-grammar start) :red)
+                                                    ws-parser)
+                                    :red (:red (modified-grammar start))))]
+    (merge final-grammar grammar-ws)))
+         */
+//        final @NotNull var wsParser = optionalCombinator(makeNonTerminal(startWS));
+//        final @NotNull var grammarWS1 = new LinkedHashMap<>(grammarWS);
+//        grammarWS1.put(startWS, hideTag(grammarWS1.get(startWS)));
+//
+//        var modifiedGrammar = new LinkedHashMap<Keyword,Combinator>();
+//        grammar.forEach((nt, parser) -> modifiedGrammar.put(nt, autoWhitespaceParser(parser, wsParser)));
+//
+//        var finalGrammar = new LinkedHashMap<>(modifiedGrammar);
+//        var mgStart = modifiedGrammar.get(start);
+//        var mgStartRed =mgStart.getReduction();
+//        finalGrammar.put(start, catCombinator(List.of(mgStart.withReduction(Reduction.nullReduction), wsParser)).withReduction(mgStartRed));
+//
+//        finalGrammar.putAll(grammarWS1)
+
         final @NotNull Combinator wsProd = Objects.requireNonNull(grammarWS.getProduction(startWS));
         final @NotNull Combinator wsParser = optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
 
@@ -209,9 +238,13 @@ public final class CombinatorsSource {
         final @NotNull Combinator startWithoutReduction = buffer.getOrAdd(modifiedGrammar.get(start).withReduction(Reduction.nullReduction));
         final @NotNull Combinator newComb = catCombinator(List.of(startWithoutReduction, wsParser)).withReduction(modifiedGrammar.get(start).getReduction());
 
+                final @NotNull var grammarWS1 = new LinkedHashMap<>(grammarWS);
+        grammarWS1.put(startWS, hideTag(grammarWS1.get(startWS)));
+
         final @NotNull Map<@NotNull Keyword, @NotNull Combinator> finalGrammar = new LinkedHashMap<>(modifiedGrammar);
         finalGrammar.put(start, newComb);
-        finalGrammar.put(startWS, hideTag(wsProd));
+        //finalGrammar.put(startWS, hideTag(wsProd));
+        finalGrammar.putAll(grammarWS1);
         return new Grammar(finalGrammar);
     }
 }
