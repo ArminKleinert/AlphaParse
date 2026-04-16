@@ -10,11 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public final class EpsilonCombinator extends CombinatorTerminal {
-    public EpsilonCombinator() {
+    private static final @NotNull EpsilonCombinator epsilon = new EpsilonCombinator();
+
+    public static@NotNull EpsilonCombinator getDefault() {return epsilon;}
+
+    private EpsilonCombinator() {
         super();
     }
 
-    public EpsilonCombinator(final boolean hide, final @NotNull ReductionType red) {
+    private EpsilonCombinator(final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
     }
 

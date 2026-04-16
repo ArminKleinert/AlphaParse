@@ -9,12 +9,12 @@ public sealed abstract class CombinatorWithParser extends Combinator permits Loo
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull Combinator parser;
 
-    public CombinatorWithParser(final @NotNull Combinator parser) {
+    protected CombinatorWithParser(final @NotNull Combinator parser) {
         super();
         this.parser = parser;
     }
 
-    public CombinatorWithParser(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
+    protected CombinatorWithParser(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
         this.parser = parser;
     }

@@ -19,7 +19,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         this(parser, min, max, false, Reduction.nullReduction);
     }
 
-    public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max, final boolean hide, final @NotNull ReductionType reduction) {
+    private RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max, final boolean hide, final @NotNull ReductionType reduction) {
         super(parser, hide, reduction);
         if (min < 0 || min > max) throw new IllegalArgumentException();
         this.min = min;

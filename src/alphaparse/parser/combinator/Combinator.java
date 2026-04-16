@@ -10,12 +10,12 @@ public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWi
     private final boolean hide;
     private final @NotNull ReductionType red;
 
-    public Combinator(final boolean hide, final @NotNull ReductionType red) {
+    protected Combinator(final boolean hide, final @NotNull ReductionType red) {
         this.hide = hide;
         this.red = red;
     }
 
-    public Combinator() {
+    protected Combinator() {
         this(false, Reduction.nullReduction);
     }
 

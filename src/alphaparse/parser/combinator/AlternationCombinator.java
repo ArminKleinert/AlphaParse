@@ -13,7 +13,7 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
         super(parsers);
     }
 
-    public AlternationCombinator(final @NotNull List<Combinator> parsers,
+    private AlternationCombinator(final @NotNull List<Combinator> parsers,
                                  final boolean hide,
                                  final @NotNull ReductionType red) {
         super(parsers, hide, red);

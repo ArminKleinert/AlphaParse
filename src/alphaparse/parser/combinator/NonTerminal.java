@@ -17,7 +17,7 @@ public final class NonTerminal extends Combinator {
         this.keyword = keyword;
     }
 
-    public NonTerminal(final @NotNull Keyword keyword, final boolean hide, final @NotNull ReductionType red) {
+    private NonTerminal(final @NotNull Keyword keyword, final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
         this.keyword = keyword;
     }

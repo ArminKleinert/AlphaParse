@@ -14,7 +14,7 @@ public final class OptCombinator extends CombinatorWithParser {
         super(parser);
     }
 
-    public OptCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
+    private OptCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
         super(parser, hide, red);
     }
 

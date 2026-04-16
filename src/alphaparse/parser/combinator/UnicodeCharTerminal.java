@@ -22,7 +22,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         this.hi = hi;
     }
 
-    public UnicodeCharTerminal(final int lo, final int hi, final boolean hide, final @NotNull ReductionType red) {
+    private UnicodeCharTerminal(final int lo, final int hi, final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
         if (lo > hi) throw new IllegalArgumentException();
         this.lo = lo;

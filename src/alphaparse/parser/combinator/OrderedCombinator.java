@@ -22,7 +22,7 @@ public final class OrderedCombinator extends Combinator {
         this.parser2 = parser2;
     }
 
-    public OrderedCombinator(final @NotNull Combinator parser1,
+    private OrderedCombinator(final @NotNull Combinator parser1,
                              final @NotNull Combinator parser2,
                              final boolean hide,
                              final @NotNull ReductionType red) {

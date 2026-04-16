@@ -22,7 +22,7 @@ public final class StringTerminal extends CombinatorTerminal {
         this.caseInsensitive = caseInsensitive;
     }
 
-    public StringTerminal(final boolean hide, final @NotNull ReductionType red, final @NotNull String string, final boolean caseInsensitive) {
+    private StringTerminal(final boolean hide, final @NotNull ReductionType red, final @NotNull String string, final boolean caseInsensitive) {
         super(hide, red);
         this.string = string;
         this.caseInsensitive = caseInsensitive;

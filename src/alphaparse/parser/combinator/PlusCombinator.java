@@ -12,7 +12,7 @@ public final class PlusCombinator extends CombinatorWithParser {
         super(parser);
     }
 
-    public PlusCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
+    private PlusCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
         super(parser, hide, red);
     }
 

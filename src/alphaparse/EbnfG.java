@@ -252,7 +252,8 @@ public final class EbnfG {
                         List.of(combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
                                 optWhitespace,
                                 combinatorsSource.stringTerminal("?").enableHideTag()));
-        final @NotNull Combinator rule = combinatorsSource.alternationCombinator(List.of(rulesBrackets, rulesQuestionMark));
+        final @NotNull Combinator rule =
+                combinatorsSource.alternationCombinator(List.of(rulesBrackets, rulesQuestionMark));
         return rule;
     }
 

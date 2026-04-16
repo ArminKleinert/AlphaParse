@@ -9,12 +9,12 @@ public sealed abstract class CombinatorWithManyParsers extends Combinator permit
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull List<@NotNull Combinator> parsers;
 
-    public CombinatorWithManyParsers(final @NotNull List<@NotNull Combinator> parsers) {
+    protected CombinatorWithManyParsers(final @NotNull List<@NotNull Combinator> parsers) {
         super();
         this.parsers = new ArrayList<>(parsers);
     }
 
-    public CombinatorWithManyParsers(final @NotNull List<@NotNull Combinator> parsers,
+    protected CombinatorWithManyParsers(final @NotNull List<@NotNull Combinator> parsers,
                                      final boolean hide,
                                      final @NotNull ReductionType red) {
         super(hide, red);

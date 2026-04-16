@@ -21,7 +21,7 @@ public final class RegexpTerminal extends CombinatorTerminal {
         this.regexp = regexp;
     }
 
-    public RegexpTerminal(final @NotNull Pattern regexp, final boolean hide, final @NotNull ReductionType red) {
+    private RegexpTerminal(final @NotNull Pattern regexp, final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
         this.regexp = regexp;
     }

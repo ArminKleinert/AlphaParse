@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public final class CombinatorsSource {
-    public static final @NotNull EpsilonCombinator epsilon = new EpsilonCombinator();
+    public static final @NotNull EpsilonCombinator epsilon = EpsilonCombinator.getDefault();
     private final @NotNull CombinatorBuffer buffer = new CombinatorBuffer();
 
     public CombinatorsSource() {
@@ -18,7 +18,7 @@ public final class CombinatorsSource {
 
     public @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.size() == 1) return parsers.getFirst();
-        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return new EpsilonCombinator();
+        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
         return buffer.getOrAdd(new AlternationCombinator(parsers));
     }
 

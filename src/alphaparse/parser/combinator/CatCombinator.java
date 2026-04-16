@@ -14,7 +14,7 @@ public final class CatCombinator extends CombinatorWithManyParsers {
         super(parsers);
     }
 
-    public CatCombinator(final @NotNull List<@NotNull Combinator> parsers, final boolean hide, final @NotNull ReductionType red) {
+    private CatCombinator(final @NotNull List<@NotNull Combinator> parsers, final boolean hide, final @NotNull ReductionType red) {
         super(parsers, hide, red);
     }
 

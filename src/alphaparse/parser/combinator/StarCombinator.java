@@ -13,7 +13,7 @@ public final class StarCombinator extends CombinatorWithParser {
         super(parser);
     }
 
-    public StarCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
+    private StarCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
         super(parser, hide, red);
     }
 

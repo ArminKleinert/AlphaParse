@@ -13,7 +13,7 @@ public final class NegateCombinator extends CombinatorWithParser {
         super(parser);
     }
 
-    public NegateCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
+    private NegateCombinator(final @NotNull Combinator parser, final boolean hide, final @NotNull ReductionType red) {
         super(parser, hide, red);
     }
 
