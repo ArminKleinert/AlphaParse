@@ -44,24 +44,27 @@ public final class CombinatorsSource {
     }
 
     public @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
-        if (parsers.isEmpty())
-            return epsilon;
-
-        final var firstComb = parsers.getFirst();
-        int sublistStartIndex = 1;
-
-        if (firstComb.equals(epsilon)) {
-            while (sublistStartIndex < parsers.size() && parsers.get(sublistStartIndex).equals(epsilon)) {
-                sublistStartIndex++;
-            }
-        }
-
-        if (sublistStartIndex == parsers.size())
-            return firstComb;
-
-        final @NotNull var restParsers = parsers.subList(sublistStartIndex, parsers.size());
-
-        return buffer.getOrAdd(new OrderedCombinator(firstComb, orderedChoiceCombinator(restParsers)));
+//        if (parsers.isEmpty())
+//            return epsilon;
+//
+//        final var firstComb = parsers.getFirst();
+//        int sublistStartIndex = 1;
+//
+//        if (firstComb.equals(epsilon)) {
+//            while (sublistStartIndex < parsers.size() && parsers.get(sublistStartIndex).equals(epsilon)) {
+//                sublistStartIndex++;
+//            }
+//        }
+//
+//        if (sublistStartIndex == parsers.size())
+//            return firstComb;
+//
+//        final @NotNull var restParsers = parsers.subList(sublistStartIndex, parsers.size());
+//
+//        return buffer.getOrAdd(new OrderedCombinator(parsers));
+        if (parsers.size() == 1) return parsers.getFirst();
+        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
+        return buffer.getOrAdd(new OrderedCombinator(parsers));
     }
 
     public @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
@@ -177,9 +180,6 @@ public final class CombinatorsSource {
                         .toList();
                 yield buffer.getOrAdd(combWithParsers.withParsers(parsers));
             }
-            case OrderedCombinator ordComb -> buffer.getOrAdd(ordComb.withParsers(
-                    autoWhitespaceParser(ordComb.getParser1(), wsParser),
-                    autoWhitespaceParser(ordComb.getParser2(), wsParser)));
             case CombinatorTerminal ignored -> {
                 final @NotNull List<Combinator> parsers = new ArrayList<>();
                 parsers.add(wsParser);
@@ -204,8 +204,6 @@ public final class CombinatorsSource {
 
         final @NotNull var finalGrammar =
                 new LinkedHashMap<>(grammar);
-//        grammar.forEach((nt, parser) ->
-//                finalGrammar.put(nt, autoWhitespaceParser(parser, wsParser)));
         for (var keywordCombinatorEntry : finalGrammar.entrySet()) {
             keywordCombinatorEntry.setValue(autoWhitespaceParser(keywordCombinatorEntry.getValue(), wsParser));
         }
@@ -216,9 +214,6 @@ public final class CombinatorsSource {
         final @NotNull Combinator newStartComb =
                 catCombinator(List.of(startWithoutReduction, wsParser))
                 .withReduction(finalGrammar.get(start).getReduction());
-
-//        final @NotNull var grammarWS1 = new LinkedHashMap<>(grammarWS);
-//        grammarWS1.put(startWS, hideTag(grammarWS1.get(startWS)));
 
         finalGrammar.put(start, newStartComb);
         finalGrammar.putAll(grammarWS);

@@ -89,12 +89,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 }
                 case CombinatorWithManyParsers combinatorWithManyParsers ->
                         combinatorStack.addAll(combinatorWithManyParsers.getParsers());
-                case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
-                case OrderedCombinator orderedCombinator -> {
-                    combinatorStack.add(orderedCombinator.getParser1());
-                    combinatorStack.add(orderedCombinator.getParser2());
-                    // Tail-recursion
-                }
+                case CombinatorWithParser combinatorWithParser ->
+                        combinatorStack.add(combinatorWithParser.getParser());
+                case OrderedCombinator orderedCombinator ->
+                        combinatorStack.addAll(orderedCombinator.getParsers());
             }
         } while (!combinatorStack.isEmpty());
 

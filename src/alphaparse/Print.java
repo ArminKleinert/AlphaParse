@@ -73,10 +73,11 @@ public final class Print {
                 return String.join(" | ", parserStrings);
             }
             case OrderedCombinator orderedCombinator -> {
-                final @NotNull Predicate<Combinator> ks = (c) -> c instanceof AlternationCombinator;
-                return parenForTags(ks, hidden, orderedCombinator.getParser1()) +
-                        " / " +
-                        parenForTags(ks, hidden, orderedCombinator.getParser2());
+                final @NotNull List<String> parserStrings =
+                        orderedCombinator.getParsers().stream()
+                                .map(p -> parenForTags((c) -> c instanceof AlternationCombinator, hidden, p))
+                                .toList();
+                return String.join(" / ", parserStrings);
             }
             case CatCombinator catCombinator -> {
                 final @NotNull List<Combinator> parsers = catCombinator.getParsers();

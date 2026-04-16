@@ -78,7 +78,7 @@ public class FormatUtils {
             case NegateCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
             case NonTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("keyword"), c.getKeyword());
             case OptCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
-            case OrderedCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser1"), c.getParser1(), Keyword.intern("parser2"), c.getParser2());
+            case OrderedCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parsers"), c.getParsers());
             case PlusCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
             case RegexpTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("regexp"), c.getRegexp());
             case RepetitionCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser(), Keyword.intern("min"), c.getMin(), Keyword.intern("max"), c.getMax());

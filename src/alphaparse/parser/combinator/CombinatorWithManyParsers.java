@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public sealed abstract class CombinatorWithManyParsers extends Combinator permits AlternationCombinator, CatCombinator {
+public sealed abstract class CombinatorWithManyParsers extends Combinator permits AlternationCombinator, CatCombinator, OrderedCombinator {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull List<@NotNull Combinator> parsers;
 

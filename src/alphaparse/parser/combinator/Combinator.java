@@ -6,7 +6,7 @@ import alphaparse.reduction.Reduction;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
-public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWithManyParsers, CombinatorWithParser, NonTerminal, OrderedCombinator {
+public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWithManyParsers, CombinatorWithParser, NonTerminal {
     private final boolean hide;
     private final @NotNull ReductionType red;
 
