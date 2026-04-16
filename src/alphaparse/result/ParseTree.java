@@ -1,6 +1,5 @@
 package alphaparse.result;
 
-import alphaparse.IO2;
 import alphaparse.Keyword;
 import alphaparse.list.UnmodList;
 import alphaparse.parsetree.Node;
@@ -18,15 +17,15 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     private final boolean hasNullTag;
     private final boolean isFlat;
 
-    public ParseTree(final @NotNull String tag, final @NotNull Object... content) {
-        this(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
-    }
+//    public ParseTree(final @NotNull String tag, final @NotNull Object... content) {
+//        this(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
+//    }
 
-    public ParseTree(final @NotNull Keyword tag, final @NotNull List<Object> content) {
-        this(new Node.NodeTreeTag(tag), content.stream().map(Node::of).toList());
-    }
+//    public ParseTree(final @NotNull Keyword tag, final @NotNull List<Object> content) {
+//        this(new Node.NodeTreeTag(tag), content.stream().map(Node::of).toList());
+//    }
 
-    public ParseTree(final @NotNull Node.NodeTreeTag tag, final @NotNull List<Node> content) {
+    private ParseTree(final @NotNull Node.NodeTreeTag tag, final @NotNull List<Node> content) {
         this(tag, content, false);
     }
 
@@ -230,12 +229,13 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
         return toList().toString();
     }
 
-    public @NotNull ParseTree flattenRawProductions() {
-        if (!hasNullTag && content.stream()
+    public static @NotNull ParseTree create(     final @NotNull Node.NodeTreeTag tag,
+     final @NotNull List<Node> content) {
+        if (!tag.content().equals(NULL_TAG) && content.stream()
                 .filter(c -> c instanceof Node.NodeParseTree)
                 .map(c -> ((Node.NodeParseTree) c).content())
                 .noneMatch(pt -> pt.hasNullTag))
-            return this;
+            return new ParseTree(tag, content);
 
         final @NotNull var entries = new ArrayList<@NotNull Node>();
         for (@NotNull var e : content) {
@@ -245,8 +245,10 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
             }
 
             final @NotNull var eContent = ((Node.NodeParseTree) e).content();
-            final @NotNull var e1 = eContent.isFlat ? eContent : eContent.flattenRawProductions();
-            
+            final @NotNull var e1 = eContent.isFlat
+                    ? eContent
+                    : create(eContent.getTag(), eContent.getContent());
+
             if (eContent.hasNullTag) {
                 entries.addAll(e1.getContent());
             } else {
@@ -255,7 +257,9 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
         }
 
         return new ParseTree(tag, entries, true);
-        //return this;
+    }
+    public static @NotNull ParseTree create(     final @NotNull String tag, final @NotNull Object... content) {
+        return create(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
     }
 
     public @NotNull List<@NotNull Object> hiccup() {

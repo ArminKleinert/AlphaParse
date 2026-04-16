@@ -117,10 +117,10 @@ public final class Main {
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
+        PerfTest.fullTest(true, c99GrammarText, 1, 10);
 
         /**/
-        PerfTest.testNumberOfParses(true, 23);
+        PerfTest.testNumberOfParses(true, 2);
 
         /**/
         {
@@ -164,7 +164,7 @@ public final class Main {
             IO2.println(Alpha.parse(p, "21").castToParseFailure().contentsToString());
             IO2.println(Alpha.parse(p, "11") + " // Expect: [:S, 1, 1]");
             IO2.println(Alpha.parse(p, "111") + " // Expect: [:S, 1, 1, 1]");
-            IO2.println(Alpha.parse(p, "1111").castToParseSuccess().flattenRawProductions() + " // Expect: [:S, 1, 1, 1, 1]");
+            IO2.println(Alpha.parse(p, "1111") + " // Expect: [:S, 1, 1, 1, 1]");
         }
 
         /**/

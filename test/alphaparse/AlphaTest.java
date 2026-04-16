@@ -18,16 +18,16 @@ class AlphaTest {
         final @NotNull var p = Alpha.parser("S : 'A' | 'B' | S S");
         {
             final @NotNull var res = Alpha.parse(p, "A");
-            Assertions.assertEquals(new ParseTree("S", "A"), res);
+            Assertions.assertEquals(ParseTree.create("S", "A"), res);
         }
         {
             final @NotNull var res = Alpha.parse(p, "B");
-            Assertions.assertEquals(new ParseTree("S", "B"), res);
+            Assertions.assertEquals(ParseTree.create("S", "B"), res);
         }
         {
             final @NotNull var res = Alpha.parse(p, "AB");
             Assertions.assertEquals(
-                    new ParseTree("S", new ParseTree("S", "A"), new ParseTree("S", "B")),
+                    ParseTree.create("S", ParseTree.create("S", "A"), ParseTree.create("S", "B")),
                     res);
         }
     }
@@ -37,12 +37,12 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("S : 'A' 'B'");
             final @NotNull var res = Alpha.parse(p, "AB");
-            Assertions.assertEquals(new ParseTree("S", "A", "B"), res);
+            Assertions.assertEquals(ParseTree.create("S", "A", "B"), res);
         }
         {
             final @NotNull var p = Alpha.parser("S : 'A' 'B' S | eps");
-            Assertions.assertEquals(new ParseTree("S"), Alpha.parse(p, ""));
-            Assertions.assertEquals(new ParseTree("S", "A", "B", new ParseTree("S")), Alpha.parse(p, "AB"));
+            Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
+            Assertions.assertEquals(ParseTree.create("S", "A", "B", ParseTree.create("S")), Alpha.parse(p, "AB"));
         }
     }
 
@@ -51,12 +51,12 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("S : 'AB'");
             final @NotNull var res = Alpha.parse(p, "AB");
-            Assertions.assertEquals(new ParseTree("S", "AB"), res);
+            Assertions.assertEquals(ParseTree.create("S", "AB"), res);
         }
         {
             final @NotNull var p = Alpha.parser("S : ''");
             final @NotNull var res = Alpha.parse(p, "");
-            Assertions.assertEquals(new ParseTree("S"), res);
+            Assertions.assertEquals(ParseTree.create("S"), res);
         }
     }
 
@@ -65,12 +65,12 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("S : ''");
             final @NotNull var res = Alpha.parse(p, "");
-            Assertions.assertEquals(new ParseTree("S"), res);
+            Assertions.assertEquals(ParseTree.create("S"), res);
         }
         {
             final @NotNull var p = Alpha.parser("S : 'AB'");
             final @NotNull var res = Alpha.parse(p, "AB");
-            Assertions.assertEquals(new ParseTree("S", "AB"), res);
+            Assertions.assertEquals(ParseTree.create("S", "AB"), res);
         }
     }
 
@@ -103,10 +103,10 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("S : eps | A | B | C\nA : C \nB : C \nC : eps");
             final @NotNull var possibleTrees = Set.of(
-                    new ParseTree("S"),
-                    new ParseTree("S", new ParseTree("C")),
-                    new ParseTree("S", new ParseTree("A", new ParseTree("C"))),
-                    new ParseTree("S", new ParseTree("B", new ParseTree("C")))
+                    ParseTree.create("S"),
+                    ParseTree.create("S", ParseTree.create("C")),
+                    ParseTree.create("S", ParseTree.create("A", ParseTree.create("C"))),
+                    ParseTree.create("S", ParseTree.create("B", ParseTree.create("C")))
             );
             Assertions.assertEquals(possibleTrees, new HashSet<>(Alpha.parses(p, "")));
         }
@@ -138,21 +138,21 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("S : A / B / eps / C\nA : C \nB : C \nC : eps");
             final @NotNull var possibleTrees = List.of(
-                    new ParseTree("S", new ParseTree("A", new ParseTree("C"))),
-                    new ParseTree("S", new ParseTree("B", new ParseTree("C"))),
-                    new ParseTree("S"),
-                    new ParseTree("S", new ParseTree("C"))
+                    ParseTree.create("S", ParseTree.create("A", ParseTree.create("C"))),
+                    ParseTree.create("S", ParseTree.create("B", ParseTree.create("C"))),
+                    ParseTree.create("S"),
+                    ParseTree.create("S", ParseTree.create("C"))
             );
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, ""));
         }
         {
             final @NotNull var p = Alpha.parser("S : 'a' / eps / 'a'");
-            final @NotNull var possibleTrees = List.of(new ParseTree("S", "a"));
+            final @NotNull var possibleTrees = List.of(ParseTree.create("S", "a"));
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, "a"));
         }
         {
             final @NotNull var p = Alpha.parser("S : eps / 'a' / 'a' / eps");
-            final @NotNull var possibleTrees = List.of(new ParseTree("S", "a"));
+            final @NotNull var possibleTrees = List.of(ParseTree.create("S", "a"));
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, "a"));
         }
         {
@@ -172,30 +172,30 @@ class AlphaTest {
 
     private List<ParseTree> r1r2r3Results() {
         return List.of(
-                new ParseTree("S", new ParseTree("r1", "a"), new ParseTree("r1", "a")),
-                new ParseTree("S", new ParseTree("r2", "a"), new ParseTree("r1", "a")),
-                new ParseTree("S", new ParseTree("r1", "a"), new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r2", "a"), new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r2", "a"), new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r1", "a"), new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r3", "a"), new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r3", "a"), new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r3", "a"), new ParseTree("r1", "a"))
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r1", "a"))
         );
     }
 
     private List<ParseTree> sabssPossibleResults() {
         final var possibleResult1 =
-                new ParseTree(
+                ParseTree.create(
                         "S",
-                        new ParseTree("S", "A"),
-                        new ParseTree("S", new ParseTree("S", "B"), new ParseTree("S", "A")
+                        ParseTree.create("S", "A"),
+                        ParseTree.create("S", ParseTree.create("S", "B"), ParseTree.create("S", "A")
                         ));
         final var possibleResult2 =
-                new ParseTree(
+                ParseTree.create(
                         "S",
-                        new ParseTree("S", new ParseTree("S", "A"), new ParseTree("S", "B")),
-                        new ParseTree("S", "A")
+                        ParseTree.create("S", ParseTree.create("S", "A"), ParseTree.create("S", "B")),
+                        ParseTree.create("S", "A")
                 );
         return List.of(possibleResult1, possibleResult2);
     }
@@ -230,19 +230,19 @@ class AlphaTest {
 
     private List<ParseTree> partialParsesOrderedR123() {
         return List.of(
-                new ParseTree("S"),
-                new ParseTree("S", new ParseTree("r1", "a")),
-                new ParseTree("S", new ParseTree("r1", "a"), new ParseTree("r1", "a")),
-                new ParseTree("S", new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r2", "a"), new ParseTree("r1", "a")),
-                new ParseTree("S", new ParseTree("r1", "a"), new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r2", "a"), new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r2", "a"), new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r1", "a"), new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r3", "a"), new ParseTree("r3", "a")),
-                new ParseTree("S", new ParseTree("r3", "a"), new ParseTree("r2", "a")),
-                new ParseTree("S", new ParseTree("r3", "a"), new ParseTree("r1", "a"))
+                ParseTree.create("S"),
+                ParseTree.create("S", ParseTree.create("r1", "a")),
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r1", "a"))
         );
     }
 }

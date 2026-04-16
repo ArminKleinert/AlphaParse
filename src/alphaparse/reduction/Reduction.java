@@ -11,7 +11,6 @@ import alphaparse.result.TotalParsesFailureNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +58,6 @@ public final class Reduction {
             case ParseTree ignored -> List.of(Node.of(result));
             default -> throw new IllegalArgumentException(result.getClass().toString());
         };
-        return new ParseTree(new Node.NodeTreeTag(f.getKey()), afs);
+        return ParseTree.create(new Node.NodeTreeTag(f.getKey()), afs);
     }
 }

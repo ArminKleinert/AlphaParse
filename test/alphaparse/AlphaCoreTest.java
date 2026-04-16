@@ -356,10 +356,10 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void as_and_bs() {
         final @NotNull String text = "aaaaabbbaaaabb";
-        final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = new ParseTree(
+        final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = ParseTree.create(
                 "S",
-                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("B", "b", "b", "b")),
-                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("B", "b", "b"))
+                ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a", "a"), ParseTree.create("B", "b", "b", "b")),
+                ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a"), ParseTree.create("B", "b", "b"))
         );
 
         Assertions.assertEquals(
@@ -382,10 +382,10 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void as_and_bs_hiccup() {
         final @NotNull String text = "aaaaabbbaaaabb";
-        final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = new ParseTree(
+        final @NotNull ParseTree as_and_bs_aaaaabbbaaaabb_tree = ParseTree.create(
                 "S",
-                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("B", "b", "b", "b")),
-                new ParseTree("AB", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("B", "b", "b"))
+                ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a", "a"), ParseTree.create("B", "b", "b", "b")),
+                ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a"), ParseTree.create("B", "b", "b"))
         );
         var abTag = Keyword.intern("AB");
         var aTag = Keyword.intern("A");
@@ -422,9 +422,9 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void as_and_bs_variation1() {
         final @NotNull String text = "aaaaabbbaaaabb";
 
-        var res = new ParseTree("S",
-                new ParseTree("AB", "a", "a", "a", "a", "a", "b", "b", "b"),
-                new ParseTree("AB", "a", "a", "a", "a", "b", "b"));
+        var res = ParseTree.create("S",
+                ParseTree.create("AB", "a", "a", "a", "a", "a", "b", "b", "b"),
+                ParseTree.create("AB", "a", "a", "a", "a", "b", "b"));
 
         Assertions.assertEquals(
                 res,
@@ -440,7 +440,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void as_and_bs_variation2() {
         final @NotNull String text = "aaaaabbbaaaabb";
 
-        var res = new ParseTree(
+        var res = ParseTree.create(
                 "S",
                 "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
         var resList = List.of(
@@ -466,9 +466,9 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void paren_ab_test() {
         var text = "(aba)";
-        var tree = new ParseTree("paren-wrapped",
+        var tree = ParseTree.create("paren-wrapped",
                 "(",
-                new ParseTree("seq-of-A-or-B", "a", "b", "a"),
+                ParseTree.create("seq-of-A-or-B", "a", "b", "a"),
                 ")");
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab, text));
@@ -481,8 +481,8 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void paren_ab_hide_parens_test() {
         var text = "(aba)";
-        var tree = new ParseTree("paren-wrapped",
-                new ParseTree("seq-of-A-or-B", "a", "b", "a"));
+        var tree = ParseTree.create("paren-wrapped",
+                ParseTree.create("seq-of-A-or-B", "a", "b", "a"));
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text));
 
@@ -494,7 +494,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void paren_ab_manually_flattened_test() {
         var text = "(aba)";
-        var tree = new ParseTree("paren-wrapped", "a", "b", "a");
+        var tree = ParseTree.create("paren-wrapped", "a", "b", "a");
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text));
 
@@ -506,7 +506,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void paren_ab_hide_tag_test() {
         var text = "(aba)";
-        var tree = new ParseTree("paren-wrapped", "a", "b", "a");
+        var tree = ParseTree.create("paren-wrapped", "a", "b", "a");
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text));
 
@@ -522,7 +522,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
         // Sadly, AlphaParse can not output untagged trees.
         // The expected result for Instaparse is as follows:
         //    (paren-ab-hide-both-tags "(aba)") ;=> ("a" "b" "a")
-        var tree = new ParseTree(ParseTree.NULL_TAG_NAME, "a", "b", "a");
+        var tree = ParseTree.create(ParseTree.NULL_TAG_NAME, "a", "b", "a");
 
         // That raw output can be achieved by manual conversion:
         Assertions.assertEquals(List.of("a", "b", "a"), tree.hiccup());
@@ -537,7 +537,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
         var text = "aaaa";
         var grammar = "S = 'a' S / '' ";
         var tree =
-                new ParseTree("S", "a", new ParseTree("S", "a", new ParseTree("S", "a", new ParseTree("S", "a", new ParseTree("S")))));
+                ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S")))));
 
         Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.getDefault()));
         Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, null));
@@ -549,7 +549,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
         var text = "aaaa";
         var grammar = "S = S 'a' / Epsilon";
         var tree =
-                new ParseTree("S", new ParseTree("S", new ParseTree("S", new ParseTree("S", new ParseTree("S"), "a"), "a"), "a"), "a");
+                ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"), "a"), "a"), "a"), "a");
 
         Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.getDefault()));
         Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, null));
@@ -561,13 +561,13 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
         var text = "aaaaaa";
 
         var treesAmbiguous = List.of(
-                new ParseTree("S", new ParseTree("A", "a"), new ParseTree("A", "a", "a", "a", "a", "a")),
-                new ParseTree("S", new ParseTree("A", "a", "a", "a", "a", "a", "a"), new ParseTree("A")),
-                new ParseTree("S", new ParseTree("A", "a", "a"), new ParseTree("A", "a", "a", "a", "a")),
-                new ParseTree("S", new ParseTree("A", "a", "a", "a"), new ParseTree("A", "a", "a", "a")),
-                new ParseTree("S", new ParseTree("A", "a", "a", "a", "a"), new ParseTree("A", "a", "a")),
-                new ParseTree("S", new ParseTree("A", "a", "a", "a", "a", "a"), new ParseTree("A", "a")),
-                new ParseTree("S", new ParseTree("A"), new ParseTree("A", "a", "a", "a", "a", "a", "a"))
+                ParseTree.create("S", ParseTree.create("A", "a"), ParseTree.create("A", "a", "a", "a", "a", "a")),
+                ParseTree.create("S", ParseTree.create("A", "a", "a", "a", "a", "a", "a"), ParseTree.create("A")),
+                ParseTree.create("S", ParseTree.create("A", "a", "a"), ParseTree.create("A", "a", "a", "a", "a")),
+                ParseTree.create("S", ParseTree.create("A", "a", "a", "a"), ParseTree.create("A", "a", "a", "a")),
+                ParseTree.create("S", ParseTree.create("A", "a", "a", "a", "a"), ParseTree.create("A", "a", "a")),
+                ParseTree.create("S", ParseTree.create("A", "a", "a", "a", "a", "a"), ParseTree.create("A", "a")),
+                ParseTree.create("S", ParseTree.create("A"), ParseTree.create("A", "a", "a", "a", "a", "a", "a"))
         );
 
         Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text));
@@ -585,7 +585,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
 
 
         var treesUnambiguous = List.of(
-                new ParseTree("S", new ParseTree("A", text), new ParseTree("A", ""))
+                ParseTree.create("S", ParseTree.create("A", text), ParseTree.create("A", ""))
         );
 
         Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text));
@@ -600,7 +600,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void lookahead_example() {
         var text = "abaaaab";
-        var tree = new ParseTree("S", "a", "b", "a", "a", "a", "a", "b");
+        var tree = ParseTree.create("S", "a", "b", "a", "a", "a", "a", "b");
         Assertions.assertEquals(tree, lookahead_example.parse(text));
         Assertions.assertEquals(tree, lookahead_example.parse(text, Alpha.ParsingOptions.getDefault()));
         Assertions.assertEquals(tree, lookahead_example.parse(text, Alpha.ParsingOptions.optMemory()));
@@ -621,7 +621,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void negative_lookahead_example() {
         var text = "bbaaaab";
-        var tree = new ParseTree("S", "b", "b", "a", "a", "a", "a", "b");
+        var tree = ParseTree.create("S", "b", "b", "a", "a", "a", "a", "b");
 
         Assertions.assertEquals(tree, negative_lookahead_example.parse(text));
 
@@ -662,10 +662,10 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void ambiguous_tokenizer_test() {
         var text = "defn my cond";
         var trees = Set.of(
-                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier", "my"), new ParseTree("identifier", "cond")),
-                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier", "my"), new ParseTree("identifier", "cond")),
-                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier", "my"), new ParseTree("keyword", "cond")),
-                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier", "my"), new ParseTree("keyword", "cond"))
+                ParseTree.create("sentence", ParseTree.create("identifier", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("identifier", "cond")),
+                ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("identifier", "cond")),
+                ParseTree.create("sentence", ParseTree.create("identifier", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond")),
+                ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond"))
         );
 
         Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(ambiguous_tokenizer, text)));
@@ -675,7 +675,7 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void unambiguous_tokenizer_test() {
         var text = "defn my cond";
         var trees = List.of(
-                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier", "my"), new ParseTree("keyword", "cond"))
+                ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond"))
         );
 
         Assertions.assertEquals(trees, Alpha.parses(unambiguous_tokenizer, text));
@@ -685,13 +685,13 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void preferential_tokenizer_test() {
         var text = "defn my cond";
         var trees = Set.of(
-                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier", "my"), new ParseTree("keyword", "cond")),
+                ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond")),
 
-                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier", "my"), new ParseTree("keyword", "cond")),
+                ParseTree.create("sentence", ParseTree.create("identifier", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond")),
 
-                new ParseTree("sentence", new ParseTree("keyword", "defn"), new ParseTree("identifier", "my"), new ParseTree("identifier", "cond")),
+                ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("identifier", "cond")),
 
-                new ParseTree("sentence", new ParseTree("identifier", "defn"), new ParseTree("identifier", "my"), new ParseTree("identifier", "cond"))
+                ParseTree.create("sentence", ParseTree.create("identifier", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("identifier", "cond"))
         );
 
         Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(preferential_tokenizer, text)));
@@ -701,19 +701,19 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void repeated_a_test() {
         var text = "aaaaaa";
         var trees = List.of(
-                new ParseTree("S", "a", "a", "a", "a", "a", "a")
+                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
         );
 
         Assertions.assertEquals(trees, Alpha.parses(repeated_a, text));
 
         var partialOpts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
         var treesPartial = List.of(
-                new ParseTree("S", "a"),
-                new ParseTree("S", "a", "a"),
-                new ParseTree("S", "a", "a", "a"),
-                new ParseTree("S", "a", "a", "a", "a"),
-                new ParseTree("S", "a", "a", "a", "a", "a"),
-                new ParseTree("S", "a", "a", "a", "a", "a", "a")
+                ParseTree.create("S", "a"),
+                ParseTree.create("S", "a", "a"),
+                ParseTree.create("S", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
         );
 
         Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
@@ -722,10 +722,10 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void words_and_numbers_one_character_at_a_time_test() {
         var text = "abc 123 def";
-        var tree = new ParseTree("sentence",
-                new ParseTree("word", "a", "b", "c"),
-                new ParseTree("number", "1", "2", "3"),
-                new ParseTree("word", "d", "e", "f"));
+        var tree = ParseTree.create("sentence",
+                ParseTree.create("word", "a", "b", "c"),
+                ParseTree.create("number", "1", "2", "3"),
+                ParseTree.create("word", "d", "e", "f"));
 
         Assertions.assertEquals(tree, Alpha.parse(words_and_numbers_one_character_at_a_time, text));
         Assertions.assertEquals(tree, Alpha.parse(words_and_numbers_one_character_at_a_time, text, Alpha.ParsingOptions.optMemory()));
@@ -734,18 +734,18 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void arithmetic_grammar_test() {
         var text = "1-2/(3-4)+5*6";
-        var tree = new ParseTree("expr",
-                new ParseTree("add",
-                        new ParseTree("sub",
-                                new ParseTree("number", "1"),
-                                new ParseTree("div",
-                                        new ParseTree("number", "2"),
-                                        new ParseTree("sub",
-                                                new ParseTree("number", "3"),
-                                                new ParseTree("number", "4")))),
-                        new ParseTree("mul",
-                                new ParseTree("number", "5"),
-                                new ParseTree("number", "6")))
+        var tree = ParseTree.create("expr",
+                ParseTree.create("add",
+                        ParseTree.create("sub",
+                                ParseTree.create("number", "1"),
+                                ParseTree.create("div",
+                                        ParseTree.create("number", "2"),
+                                        ParseTree.create("sub",
+                                                ParseTree.create("number", "3"),
+                                                ParseTree.create("number", "4")))),
+                        ParseTree.create("mul",
+                                ParseTree.create("number", "5"),
+                                ParseTree.create("number", "6")))
         );
 
         Assertions.assertEquals(tree, Alpha.parse(arithmetic, text));
@@ -764,8 +764,8 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     public void tricky_ebnf_build_test() {
         var text1 = "===";
         var text2 = "b=";
-        var tree1 = new ParseTree("S", "=", "=", "="        );
-        var tree2 = new ParseTree("S", new ParseTree("B", "b","="));
+        var tree1 = ParseTree.create("S", "=", "=", "="        );
+        var tree2 = ParseTree.create("S", ParseTree.create("B", "b","="));
 
         Assertions.assertEquals(tree1, Alpha.parse(tricky_ebnf_build, text1));
         Assertions.assertEquals(tree2, Alpha.parse(tricky_ebnf_build, text2));
@@ -774,23 +774,23 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void testFail() {
         Assertions.assertEquals(
-                new ParseTree("S", "a")
+                ParseTree.create("S", "a")
                 , Alpha.parser("S = A\n<A> = 'a'").parse("a"));
         Assertions.assertEquals(
-                new ParseTree("S", "a")
+                ParseTree.create("S", "a")
                 , Alpha.parser("S = A\n<A> = 'a'").parse("a", Alpha.ParsingOptions.optMemory()));
         Assertions.assertEquals(
-                new ParseTree("S", new ParseTree("A")),
+                ParseTree.create("S", ParseTree.create("A")),
                 Alpha.parser("S = A\nA = <'a'>").parse("a"));
         Assertions.assertEquals(
-                new ParseTree("S", new ParseTree("A")),
+                ParseTree.create("S", ParseTree.create("A")),
                 Alpha.parser("S = A\nA = <'a'>").parse("a", Alpha.ParsingOptions.optMemory()));
     }
 
     @Test
     public void testOptionalRepeat() {
         var parser = Alpha.parser("S = ('a'?)+");
-        var tree = new ParseTree("S");
+        var tree = ParseTree.create("S");
 
         Assertions.assertEquals(tree, parser.parse(""));
         Assertions.assertEquals(tree, parser.parse("", Alpha.ParsingOptions.optMemory()));
@@ -803,9 +803,9 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
                 b = 'b' .
                 c = 'c' .
                 """);
-        var tree = new ParseTree("a",
-                new ParseTree("b", "b"),
-                new ParseTree("c", "c"));
+        var tree = ParseTree.create("a",
+                ParseTree.create("b", "b"),
+                ParseTree.create("c", "c"));
 
         Assertions.assertEquals(tree, parser.parse("bc"));
         Assertions.assertEquals(tree, parser.parse("bc", Alpha.ParsingOptions.optMemory()));
@@ -814,12 +814,12 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void testUnhide1() {
         var text = "(ababa)";
-        var treeNormal = new ParseTree("paren-wrapped",
-                new ParseTree("seq-of-A-or-B",
+        var treeNormal = ParseTree.create("paren-wrapped",
+                ParseTree.create("seq-of-A-or-B",
                         "a", "b", "a", "b", "a"));
-        var treeWParen = new ParseTree("paren-wrapped",
+        var treeWParen = ParseTree.create("paren-wrapped",
                 "(",
-                new ParseTree("seq-of-A-or-B",
+                ParseTree.create("seq-of-A-or-B",
                         "a", "b", "a", "b", "a"),
                 ")");
         var p = paren_ab_hide_parens;
@@ -836,12 +836,12 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void testUnhide2() {
         var text = "(ababa)";
-        var treeWTag = new ParseTree("paren-wrapped",
-                new ParseTree("seq-of-A-or-B",
+        var treeWTag = ParseTree.create("paren-wrapped",
+                ParseTree.create("seq-of-A-or-B",
                         "a", "b", "a", "b", "a"));
-        var treeWAll = new ParseTree("paren-wrapped",
+        var treeWAll = ParseTree.create("paren-wrapped",
                 "(",
-                new ParseTree("seq-of-A-or-B",
+                ParseTree.create("seq-of-A-or-B",
                         "a", "b", "a", "b", "a"),
                 ")");
         var p = paren_ab_hide_tag;
@@ -856,19 +856,19 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void testEps() {
         Assertions.assertEquals(
-                new ParseTree("S"),
+                ParseTree.create("S"),
                 Alpha.parser("S = eps").parse(""));
         Assertions.assertEquals(
-                new ParseTree("S"),
+                ParseTree.create("S"),
                 Alpha.parser("S = epsilon").parse(""));
         Assertions.assertEquals(
-                new ParseTree("S"),
+                ParseTree.create("S"),
                 Alpha.parser("S = Epsilon").parse(""));
         Assertions.assertEquals(
-                new ParseTree("S"),
+                ParseTree.create("S"),
                 Alpha.parser("S = EPSILON").parse(""));
         Assertions.assertEquals(
-                new ParseTree("S"),
+                ParseTree.create("S"),
                 Alpha.parser("S = ε").parse(""));
     }
 
@@ -899,19 +899,19 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
     @Test
     public void testWordsAndNumbers() {
         var text = "ab 123 cd";
-        var treeWithoutTokenTag = new ParseTree(
+        var treeWithoutTokenTag = ParseTree.create(
                 "sentence",
-                new ParseTree("word","ab"),
-                new ParseTree("number","123"),
-                new ParseTree("word","cd")
+                ParseTree.create("word","ab"),
+                ParseTree.create("number","123"),
+                ParseTree.create("word","cd")
         );
-        var treeFull = new ParseTree(
+        var treeFull = ParseTree.create(
                 "sentence",
-                new ParseTree("token", new ParseTree("word","ab")),
-                new ParseTree("whitespace"," "),
-                new ParseTree("token", new ParseTree("number","123")),
-                new ParseTree("whitespace"," "),
-                new ParseTree("token", new ParseTree("word","cd"))
+                ParseTree.create("token", ParseTree.create("word","ab")),
+                ParseTree.create("whitespace"," "),
+                ParseTree.create("token", ParseTree.create("number","123")),
+                ParseTree.create("whitespace"," "),
+                ParseTree.create("token", ParseTree.create("word","cd"))
         );
         Assertions.assertEquals(treeWithoutTokenTag, words_and_numbers.parse(text));
 
@@ -920,11 +920,11 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
 
     @Test
     public void testWordsAndNumbersAutoWhitespace() {
-        var tree = new ParseTree(
+        var tree = ParseTree.create(
                 "sentence",
-                new ParseTree("word","ab"),
-                new ParseTree("number","123"),
-                new ParseTree("word","cd")
+                ParseTree.create("word","ab"),
+                ParseTree.create("number","123"),
+                ParseTree.create("word","cd")
         );
 
         var p = words_and_numbers_auto_whitespace;
@@ -938,11 +938,11 @@ final @NotNull Parser  tricky_ebnf_build = Alpha.parser("""
 
     @Test
     public void testWordsAndNumbersAutoWhitespaceAndComments() {
-        var tree = new ParseTree(
+        var tree = ParseTree.create(
                 "sentence",
-                new ParseTree("word","abc"),
-                new ParseTree("number","123"),
-                new ParseTree("word","def")
+                ParseTree.create("word","abc"),
+                ParseTree.create("number","123"),
+                ParseTree.create("word","def")
         );
 
         final @NotNull Parser p = words_and_numbers_auto_whitespace_and_comments;

@@ -114,6 +114,10 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
         };
     }
 
+    public static @NotNull AlphaParseSuccess create(int index, final @NotNull ParseTree result) {
+        return new AlphaParseSuccessParseResult(index, result);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (!(o instanceof @NotNull AlphaParseSuccess that)) return false;

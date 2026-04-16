@@ -17,7 +17,7 @@ public class FormatUtils {
         final @NotNull var tag = pt.getFirst();
         if (!(tag instanceof Keyword keyTag)) throw new IllegalArgumentException();
         final @NotNull var content = pt.stream().skip(1).map(FormatUtils::parseTreeFromHiccup).toList();
-        return new ParseTree(new Node.NodeTreeTag(keyTag), content);
+        return ParseTree.create(new Node.NodeTreeTag(keyTag), content);
     }
 
     private static @NotNull Node parseTreeFromHiccup(final @Nullable Object pt) {
@@ -38,7 +38,7 @@ public class FormatUtils {
         if (!(tag instanceof Keyword && content instanceof List<?>))
             throw new IllegalArgumentException();
 
-        return new ParseTree(
+        return ParseTree.create(
                 new Node.NodeTreeTag((Keyword) tag),
                 ((List<?>) content).stream().map(FormatUtils::parseTreeFromEnlive).toList()
         );

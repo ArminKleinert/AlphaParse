@@ -129,7 +129,8 @@ public final class Gll {
                     throw new IllegalStateException(successResult.toString());
                 tramp.setSuccess(null);
                 foundResult.set(true);
-                return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult().flattenRawProductions();
+                //return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult().flattenRawProductions();
+                return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult();
             }
             final List<Procedure> stack = tramp.getStack();
             if (!stack.isEmpty()) {
@@ -210,7 +211,7 @@ public final class Gll {
                 ? result.withResult(null)
                 : result;
         if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.NONE) {
-            final var resultR = Reduction.applyReduction(
+            final ParseTree resultR = Reduction.applyReduction(
                     parser.getReduction(),
                     result.getResult());
             result = AlphaParseSuccess.create(result.getIndex(), resultR);
