@@ -44,27 +44,22 @@ public final class CombinatorsSource {
     }
 
     public @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
-//        if (parsers.isEmpty())
-//            return epsilon;
-//
-//        final var firstComb = parsers.getFirst();
-//        int sublistStartIndex = 1;
-//
-//        if (firstComb.equals(epsilon)) {
-//            while (sublistStartIndex < parsers.size() && parsers.get(sublistStartIndex).equals(epsilon)) {
-//                sublistStartIndex++;
-//            }
-//        }
-//
-//        if (sublistStartIndex == parsers.size())
-//            return firstComb;
-//
-//        final @NotNull var restParsers = parsers.subList(sublistStartIndex, parsers.size());
-//
-//        return buffer.getOrAdd(new OrderedCombinator(parsers));
+        if (parsers.isEmpty())
+            return epsilon;
+
         if (parsers.size() == 1) return parsers.getFirst();
-        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
-        return buffer.getOrAdd(new OrderedCombinator(parsers));
+
+        List<@NotNull Combinator> newParserList = null;
+        for (int i = 0; i < parsers.size(); i++) {
+            if (parsers.get(i).equals(epsilon)) {
+                if (newParserList == null) newParserList = new ArrayList<>(parsers);
+                else newParserList.remove(i);
+            }
+        }
+        if (newParserList==null) newParserList = parsers;
+
+        if (newParserList.size() == 1) return newParserList.getFirst();
+        return buffer.getOrAdd(new OrderedCombinator(newParserList));
     }
 
     public @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
@@ -202,7 +197,7 @@ public final class CombinatorsSource {
                                            final @NotNull Keyword startWS) {
         final @NotNull Combinator wsParser = optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
 
-        final @NotNull var finalGrammar =
+        final @NotNull SequencedMap<@NotNull Keyword, @NotNull Combinator> finalGrammar =
                 new LinkedHashMap<>(grammar);
         for (var keywordCombinatorEntry : finalGrammar.entrySet()) {
             keywordCombinatorEntry.setValue(autoWhitespaceParser(keywordCombinatorEntry.getValue(), wsParser));

@@ -1,6 +1,5 @@
 package alphaparse.util;
 
-import alphaparse.IO2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

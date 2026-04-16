@@ -32,7 +32,7 @@ final class GllParserListeners {
                                           final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
-            final int continueIndex = result.getIndex();
+            final int continueIndex = result.index();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty()) {
                     Gll.success(tramp, nodeKey, null, continueIndex);
@@ -53,7 +53,7 @@ final class GllParserListeners {
                                          final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
-            final int continueIndex = result.getIndex();
+            final int continueIndex = result.index();
             final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
@@ -80,7 +80,7 @@ final class GllParserListeners {
                                          final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey, final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
-            final int continueIndex = result.getIndex();
+            final int continueIndex = result.index();
 
             final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
@@ -108,7 +108,7 @@ final class GllParserListeners {
                                               final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
-            final var continueIndex = result.getIndex();
+            final var continueIndex = result.index();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty())
                     Gll.success(tramp, nodeKey, null, continueIndex);
@@ -132,7 +132,7 @@ final class GllParserListeners {
                                              final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
-            final var continueIndex = result.getIndex();
+            final var continueIndex = result.index();
             final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
@@ -159,7 +159,7 @@ final class GllParserListeners {
                                              final @NotNull Tramp tramp) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
-            final int continueIndex = result.getIndex();
+            final int continueIndex = result.index();
             final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);

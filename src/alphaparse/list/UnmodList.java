@@ -4,11 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+
 public final class UnmodList<T> implements List<T> {
     private final Object[] inner;
     private int hashCode = 0;
 
-    public UnmodList(final @NotNull Collection<T> coll) {
+    public UnmodList(final @NotNull List<T> coll) {
         inner = new Object[coll.size()];
         int i = 0;
         for (T t : coll) {

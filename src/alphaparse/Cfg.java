@@ -1,7 +1,7 @@
 package alphaparse;
 
 import alphaparse.parser.Grammar;
-import alphaparse.parsetree.Node;
+import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.parser.Parser;
 import alphaparse.reduction.Reduction;
@@ -10,7 +10,10 @@ import alphaparse.result.AlphaParseFailure;
 import alphaparse.util.StrParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+
 
 public final class Cfg {
 

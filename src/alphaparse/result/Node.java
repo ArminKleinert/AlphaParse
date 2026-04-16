@@ -1,9 +1,7 @@
-package alphaparse.parsetree;
+package alphaparse.result;
 
 
 import alphaparse.Keyword;
-import alphaparse.result.ParseTree;
-import alphaparse.result.ParseFailureNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

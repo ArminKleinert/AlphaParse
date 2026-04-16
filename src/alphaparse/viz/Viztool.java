@@ -1,6 +1,6 @@
 package alphaparse.viz;
 
-import alphaparse.parsetree.Node;
+import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 

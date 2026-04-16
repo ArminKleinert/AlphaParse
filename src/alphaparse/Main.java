@@ -2,7 +2,7 @@ package alphaparse;
 
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseFailure;
-import alphaparse.result.FormatUtils;
+import alphaparse.result.ParseConverterUtils;
 import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
 import alphaparse.result.failure.failureReason.ParseFailureReasonString;
@@ -77,8 +77,8 @@ public final class Main {
 
         /**/
         {
-            IO2.println(FormatUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")));
-            IO2.println(FormatUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")).getClass());
+            IO2.println(ParseConverterUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")));
+            IO2.println(ParseConverterUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")).getClass());
             IO2.println();
         }
 
@@ -173,11 +173,11 @@ public final class Main {
 
             final @NotNull var p = Alpha.parser("S : &'1' S S | '1'+", Alpha.ParserCreationOptions.newWithStandardWhitespace());
             final @NotNull var parse = Alpha.parse(p, "112").castToParseFailure();
-            final var failIndex = parse.getIndex();
-            final var failColumn = parse.getColumn();
-            final var failLine = parse.getLine();
+            final var failIndex = parse.index();
+            final var failColumn = parse.column();
+            final var failLine = parse.line();
             final @NotNull var failReasonList = parse.getReasonList();
-            final @NotNull var failText = parse.getText();
+            final @NotNull var failText = parse.text();
             final @NotNull var failResult = List.of();//parse.getResult();
             IO2.println(failIndex + " " + failColumn + " " + failLine + " " + failReasonList + " " + failText + " " + failResult);
 

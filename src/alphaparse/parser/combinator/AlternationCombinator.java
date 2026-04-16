@@ -1,7 +1,9 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +16,8 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
     }
 
     private AlternationCombinator(final @NotNull List<Combinator> parsers,
-                                 final boolean hide,
-                                 final @NotNull ReductionType red) {
+                                  final boolean hide,
+                                  final @NotNull ReductionType red) {
         super(parsers, hide, red);
     }
 

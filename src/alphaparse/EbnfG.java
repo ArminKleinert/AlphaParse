@@ -5,8 +5,9 @@ import alphaparse.parser.Grammar;
 import alphaparse.reduction.Reduction;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.SequencedMap;
 import java.util.regex.Pattern;
 
 public final class EbnfG {
@@ -348,7 +349,7 @@ public final class EbnfG {
     }
 
     static @NotNull Grammar makeCfg() {
-        final @NotNull HashMap<Keyword, Combinator> grammarMap = new HashMap<>();
+        final @NotNull SequencedMap<Keyword, Combinator> grammarMap = new LinkedHashMap<>();
         final @NotNull CombinatorsSource cs = new CombinatorsSource();
         grammarMap.put(Keyword.intern("rules"), makeCfgRulesRhs(cs));
         grammarMap.put(Keyword.intern("comment"), makeCfgCommentRhs(cs));

@@ -9,10 +9,10 @@ import java.util.*;
 
 public record TrampolineListenerNode(@NotNull List<Listener> listeners,
                                      @NotNull List<Listener> fullListeners,
-                                     @NotNull Set<AlphaParseSuccess> results,
-                                     @NotNull Set<AlphaParseSuccess> fullResults) {
+                                     @NotNull SequencedSet<AlphaParseSuccess> results,
+                                     @NotNull SequencedSet<AlphaParseSuccess> fullResults) {
     public TrampolineListenerNode() {
-        this(new ArrayList<>(), new ArrayList<>(), new HashSet<>(), new HashSet<>());
+        this(new ArrayList<>(), new ArrayList<>(), new LinkedHashSet<>(), new LinkedHashSet<>());
     }
 
     public record TrampolineListenerKey(int index, @NotNull Combinator parser) {

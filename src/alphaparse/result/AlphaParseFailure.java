@@ -7,32 +7,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public final class AlphaParseFailure implements AlphaIntermediateResult, AlphaParseResult {
-    private final int index;
-    private final @NotNull List<ParseFailureReason> reason;
-    private final int line;
-    private final int column;
-    private final @Nullable String text;
-    private final @NotNull Object result;
+public record AlphaParseFailure(int index,
+                                @NotNull List<ParseFailureReason> reason,
+                                int line,
+                                int column,
+                                @Nullable String text)
+        implements AlphaIntermediateResult, AlphaParseResult {
 
     public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason) {
         this(index, reason, -1, -1, null);
-    }
-
-    public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason,
-                             final int line, final int column, final @Nullable String text) {
-        this(index, reason, line, column, text, List.of());
-    }
-
-    public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason,
-                             final int line, final int column, final @Nullable String text,
-                             final @NotNull Object result) {
-        this.index = index;
-        this.reason = reason;
-        this.line = line;
-        this.column = column;
-        this.text = text;
-        this.result = result;
     }
 
     public @NotNull List<ParseFailureReason> getReasonList() {
@@ -40,15 +23,15 @@ public final class AlphaParseFailure implements AlphaIntermediateResult, AlphaPa
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return FailureUtil.pprintFailure(this);
     }
 
-    public String contentsToString() {
-        return "[" + index + ", " + reason + ", " + line + ", " + column + ", " + text + ", " + result + "]";
+    public @NotNull String contentsToString() {
+        return "[" + index + ", " + reason + ", " + line + ", " + column + ", " + text + "]";
     }
 
-    public String checkCorrectness(
+    public@NotNull String checkCorrectness(
             final int failIndex,
             final int failColumn,
             final int failLine,
@@ -59,49 +42,16 @@ public final class AlphaParseFailure implements AlphaIntermediateResult, AlphaPa
         sb.append("Attribute: Index  Column Line   Text   List \n");
         sb.append(String.format(
                 "Correct?   %-5s  %-5s  %-5s  %-5s  %-5s",
-                getIndex() == failIndex,
-                getColumn() == failColumn,
-                getLine() == failLine,
-                Objects.equals(getText(), failText),
+                index() == failIndex,
+                column() == failColumn,
+                line() == failLine,
+                Objects.equals(text(), failText),
                 Objects.equals(getReasonList(), failReasonList)
         ));
         return sb.toString();
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public int getLine() {
-        return line;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
-    public @Nullable String getText() {
-        return text;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        AlphaParseFailure that = (AlphaParseFailure) o;
-        return index == that.index
-                && line == that.line
-                && column == that.column
-                && Objects.equals(reason, that.reason)
-                && Objects.equals(text, that.text);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(index, reason, line, column, text);
-    }
-
     public @NotNull Object getResult() {
         throw new UnsupportedOperationException();
-        //return result;
     }
 }

@@ -5,7 +5,9 @@ import alphaparse.result.ParseTree;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -132,11 +134,15 @@ class AlphaTest {
             final @NotNull var res = Alpha.parses(p, "ABA");
             final @NotNull var possibleResults = sabssPossibleResults();
 
-            Assertions.assertEquals(possibleResults.getFirst(), res.getFirst());
             Assertions.assertEquals(possibleResults, res);
         }
         {
-            final @NotNull var p = Alpha.parser("S : A / B / eps / C\nA : C \nB : C \nC : eps");
+            final @NotNull var p = Alpha.parser("""
+                    S : A / B / eps / C
+                    A : C
+                    B : C
+                    C : eps
+                    """);
             final @NotNull var possibleTrees = List.of(
                     ParseTree.create("S", ParseTree.create("A", ParseTree.create("C"))),
                     ParseTree.create("S", ParseTree.create("B", ParseTree.create("C"))),
@@ -162,15 +168,37 @@ class AlphaTest {
                     r2 : 'a'
                     r3 : 'a'
                     """;
+            final @NotNull var text = "a";
+            final @NotNull var p = Alpha.parser(grammar);
+            final @NotNull var ps = Alpha.parses(p, text);
+            final @NotNull var possibleParses = List.of(
+                    ParseTree.create("S", ParseTree.create("r1", "a")),
+                    ParseTree.create("S", ParseTree.create("r2", "a")),
+                    ParseTree.create("S", ParseTree.create("r3", "a"))
+            );
+            Assertions.assertEquals(possibleParses, ps);
+        }
+        {
+            final @NotNull var grammar = """
+                    S : (r1 / r2)*
+                    r1 : 'a'
+                    r2 : 'a'
+                    """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
             final @NotNull var ps = Alpha.parses(p, text);
-            final @NotNull var possibleParses =  r1r2r3Results();
+            final @NotNull var possibleParses = List.of(
+                    ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
+                    ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
+                    ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
+                    ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r2", "a"))
+            );
             Assertions.assertEquals(possibleParses, ps);
         }
     }
 
-    private List<ParseTree> r1r2r3Results() {
+    @Contract(" -> new")
+    private @NotNull @Unmodifiable List<ParseTree> r1r2r3Results() {
         return List.of(
                 ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
@@ -184,23 +212,22 @@ class AlphaTest {
         );
     }
 
-    private List<ParseTree> sabssPossibleResults() {
-        final var possibleResult1 =
+    private @NotNull @Unmodifiable List<ParseTree> sabssPossibleResults() {
+        return List.of(
                 ParseTree.create(
                         "S",
                         ParseTree.create("S", "A"),
                         ParseTree.create("S", ParseTree.create("S", "B"), ParseTree.create("S", "A")
-                        ));
-        final var possibleResult2 =
+                        )),
                 ParseTree.create(
                         "S",
                         ParseTree.create("S", ParseTree.create("S", "A"), ParseTree.create("S", "B")),
                         ParseTree.create("S", "A")
-                );
-        return List.of(possibleResult1, possibleResult2);
+                ));
     }
 
-    @Test void parsesPartial() {
+    @Test
+    void parsesPartial() {
         {
             final @NotNull var grammar = """
                     S : (r1 | r2 | r3)*
@@ -213,7 +240,8 @@ class AlphaTest {
             final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new Alpha.ParsingOptions(null, true, Alpha.UnhideOptions.none, false, false)));
             final @NotNull var possibleParses = new HashSet<>(partialParsesOrderedR123());
             Assertions.assertEquals(possibleParses, ps);
-        }{
+        }
+        {
             final @NotNull var grammar = """
                     S : (r1 / r2 / r3)*
                     r1 : 'a'
@@ -228,14 +256,13 @@ class AlphaTest {
         }
     }
 
-    private List<ParseTree> partialParsesOrderedR123() {
+    private @NotNull @Unmodifiable List<ParseTree> partialParsesOrderedR123() {
         return List.of(
                 ParseTree.create("S"),
                 ParseTree.create("S", ParseTree.create("r1", "a")),
                 ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
-                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r3", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r3", "a")),

@@ -3,7 +3,6 @@ package alphaparse.result;
 import alphaparse.Keyword;
 import alphaparse.parser.Parser;
 import alphaparse.parser.combinator.*;
-import alphaparse.parsetree.Node;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class FormatUtils {
+public class ParseConverterUtils {
     public static @NotNull ParseTree parseTreeFromHiccup(final @NotNull List<?> pt) {
         if (pt.isEmpty()) throw new IllegalArgumentException();
         final @NotNull var tag = pt.getFirst();
         if (!(tag instanceof Keyword keyTag)) throw new IllegalArgumentException();
-        final @NotNull var content = pt.stream().skip(1).map(FormatUtils::parseTreeFromHiccup).toList();
+        final @NotNull var content = pt.stream().skip(1).map(ParseConverterUtils::parseTreeFromHiccup).toList();
         return ParseTree.create(new Node.NodeTreeTag(keyTag), content);
     }
 
@@ -40,7 +39,7 @@ public class FormatUtils {
 
         return ParseTree.create(
                 new Node.NodeTreeTag((Keyword) tag),
-                ((List<?>) content).stream().map(FormatUtils::parseTreeFromEnlive).toList()
+                ((List<?>) content).stream().map(ParseConverterUtils::parseTreeFromEnlive).toList()
         );
     }
 

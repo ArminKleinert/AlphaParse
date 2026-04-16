@@ -4,7 +4,7 @@ import alphaparse.Keyword;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.parser.Grammar;
 import alphaparse.parser.combinator.Combinator;
-import alphaparse.parsetree.Node;
+import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.TotalParsesFailureNode;
@@ -29,7 +29,7 @@ public final class Reduction {
         return list.size() == 1;
     }
 
-    public static ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
+    public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
         return new ReductionType(key, ReductionType.ReductionTypesAvailable.defaultType);
     }
 
@@ -49,8 +49,8 @@ public final class Reduction {
     }
 
     public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
-        final @NotNull List<Node> afs = switch (result) {
-            case null -> List.of();
+        final @NotNull var afs = switch (result) {
+            case null -> List.<Node>of();
             case AutoFlattenSeq<?> objects -> objects.toNodes();
             case String ignored -> List.of(Node.of(result));
             case TotalParsesFailureNode ignored -> List.of(Node.of(result));

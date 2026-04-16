@@ -24,7 +24,8 @@ import alphaparse.trampoline.Tramp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.SequencedSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class Gll {
@@ -71,7 +72,7 @@ public final class Gll {
     private static boolean totalSuccess_Q(
             final @NotNull Tramp tramp,
             final @NotNull AlphaParseSuccess success) {
-        return tramp.getText().length() == success.getIndex();
+        return tramp.getText().length() == success.index();
     }
 
     public static void pushNegativeListener(
@@ -85,7 +86,7 @@ public final class Gll {
             final @NotNull Tramp tramp,
             final @NotNull Listener listener,
             final @NotNull AlphaParseSuccess result) {
-        final int i = result.getIndex();
+        final int i = result.index();
         final TrampolineMsgCacheKey k = new TrampolineMsgCacheKey(i, listener);
         final int c = tramp.getFromMsgCache(k, 0);
         final Procedure f = () -> listener.execute(result);
@@ -125,12 +126,13 @@ public final class Gll {
         do {
             if (tramp.getSuccess() != null) {
                 final var successResult = tramp.getSuccess();
-                if (!(successResult instanceof AlphaParseSuccess.AlphaParseSuccessParseResult))
+                final var resultTree = successResult.getResult();
+                if (!(resultTree instanceof ParseTree))
                     throw new IllegalStateException(successResult.toString());
                 tramp.setSuccess(null);
                 foundResult.set(true);
                 //return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult().flattenRawProductions();
-                return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult();
+                return (ParseTree) resultTree;
             }
             final List<Procedure> stack = tramp.getStack();
             if (!stack.isEmpty()) {
@@ -214,10 +216,11 @@ public final class Gll {
             final ParseTree resultR = Reduction.applyReduction(
                     parser.getReduction(),
                     result.getResult());
-            result = AlphaParseSuccess.create(result.getIndex(), resultR);
+            result = AlphaParseSuccess.create(result.index(), resultR);
         }
         final boolean isTotal = totalSuccess_Q(tramp, result);
-        final @NotNull Set<@NotNull AlphaParseSuccess> results = isTotal ? node.fullResults() : node.results();
+        final @NotNull SequencedSet<@NotNull AlphaParseSuccess> results =
+                isTotal ? node.fullResults() : node.results();
 
         final var resultExisted = !results.add(result);
         if (resultExisted) {
@@ -371,6 +374,6 @@ public final class Gll {
             final boolean partial) {
         final @NotNull var result = parse(grammar, start, text, partial);
         if (!(result instanceof AlphaParseFailure)) return result;
-        return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).getIndex(), partial);
+        return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial);
     }
 }

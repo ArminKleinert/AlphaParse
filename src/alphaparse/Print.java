@@ -6,7 +6,8 @@ import alphaparse.parser.combinator.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public final class Print {
@@ -122,9 +123,9 @@ public final class Print {
         final @NotNull Keyword start = p.startProduction();
 
         final @NotNull StringBuilder sb = new StringBuilder(
-                Objects.requireNonNull(ruleToString(start, grammar.getProduction(start))));
+                ruleToString(start, Objects.requireNonNull(grammar.getProduction(start))));
 
-        sb.append('\n').append(ruleToString(start, grammar.getProduction(start)));
+        sb.append('\n').append(ruleToString(start, Objects.requireNonNull(grammar.getProduction(start))));
 
         grammar.forEach((nonTerminal, parser) -> {
                     if (!Objects.equals(nonTerminal, start)) {

@@ -1,6 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.list.LazySupplierList;
+import alphaparse.list.PretenderList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

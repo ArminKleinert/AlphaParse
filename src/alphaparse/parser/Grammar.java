@@ -38,8 +38,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return true;
     }
 
-    public static @NotNull Grammar fromProductions(final @NotNull Iterable<Map.Entry<Keyword, Combinator>> kvs) {
-        final @NotNull Map<Keyword, Combinator> m = new HashMap<>();
+    public static @NotNull Grammar fromProductions(final @NotNull List<Map.Entry<Keyword, Combinator>> kvs) {
+        final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
         for (Map.Entry<Keyword, Combinator> kv : kvs) {
             m.put(kv.getKey(), kv.getValue());
         }

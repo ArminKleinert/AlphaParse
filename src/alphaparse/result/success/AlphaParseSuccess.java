@@ -10,94 +10,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
-    public static final class AlphaParseSuccessNull extends AlphaParseSuccess {
-        public AlphaParseSuccessNull(final int index) {
-            super(index);
-        }
-
-        @Override
-        public @Nullable Object getResult() {
-            return null;
-        }
-    }
-
-    public static final class AlphaParseSuccessString extends AlphaParseSuccess {
-        private final @NotNull String result;
-
-        public AlphaParseSuccessString(final int index, final @NotNull String result) {
-            super(index);
-            this.result = result;
-            //try {throw new IllegalArgumentException();} catch (IllegalArgumentException e) {e.printStackTrace();}
-        }
-
-        @Override
-        public @NotNull String getResult() {
-            return result;
-        }
-    }
-
-    public static final class AlphaParseSuccessList extends AlphaParseSuccess {
-        private final @NotNull AutoFlattenSeq<Object> result; // TODO Do not use raw objects
-
-        public AlphaParseSuccessList(final int index, final @NotNull AutoFlattenSeq<Object> result) {
-            super(index);
-            this.result = result;
-        }
-
-        @Override
-        public @NotNull AutoFlattenSeq<Object> getResult() {
-            return result;
-        }
-    }
-
-    public static final class AlphaParseSuccessParseResult extends AlphaParseSuccess {
-        private final @NotNull ParseTree result;
-
-        public AlphaParseSuccessParseResult(final int index, final @NotNull ParseTree result) {
-            super(index);
-            //try {throw new IllegalArgumentException();} catch (IllegalArgumentException e) {e.printStackTrace();}
-            this.result = result;
-        }
-
-        @Override
-        public @NotNull ParseTree getResult() {
-            return result;
-        }
-    }
-
-    public static final class AlphaParseSuccessWithTotalFailure extends AlphaParseSuccess {
-        private final @NotNull TotalParsesFailureNode result;
-
-        public AlphaParseSuccessWithTotalFailure(final int index, final @NotNull TotalParsesFailureNode result) {
-            super(index);
-            this.result = result;
-        }
-
-        @Override
-        public @NotNull TotalParsesFailureNode getResult() {
-            return result;
-        }
-    }
-
-    public static final class AlphaParseSuccessWithFailure extends AlphaParseSuccess {
-        private final @NotNull ParseFailureNode result;
-
-        public AlphaParseSuccessWithFailure(final int index, final @NotNull ParseFailureNode result) {
-            super(index);
-            this.result = result;
-        }
-
-        @Override
-        public @NotNull ParseFailureNode getResult() {
-            return result;
-        }
-    }
+public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResult permits
+        AlphaParseSuccessList,
+        AlphaParseSuccessNull,
+        AlphaParseSuccessParseResult,
+        AlphaParseSuccessString,
+        AlphaParseSuccessWithFailure,
+        AlphaParseSuccessWithTotalFailure {
 
     private final int index;
 
     public AlphaParseSuccess(final int index) {
-        //System.out.println("Result " + (result == null ? "null" : result.getClass()));
         this.index = index;
     }
 
@@ -105,10 +28,10 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
         return switch (result) {
             case null -> new AlphaParseSuccessNull(index);
             case String s -> new AlphaParseSuccessString(index, s);
-            case ParseTree nodes -> new AlphaParseSuccessParseResult(index, nodes);
             case TotalParsesFailureNode parseTrees -> new AlphaParseSuccessWithTotalFailure(index, parseTrees);
             case AutoFlattenSeq<?> objects -> new AlphaParseSuccessList(index, (AutoFlattenSeq<Object>) objects);
             case ParseFailureNode parseFailureNode -> new AlphaParseSuccessWithFailure(index, parseFailureNode);
+            case ParseTree nodes -> new AlphaParseSuccessParseResult(index, nodes);
             default ->
                     throw new UnsupportedOperationException("Cannot create success node from type " + result.getClass());
         };
@@ -129,7 +52,7 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
         return Objects.hash(index, getResult());
     }
 
-    public int getIndex() {
+    public int index() {
         return index;
     }
 
@@ -141,6 +64,6 @@ public abstract class AlphaParseSuccess implements AlphaIntermediateResult {
 
     @Override
     public String toString() {
-        return "AlphaSuccess{"+getResult()+"}";
+        return "AlphaSuccess{" + getResult() + "}";
     }
 }

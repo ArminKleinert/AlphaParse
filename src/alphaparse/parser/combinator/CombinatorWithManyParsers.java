@@ -3,7 +3,9 @@ package alphaparse.parser.combinator;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public sealed abstract class CombinatorWithManyParsers extends Combinator permits AlternationCombinator, CatCombinator, OrderedCombinator {
     private long bufferedHashCode = Long.MIN_VALUE;
@@ -15,8 +17,8 @@ public sealed abstract class CombinatorWithManyParsers extends Combinator permit
     }
 
     protected CombinatorWithManyParsers(final @NotNull List<@NotNull Combinator> parsers,
-                                     final boolean hide,
-                                     final @NotNull ReductionType red) {
+                                        final boolean hide,
+                                        final @NotNull ReductionType red) {
         super(hide, red);
         this.parsers = new ArrayList<>(parsers);
     }

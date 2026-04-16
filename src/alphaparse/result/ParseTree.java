@@ -2,7 +2,6 @@ package alphaparse.result;
 
 import alphaparse.Keyword;
 import alphaparse.list.UnmodList;
-import alphaparse.parsetree.Node;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,25 +15,18 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     private int hashCode = 0;
     private final boolean hasNullTag;
     private final boolean isFlat;
+    private final boolean usedMemoryOptimization;
 
-//    public ParseTree(final @NotNull String tag, final @NotNull Object... content) {
-//        this(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
-//    }
-
-//    public ParseTree(final @NotNull Keyword tag, final @NotNull List<Object> content) {
-//        this(new Node.NodeTreeTag(tag), content.stream().map(Node::of).toList());
-//    }
-
-    private ParseTree(final @NotNull Node.NodeTreeTag tag, final @NotNull List<Node> content) {
-        this(tag, content, false);
-    }
-
-    private ParseTree(final @NotNull Node.NodeTreeTag tag, final @NotNull List<Node> content, final boolean isFlat) {
+    private ParseTree(final @NotNull Node.NodeTreeTag tag,
+                      final @NotNull List<Node> content,
+                      final boolean isFlat,
+                      final boolean usedMemoryOptimization) {
         this.hasNullTag = tag.content().equals(NULL_TAG);
         this.tag = tag;
         // this.content = flattenRawProductions(content);
         this.content = content;
         this.isFlat = isFlat;
+        this.usedMemoryOptimization = usedMemoryOptimization;
     }
 
     public @NotNull Node.NodeTreeTag getTag() {
@@ -43,6 +35,10 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
 
     public @NotNull List<Node> getContent() {
         return content;
+    }
+
+    public boolean usedMemoryOptimization() {
+        return usedMemoryOptimization;
     }
 
     public @NotNull List<Node> toList() {
@@ -229,13 +225,19 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
         return toList().toString();
     }
 
-    public static @NotNull ParseTree create(     final @NotNull Node.NodeTreeTag tag,
-     final @NotNull List<Node> content) {
+    public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
+                                            final @NotNull List<Node> content) {
+        return create(tag,content,false);
+    }
+
+    public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
+                                            final @NotNull List<Node> content,
+                                            final boolean usedMemoryOptimization) {
         if (!tag.content().equals(NULL_TAG) && content.stream()
                 .filter(c -> c instanceof Node.NodeParseTree)
                 .map(c -> ((Node.NodeParseTree) c).content())
                 .noneMatch(pt -> pt.hasNullTag))
-            return new ParseTree(tag, content);
+            return new ParseTree(tag, content, false, usedMemoryOptimization);
 
         final @NotNull var entries = new ArrayList<@NotNull Node>();
         for (@NotNull var e : content) {
@@ -256,9 +258,10 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
             }
         }
 
-        return new ParseTree(tag, entries, true);
+        return new ParseTree(tag, entries, true, usedMemoryOptimization);
     }
-    public static @NotNull ParseTree create(     final @NotNull String tag, final @NotNull Object... content) {
+
+    public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
         return create(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
     }
 

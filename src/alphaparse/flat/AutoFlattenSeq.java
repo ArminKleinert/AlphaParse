@@ -1,10 +1,13 @@
 package alphaparse.flat;
 
 
-import alphaparse.parsetree.Node;
+import alphaparse.result.Node;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class AutoFlattenSeq<T> {
     private static final AutoFlattenSeq<Object> EMPTY = new AutoFlattenSeq<>(new Object[0]);

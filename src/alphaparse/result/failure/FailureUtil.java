@@ -23,7 +23,7 @@ public final class FailureUtil {
         int line = 1;
         int col = 1;
 
-        final int index = failure1.getIndex();
+        final int index = failure1.index();
 
         final PrimitiveIterator.OfInt charCodes = text.chars().iterator();
         for (int counter = 0; counter < index; counter++) {
@@ -60,7 +60,7 @@ public final class FailureUtil {
     public static @NotNull AlphaParseFailure modifyFailureByIndex(final @Nullable AlphaParseFailure failure,
                                                                   final ParseFailureReason newReason,
                                                                   final int nextIndex) {
-        final int currentIndex = failure == null ? 0 : failure.getIndex();
+        final int currentIndex = failure == null ? 0 : failure.index();
         if (nextIndex > currentIndex)
             return new AlphaParseFailure(nextIndex, new ArrayList<>(Collections.singletonList(newReason)));
         if (nextIndex < currentIndex) return Objects.requireNonNull(failure);
@@ -71,9 +71,9 @@ public final class FailureUtil {
     }
 
     public static @NotNull String pprintFailure(final @NotNull AlphaParseFailure failure) {
-        final int line = ((Number) failure.getLine()).intValue();
-        final int column = ((Number) failure.getColumn()).intValue();
-        final String text = failure.getText();
+        final int line = ((Number) failure.line()).intValue();
+        final int column = ((Number) failure.column()).intValue();
+        final String text = failure.text();
         final List<ParseFailureReason> reason = failure.getReasonList();
 
         final StringBuilder sb = new StringBuilder();

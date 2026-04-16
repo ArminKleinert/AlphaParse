@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClassUtil {
     public static @Nullable Class<?> mostDerived(final @NotNull Collection<?> objects) {
         List<Class<?>> common = null;
-        Set<Class<?>> checked = objects.size() > 30 ? new HashSet<>() : null;
+        SequencedSet<Class<?>> checked = objects.size() > 30 ? new LinkedHashSet<>() : null;
         for (final Object object : objects) {
             if (object == null) {
                 continue;

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,

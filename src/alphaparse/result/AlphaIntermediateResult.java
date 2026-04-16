@@ -3,7 +3,7 @@ package alphaparse.result;
 import org.jetbrains.annotations.Nullable;
 
 public interface AlphaIntermediateResult {
-    int getIndex();
+    int index();
 
     @Nullable Object getResult();
 }

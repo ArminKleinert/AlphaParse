@@ -8,9 +8,13 @@ import alphaparse.result.success.AlphaParseSuccess;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.SequencedMap;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import java.util.*;
 
 public final class Tramp {
     private final @NotNull Grammar grammar;
@@ -20,9 +24,9 @@ public final class Tramp {
     private final @NotNull List<@NotNull Procedure> stack;
     private final @NotNull List<@NotNull Procedure> nextStack;
     private int generation;
-    private final @NotNull Map<@NotNull Integer, @NotNull NegativeListener> negativeListeners;
-    private final @NotNull Map<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
-    private final @NotNull Map<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
+    private final @NotNull SequencedMap<@NotNull Integer, @NotNull NegativeListener> negativeListeners;
+    private final @NotNull SequencedMap<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
+    private final @NotNull SequencedMap<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
     private @Nullable AlphaParseSuccess success;
     private @Nullable AlphaParseFailure failure;
 
@@ -46,9 +50,10 @@ public final class Tramp {
         this.stack = new ArrayList<>();
         this.nextStack = new ArrayList<>();
         this.generation = 0;
-        this.negativeListeners = new TreeMap<>(Comparator.comparingInt((Integer o) -> o).reversed());
-        this.msgCache = new HashMap<>();
-        this.nodes = new HashMap<>();
+        //this.negativeListeners = new TreeMap<>(Comparator.comparingInt((Integer o) -> o).reversed());
+        this.negativeListeners = new LinkedHashMap<>();
+        this.msgCache = new LinkedHashMap<>();
+        this.nodes = new LinkedHashMap<>();
         this.success = null;
         this.failure = null;
     }
@@ -77,7 +82,7 @@ public final class Tramp {
         return generation;
     }
 
-    public @NotNull Map<@NotNull Integer, @NotNull NegativeListener> getNegativeListeners() {
+    public @NotNull SequencedMap<@NotNull Integer, @NotNull NegativeListener> getNegativeListeners() {
         return negativeListeners;
     }
 

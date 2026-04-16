@@ -84,13 +84,6 @@ class AlphaCoreTest {
                     num = #'[0-9]'+
                     """);
 
-    final @NotNull Parser addition_e = Alpha.parser(
-            """
-                    plus = plus <'+'> plus | num
-                    num = '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'
-                    """,
-            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
-
     final @NotNull Parser words_and_numbers = Alpha.parser(
             """
                     sentence = token (<whitespace> token)*
@@ -110,30 +103,6 @@ class AlphaCoreTest {
                     <letter> = #'[a-zA-Z]'
                     <digit> = #'[0-9]'
                     """);
-
-    final @NotNull Parser words_and_numbers_enlive = Alpha.parser(
-            """
-                    sentence = token (<whitespace> token)*
-                    <token> = word | number
-                    whitespace = #'\\s+'
-                    word = letter+
-                    number = digit+
-                    <letter> = #'[a-zA-Z]'
-                    <digit> = #'[0-9]'
-                    """,
-            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
-
-    final @NotNull Parser words_and_numbers_enlive_defparser = Alpha.parser(
-            """
-                    sentence = token (<whitespace> token)*
-                    <token> = word | number
-                    whitespace = #'\\s+'
-                    word = letter+
-                    number = digit+
-                    <letter> = #'[a-zA-Z]'
-                    <digit> = #'[0-9]'
-                    """,
-            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
 
     final @NotNull Parser ambiguous = Alpha.parser(
             """
@@ -234,23 +203,6 @@ class AlphaCoreTest {
                     number = #'[0-9]+'
                     """);
 
-    //    final @NotNull Parser  combo_build_example  = Alpha.parser(
-//            (merge
-//    {:S (alternation_combinator (make-non_terminal :A) (make_non_terminal :B);}
-//      (ebnf "A = 'a'*")
-//    {:B (ebnf "'b'+")})
-//            :start :S);
-//
-//    final @NotNull Parser  tricky_ebnf_build = Alpha.parser(
-//          (merge
-//    {:S (alternation_combinator (make_non_terminal :A) (make_non_terminal :B);}
-//      (ebnf "<A> = '='*")
-//    {:B (ebnf "'b' '='")})
-//            :start :S);
-//final @NotNull Parser  tricky_ebnf_build = Alpha.parser(Grammar.fromProductions(
-//        Grammar.entry(Keyword.intern("S"), new AlternationCombinator(List.of(new NonTerminal(Keyword.intern("A")), new NonTerminal(Keyword.intern("B"))))),
-//        Grammar.entry(Keyword.intern())
-//));
     final @NotNull Parser tricky_ebnf_build = Alpha.parser("""
                     S = A | B
                     <A> = '='*
@@ -299,21 +251,6 @@ class AlphaCoreTest {
                     """,
             new Alpha.ParserCreationOptions(
                     Alpha.getPredefinedWhitespaceParser(Keyword.intern("standard"))));
-
-    final @NotNull Parser whitespace_or_comments_v1 = Alpha.parser(
-            """
-                    ws-or-comment = #'\\s+' | comment
-                    comment = '(*' inside-comment* '*)'
-                    inside-comment =  ( !('*)' | '(*') #'.' ) | comment
-                    """);
-
-    final @NotNull Parser whitespace_or_comments_v2 = Alpha.parser(
-            """
-                    ws-or-comments = #'\\s+' | comments
-                    comments = comment+
-                    comment = '(*' inside-comment* '*)'
-                    inside-comment =  !( '*)' | '(*' ) #'.' | comment
-                    """);
 
     final @NotNull Parser whitespace_or_comments = Alpha.parser(
             """
@@ -663,18 +600,26 @@ class AlphaCoreTest {
 
     @Test
     public void testCharRangeExampleFailure() {
-        // TODO
+        var p = Alpha.parser("""
+                Regex = (CharNonRange | Range) +
+                Range = Char <'-'> Char
+                CharNonRange = Char ! ('-' Char)
+        Char = #'[-x]' | 'c' (! 'd') 'x'
+        """);
 
-        /*
-        (insta/parses
-               (insta/parser
-                 "Regex = (CharNonRange | Range) +
-                  Range = Char <'-'> Char
-                  CharNonRange = Char ! ('-' Char)
-                  Char = #'[-x]' | 'c' (! 'd') 'x'")
-               "x-cx")
-         '([:Regex [:Range [:Char "x"] [:Char "c" "x"]]])
-         */
+        var tree = ParseTree.create("Regex",
+                ParseTree.create("Range",
+                        ParseTree.create("Char", "x"),
+                        ParseTree.create("Char", "c", "x")));
+
+        Assertions.assertEquals(
+                tree,
+                p.parse("x-cx")
+        );
+        Assertions.assertEquals(
+                List.of(tree),
+                p.parses("x-cx")
+        );
     }
 
     @Test
