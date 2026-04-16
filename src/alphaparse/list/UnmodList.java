@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public final class UnmodList<T> implements List<T> {
-    private final T[] inner;
+    private final Object[] inner;
     private int hashCode = 0;
 
     public UnmodList(final @NotNull Collection<T> coll) {
-        inner = (T[]) new Object[coll.size()];
+        inner = new Object[coll.size()];
         int i = 0;
         for (T t : coll) {
             inner[i] = t;
@@ -17,7 +17,7 @@ public final class UnmodList<T> implements List<T> {
         }
     }
 
-    public UnmodList(final T[] safeArray) {
+    public UnmodList(final Object[] safeArray) {
         inner = safeArray;
     }
 
@@ -108,7 +108,7 @@ public final class UnmodList<T> implements List<T> {
     @Override
     public T get(final int i) {
         Objects.checkIndex(i, size());
-        return inner[i];
+        return (T) inner[i];
     }
 
     @Override
@@ -155,7 +155,7 @@ public final class UnmodList<T> implements List<T> {
             public T next() {
                 int i = cursor;
                 cursor++;
-                return inner[i];
+                return get(i);
             }
 
             @Override
@@ -166,7 +166,7 @@ public final class UnmodList<T> implements List<T> {
             @Override
             public T previous() {
                 cursor--;
-                return inner[cursor];
+                return get(cursor);
             }
 
             @Override

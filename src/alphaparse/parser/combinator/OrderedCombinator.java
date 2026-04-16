@@ -2,11 +2,12 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
 import alphaparse.reduction.ReductionType;
-import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.Tramp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 public final class OrderedCombinator extends CombinatorWithManyParsers {
     public OrderedCombinator(final @NotNull List<Combinator> parsers) {

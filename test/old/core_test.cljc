@@ -631,10 +631,6 @@
              (paren-ab-hide-tag "(ababa)" :unhide :all)
              [:paren-wrapped "(" [:seq-of-A-or-B "a" "b" "a" "b" "a"] ")"]
 
-       ;----------------------------------;
-       ;---            HERE            ---;
-       ;----------------------------------;
-
              (insta/parses words-and-numbers "ab 123 cd" :unhide :all)
              '([:sentence [:token [:word "ab"]] [:whitespace " "] [:token [:number "123"]] [:whitespace " "] [:token [:word "cd"]]])
 
@@ -672,6 +668,10 @@
 
              ((insta/parser "S = %x30.31" :input-format :abnf) "01")
              [:S "0" "1"]
+
+       ;----------------------------------;
+       ;---            HERE            ---;
+       ;----------------------------------;
 
              (auto-whitespace-example "foo 123")
              [:S "foo" "123"]

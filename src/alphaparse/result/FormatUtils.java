@@ -49,10 +49,13 @@ public class FormatUtils {
         return Node.of(pt);
     }
 
-    private static @NotNull Map<Keyword, Object> mapFromTagAndContents(final @NotNull Combinator combinator,final @NotNull Function<Combinator, String> classTagLookup, final @NotNull Object... otherKeyAndValues) {
-        final @NotNull String tag=classTagLookup.apply(combinator);
-        final boolean isHidden=combinator.isHidden();
-        final @NotNull ReductionType reductionType=combinator.getReduction();
+    private static @NotNull Map<Keyword, Object> mapFromTagAndContents(
+            final @NotNull Combinator combinator,
+            final @NotNull Function<Combinator, String> classTagLookup,
+            final @NotNull Object... otherKeyAndValues) {
+        final @NotNull String tag = classTagLookup.apply(combinator);
+        final boolean isHidden = combinator.isHidden();
+        final @NotNull ReductionType reductionType = combinator.getReduction();
         if ((otherKeyAndValues.length & 1) == 1)
             throw new IllegalArgumentException();
         final @NotNull Map<Keyword, Object> m = new HashMap<>();
@@ -69,22 +72,23 @@ public class FormatUtils {
         return m;
     }
 
-    private static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Combinator combinator, final @NotNull Function<Combinator, String> classTagLookup) {
+    private static @NotNull Map<Keyword, Object> parserToMap(
+            final @NotNull Combinator combinator,
+            final @NotNull Function<Combinator, String> classTagLookup) {
         return switch (combinator) {
-            case AlternationCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parsers"), c.getParsers());
-            case CatCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parsers"), c.getParsers());
+            case CombinatorWithManyParsers c ->
+                    mapFromTagAndContents(c, classTagLookup, Keyword.intern("parsers"), c.getParsers());
+            case RepetitionCombinator c ->
+                    mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser(),
+                            Keyword.intern("min"), c.getMin(), Keyword.intern("max"), c.getMax());
+            case CombinatorWithParser c ->
+                    mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
             case EpsilonCombinator c -> mapFromTagAndContents(c, classTagLookup);
-            case LookaheadCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
-            case NegateCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
             case NonTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("keyword"), c.getKeyword());
-            case OptCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
-            case OrderedCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parsers"), c.getParsers());
-            case PlusCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
             case RegexpTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("regexp"), c.getRegexp());
-            case RepetitionCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser(), Keyword.intern("min"), c.getMin(), Keyword.intern("max"), c.getMax());
-            case StarCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
             case StringTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
-            case UnicodeCharTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("lo"), c.getLo(), Keyword.intern("hi"), c.getHi());
+            case UnicodeCharTerminal c -> mapFromTagAndContents(c, classTagLookup,
+                    Keyword.intern("lo"), c.getLo(), Keyword.intern("hi"), c.getHi());
         };
     }
 
@@ -130,10 +134,10 @@ public class FormatUtils {
         final @NotNull var start = parser.startProduction();
         final @NotNull var grammar = new LinkedHashMap<>();
         parser.grammar().entrySet().stream().map((kcEntry) ->
-                        new AbstractMap.SimpleImmutableEntry<>(kcEntry.getKey(), parserToMap(kcEntry.getValue(), classTagLookup))
-                ).forEach(kcEntry ->
+                new AbstractMap.SimpleImmutableEntry<>(kcEntry.getKey(), parserToMap(kcEntry.getValue(), classTagLookup))
+        ).forEach(kcEntry ->
                 grammar.put(kcEntry.getKey(), kcEntry.getValue())
-                );
+        );
         return Map.of(Keyword.intern("start"), start, Keyword.intern("grammar"), grammar);
     }
 }

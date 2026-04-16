@@ -8,6 +8,6 @@ public record ParseFailureNode(@NotNull String text, @NotNull Keyword key, int s
 
     @Override
     public @NotNull String toString() {
-        return "[" + key + ", could not parse \"" + text + "\"]";
+        return "[" + key + ", could not parse \"" + text + "\" at "+start+".." + end+"]";
     }
 }

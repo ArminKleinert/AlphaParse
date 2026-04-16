@@ -131,8 +131,8 @@ public final class Alpha {
         public static final @Nullable Keyword DEFAULT_START = null;
         public static final boolean DEFAULT_PARTIAL = false;
         public static final @NotNull Alpha.UnhideOptions DEFAULT_UNHIDE = UnhideOptions.none;
-        public static final boolean DEFAULT_TOTAL=false;
-        public static final boolean DEFAULT_OPTIMIZE_MEMORY=false;
+        public static final boolean DEFAULT_TOTAL = false;
+        public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
 
         private final @Nullable Keyword start;
         private final boolean partial;
@@ -181,23 +181,23 @@ public final class Alpha {
         }
 
         public @NotNull ParsingOptions withStartingProdSetTo(final @Nullable Keyword start) {
-            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         public @NotNull ParsingOptions withPartialSetTo(final boolean partial) {
-            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         public @NotNull ParsingOptions withUnhideOptionsSetTo(final @NotNull Alpha.UnhideOptions unhide) {
-            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         public @NotNull ParsingOptions withTotalParseSetTo(final boolean total) {
-            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         public ParsingOptions withOptMemorySetTo(final boolean optimizeMemory) {
-            return new ParsingOptions(start,partial,unhide,total,optimizeMemory);
+            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
     }
 
@@ -206,8 +206,8 @@ public final class Alpha {
                                         @NotNull Cfg.GlobalCaseInsensitivity stringCaseInsensitive,
                                         @NotNull ReductionType.ReductionTypesAvailable outputFormat) {
         private static final @NotNull ParserCreationOptions DEFAULT = new ParserCreationOptions(
-                        null, null,
-                        Cfg.GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
+                null, null,
+                Cfg.GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
 
         public static @NotNull ParserCreationOptions getDefault() {
             return DEFAULT;
@@ -234,17 +234,21 @@ public final class Alpha {
         }
 
         public ParserCreationOptions(final @Nullable Keyword startProduction) {
-            this(
-                    null, startProduction,
+            this(null, startProduction,
                     Cfg.GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType);
         }
 
         public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
-            this(
-                    null, null,
+            this(null, null,
                     Cfg.GlobalCaseInsensitivity.DEFAULT, outputFormat);
         }
+
+        public ParserCreationOptions withWhitespaceParser(final @Nullable Parser whitespaceParser) {return new ParserCreationOptions(whitespaceParser, startProduction,stringCaseInsensitive,outputFormat);}
+        public ParserCreationOptions withStartProduction(final @Nullable Keyword startProduction) {return new ParserCreationOptions(whitespaceParser, startProduction,stringCaseInsensitive,outputFormat);}
+        public ParserCreationOptions withCaseInsensitivity(final @Nullable Cfg.GlobalCaseInsensitivity stringCaseInsensitive) {return new ParserCreationOptions(whitespaceParser, startProduction,stringCaseInsensitive,outputFormat);}
+        public ParserCreationOptions withCaseInsensitivity(final boolean stringCaseInsensitive) {return new ParserCreationOptions(whitespaceParser, startProduction,stringCaseInsensitive? Cfg.GlobalCaseInsensitivity.TRUE: Cfg.GlobalCaseInsensitivity.FALSE,outputFormat);}
+        public ParserCreationOptions withOutputFormat(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {return new ParserCreationOptions(whitespaceParser, startProduction,stringCaseInsensitive,outputFormat);}
 
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
             return new ParserCreationOptions(

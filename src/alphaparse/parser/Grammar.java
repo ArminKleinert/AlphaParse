@@ -46,10 +46,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return new Grammar(m);
     }
 
-    public static @NotNull Grammar fromProductions(final @NotNull Map<Keyword, Combinator> kvs) {
-        return fromProductions(kvs.entrySet());
-    }
-
     public @Nullable Combinator getProduction(final @NotNull Keyword key) {
         return getOrDefault(key, null);
     }
@@ -89,10 +85,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 }
                 case CombinatorWithManyParsers combinatorWithManyParsers ->
                         combinatorStack.addAll(combinatorWithManyParsers.getParsers());
-                case CombinatorWithParser combinatorWithParser ->
-                        combinatorStack.add(combinatorWithParser.getParser());
-                case OrderedCombinator orderedCombinator ->
-                        combinatorStack.addAll(orderedCombinator.getParsers());
+                case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
             }
         } while (!combinatorStack.isEmpty());
 

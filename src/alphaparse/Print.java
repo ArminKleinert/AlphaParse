@@ -20,7 +20,7 @@ public final class Print {
 
     public static @NotNull String parenForCompound(final boolean hidden, final @NotNull Combinator parser) {
         return parenForTags(
-                (c) -> c instanceof AlternationCombinator || c instanceof OrderedCombinator || c instanceof CatCombinator,
+                (c) -> c instanceof CombinatorWithManyParsers,
                 hidden, parser);
     }
 
@@ -68,20 +68,20 @@ public final class Print {
             case AlternationCombinator alternationCombinator -> {
                 final @NotNull List<String> parserStrings =
                         alternationCombinator.getParsers().stream()
-                                .map(p -> parenForTags((c) -> c instanceof OrderedCombinator, hidden, p))
+                                .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
                                 .toList();
                 return String.join(" | ", parserStrings);
             }
             case OrderedCombinator orderedCombinator -> {
                 final @NotNull List<String> parserStrings =
                         orderedCombinator.getParsers().stream()
-                                .map(p -> parenForTags((c) -> c instanceof AlternationCombinator, hidden, p))
+                                .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
                                 .toList();
                 return String.join(" / ", parserStrings);
             }
             case CatCombinator catCombinator -> {
                 final @NotNull List<Combinator> parsers = catCombinator.getParsers();
-                final @NotNull Predicate<Combinator> ks = (c) -> c instanceof AlternationCombinator || c instanceof OrderedCombinator;
+                final @NotNull Predicate<Combinator> ks = (c) -> c instanceof CombinatorWithManyParsers;
                 final @NotNull Iterable<String> parserStrings =
                         parsers.stream().map(p -> parenForTags(ks, hidden, p)).toList();
                 return String.join(" ", parserStrings);
