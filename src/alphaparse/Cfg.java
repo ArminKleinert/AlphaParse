@@ -35,7 +35,7 @@ public final class Cfg {
     private static @NotNull Combinator buildRepRule(final @NotNull ParseTree tree,
                                                     final @NotNull CombinatorsSource combinatorsSource,
                                                     final @NotNull Alpha.ParserCreationOptions options) {
-        final var partsUncut = (String) tree.getContent().getFirst().content();
+        final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
         @NotNull var parts = partsUncut.split("\\*");
         if (parts.length == 0 || parts.length > 2) {
             throw new IllegalArgumentException("Invalid format for repetition rule: " + partsUncut);
@@ -84,7 +84,7 @@ public final class Cfg {
     private static @NotNull Object buildRule(@NotNull ParseTree tree,
                                              final @NotNull CombinatorsSource combinatorsSource,
                                              final @NotNull Alpha.ParserCreationOptions options) {
-        do {
+        for(;;) {
             if (tree.getTag().content().equals(ParseTree.NULL_TAG)) {
                 tree = (ParseTree) tree.getContent().getFirst().content();
                 continue;
@@ -144,15 +144,15 @@ public final class Cfg {
                     return buildRepRule(tree, combinatorsSource, options);
                 }
                 case "epsilon" -> {
-                    return CombinatorsSource.epsilon;
+                    return EpsilonCombinator.getDefault();
                 }
                 case "paren" -> {
                     tree = (ParseTree) tree.getContent().getFirst().content();
-                    continue; // Tail recursion (somewhat)
+                    continue; // Open up the grouping and continue.
                 }
             }
             throw new UnsupportedOperationException(tag);
-        } while (true);
+        }
     }
 
     private static @NotNull Grammar checkGrammarValidity(final @NotNull Grammar g) {

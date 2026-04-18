@@ -123,15 +123,14 @@ public final class Gll {
     private static @Nullable ParseTree run(
             final @NotNull Tramp tramp,
             final @NotNull AtomicBoolean foundResult) {
-        do {
+        for (;;) {
             if (tramp.getSuccess() != null) {
-                final var successResult = tramp.getSuccess();
+                final @NotNull var successResult = tramp.getSuccess();
                 final var resultTree = successResult.getResult();
                 if (!(resultTree instanceof ParseTree))
                     throw new IllegalStateException(successResult.toString());
                 tramp.setSuccess(null);
                 foundResult.set(true);
-                //return ((AlphaParseSuccess.AlphaParseSuccessParseResult) successResult).getResult().flattenRawProductions();
                 return (ParseTree) resultTree;
             }
             final List<Procedure> stack = tramp.getStack();
@@ -158,7 +157,7 @@ public final class Gll {
                 continue; // Take it to the top.
             }
             return null; // Fail
-        } while (true);
+        }
     }
 
     public static void pushListener(

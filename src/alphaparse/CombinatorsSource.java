@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public final class CombinatorsSource {
-    public static final @NotNull EpsilonCombinator epsilon = EpsilonCombinator.getDefault();
+    private final @NotNull EpsilonCombinator epsilon = EpsilonCombinator.getDefault();
     private final @NotNull CombinatorBuffer buffer = new CombinatorBuffer();
 
     public CombinatorsSource() {
@@ -65,11 +65,13 @@ public final class CombinatorsSource {
     public @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         final var parserStream = parsers.stream().filter(p -> !p.equals(epsilon)).iterator();
 
+        // If no parsers are provided, return the first one only.
         if (!parserStream.hasNext())
             return epsilon;
 
         final @NotNull var first = parserStream.next();
 
+        // If there is only one parser, then there is no point in making a grouping.
         if (!parserStream.hasNext())
             return first;
 

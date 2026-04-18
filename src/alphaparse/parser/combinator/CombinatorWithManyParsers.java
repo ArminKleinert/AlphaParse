@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public sealed abstract class CombinatorWithManyParsers extends Combinator permits AlternationCombinator, CatCombinator, OrderedCombinator {
+public sealed abstract class CombinatorWithManyParsers
+        extends Combinator
+        permits AlternationCombinator, CatCombinator, OrderedCombinator {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull List<@NotNull Combinator> parsers;
 

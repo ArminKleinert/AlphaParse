@@ -31,7 +31,17 @@ public final class Main {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
         int i = 0;
 
+        {
+            var grammar = "S = 'aa' | A+\nA = 'a'";
+            var result1 = Alpha.parse(Alpha.parser(grammar), "aa");
+            IO2.println(result1);
+            IO2.println(result1.getClass());
+            var result2 = Alpha.parses(Alpha.parser(grammar), "aa");
+            IO2.println(result2);
+            IO2.println(result2.getClass());
+        }
 
+        System.exit(0);
 //        /**/
 //        //while (i != 0)
 //        {

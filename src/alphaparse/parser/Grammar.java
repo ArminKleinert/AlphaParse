@@ -72,7 +72,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         final @NotNull ArrayList<@NotNull Combinator> combinatorStack = new ArrayList<>(values());
         @NotNull Combinator parser;
 
-        do {
+        while (!combinatorStack.isEmpty()) {
             parser = combinatorStack.removeLast();
             if (analyzedCombinators.contains(parser)) {
                 continue;
@@ -87,7 +87,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                         combinatorStack.addAll(combinatorWithManyParsers.getParsers());
                 case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
             }
-        } while (!combinatorStack.isEmpty());
+        }
 
         return result;
     }

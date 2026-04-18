@@ -6,19 +6,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class LazySupplierList<T> implements List<T> {
-    private final @NotNull List<@NotNull T> evaluatedPart;
+public class LazySupplierList<T extends @NotNull Object> implements List<@Nullable T> {
+    private final @NotNull List<T> evaluatedPart;
     private final int maxResults;
-    private Supplier<T> nextFn;
+    private Supplier<@Nullable T> nextFn;
     private boolean fullyEvaluated = false;
 
-    public LazySupplierList(final @NotNull Supplier<T> nextFn, final int maxResults) {
+    public LazySupplierList(final @NotNull Supplier<@Nullable T> nextFn, final int maxResults) {
         this.evaluatedPart = new ArrayList<>();
         this.nextFn = nextFn;
         this.maxResults = maxResults;
     }
 
-    public LazySupplierList(final @NotNull Supplier<T> nextFn) {
+    public LazySupplierList(final @NotNull Supplier<@Nullable T> nextFn) {
         this(nextFn, Integer.MAX_VALUE);
     }
 
@@ -51,9 +51,9 @@ public class LazySupplierList<T> implements List<T> {
         final StringBuilder sb = new StringBuilder();
         sb.append('[');
         int cursor = 0;
-        T first = getOrNull(cursor);
+        @Nullable T first = getOrNull(cursor);
         cursor++;
-        T second = getOrNull(cursor);
+        @Nullable T second = getOrNull(cursor);
         while (first != null) {
             sb.append(first);
             if (second == null) {

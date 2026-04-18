@@ -29,7 +29,7 @@ public final class ReductionType {
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ReductionType that = (ReductionType) o;
+        final @NotNull ReductionType that = (ReductionType) o;
         return Objects.equals(key, that.key);
     }
 
@@ -47,7 +47,7 @@ public final class ReductionType {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "{" +
                 "key=" + key +
                 ", type=" + type +
