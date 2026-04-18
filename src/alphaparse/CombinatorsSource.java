@@ -5,64 +5,71 @@ import alphaparse.reduction.Reduction;
 import alphaparse.parser.combinator.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
 public final class CombinatorsSource {
-    private final @NotNull EpsilonCombinator epsilon = EpsilonCombinator.getDefault();
-    private final @NotNull CombinatorBuffer buffer = new CombinatorBuffer();
+    private final @NotNull EpsilonCombinator epsilon;
+    private final @NotNull CombinatorBuffer buffer;
 
     public CombinatorsSource() {
+        epsilon = EpsilonCombinator.getDefault();
+        buffer = new CombinatorBuffer();
     }
 
-    public @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.size() == 1) return parsers.getFirst();
         if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
         return buffer.getOrAdd(new AlternationCombinator(parsers));
     }
 
-    public @NotNull Combinator optionalCombinator(final @NotNull Combinator parser) {
+    @NotNull Combinator optionalCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         return buffer.getOrAdd(new OptCombinator(parser));
     }
 
-    public @NotNull Combinator plusCombinator(final @NotNull Combinator parser) {
+    @NotNull Combinator plusCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         return buffer.getOrAdd(new PlusCombinator(parser));
     }
 
-    public @NotNull Combinator starCombinator(final @NotNull Combinator parser) {
+    @NotNull Combinator starCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         return buffer.getOrAdd(new StarCombinator(parser));
     }
 
-    public @NotNull Combinator repetitionCombinator(final int m, final int n, final @NotNull Combinator parser) {
+    @NotNull Combinator repetitionCombinator(final int m, final int n, final @NotNull Combinator parser) {
         if (m < 0 || m > n) throw new IllegalArgumentException();
         if ((m == 0 && n == 0) || parser.equals(epsilon)) return epsilon;
         return buffer.getOrAdd(new RepetitionCombinator(parser, m, n));
     }
 
-    public @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.isEmpty())
             return epsilon;
 
         if (parsers.size() == 1) return parsers.getFirst();
 
-        List<@NotNull Combinator> newParserList = null;
+        List<@Nullable Combinator> newParserList = null;
         for (int i = 0; i < parsers.size(); i++) {
             if (parsers.get(i).equals(epsilon)) {
                 if (newParserList == null) newParserList = new ArrayList<>(parsers);
-                else newParserList.remove(i);
+                else newParserList.set(i, null); // mark for removal
             }
         }
-        if (newParserList==null) newParserList = parsers;
+
+        if (newParserList == null)
+            newParserList = parsers;
+        else
+            newParserList = newParserList.stream().filter(Objects::nonNull).toList();
 
         if (newParserList.size() == 1) return newParserList.getFirst();
         return buffer.getOrAdd(new OrderedCombinator(newParserList));
     }
 
-    public @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         final var parserStream = parsers.stream().filter(p -> !p.equals(epsilon)).iterator();
 
         // If no parsers are provided, return the first one only.
@@ -84,29 +91,29 @@ public final class CombinatorsSource {
         return buffer.getOrAdd(new CatCombinator(parserList));
     }
 
-    public @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string, final boolean caseInsensitive) {
+    @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string, final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
         return buffer.getOrAdd(new StringTerminal(string, caseInsensitive));
     }
 
-    public @NotNull Combinator stringTerminal(final @NotNull String string) {
+    @NotNull Combinator stringTerminal(final @NotNull String string) {
         if (string.isEmpty()) return epsilon;
         return buffer.getOrAdd(new StringTerminal(string, false));
     }
 
-    public @NotNull Combinator unicodeChar(final int lohi) {
+    @NotNull Combinator unicodeChar(final int lohi) {
         return buffer.getOrAdd(new UnicodeCharTerminal(lohi, lohi));
     }
 
-    public @NotNull Combinator unicodeChar(final int lo, final int hi) {
+    @NotNull Combinator unicodeChar(final int lo, final int hi) {
         return buffer.getOrAdd(new UnicodeCharTerminal(lo, hi));
     }
 
-    public @NotNull RegexpTerminal createRegexTerminal(final @NotNull Pattern regex) {
+    @NotNull RegexpTerminal createRegexTerminal(final @NotNull Pattern regex) {
         return buffer.getOrAdd(new RegexpTerminal(regex));
     }
 
-    public @NotNull NonTerminal makeNonTerminal(final @NotNull Keyword keyword) {
+    @NotNull NonTerminal makeNonTerminal(final @NotNull Keyword keyword) {
         return buffer.getOrAdd(new NonTerminal(keyword));
     }
 
@@ -114,22 +121,22 @@ public final class CombinatorsSource {
         return new NonTerminal(keyword);
     }
 
-    public @NotNull Combinator makeLookahead(final @NotNull Combinator parser) {
+    @NotNull Combinator makeLookahead(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         return buffer.getOrAdd(new LookaheadCombinator(parser));
     }
 
-    public @NotNull Combinator negateRule(final @NotNull Combinator parser) {
+    @NotNull Combinator negateRule(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         return buffer.getOrAdd(new NegateCombinator(parser));
     }
 
 
-    public @NotNull Combinator hideTag(final @NotNull Combinator parser) {
+    @NotNull Combinator hideTag(final @NotNull Combinator parser) {
         return buffer.getOrAdd(parser.withReduction(Reduction.rawNonTerminalReduction));
     }
 
-    public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
+    @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
@@ -139,8 +146,8 @@ public final class CombinatorsSource {
         return Grammar.fromProductions(res);
     }
 
-    public @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
-                                       final @NotNull Grammar grammar) {
+    @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
+                                final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
@@ -152,8 +159,8 @@ public final class CombinatorsSource {
         return Grammar.fromProductions(res);
     }
 
-    public @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
-                                      final @NotNull Grammar grammar) {
+    @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
+                               final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
@@ -170,7 +177,8 @@ public final class CombinatorsSource {
         return switch (parser) {
             case NonTerminal ignored -> parser;
             case EpsilonCombinator ignored2 -> parser;
-            case CombinatorWithParser parser1 -> buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
+            case CombinatorWithParser parser1 ->
+                    buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
                 @NotNull List<Combinator> parsers = combWithParsers.getParsers().stream()
                         .map(p -> autoWhitespaceParser(p, wsParser))
@@ -206,11 +214,11 @@ public final class CombinatorsSource {
         }
 
         final @NotNull Combinator startWithoutReduction = buffer
-                        .getOrAdd(finalGrammar.get(start)
+                .getOrAdd(finalGrammar.get(start)
                         .withReduction(Reduction.nullReduction));
         final @NotNull Combinator newStartComb =
                 catCombinator(List.of(startWithoutReduction, wsParser))
-                .withReduction(finalGrammar.get(start).getReduction());
+                        .withReduction(finalGrammar.get(start).getReduction());
 
         finalGrammar.put(start, newStartComb);
         finalGrammar.putAll(grammarWS);

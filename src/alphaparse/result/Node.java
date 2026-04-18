@@ -19,7 +19,7 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
         };
     }
 
-    Object content();
+    @NotNull Object content();
 
     record NodeTreeTag(@NotNull Keyword content) implements Node {
         @Override

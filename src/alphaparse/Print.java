@@ -19,7 +19,7 @@ public final class Print {
         return combinatorsToString(parser, false);
     }
 
-    public static @NotNull String parenForCompound(final boolean hidden, final @NotNull Combinator parser) {
+    private static @NotNull String parenForCompound(final boolean hidden, final @NotNull Combinator parser) {
         return parenForTags(
                 (c) -> c instanceof CombinatorWithManyParsers,
                 hidden, parser);
@@ -40,7 +40,7 @@ public final class Print {
         return combinatorsToString(parser, false);
     }
 
-    public static @NotNull String combinatorsToString(final @NotNull Combinator parser, final boolean hidden) {
+    private static @NotNull String combinatorsToString(final @NotNull Combinator parser, final boolean hidden) {
         if (!hidden && parser.isHidden())
             return "<" + combinatorsToString(parser, true) + ">";
 

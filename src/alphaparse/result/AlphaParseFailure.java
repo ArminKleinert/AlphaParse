@@ -31,7 +31,7 @@ public record AlphaParseFailure(int index,
         return "[" + index + ", " + reason + ", " + line + ", " + column + ", " + text + "]";
     }
 
-    public@NotNull String checkCorrectness(
+    public @NotNull String checkCorrectness(
             final int failIndex,
             final int failColumn,
             final int failLine,

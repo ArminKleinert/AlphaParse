@@ -189,8 +189,8 @@ class AlphaTest {
             final @NotNull var ps = Alpha.parses(p, text);
             final @NotNull var possibleParses = List.of(
                     ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
-                    ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
                     ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
+                    ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
                     ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r2", "a"))
             );
             Assertions.assertEquals(possibleParses, ps);
@@ -216,13 +216,13 @@ class AlphaTest {
         return List.of(
                 ParseTree.create(
                         "S",
-                        ParseTree.create("S", ParseTree.create("S", "A"), ParseTree.create("S", "B")),
-                        ParseTree.create("S", "A")
+                        ParseTree.create("S", "A"),
+                        ParseTree.create("S", ParseTree.create("S", "B"), ParseTree.create("S", "A"))
                 ),
                 ParseTree.create(
                         "S",
-                        ParseTree.create("S", "A"),
-                        ParseTree.create("S", ParseTree.create("S", "B"), ParseTree.create("S", "A"))
+                        ParseTree.create("S", ParseTree.create("S", "A"), ParseTree.create("S", "B")),
+                        ParseTree.create("S", "A")
                 )
         );
     }
@@ -262,16 +262,16 @@ class AlphaTest {
                 ParseTree.create("S"),
                 ParseTree.create("S", ParseTree.create("r1", "a")),
                 ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
-                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r1", "a")),
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r3", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r2", "a")),
-                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r2", "a")),
-                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r1", "a")),
-                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r3", "a")),
                 ParseTree.create("S", ParseTree.create("r2", "a"), ParseTree.create("r3", "a")),
-                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r3", "a"))
+                ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r3", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r2", "a")),
+                ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r1", "a"))
         );
     }
 }

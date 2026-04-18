@@ -10,17 +10,15 @@ import java.util.List;
 import java.util.SequencedMap;
 import java.util.regex.Pattern;
 
-public final class EbnfG {
+final class EbnfG {
     private static final @NotNull Combinator optWhitespace =
             new CombinatorsSource().makeNonTerminal(Keyword.intern("opt-whitespace")).enableHideTag();
 
-    @NotNull
-    private static Pattern regexDoc(final @NotNull String patternString, final @NotNull String comment) {
+    private static @NotNull Pattern regexDoc(final @NotNull String patternString, final @NotNull String comment) {
         return Pattern.compile(patternString + "(?x) #" + comment);
     }
 
-    @NotNull
-    private static Combinator makeCfgRulesRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRulesRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule = combinatorsSource.catCombinator(
                         List.of(optWhitespace,
                                 combinatorsSource.plusCombinator(
@@ -29,8 +27,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgCommentRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgCommentRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("(*"),
@@ -39,8 +36,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgInsideCommentRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgInsideCommentRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Pattern insideComment = regexDoc("(?s)(?:(?!(?:\\(\\*|\\*\\))).)*", "Comment text");
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
@@ -52,8 +48,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgOptWhitespaceRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOptWhitespaceRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Pattern ws = regexDoc("[,\\s]*", "optional whitespace");
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
@@ -77,8 +72,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgFactorRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgFactorRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.alternationCombinator(
                                 List.of(combinatorsSource.makeNonTerminal(Keyword.intern("nt")),
@@ -95,8 +89,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgPlusRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgPlusRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
@@ -105,8 +98,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgRuleSeparatorRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRuleSeparatorRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.alternationCombinator(
                         List.of(combinatorsSource.stringTerminal(":"),
@@ -116,8 +108,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgParenRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgParenRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("(").enableHideTag(),
@@ -128,8 +119,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgHideRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgHideRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("<").enableHideTag(),
@@ -140,8 +130,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgStringRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgStringRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Pattern singleQuotedString =
                 regexDoc("'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted string");
         final @NotNull Pattern doubleQuotedString =
@@ -153,8 +142,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgRegexRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRegexRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Pattern singleQuotedRegex =
                 regexDoc("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted regexp");
         final @NotNull Pattern doubleQuotedRegex =
@@ -166,8 +154,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgRulesOrParserRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRulesOrParserRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.alternationCombinator(
                                 List.of(combinatorsSource.makeNonTerminal(Keyword.intern("rules")),
@@ -176,8 +163,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgNtRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgNtRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(List.of(
                         combinatorsSource.negateRule(
@@ -187,8 +173,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgRepRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRepRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(List.of(
                         combinatorsSource.alternationCombinator(
@@ -200,8 +185,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgLookRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgLookRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("&").enableHideTag(),
@@ -210,8 +194,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgNegRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgNegRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("!").enableHideTag(),
@@ -220,8 +203,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgOneOrMoreRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOneOrMoreRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRuleCurlies =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("{").enableHideTag(),
@@ -239,8 +221,7 @@ public final class EbnfG {
         return rule;
     }
 
-    @NotNull
-    private static Combinator makeCfgOptRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOptRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesBrackets =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("[").enableHideTag(),
@@ -258,8 +239,7 @@ public final class EbnfG {
         return rule;
     }
 
-    @NotNull
-    private static Combinator makeCfgAltOrOrdRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgAltOrOrdRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.alternationCombinator(
                                 List.of(combinatorsSource.makeNonTerminal(Keyword.intern("alt")),
@@ -268,8 +248,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgHideNtRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgHideNtRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.stringTerminal("<").enableHideTag(),
@@ -280,8 +259,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgRuleRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRuleRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator optWs = combinatorsSource.makeNonTerminal(Keyword.intern("opt-whitespace"));
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
@@ -304,8 +282,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgOrdRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOrdRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
                         List.of(combinatorsSource.makeNonTerminal(Keyword.intern("cat")),
@@ -318,8 +295,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgAltRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgAltRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator catNt = combinatorsSource.makeNonTerminal(Keyword.intern("cat"));
         final @NotNull Combinator rulesRule =
                 combinatorsSource.catCombinator(
@@ -333,8 +309,7 @@ public final class EbnfG {
         return rulesRule;
     }
 
-    @NotNull
-    private static Combinator makeCfgCatRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgCatRhs(final @NotNull CombinatorsSource combinatorsSource) {
         final @NotNull Combinator factorLookNeg = combinatorsSource.alternationCombinator(List.of(
                 combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
                 combinatorsSource.makeNonTerminal(Keyword.intern("look")),

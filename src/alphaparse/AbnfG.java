@@ -1,4 +1,4 @@
 package alphaparse;
 
-public final class AbnfG {
+final class AbnfG {
 }

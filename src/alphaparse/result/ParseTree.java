@@ -6,19 +6,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public final class ParseTree implements List<Node>, AlphaParseResult {
+public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     public static @NotNull String NULL_TAG_NAME = "\0\0\0\0";
     public static @NotNull Keyword NULL_TAG = Keyword.intern(NULL_TAG_NAME);
 
     private final @NotNull Node.NodeTreeTag tag;
-    private final @NotNull List<Node> content;
+    private final @NotNull List<@NotNull Node> content;
     private int hashCode = 0;
     private final boolean hasNullTag;
     private final boolean isFlat;
     private final boolean usedMemoryOptimization;
 
     private ParseTree(final @NotNull Node.NodeTreeTag tag,
-                      final @NotNull List<Node> content,
+                      final @NotNull List<@NotNull Node> content,
                       final boolean isFlat,
                       final boolean usedMemoryOptimization) {
         this.hasNullTag = tag.content().equals(NULL_TAG);
@@ -33,7 +33,7 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
         return tag;
     }
 
-    public @NotNull List<Node> getContent() {
+    public @NotNull List<@NotNull Node> getContent() {
         return content;
     }
 
@@ -41,8 +41,8 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
         return usedMemoryOptimization;
     }
 
-    public @NotNull List<Node> toList() {
-        final @NotNull List<Node> alist = new ArrayList<>();
+    public @NotNull List<@NotNull Node> toList() {
+        final @NotNull List<@NotNull Node> alist = new ArrayList<>();
         alist.add(tag);
         alist.addAll(content);
         return new UnmodList<>(alist);
@@ -65,9 +65,9 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     }
 
     @Override
-    public @NotNull Iterator<Node> iterator() {
+    public @NotNull Iterator<@NotNull Node> iterator() {
         return new Iterator<>() {
-            Iterator<Node> delegate = null;
+            Iterator<@NotNull Node> delegate = null;
 
             @Override
             public boolean hasNext() {
@@ -221,13 +221,13 @@ public final class ParseTree implements List<Node>, AlphaParseResult {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return toList().toString();
     }
 
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content) {
-        return create(tag,content,false);
+        return create(tag, content, false);
     }
 
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,

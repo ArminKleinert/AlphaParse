@@ -30,13 +30,13 @@ class AlphaCoreTest {
                     B = #'b'+
                     """);
 
-    final @NotNull Parser as_and_bs_enlive = Alpha.parser(
-            """
-                    S = AB*
-                    AB = A B
-                    A = 'a'+
-                    B = 'b'+""",
-            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
+//    final @NotNull Parser as_and_bs_enlive = Alpha.parser(
+//            """
+//                    S = AB*
+//                    AB = A B
+//                    A = 'a'+
+//                    B = 'b'+""",
+//            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
 
     final @NotNull Parser as_and_bs_variation1 = Alpha.parser(
             """
@@ -78,11 +78,11 @@ class AlphaCoreTest {
                     <seq-of-A-or-B> = ('a' | 'b')*
                     """);
 
-    final @NotNull Parser addition = Alpha.parser(
-            """
-                    plus = plus <'+'> plus | num
-                    num = #'[0-9]'+
-                    """);
+//    final @NotNull Parser addition = Alpha.parser(
+//            """
+//                    plus = plus <'+'> plus | num
+//                    num = #'[0-9]'+
+//                    """);
 
     final @NotNull Parser words_and_numbers = Alpha.parser(
             """
@@ -131,12 +131,12 @@ class AlphaCoreTest {
                     S = !'ab' ('a' | 'b')+
                     """);
 
-    final @NotNull Parser abc = Alpha.parser(
-            """
-                    S = &(A 'c') 'a'+ B
-                    A = 'a' A? 'b'
-                    <B> = 'b' B? 'c'
-                    """);
+//    final @NotNull Parser abc = Alpha.parser(
+//            """
+//                    S = &(A 'c') 'a'+ B
+//                    A = 'a' A? 'b'
+//                    <B> = 'b' B? 'c'
+//                    """);
 
     final @NotNull Parser ambiguous_tokenizer = Alpha.parser(
             """
@@ -165,30 +165,30 @@ class AlphaCoreTest {
                     keyword = 'cond' | 'defn'
                     """);
 
-    final @NotNull Parser ord_test = Alpha.parser(
-            """
-                    S = Even / Odd
-                    Even = 'aa'*
-                    Odd = 'a'+
-                    """);
+//    final @NotNull Parser ord_test = Alpha.parser(
+//            """
+//                    S = Even / Odd
+//                    Even = 'aa'*
+//                    Odd = 'a'+
+//                    """);
 
-    final @NotNull Parser ord2_test = Alpha.parser(
-            """
-                    S = token (<ws> token)*
-                    ws = #'\\s+'
-                    keyword = 'hello' | 'bye'
-                    identifier = #'\\S+'
-                    token = keyword / identifier
-                    """
-    );
+//    final @NotNull Parser ord2_test = Alpha.parser(
+//            """
+//                    S = token (<ws> token)*
+//                    ws = #'\\s+'
+//                    keyword = 'hello' | 'bye'
+//                    identifier = #'\\S+'
+//                    token = keyword / identifier
+//                    """
+//    );
 
-    final @NotNull Parser even_odd = Alpha.parser(
-            """
-                    S = Even | Odd
-                    eos = !#'.'
-                    Even = 'aa'*
-                    Odd = !(Even eos) 'a'+
-                    """);
+//    final @NotNull Parser even_odd = Alpha.parser(
+//            """
+//                    S = Even | Odd
+//                    eos = !#'.'
+//                    Even = 'aa'*
+//                    Odd = !(Even eos) 'a'+
+//                    """);
 
     final @NotNull Parser arithmetic = Alpha.parser(
             """
@@ -1018,8 +1018,8 @@ class AlphaCoreTest {
                 p.parse("AaaAaa", opts)
         );
 
-        // FIXME
-        IO2.println(p.parse("", opts)); // FIXME: Expected error.
+        // TODO: Expected error?
+        IO2.println(p.parse("", opts));
         Assertions.assertTrue(p.parse("", opts).isFailure());
     }
 
@@ -1051,7 +1051,7 @@ class AlphaCoreTest {
         var pStandard2 = Alpha.parser(grammar,
                 Alpha.ParserCreationOptions
                         .getDefault()
-                        .withCaseInsensitivity(Cfg.GlobalCaseInsensitivity.FALSE));
+                        .withCaseInsensitivity(GlobalCaseInsensitivity.FALSE));
         Assertions.assertTrue(pStandard2.parse(text).isFailure());
 
         var pStandard3 = Alpha.parser(grammar,
@@ -1071,7 +1071,7 @@ class AlphaCoreTest {
         var pCaseInsensitive = Alpha.parser(grammar,
                 Alpha.ParserCreationOptions
                         .getDefault()
-                        .withCaseInsensitivity(Cfg.GlobalCaseInsensitivity.TRUE));
+                        .withCaseInsensitivity(GlobalCaseInsensitivity.TRUE));
         Assertions.assertEquals(tree, pCaseInsensitive.parse(text));
 
         var pCaseInsensitive2 = Alpha.parser(grammar,

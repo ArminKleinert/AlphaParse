@@ -8,13 +8,9 @@ import alphaparse.result.success.AlphaParseSuccess;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.SequencedMap;
+import java.util.*;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-
 
 public final class Tramp {
     private final @NotNull Grammar grammar;
@@ -34,15 +30,15 @@ public final class Tramp {
         this(grammar, text, text, -1);
     }
 
-    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final int failIndex) {
+     public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final int failIndex) {
         this(grammar, text, text, failIndex);
     }
 
-    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment) {
-        this(grammar, text, segment, -1);
-    }
+//     Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment) {
+//        this(grammar, text, segment, -1);
+//    }
 
-    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment, final int failIndex) {
+    private Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment, final int failIndex) {
         this.grammar = grammar;
         this.text = text;
         this.segment = segment;
@@ -50,8 +46,8 @@ public final class Tramp {
         this.stack = new ArrayList<>();
         this.nextStack = new ArrayList<>();
         this.generation = 0;
-        //this.negativeListeners = new TreeMap<>(Comparator.comparingInt((Integer o) -> o).reversed());
-        this.negativeListeners = new LinkedHashMap<>();
+        this.negativeListeners = new TreeMap<>(Comparator.comparingInt((Integer o) -> o).reversed());
+        //this.negativeListeners = new LinkedHashMap<>();
         this.msgCache = new LinkedHashMap<>();
         this.nodes = new LinkedHashMap<>();
         this.success = null;

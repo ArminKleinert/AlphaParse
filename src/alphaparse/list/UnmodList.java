@@ -55,7 +55,7 @@ public final class UnmodList<T> implements List<T> {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return Arrays.toString(inner);
     }
 

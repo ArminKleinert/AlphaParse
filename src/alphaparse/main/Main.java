@@ -1,5 +1,9 @@
-package alphaparse;
+package alphaparse.main;
 
+import alphaparse.Alpha;
+import alphaparse.GlobalCaseInsensitivity;
+import alphaparse.IO2;
+import alphaparse.Keyword;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.ParseConverterUtils;
@@ -15,7 +19,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public final class Main {
+ final class Main {
 
     private static String readFile(String path) {
         final @NotNull String text;
@@ -31,17 +35,6 @@ public final class Main {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
         int i = 0;
 
-        {
-            var grammar = "S = 'aa' | A+\nA = 'a'";
-            var result1 = Alpha.parse(Alpha.parser(grammar), "aa");
-            IO2.println(result1);
-            IO2.println(result1.getClass());
-            var result2 = Alpha.parses(Alpha.parser(grammar), "aa");
-            IO2.println(result2);
-            IO2.println(result2.getClass());
-        }
-
-        System.exit(0);
 //        /**/
 //        //while (i != 0)
 //        {
@@ -77,8 +70,12 @@ public final class Main {
 
         /**/
         {
-            final @NotNull var p = Alpha.parser("S : 'ABC'",
-                    new Alpha.ParserCreationOptions(null, null, Cfg.GlobalCaseInsensitivity.TRUE, ReductionType.ReductionTypesAvailable.defaultType));
+            final @NotNull var opts = new Alpha.ParserCreationOptions(
+                    null,
+                    null,
+                    GlobalCaseInsensitivity.TRUE,
+                    ReductionType.ReductionTypesAvailable.defaultType);
+            final @NotNull var p = Alpha.parser("S : 'ABC'", opts);
             IO2.println(Alpha.parses(p, "ABC"));
             IO2.println(Alpha.parses(p, "AbC"));
             IO2.println(Alpha.parses(p, "abc"));
@@ -127,10 +124,10 @@ public final class Main {
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 1, 10);
+        PerfTest.fullTest(true, c99GrammarText, 10, 100);
 
         /**/
-        PerfTest.testNumberOfParses(true, 2);
+        PerfTest.testNumberOfParses(true, 23);
 
         /**/
         {

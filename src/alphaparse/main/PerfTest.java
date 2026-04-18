@@ -1,5 +1,7 @@
-package alphaparse;
+package alphaparse.main;
 
+import alphaparse.Alpha;
+import alphaparse.IO2;
 import alphaparse.list.UnmodList;
 import alphaparse.result.ParseTree;
 import alphaparse.util.TimeUtil;
@@ -7,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class PerfTest {
+class PerfTest {
     public static void fullTest(
             final boolean doRun,
             final @NotNull String c99GrammarText,
@@ -223,8 +225,8 @@ Count of parses: {:lowest 13.937, :highest 18.469, :average 14.255, :mid 14.182,
     }
 
 
-    public static void testNumberOfParses(final boolean doRun,
-                                          final int max) // Currently tested with max=23, number is exclusive
+    static void testNumberOfParses(final boolean doRun,
+                                   final int max) // Currently tested with max=23, number is exclusive
     {
         if (!doRun)
             return;

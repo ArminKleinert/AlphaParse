@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class ParseConverterUtils {
+public final class ParseConverterUtils {
     public static @NotNull ParseTree parseTreeFromHiccup(final @NotNull List<?> pt) {
         if (pt.isEmpty()) throw new IllegalArgumentException();
         final @NotNull var tag = pt.getFirst();

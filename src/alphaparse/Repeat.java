@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Repeat {
+final class Repeat {
     public static AlphaParseFailure failureSignal = new AlphaParseFailure(-1, new ArrayList<>());
 
     private static boolean isEmptyResult(final @NotNull Object result) {
