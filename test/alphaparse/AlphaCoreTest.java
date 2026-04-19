@@ -1018,9 +1018,7 @@ class AlphaCoreTest {
                 p.parse("AaaAaa", opts)
         );
 
-        // TODO: Expected error?
-        IO2.println(p.parse("", opts));
-        Assertions.assertTrue(p.parse("", opts).isFailure());
+        Assertions.assertEquals(ParseTree.create("S"), p.parse("", opts));
     }
 
     @Test

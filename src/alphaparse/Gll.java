@@ -133,7 +133,7 @@ public final class Gll {
                 foundResult.set(true);
                 return (ParseTree) resultTree;
             }
-            final List<Procedure> stack = tramp.getStack();
+            final @NotNull List<@NotNull Procedure> stack = tramp.getStack();
             if (!stack.isEmpty()) {
                 step(tramp);
                 continue; // Take it to the top.

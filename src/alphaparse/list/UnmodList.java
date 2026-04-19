@@ -46,12 +46,8 @@ public final class UnmodList<T> implements List<T> {
     @Override
     public int hashCode() {
         if (hashCode != 0)
-            return hashCode;
-        int hc = 1;
-        for (final T e : this)
-            hc = hc * 31 + Objects.hashCode(e);
-        hashCode = hc;
-        return hc;
+            hashCode = Arrays.hashCode(inner);
+        return hashCode;
     }
 
     @Override
