@@ -2,7 +2,6 @@ package alphaparse.parser.combinator;
 
 import alphaparse.trampoline.Tramp;
 import alphaparse.Print;
-import alphaparse.reduction.Reduction;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +15,7 @@ public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWi
     }
 
     protected Combinator() {
-        this(false, Reduction.nullReduction);
+        this(false, ReductionType.nullReduction());
     }
 
     public abstract void parse(final int index, final @NotNull Tramp tramp);
@@ -44,7 +43,7 @@ public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWi
     }
 
     public final @NotNull Combinator hideTag() {
-        return withReduction(Reduction.rawNonTerminalReduction);
+        return withReduction(ReductionType.rawNonTerminalReduction());
     }
 
     @Override

@@ -7,7 +7,6 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.ParseTree;
 import alphaparse.parser.combinator.Combinator;
 import alphaparse.parser.Grammar;
-import alphaparse.reduction.Reduction;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import alphaparse.result.failure.FailureUtil;

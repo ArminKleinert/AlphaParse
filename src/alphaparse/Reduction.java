@@ -1,9 +1,9 @@
-package alphaparse.reduction;
+package alphaparse;
 
-import alphaparse.Keyword;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.parser.Grammar;
 import alphaparse.parser.combinator.Combinator;
+import alphaparse.reduction.ReductionType;
 import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
@@ -14,41 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public final class Reduction {
-    public static final @NotNull ReductionType rawNonTerminalReduction
-            = new ReductionType(ParseTree.NULL_TAG, ReductionType.ReductionTypesAvailable.RAW, true);
-    public static final @NotNull ReductionType nullReduction
-            = new ReductionType(ParseTree.NULL_TAG, ReductionType.ReductionTypesAvailable.NONE, true);
+final class Reduction {
 
     private Reduction() {
     }
 
-    // Argument is LazySeq, PersistentVector, Cons, or null
-    public static <T> boolean isSingleton(final List<T> list) {
-        if (list == null) return false;
-        return list.size() == 1;
-    }
-
-    public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
-        return new ReductionType(key, ReductionType.ReductionTypesAvailable.defaultType);
-    }
-
-    public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
-        return new ReductionType(key, type);
-    }
-
-    public static @NotNull Grammar applyStandardReductions(final @NotNull Grammar grammar) {
+    static @NotNull Grammar applyStandardReductions(final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> m = new ArrayList<>();
         grammar.forEach((prodKey, pars) -> {
             if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.NONE)
-                pars = pars.withReduction(defaultNonRawReduction(prodKey));
+                pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
 
             m.add(Grammar.entry(prodKey, pars));
         });
         return Grammar.fromProductions(m);
     }
 
-    public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
+    static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
         final @NotNull var afs = switch (result) {
             case null -> List.<Node>of();
             case AutoFlattenSeq<?> objects -> objects.toNodes();

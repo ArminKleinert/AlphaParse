@@ -1,7 +1,6 @@
 package alphaparse;
 
 import alphaparse.parser.Grammar;
-import alphaparse.reduction.Reduction;
 import alphaparse.parser.combinator.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +64,7 @@ public final class CombinatorsSource {
         else
             newParserList = newParserList.stream().filter(Objects::nonNull).toList();
 
-        if (newParserList.size() == 1) return newParserList.getFirst();
+        if (newParserList.size() == 1) return Objects.requireNonNull(newParserList.getFirst());
         return buffer.getOrAdd(new OrderedCombinator(newParserList));
     }
 
@@ -84,9 +83,9 @@ public final class CombinatorsSource {
 
         final @NotNull var parserList = new ArrayList<Combinator>();
         parserList.add(first);
-        do {
+        while (parserStream.hasNext()) {
             parserList.add(parserStream.next());
-        } while (parserStream.hasNext());
+        }
 
         return buffer.getOrAdd(new CatCombinator(parserList));
     }
@@ -133,12 +132,12 @@ public final class CombinatorsSource {
 
 
     @NotNull Combinator hideTag(final @NotNull Combinator parser) {
-        return buffer.getOrAdd(parser.withReduction(Reduction.rawNonTerminalReduction));
+        return buffer.getOrAdd(parser.withReduction(ReductionType.rawNonTerminalReduction()));
     }
 
     @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
-        for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (final@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             res.add(Grammar.entry(key, buffer.getOrAdd(value.unhideContent())));
@@ -149,10 +148,10 @@ public final class CombinatorsSource {
     @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
                                 final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
-        for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (final@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
-            final @NotNull ReductionType reduction = new ReductionType(key, reductionType);
+            final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
             final @NotNull Combinator comb = buffer.getOrAdd(value.withReduction(reduction));
             res.add(Grammar.entry(key, comb));
         }
@@ -162,10 +161,10 @@ public final class CombinatorsSource {
     @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
                                final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
-        for (@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (final@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
-            final @NotNull ReductionType reduction = new ReductionType(key, reductionType);
+            final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
             final @NotNull Combinator comb = buffer.getOrAdd(value.unhideContent().withReduction(reduction));
             res.add(Grammar.entry(key, comb));
         }
@@ -180,7 +179,8 @@ public final class CombinatorsSource {
             case CombinatorWithParser parser1 ->
                     buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
-                @NotNull List<Combinator> parsers = combWithParsers.getParsers().stream()
+                final @NotNull List<Combinator> parsers = combWithParsers.getParsers()
+                        .stream()
                         .map(p -> autoWhitespaceParser(p, wsParser))
                         .toList();
                 yield buffer.getOrAdd(combWithParsers.withParsers(parsers));
@@ -190,7 +190,7 @@ public final class CombinatorsSource {
                 parsers.add(wsParser);
                 final @NotNull Combinator result;
                 if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.NONE) {
-                    parsers.add(parser.withReduction(Reduction.nullReduction));
+                    parsers.add(parser.withReduction(ReductionType.nullReduction()));
                     result = catCombinator(parsers).withReduction(parser.getReduction());
                 } else {
                     parsers.add(parser);
@@ -215,7 +215,7 @@ public final class CombinatorsSource {
 
         final @NotNull Combinator startWithoutReduction = buffer
                 .getOrAdd(finalGrammar.get(start)
-                        .withReduction(Reduction.nullReduction));
+                        .withReduction(ReductionType.nullReduction()));
         final @NotNull Combinator newStartComb =
                 catCombinator(List.of(startWithoutReduction, wsParser))
                         .withReduction(finalGrammar.get(start).getReduction());

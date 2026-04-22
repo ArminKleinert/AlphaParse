@@ -3,7 +3,6 @@ package alphaparse.parser.combinator;
 import alphaparse.Gll;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.functions.Listener;
-import alphaparse.reduction.Reduction;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -137,7 +136,7 @@ final class GllParserListeners {
                     ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
 
-            if (Reduction.isSingleton(parserSequence)) {
+            if (parserSequence.size() == 1) {
                 Gll.pushFullListener(tramp, new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
                         catFullListener(newResultsSoFar, List.of(), nodeKey, tramp));
             } else if (!parserSequence.isEmpty()) {

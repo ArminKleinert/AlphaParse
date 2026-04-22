@@ -1,7 +1,7 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
-import alphaparse.reduction.Reduction;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
@@ -16,7 +16,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     private final int max;
 
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
-        this(parser, min, max, false, Reduction.nullReduction);
+        this(parser, min, max, false, ReductionType.nullReduction());
     }
 
     private RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max, final boolean hide, final @NotNull ReductionType reduction) {

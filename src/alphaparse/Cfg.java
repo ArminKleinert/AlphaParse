@@ -4,7 +4,6 @@ import alphaparse.parser.Grammar;
 import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.parser.Parser;
-import alphaparse.reduction.Reduction;
 import alphaparse.parser.combinator.*;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.util.StrParser;
