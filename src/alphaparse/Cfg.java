@@ -88,7 +88,7 @@ final class Cfg {
                 continue;
             }
 
-            final @NotNull var tag = tree.getTag().content().sym;
+            final @NotNull var tag = tree.getTag().content().getName();
             switch (tag) {
                 case "rule" -> {
                     return buildRuleRule(tree, combinatorsSource, options);

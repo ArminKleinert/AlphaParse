@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Viztool {
+    /**
+     *
+     * @param printer
+     * @param parseRes
+     * @param count
+     * @return
+     */
     public static int dumpParseTreeHelp(final @NotNull PrintStream printer,
                                         final @NotNull List<Node> parseRes,
                                         final @NotNull AtomicInteger count) {
@@ -30,6 +37,11 @@ public class Viztool {
         return currentId;
     }
 
+    /**
+     *
+     * @param parseRes
+     * @return
+     */
     private static @NotNull String getLabel(@NotNull List<Node> parseRes) {
         final @NotNull Node fpr = parseRes.getFirst();
         final @NotNull var label = switch (fpr) {
@@ -43,6 +55,14 @@ public class Viztool {
         return label.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
+    /**
+     *
+     * @param dotFileNamePrefix
+     * @param parseRes
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static int dumpParseTree(
             final @NotNull String dotFileNamePrefix,
             final @NotNull ParseTree parseRes) throws IOException, InterruptedException {
@@ -63,6 +83,7 @@ public class Viztool {
         return ret;
     }
 }
+
 //      APENOESCAPENOE
 //   ESCAPENOESCAPENOESCA
 // NOESCAPENOESCAPENOESCAPE

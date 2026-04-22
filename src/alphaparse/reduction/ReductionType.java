@@ -23,6 +23,10 @@ public final class ReductionType {
     }
 
 
+    /**
+     *
+     * @return
+     */
     public enum ReductionTypesAvailable {
         NONE, HICCUP, RAW, ENLIVE;
         public static final ReductionTypesAvailable defaultType = HICCUP;

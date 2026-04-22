@@ -7,6 +7,12 @@ import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 public final class TimeUtil {
+    /**
+     * 
+     * @param n
+     * @param f
+     * @return
+     */
     public static @NotNull String measureTimeMillis(final int n, final @NotNull Procedure f) {
         if (n < 1)
             throw new IllegalArgumentException();

@@ -13,7 +13,16 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
 
+/**
+ *
+ */
 public final class Alpha {
+    /**
+     *
+     * @param parser
+     * @param unhide
+     * @return
+     */
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Alpha.UnhideOptions unhide) {
         final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
@@ -29,6 +38,13 @@ public final class Alpha {
         };
     }
 
+    /**
+     *
+     * @param parser
+     * @param text
+     * @param options
+     * @return
+     */
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
@@ -55,11 +71,24 @@ public final class Alpha {
         return parsingResult;
     }
 
+    /**
+     *
+     * @param parser
+     * @param text
+     * @return
+     */
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text) {
         return parse(parser, text, ParsingOptions.getDefault());
     }
 
+    /**
+     *
+     * @param parser
+     * @param text
+     * @param options
+     * @return
+     */
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
@@ -76,11 +105,24 @@ public final class Alpha {
         }
     }
 
+    /**
+     *
+     * @param parser
+     * @param text
+     * @return
+     */
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text) {
         return parses(parser, text, ParsingOptions.getDefault());
     }
 
+    /**
+     *
+     * @param parser
+     * @param text
+     * @param options
+     * @return
+     */
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
                                                              final @NotNull String text,
                                                              final @NotNull ParsingOptions options) {
@@ -97,25 +139,56 @@ public final class Alpha {
         }
     }
 
+    /**
+     *
+     * @param grammar
+     * @return
+     */
     public static @NotNull Parser parser(final @NotNull String grammar) {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
+    /**
+     *
+     * @param grammar
+     * @return
+     * @throws IOException
+     */
     public static @NotNull Parser parser(final @NotNull File grammar) throws IOException {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
-    public static @NotNull Parser parser(final @NotNull String grammar,
-                                         final @NotNull Alpha.ParserCreationOptions options) {
-        return Cfg.buildParser(grammar, options);
-    }
+    /**
+     *
+     * @param grammar
+     * @param options
+     * @return
+     */
+     public static @NotNull Parser parser(final @NotNull String grammar,
+     final @NotNull Alpha.ParserCreationOptions options) {
+     return Cfg.buildParser(grammar, options);
+     }
 
+     /* *
+     *
+     * @param grammar
+     * @param options
+     * @return
+     * @throws IOException
+     */
     public static @NotNull Parser parser(final @NotNull File grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) throws IOException {
         final @NotNull String contents = Files.readString(grammar.toPath());
         return parser(contents, options);
     }
 
+    /**
+     *
+     * @param grammar
+     * @param options
+     * @return
+     * @throws IOException
+     */
     public static @NotNull Parser parser(final @NotNull Grammar grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) throws IOException {
         if (options.startProduction() == null)
@@ -128,10 +201,16 @@ public final class Alpha {
         return parser;
     }
 
+    /**
+     *
+     */
     public enum UnhideOptions {
         content, tags, all, none
     }
 
+    /**
+     *
+     */
     public static class ParsingOptions {
         public static final @Nullable Keyword DEFAULT_START = null;
         public static final boolean DEFAULT_PARTIAL = false;
@@ -145,10 +224,22 @@ public final class Alpha {
         private final boolean total;
         private final boolean optimizeMemory;
 
+        /**
+         *
+         * @return
+         */
         public static @NotNull ParsingOptions getDefault() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
         }
 
+        /**
+         *
+         * @param start
+         * @param partial
+         * @param unhide
+         * @param total
+         * @param optimizeMemory
+         */
         public ParsingOptions(final @Nullable Keyword start,
                               final boolean partial,
                               final @NotNull Alpha.UnhideOptions unhide,
@@ -161,51 +252,108 @@ public final class Alpha {
             this.optimizeMemory = optimizeMemory;
         }
 
+        /**
+         *
+         * @return
+         */
         public static @NotNull ParsingOptions optMemory() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, true);
         }
 
+        /**
+         *
+         * @param defaultStart
+         * @return
+         */
         public @NotNull Keyword getStartOrDefault(final @NotNull Keyword defaultStart) {
             return start == null ? defaultStart : start;
         }
 
+        /**
+         *
+         * @return
+         */
         public boolean usePartial() {
             return partial;
         }
 
+        /**
+         *
+         * @return
+         */
         public @NotNull Alpha.UnhideOptions getUnhide() {
             return unhide;
         }
 
+        /**
+         *
+         * @return
+         */
         public boolean isTotal() {
             return total;
         }
 
+        /**
+         *
+         * @return
+         */
         public boolean isOptimizeMemory() {
             return optimizeMemory;
         }
 
+        /**
+         *
+         * @param start
+         * @return
+         */
         public @NotNull ParsingOptions withStartingProdSetTo(final @Nullable Keyword start) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
+        /**
+         *
+         * @param partial
+         * @return
+         */
         public @NotNull ParsingOptions withPartialSetTo(final boolean partial) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
+        /**
+         *
+         * @param unhide
+         * @return
+         */
         public @NotNull ParsingOptions withUnhideOptionsSetTo(final @NotNull Alpha.UnhideOptions unhide) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
+        /**
+         *
+         * @param total
+         * @return
+         */
         public @NotNull ParsingOptions withTotalParseSetTo(final boolean total) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
+        /**
+         *
+         * @param optimizeMemory
+         * @return
+         */
         public @NotNull ParsingOptions withOptMemorySetTo(final boolean optimizeMemory) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
     }
 
+    /**
+     *
+     * @param whitespaceParser
+     * @param startProduction
+     * @param stringCaseInsensitive
+     * @param outputFormat
+     */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
@@ -214,10 +362,21 @@ public final class Alpha {
                 null, null,
                 GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
 
+        /**
+         *
+         * @return
+         */
         public static @NotNull ParserCreationOptions getDefault() {
             return DEFAULT;
         }
 
+        /**
+         *
+         * @param whitespaceParser
+         * @param startProduction
+         * @param stringCaseInsensitive
+         * @param outputFormat
+         */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
                                      final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
@@ -232,43 +391,84 @@ public final class Alpha {
                     : outputFormat;
         }
 
+        /**
+         *
+         * @param whitespaceParser
+         */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser) {
             this(whitespaceParser, null,
                     GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType);
         }
 
+        /**
+         *
+         * @param startProduction
+         */
         public ParserCreationOptions(final @Nullable Keyword startProduction) {
             this(null, startProduction,
                     GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType);
         }
 
+        /**
+         *
+         * @param outputFormat
+         */
         public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             this(null, null,
                     GlobalCaseInsensitivity.DEFAULT, outputFormat);
         }
 
+        /**
+         *
+         * @param whitespaceParser
+         * @return
+         */
         public @NotNull ParserCreationOptions withWhitespaceParser(final @Nullable Parser whitespaceParser) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
+        /**
+         *
+         * @param startProduction
+         * @return
+         */
         public @NotNull ParserCreationOptions withStartProduction(final @Nullable Keyword startProduction) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
+        /**
+         *
+         * @param stringCaseInsensitive
+         * @return
+         */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final @Nullable GlobalCaseInsensitivity stringCaseInsensitive) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
+        /**
+         *
+         * @param stringCaseInsensitive
+         * @return
+         */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final boolean stringCaseInsensitive) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive ? GlobalCaseInsensitivity.TRUE : GlobalCaseInsensitivity.FALSE, outputFormat);
         }
 
+        /**
+         *
+         * @param outputFormat
+         * @return
+         */
         public @NotNull ParserCreationOptions withOutputFormat(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
+        /**
+         *
+         * @return
+         */
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
             return new ParserCreationOptions(
                     getPredefinedWhitespaceParser(Keyword.intern("standard")),
@@ -278,6 +478,11 @@ public final class Alpha {
         }
     }
 
+    /**
+     *
+     * @param wsParserName
+     * @return
+     */
     public static @Nullable Parser getPredefinedWhitespaceParser(final @Nullable Keyword wsParserName) {
         if (wsParserName == null) {
             return null;

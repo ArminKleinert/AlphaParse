@@ -7,6 +7,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ *
+ * @param index
+ * @param reason
+ * @param line
+ * @param column
+ * @param text
+ */
 public record AlphaParseFailure(int index,
                                 @NotNull List<ParseFailureReason> reason,
                                 int line,
@@ -31,6 +39,15 @@ public record AlphaParseFailure(int index,
         return "[" + index + ", " + reason + ", " + line + ", " + column + ", " + text + "]";
     }
 
+    /**
+     *
+     * @param failIndex
+     * @param failColumn
+     * @param failLine
+     * @param failText
+     * @param failReasonList
+     * @return
+     */
     public @NotNull String checkCorrectness(
             final int failIndex,
             final int failColumn,

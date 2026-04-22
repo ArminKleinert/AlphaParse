@@ -12,6 +12,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
+    /**
+     *
+     * @return
+     */
     public Grammar(final @NotNull Map<? extends Keyword, ? extends Combinator> m) {
         super(m);
     }
@@ -92,12 +96,20 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return result;
     }
 
+    /**
+     *
+     * @return
+     */
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(
                 keySet(),
                 listNonTerminals().stream().map(NonTerminal::getKeyword).collect(Collectors.toSet()));
     }
 
+    /**
+     *
+     * @return
+     */
     public record GrammarInfo(@NotNull Collection<@NotNull Keyword> definedNTs,
                               @NotNull Collection<@NotNull Keyword> usedNTs) {
         public @NotNull Collection<Keyword> getUnusedNTs() {

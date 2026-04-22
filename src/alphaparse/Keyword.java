@@ -8,7 +8,10 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Keyword implements Comparable<Keyword> {
+/**
+ *
+ */
+public class Keyword {
     private static final ConcurrentHashMap<String, Reference<Keyword>> table =
             new ConcurrentHashMap<>();
     private static final ReferenceQueue<Keyword> rq =
@@ -16,14 +19,22 @@ public class Keyword implements Comparable<Keyword> {
     private static boolean cachingDisabled =
             false;
 
-    public final @NotNull String sym;
+    private final @NotNull String sym;
 
+    /**
+     *
+     */
     public static void disableCaching() {
         cachingDisabled = true;
         table.clear();
         ClassUtil.clearReferenceCache(rq, table);
     }
 
+    /**
+     *
+     * @param sym
+     * @return
+     */
     public static @NotNull Keyword intern(final @NotNull String sym) {
         if (cachingDisabled) {
             return new Keyword(sym);
@@ -61,13 +72,6 @@ public class Keyword implements Comparable<Keyword> {
         return ":" + this.sym;
     }
 
-    /**
-     * @deprecated
-     */
-    public Object throwArity() {
-        throw new IllegalArgumentException("Wrong number of args passed to keyword: " + this);
-    }
-
     public @NotNull String getName() {
         return sym;
     }
@@ -77,10 +81,5 @@ public class Keyword implements Comparable<Keyword> {
         if (!(o instanceof Keyword)) return false;
         if (cachingDisabled) return getName().equals(((Keyword) o).getName());
         return o == this;
-    }
-
-    @Override
-    public int compareTo(@NotNull Keyword keyword) {
-        return sym.compareTo(keyword.sym);
     }
 }

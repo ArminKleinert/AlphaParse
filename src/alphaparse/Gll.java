@@ -273,7 +273,8 @@ public final class Gll {
         if (allParses.isEmpty()) {
             if (tramp.getFailure() == null)
                 throw new IllegalStateException();
-            return new AlphaParsesResult.ParsesFailureResult(FailureUtil.augmentFailure(tramp.getFailure(), text));
+            @NotNull AlphaParseFailure apf = FailureUtil.augmentFailure(tramp.getFailure(), text);
+            return AlphaParsesResult.make(apf);
         }
         return AlphaParsesResult.make(allParses);
     }

@@ -10,6 +10,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+/**
+ *
+ * @param grammar
+ * @param startProduction
+ * @param outputFormat
+ */
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
                      @NotNull ReductionType.ReductionTypesAvailable outputFormat)
@@ -20,20 +26,42 @@ public record Parser(@NotNull Grammar grammar,
 
     }
 
+    /**
+     *
+     * @param text
+     * @param options
+     * @return
+     */
     public @NotNull AlphaParseResult parse(final @NotNull String text,
                                            final @NotNull Alpha.ParsingOptions options) {
         return Alpha.parse(this, text, options);
     }
 
+    /**
+     *
+     * @param text
+     * @return
+     */
     public @NotNull AlphaParseResult parse(final @NotNull String text) {
         return Alpha.parse(this, text, Alpha.ParsingOptions.getDefault());
     }
 
+    /**
+     *
+     * @param text
+     * @param options
+     * @return
+     */
     public @NotNull AlphaParsesResult parses(final @NotNull String text,
                                              final @NotNull Alpha.ParsingOptions options) {
         return Alpha.parses(this, text, options);
     }
 
+    /**
+     *
+     * @param text
+     * @return
+     */
     public @NotNull AlphaParsesResult parses(final @NotNull String text) {
         return Alpha.parses(this, text, Alpha.ParsingOptions.getDefault());
     }
