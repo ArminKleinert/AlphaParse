@@ -2,7 +2,7 @@ package alphaparse.result.failure.failureReason;
 
 import alphaparse.Keyword;
 import alphaparse.Print;
-import alphaparse.parser.combinator.Combinator;
+import alphaparse.parser.Combinator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

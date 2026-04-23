@@ -1,7 +1,7 @@
 package alphaparse;
 
 import alphaparse.parser.Grammar;
-import alphaparse.parser.combinator.EpsilonCombinator;
+import alphaparse.parser.EpsilonCombinator;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;

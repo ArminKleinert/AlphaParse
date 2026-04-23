@@ -2,7 +2,7 @@ package alphaparse;
 
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.parser.Grammar;
-import alphaparse.parser.combinator.Combinator;
+import alphaparse.parser.Combinator;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-final class Reduction {
+public final class Reduction {
 
     private Reduction() {
     }
@@ -30,7 +30,7 @@ final class Reduction {
         return Grammar.fromProductions(m);
     }
 
-    static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
+   public  static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
         final @NotNull var afs = switch (result) {
             case null -> List.<Node>of();
             case AutoFlattenSeq<?> objects -> objects.toNodes();

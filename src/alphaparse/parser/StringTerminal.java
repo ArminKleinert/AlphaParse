@@ -1,9 +1,7 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
-import alphaparse.Gll;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonString;
-import alphaparse.trampoline.Tramp;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -38,43 +36,43 @@ public final class StringTerminal extends CombinatorTerminal {
     }
 
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull String string = getString();
-        final @NotNull String text = tramp.getText();
+        final @NotNull String text = runner.tramp().getText();
         final int end = Integer.min(text.length(), index + string.length());
         final @NotNull String head = text.substring(index, end);
 
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (caseInsensitive) {
             if (string.equalsIgnoreCase(head))
-                Gll.success(tramp, nodeKey, string, end);
+                runner.success(nodeKey, string, end);
             else
-                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string));
+                runner.fail(nodeKey, index, new ParseFailureReasonString(string));
         } else {
             if (string.contentEquals(head))
-                Gll.success(tramp, nodeKey, string, end);
+                runner.success(nodeKey, string, end);
             else
-                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string));
+                runner.fail(nodeKey, index, new ParseFailureReasonString(string));
         }
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
+    public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull var string = getString();
-        final @NotNull var text = tramp.getText();
+        final @NotNull var text = runner.tramp().getText();
         final var end = Integer.min(text.length(), string.length() + index);
         final @NotNull var head = text.substring(index, end);
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (caseInsensitive) {
             if (end == text.length() && string.equalsIgnoreCase(head))
-                Gll.success(tramp, nodeKey, string, end);
+                runner.success(nodeKey, string, end);
             else
-                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string, true));
+                runner.fail(nodeKey, index, new ParseFailureReasonString(string, true));
         } else {
             if (text.length() == end && Objects.equals(string, head))
-                Gll.success(tramp, nodeKey, string, end);
+                runner.success(nodeKey, string, end);
             else
-                Gll.fail(tramp, nodeKey, index, new ParseFailureReasonString(string, true));
+                runner.fail(nodeKey, index, new ParseFailureReasonString(string, true));
         }
     }
 

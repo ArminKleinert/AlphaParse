@@ -1,6 +1,5 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.Print;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -24,18 +23,18 @@ public sealed abstract class Combinator permits CombinatorTerminal, CombinatorWi
     /**
      * TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param index  TODO
+     * @param runner TODO
      */
-    public abstract void parse(final int index, final @NotNull Tramp tramp);
+    public abstract void parse(final int index, final @NotNull Gll runner);
 
     /**
      * TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param index  TODO
+     * @param runner TODO
      */
-    public abstract void fullParse(final int index, final @NotNull Tramp tramp);
+    public abstract void fullParse(final int index, final @NotNull Gll runner);
 
     /**
      * TODO

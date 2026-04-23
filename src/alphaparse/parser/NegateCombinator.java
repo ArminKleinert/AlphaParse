@@ -1,10 +1,9 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
-import alphaparse.Gll;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonNegative;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
-import alphaparse.trampoline.Tramp;
+
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,40 +24,59 @@ public final class NegateCombinator extends CombinatorWithParser {
     }
 
     /**
-     *  TODO
-     * @param index TODO
-     * @param tramp TODO
+     * TODO
+     *
+     * @param nodeKey TODO
+     * @return TODO
+     */
+    public boolean resultExists_Q(
+            final @NotNull Gll runner,
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
+        final TrampolineListenerNode node = runner.tramp().getNode(nodeKey);
+
+        if (node == null)
+            return false;
+
+        return !node.fullResults().isEmpty() || !node.results().isEmpty();
+    }
+
+    /**
+     * TODO
+     *
+     * @param index  TODO
+     * @param runner TODO
      */
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, combinator);
 
-        if (Gll.resultExists_Q(tramp, nodeKey)) {
-            Gll.fail(tramp, new TrampolineListenerKey(index, this), index, new ParseFailureReasonNegative(null));
+        if (resultExists_Q(runner, nodeKey)) {
+            runner.fail(new TrampolineListenerKey(index, this), index, new ParseFailureReasonNegative(null));
             return;
         }
 
-        Gll.pushListener(tramp, nodeKey, ignored -> Gll.fail(
-                tramp, new TrampolineListenerKey(index, this), index,
+        runner.pushListener(nodeKey, ignored -> runner.fail(
+                new TrampolineListenerKey(index, this), index,
                 new ParseFailureReasonNegative(combinator)));
 
         final @NotNull Combinator p = this;
-        Gll.pushNegativeListener(tramp, nodeKey, () -> {
-            if (!Gll.resultExists_Q(tramp, nodeKey)) {
-                Gll.success(tramp, new TrampolineListenerKey(index, p), null, index);
+        runner.pushNegativeListener(nodeKey, () -> {
+            if (!resultExists_Q(runner, nodeKey)) {
+                runner.success(new TrampolineListenerKey(index, p), null, index);
             }
         });
     }
 
     /**
-     *  TODO
-     * @param index TODO
-     * @param tramp TODO
+     * TODO
+     *
+     * @param index  TODO
+     * @param runner TODO
      */
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
-        parse(index, tramp);
+    public void fullParse(final int index, final @NotNull Gll runner) {
+        parse(index, runner);
     }
 
     @Override

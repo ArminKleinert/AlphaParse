@@ -1,11 +1,9 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
 import alphaparse.Keyword;
-import alphaparse.Gll;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,22 +31,20 @@ public final class NonTerminal extends Combinator {
     }
 
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
-        final @NotNull Combinator combinator = tramp.getGrammar().getOrMakeNonTerm(this.getKeyword());
-        Gll.pushListener(
-                tramp,
+    public void parse(final int index, final @NotNull Gll runner) {
+        final @NotNull Combinator combinator = runner.tramp().getGrammar().getOrMakeNonTerm(this.getKeyword());
+        runner.pushListener(
                 new TrampolineListenerKey(index, combinator),
-                GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp)
+                runner.nodeListener(new TrampolineListenerKey(index, this))
         );
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
-        final @NotNull Combinator combinator = tramp.getGrammar().getOrMakeNonTerm(this.getKeyword());
-        Gll.pushFullListener(
-                tramp,
+    public void fullParse(final int index, final @NotNull Gll runner) {
+        final @NotNull Combinator combinator = runner.tramp().getGrammar().getOrMakeNonTerm(this.getKeyword());
+        runner.pushFullListener(
                 new TrampolineListenerKey(index, combinator),
-                GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp));
+                runner.nodeListener(new TrampolineListenerKey(index, this)));
     }
 
     /**

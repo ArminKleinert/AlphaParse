@@ -1,4 +1,4 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
 import org.jetbrains.annotations.NotNull;
 

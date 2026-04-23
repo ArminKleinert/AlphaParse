@@ -1,11 +1,9 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
 import alphaparse.Keyword;
-import alphaparse.Gll;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
 import org.jetbrains.annotations.NotNull;
@@ -29,30 +27,30 @@ public final class LookaheadCombinator extends CombinatorWithParser {
 
     /**
      * TODO
+     *  @param index TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param runner TODO
      */
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator = getParser();
-        Gll.pushListener(tramp, new TrampolineListenerKey(index, combinator),
-                GllParserListeners.lookListener(new TrampolineListenerKey(index, this), tramp));
+        final @NotNull var nodeKey = new TrampolineListenerKey(index, this);
+        runner.pushListener(new TrampolineListenerKey(index, combinator),
+                ignored -> runner.success(nodeKey, null, index));
     }
 
     /**
      * TODO
+     *  @param index TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param runner TODO
      */
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
-        if (index == tramp.getText().length()) {
-            parse(index, tramp);
+    public void fullParse(final int index, final @NotNull Gll runner) {
+        if (index == runner.tramp().getText().length()) {
+            parse(index, runner);
         } else {
-            Gll.fail(
-                    tramp,
+            runner.fail(
                     new TrampolineListenerKey(index, this),
                     index,
                     new ParseFailureReasonLookahead(Keyword.intern("end-of-string")));

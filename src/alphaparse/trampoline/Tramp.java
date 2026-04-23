@@ -3,6 +3,7 @@ package alphaparse.trampoline;
 import alphaparse.parser.Grammar;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
+import alphaparse.parser.StringTerminal;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.success.AlphaParseSuccess;
 import org.jetbrains.annotations.NotNull;
@@ -223,7 +224,7 @@ public final class Tramp {
     }
 
     /**
-     * Sets the last detected parsing success. This is usually a String for a parsed {@link alphaparse.parser.combinator.StringTerminal} or a finished {@link alphaparse.result.ParseTree}.
+     * Sets the last detected parsing success. This is usually a String for a parsed {@link StringTerminal} or a finished {@link alphaparse.result.ParseTree}.
      *
      * @param success The new success or null.
      */

@@ -1,10 +1,7 @@
-package alphaparse.parser.combinator;
-
-import alphaparse.Gll;
+package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,34 +28,32 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
 
     /**
      * TODO
+     *  @param index TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param runner TODO
      */
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         for (final @NotNull Combinator combinator : getParsers()) {
-            Gll.pushListener(
-                    tramp,
+            runner.pushListener(
                     new TrampolineListenerKey(index, combinator),
-                    GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp)
+                    runner.nodeListener(new TrampolineListenerKey(index, this))
             );
         }
     }
 
     /**
      * TODO
+     *  @param index TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param runner TODO
      */
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
+    public void fullParse(final int index, final @NotNull Gll runner) {
         for (final @NotNull Combinator parser : getParsers()) {
-            Gll.pushFullListener(
-                    tramp,
+            runner.pushFullListener(
                     new TrampolineListenerKey(index, parser),
-                    GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp)
+                    runner.nodeListener(new TrampolineListenerKey(index, this))
             );
         }
     }

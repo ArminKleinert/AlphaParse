@@ -1,7 +1,6 @@
 package alphaparse;
 
-import alphaparse.parser.Grammar;
-import alphaparse.parser.combinator.*;
+import alphaparse.parser.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

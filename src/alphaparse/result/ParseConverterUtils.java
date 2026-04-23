@@ -1,8 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.Keyword;
-import alphaparse.parser.Parser;
-import alphaparse.parser.combinator.*;
+import alphaparse.parser.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

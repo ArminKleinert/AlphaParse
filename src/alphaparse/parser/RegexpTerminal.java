@@ -1,10 +1,7 @@
-package alphaparse.parser.combinator;
-
-import alphaparse.Gll;
+package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
 import org.jetbrains.annotations.NotNull;
@@ -43,31 +40,31 @@ public final class RegexpTerminal extends CombinatorTerminal {
     }
 
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Pattern regexp = getRegexp();
-        final @NotNull String text = tramp.getText();
+        final @NotNull String text = runner.tramp().getText();
         final @NotNull String subString = text.substring(index);
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         final @Nullable String match = reMatchAtFront(regexp, subString);
         if (match != null) {
-            Gll.success(tramp, nodeKey, match, index + match.length());
+            runner.success(nodeKey, match, index + match.length());
         } else {
-            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonRegex(regexp));
+            runner.fail(nodeKey, index, new ParseFailureReasonRegex(regexp));
         }
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
+    public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Pattern regexp = this.getRegexp();
-        final @NotNull String text = tramp.getSegment();
+        final @NotNull String text = runner.tramp().getSegment();
         final @NotNull String substring = text.substring(index);
         final @Nullable String match = reMatchAtFront(regexp, substring);
         final int desiredLength = text.length() - index;
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (match != null && match.length() == desiredLength) {
-            Gll.success(tramp, nodeKey, match, text.length());
+            runner.success(nodeKey, match, text.length());
         } else {
-            Gll.fail(tramp, nodeKey, index, new ParseFailureReasonRegex(regexp, true));
+            runner.fail(nodeKey, index, new ParseFailureReasonRegex(regexp, true));
         }
     }
 

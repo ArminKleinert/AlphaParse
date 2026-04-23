@@ -1,9 +1,7 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
-import alphaparse.Gll;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
-import alphaparse.trampoline.Tramp;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -62,7 +60,7 @@ public final class OrderedCombinator extends CombinatorWithManyParsers {
     }
 
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator1 = parser1;
         final @NotNull Combinator combinator2 = parser2;
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
@@ -70,13 +68,13 @@ public final class OrderedCombinator extends CombinatorWithManyParsers {
         final @NotNull TrampolineListenerKey nodeKeyForComb2 =
                 new TrampolineListenerKey(index, combinator2);
         final @NotNull Listener listener =
-                GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp);
-        Gll.pushListener(tramp, nodeKeyForComb1, listener);
-        Gll.pushNegativeListener(tramp, nodeKeyForComb1, () -> Gll.pushListener(tramp, nodeKeyForComb2, listener));
+                runner.nodeListener(new TrampolineListenerKey(index, this));
+        runner.pushListener(nodeKeyForComb1, listener);
+        runner.pushNegativeListener(nodeKeyForComb1, () -> runner.pushListener(nodeKeyForComb2, listener));
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
+    public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator1 = parser1;
         final @NotNull Combinator combinator2 = parser2;
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
@@ -84,9 +82,9 @@ public final class OrderedCombinator extends CombinatorWithManyParsers {
         final @NotNull TrampolineListenerKey nodeKeyForComb2 =
                 new TrampolineListenerKey(index, combinator2);
         final @NotNull Listener listener =
-                GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp);
-        Gll.pushFullListener(tramp, nodeKeyForComb1, listener);
-        Gll.pushNegativeListener(tramp, nodeKeyForComb1, () -> Gll.pushFullListener(tramp, nodeKeyForComb2, listener));
+                runner.nodeListener(new TrampolineListenerKey(index, this));
+        runner.pushFullListener(nodeKeyForComb1, listener);
+        runner.pushNegativeListener(nodeKeyForComb1, () -> runner.pushFullListener(nodeKeyForComb2, listener));
     }
 
     @Override

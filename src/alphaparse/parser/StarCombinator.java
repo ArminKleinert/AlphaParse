@@ -1,10 +1,7 @@
-package alphaparse.parser.combinator;
-
-import alphaparse.Gll;
+package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -28,26 +25,26 @@ public final class StarCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
-        Gll.pushListener(
-                tramp, new TrampolineListenerKey(index, combinator),
-                GllParserListeners.plusListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, tramp)
+        runner.pushListener(
+                new TrampolineListenerKey(index, combinator),
+                PlusCombinator.plusListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner)
         );
-        Gll.success(tramp, nodeKeyForStar, null, index);
+        runner.success(nodeKeyForStar, null, index);
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
+    public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
-        if (index == tramp.getText().length()) {
-            Gll.success(tramp, nodeKeyForStar, null, index);
+        if (index == runner.tramp().getText().length()) {
+            runner.success(nodeKeyForStar, null, index);
         } else {
-            Gll.pushListener(
-                    tramp, new TrampolineListenerKey(index, combinator),
-                    GllParserListeners.plusFullListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, tramp));
+            runner.pushListener(
+                    new TrampolineListenerKey(index, combinator),
+                    PlusCombinator.plusFullListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner));
         }
     }
 

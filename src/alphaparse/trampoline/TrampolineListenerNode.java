@@ -1,7 +1,7 @@
 package alphaparse.trampoline;
 
 import alphaparse.functions.Listener;
-import alphaparse.parser.combinator.Combinator;
+import alphaparse.parser.Combinator;
 import alphaparse.result.success.AlphaParseSuccess;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,11 +1,9 @@
-package alphaparse.parser.combinator;
+package alphaparse.parser;
 
 import alphaparse.Keyword;
-import alphaparse.Gll;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -29,25 +27,25 @@ public final class OptCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
+    public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt = new TrampolineListenerKey(index, this);
-        Gll.pushListener(
-                tramp, new TrampolineListenerKey(index, combinator),
-                GllParserListeners.nodeListener(nodeKeyForOpt, tramp)
+        runner.pushListener(
+                new TrampolineListenerKey(index, combinator),
+                runner.nodeListener(nodeKeyForOpt)
         );
-        Gll.success(tramp, nodeKeyForOpt, null, index);
+        runner.success(nodeKeyForOpt, null, index);
     }
 
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
+    public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Combinator parser = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey thisNodeKey = new TrampolineListenerKey(index, this);
-        Gll.pushFullListener(tramp, new TrampolineListenerKey(index, parser), GllParserListeners.nodeListener(thisNodeKey, tramp));
-        if (index == tramp.getText().length()) {
-            Gll.success(tramp, thisNodeKey, null, index);
+        runner.pushFullListener(new TrampolineListenerKey(index, parser), runner.nodeListener(thisNodeKey));
+        if (index == runner.tramp().getText().length()) {
+            runner.success(thisNodeKey, null, index);
         } else {
-            Gll.fail(tramp, thisNodeKey, index, new ParseFailureReasonOptional(Keyword.intern("end-of-string")));
+            runner.fail(thisNodeKey, index, new ParseFailureReasonOptional(Keyword.intern("end-of-string")));
         }
     }
 

@@ -1,10 +1,7 @@
-package alphaparse.parser.combinator;
-
-import alphaparse.Gll;
+package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonEpsilon;
 import org.jetbrains.annotations.NotNull;
@@ -36,27 +33,27 @@ public final class EpsilonCombinator extends CombinatorTerminal {
 
     /**
      * TODO
+     *  @param index TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param runner TODO
      */
     @Override
-    public void parse(final int index, final @NotNull Tramp tramp) {
-        Gll.success(tramp, new TrampolineListenerKey(index, this), null, index);
+    public void parse(final int index, final @NotNull Gll runner) {
+        runner.success(new TrampolineListenerKey(index, this), null, index);
     }
 
     /**
      * TODO
+     *  @param index TODO
      *
-     * @param index TODO
-     * @param tramp TODO
+     * @param runner TODO
      */
     @Override
-    public void fullParse(final int index, final @NotNull Tramp tramp) {
-        if (index == tramp.getText().length())
-            Gll.success(tramp, new TrampolineListenerKey(index, this), null, index);
+    public void fullParse(final int index, final @NotNull Gll runner) {
+        if (index == runner.tramp().getText().length())
+            runner.success(new TrampolineListenerKey(index, this), null, index);
         else
-            Gll.fail(tramp, new TrampolineListenerKey(index, this), index,
+            runner.fail(new TrampolineListenerKey(index, this), index,
                     new ParseFailureReasonEpsilon());
     }
 

@@ -2,7 +2,6 @@ package alphaparse.parser;
 
 import alphaparse.CombinatorsSource;
 import alphaparse.Keyword;
-import alphaparse.parser.combinator.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

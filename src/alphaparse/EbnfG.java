@@ -1,6 +1,6 @@
 package alphaparse;
 
-import alphaparse.parser.combinator.Combinator;
+import alphaparse.parser.Combinator;
 import alphaparse.parser.Grammar;
 import org.jetbrains.annotations.NotNull;
 
