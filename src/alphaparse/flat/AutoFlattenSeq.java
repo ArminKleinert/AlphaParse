@@ -9,12 +9,23 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class AutoFlattenSeq<T> {
+/**
+ * TODO
+ *
+ * @param <T> TODO
+ */
+public class AutoFlattenSeq<T> implements Iterable<T> {
     private static final AutoFlattenSeq<Object> EMPTY = new AutoFlattenSeq<>(new Object[0]);
 
     private final Object[] v;
     private int hashCode = 0;
 
+    /**
+     * TODO
+     *
+     * @param <T> TODO
+     * @return TODO
+     */
     public static @NotNull <T> AutoFlattenSeq<@NotNull T> make() {
         return (AutoFlattenSeq<T>) EMPTY;
     }
@@ -23,14 +34,17 @@ public class AutoFlattenSeq<T> {
         this.v = v;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull List<@NotNull Node> toNodes() {
         final @NotNull var result = new ArrayList<Node>();
-        final @NotNull var iter = iterator();
-        while (iter.hasNext())
-            result.add(Node.of(iter.next()));
+        for (T t : this) result.add(Node.of(t));
         return result;
     }
-
+    @Override
     public @NotNull Iterator<@NotNull T> iterator() {
         return new Iterator<>() {
             private int pos = 0;
@@ -45,10 +59,20 @@ public class AutoFlattenSeq<T> {
         };
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public int size() {
         return v.length;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public boolean isEmpty() {
         return v.length == 0;
     }
@@ -75,6 +99,12 @@ public class AutoFlattenSeq<T> {
         return hc;
     }
 
+    /**
+     * TODO
+     *
+     * @param obj TODO
+     * @return TODO
+     */
     public @NotNull AutoFlattenSeq<@NotNull T> append(final T obj) {
         if (obj == null) {
             return this;
@@ -86,6 +116,12 @@ public class AutoFlattenSeq<T> {
         return new AutoFlattenSeq<>(newV);
     }
 
+    /**
+     * TODO
+     *
+     * @param obj TODO
+     * @return TODO
+     */
     public @NotNull AutoFlattenSeq<@NotNull T> concat(final @NotNull AutoFlattenSeq<?> obj) {
         if (size() == 0) return (AutoFlattenSeq<T>) obj;
         final @NotNull Object[] newV = Arrays.copyOf(v, v.length + obj.v.length);

@@ -1,7 +1,9 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
@@ -9,7 +11,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * TODO
+ */
 public final class CatCombinator extends CombinatorWithManyParsers {
+    /**
+     * TODO
+     *
+     * @param parsers TODO
+     */
     public CatCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         super(parsers);
     }

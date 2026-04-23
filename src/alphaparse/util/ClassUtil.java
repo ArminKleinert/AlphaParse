@@ -13,7 +13,19 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * TODO
+ */
 public class ClassUtil {
+    private ClassUtil() {
+    }
+
+    /**
+     * TODO
+     *
+     * @param objects TODO
+     * @return TODO
+     */
     public static @Nullable Class<?> mostDerived(final @NotNull Collection<?> objects) {
         List<Class<?>> common = null;
         SequencedSet<Class<?>> checked = objects.size() > 30 ? new LinkedHashSet<>() : null;
@@ -44,6 +56,11 @@ public class ClassUtil {
 
     private static final List<String> uniqueStrings = new ArrayList<>();
 
+    /**
+     * TODO
+     *
+     * @param s TODO
+     */
     public static void fileLog(String s) {
         if (uniqueStrings.contains(s))
             return;
@@ -56,6 +73,14 @@ public class ClassUtil {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param rq    TODO
+     * @param table TODO
+     * @param <K>   TODO
+     * @param <T>   TODO
+     */
     public static <K, T> void clearReferenceCache(
             final @NotNull ReferenceQueue<T> rq,
             final @NotNull ConcurrentHashMap<K, Reference<T>> table) {

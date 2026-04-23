@@ -11,17 +11,18 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * TODO
+ */
 public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
+
     /**
+     * TODO
      *
-     * @return
+     * @param m TODO
      */
     public Grammar(final @NotNull Map<? extends Keyword, ? extends Combinator> m) {
         super(m);
-    }
-
-    public Grammar() {
-        super();
     }
 
     @Override
@@ -42,6 +43,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return true;
     }
 
+    /**
+     * TODO
+     *
+     * @param kvs TODO
+     * @return TODO
+     */
     public static @NotNull Grammar fromProductions(final @NotNull List<Map.Entry<Keyword, Combinator>> kvs) {
         final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
         for (Map.Entry<Keyword, Combinator> kv : kvs) {
@@ -50,10 +57,22 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return new Grammar(m);
     }
 
+    /**
+     * TODO
+     *
+     * @param key TODO
+     * @return TODO
+     */
     public @Nullable Combinator getProduction(final @NotNull Keyword key) {
         return getOrDefault(key, null);
     }
 
+    /**
+     * TODO
+     *
+     * @param key TODO
+     * @return TODO
+     */
     public @NotNull Combinator getOrMakeNonTerm(final @NotNull Keyword key) {
         final @Nullable Combinator p = getProduction(key);
         if (p == null) return CombinatorsSource.staticMakeNonTerminal(key);
@@ -97,8 +116,9 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(
@@ -107,19 +127,36 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @param definedNTs TODO
+     * @param usedNTs    TODO
      */
     public record GrammarInfo(@NotNull Collection<@NotNull Keyword> definedNTs,
                               @NotNull Collection<@NotNull Keyword> usedNTs) {
+        /**
+         * TODO
+         *
+         * @return TODO
+         */
         public @NotNull Collection<Keyword> getUnusedNTs() {
             return definedNTs.stream().filter(it -> !usedNTs.contains(it)).collect(Collectors.toSet());
         }
 
+        /**
+         * TODO
+         *
+         * @return TODO
+         */
         public @NotNull Collection<Keyword> getUndefinedUsedNTs() {
             return usedNTs.stream().filter(it -> !definedNTs.contains(it)).collect(Collectors.toSet());
         }
 
+        /**
+         * TODO
+         *
+         * @return TODO
+         */
         public boolean isValid() {
             return getUndefinedUsedNTs().isEmpty();
         }
@@ -147,6 +184,13 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param k TODO
+     * @param v TODO
+     * @return TODO
+     */
     public static Map.Entry<Keyword, Combinator> entry(final @NotNull Keyword k, final @NotNull Combinator v) {
         return new Map.Entry<>() {
             final @NotNull Keyword key = k;

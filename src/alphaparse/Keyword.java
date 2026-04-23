@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * TODO
  */
 public class Keyword {
     private static final ConcurrentHashMap<String, Reference<Keyword>> table =
@@ -22,7 +22,7 @@ public class Keyword {
     private final @NotNull String sym;
 
     /**
-     *
+     * TODO
      */
     public static void disableCaching() {
         cachingDisabled = true;
@@ -31,9 +31,10 @@ public class Keyword {
     }
 
     /**
+     * TODO
      *
-     * @param sym
-     * @return
+     * @param sym TODO
+     * @return TODO
      */
     public static @NotNull Keyword intern(final @NotNull String sym) {
         if (cachingDisabled) {
@@ -64,14 +65,21 @@ public class Keyword {
         this.sym = sym;
     }
 
+    @Override
     public final int hashCode() {
         return this.sym.hashCode() - 1640531527;
     }
 
+    @Override
     public @NotNull String toString() {
         return ":" + this.sym;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull String getName() {
         return sym;
     }

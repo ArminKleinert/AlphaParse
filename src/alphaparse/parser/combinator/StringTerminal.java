@@ -11,11 +11,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public final class StringTerminal extends CombinatorTerminal {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull String string;
     private final boolean caseInsensitive;
 
+    /**
+     * TODO
+     *
+     * @param string          TODO
+     * @param caseInsensitive TODO
+     */
     public StringTerminal(final @NotNull String string, final boolean caseInsensitive) {
         super();
         this.string = string;
@@ -69,10 +78,20 @@ public final class StringTerminal extends CombinatorTerminal {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull String getString() {
         return string;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public boolean isCaseInsensitive() {
         return caseInsensitive;
     }

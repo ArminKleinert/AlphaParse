@@ -11,12 +11,21 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+/**
+ * TODO
+ */
 public final class FailureUtil {
+    private FailureUtil() {
+    }
 
     /**
      * Creates string with caret at nth position, 1-based
      * and accounts for horizontal tabs which might change
      * the alignment of the '^' to the error location.
+     *
+     * @param failure1 TODO
+     * @param text     TODO
+     * @return TODO
      */
     public static @NotNull AlphaParseFailure augmentFailure(final @NotNull AlphaParseFailure failure1,
                                                             final @NotNull String text) {
@@ -47,6 +56,10 @@ public final class FailureUtil {
      * Creates string with caret at nth position, 1-based
      * and accounts for horizontal tabs which might change
      * the alignment of the '^' to the error location.
+     *
+     * @param text TODO
+     * @param n    TODO
+     * @return TODO
      */
     public static @NotNull String marker(final String text, final int n) {
         if (text == null) return "<No text>";
@@ -57,6 +70,14 @@ public final class FailureUtil {
         return markerText.substring(0, n - 1) + '^';
     }
 
+    /**
+     * TODO
+     *
+     * @param failure   TODO
+     * @param newReason TODO
+     * @param nextIndex TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParseFailure modifyFailureByIndex(final @Nullable AlphaParseFailure failure,
                                                                   final ParseFailureReason newReason,
                                                                   final int nextIndex) {
@@ -70,6 +91,12 @@ public final class FailureUtil {
         return new AlphaParseFailure(nextIndex, newReasonList);
     }
 
+    /**
+     * TODO
+     *
+     * @param failure TODO
+     * @return TODO
+     */
     public static @NotNull String pprintFailure(final @NotNull AlphaParseFailure failure) {
         final int line = ((Number) failure.line()).intValue();
         final int column = ((Number) failure.column()).intValue();
@@ -135,6 +162,8 @@ public final class FailureUtil {
 
     /**
      * Provides special case for printing negative lookahead reasons.
+     *
+     * @param expected TODO
      */
     public static void printReason(final Object expected) {
         System.out.println(reasonString(expected));

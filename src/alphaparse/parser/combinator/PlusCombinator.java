@@ -1,13 +1,23 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO
+ */
 public final class PlusCombinator extends CombinatorWithParser {
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     */
     public PlusCombinator(final @NotNull Combinator parser) {
         super(parser);
     }

@@ -1,7 +1,9 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonChar;
@@ -10,11 +12,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public final class UnicodeCharTerminal extends CombinatorTerminal {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final int lo;
     private final int hi;
 
+    /**
+     * TODO
+     *
+     * @param lo TODO
+     * @param hi TODO
+     */
     public UnicodeCharTerminal(final int lo, final int hi) {
         super();
         if (lo > hi) throw new IllegalArgumentException();
@@ -59,6 +70,7 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
             Gll.fail(tramp, nodeKey, index, new ParseFailureReasonChar(lo, hi));
         }
     }
+
     @Override
     public void fullParse(final int index, final @NotNull Tramp tramp) {
         final @NotNull String text = tramp.getText();
@@ -93,10 +105,20 @@ public final class UnicodeCharTerminal extends CombinatorTerminal {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public int getLo() {
         return lo;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public int getHi() {
         return hi;
     }

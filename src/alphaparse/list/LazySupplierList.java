@@ -6,18 +6,31 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class LazySupplierList<T extends @NotNull Object> implements List<@Nullable T> {
-    private final @NotNull List<T> evaluatedPart;
+/**
+ * TODO
+ * @param <T> TODO
+ */
+public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional<T>> {
+    private @NotNull List<@NotNull T> evaluatedPart;
     private final int maxResults;
     private Supplier<@Nullable T> nextFn;
     private boolean fullyEvaluated = false;
 
+    /**
+     * TODO
+     * @param nextFn TODO
+     * @param maxResults TODO
+     */
     public LazySupplierList(final @NotNull Supplier<@Nullable T> nextFn, final int maxResults) {
         this.evaluatedPart = new ArrayList<>();
         this.nextFn = nextFn;
         this.maxResults = maxResults;
     }
 
+    /**
+     * TODO
+     * @param nextFn TODO
+     */
     public LazySupplierList(final @NotNull Supplier<@Nullable T> nextFn) {
         this(nextFn, Integer.MAX_VALUE);
     }
@@ -33,12 +46,16 @@ public class LazySupplierList<T extends @NotNull Object> implements List<@Nullab
         if (next == null) {
             fullyEvaluated = true;
             nextFn = null;
+            evaluatedPart = new UnmodList<>(evaluatedPart); // Everything evaluated. Compress the list.
             return null;
         }
         evaluatedPart.add(next);
         return next;
     }
 
+    /**
+     * TODO
+     */
     public void evaluate() {
         @Nullable T ep;
         do {
@@ -46,26 +63,19 @@ public class LazySupplierList<T extends @NotNull Object> implements List<@Nullab
         } while (ep != null);
     }
 
+    /**
+     * TODO
+     * @return TODO
+     */
+    @Override
+    public Optional<T> get() {
+        return Optional.ofNullable(evalutePart());
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append('[');
-        int cursor = 0;
-        @Nullable T first = getOrNull(cursor);
-        cursor++;
-        @Nullable T second = getOrNull(cursor);
-        while (first != null) {
-            sb.append(first);
-            if (second == null) {
-                break;
-            }
-            cursor++;
-            first = second;
-            second = getOrNull(cursor);
-            sb.append(", ");
-        }
-        sb.append(']');
-        return sb.toString();
+        evaluate();
+        return evaluatedPart.toString();
     }
 
     @Override
@@ -142,17 +152,9 @@ public class LazySupplierList<T extends @NotNull Object> implements List<@Nullab
     }
 
     @Override
-    public <T1> T1 @NotNull [] toArray(T1[] t1s) {
-        final var size = size();
-        if (t1s.length < size) {
-            t1s = (T1[]) new Object[size];
-        }
-        int i = 0;
-        for (T t : this) {
-            t1s[i] = (T1) t;
-            i++;
-        }
-        return t1s;
+    public <T1> T1 @NotNull [] toArray(T1 @NotNull [] t1s) {
+        evaluate();
+        return evaluatedPart.toArray(t1s);
     }
 
     @Override
@@ -173,6 +175,11 @@ public class LazySupplierList<T extends @NotNull Object> implements List<@Nullab
         }
     }
 
+    /**
+     *  TODO
+     * @param i TODO
+     * @return TODO
+     */
     @Override
     public T get(final int i) {
         final var at = getOrNull(i);
@@ -181,6 +188,11 @@ public class LazySupplierList<T extends @NotNull Object> implements List<@Nullab
         return at;
     }
 
+    /**
+     * TODO
+     * @param i TODO
+     * @return TODO
+     */
     public T getOrNull(final int i) {
         if (i < evaluatedPart.size())
             return evaluatedPart.get(i);

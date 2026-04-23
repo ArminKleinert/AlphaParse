@@ -3,6 +3,7 @@ package alphaparse.parser.combinator;
 import alphaparse.Gll;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
@@ -11,10 +12,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public final class RepetitionCombinator extends CombinatorWithParser {
     private final int min;
     private final int max;
 
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     * @param min    TODO
+     * @param max    TODO
+     */
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
         this(parser, min, max, false, ReductionType.nullReduction());
     }
@@ -65,10 +76,20 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public int getMin() {
         return min;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public int getMax() {
         return max;
     }

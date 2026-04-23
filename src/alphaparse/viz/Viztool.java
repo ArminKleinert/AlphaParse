@@ -10,13 +10,20 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * TODO
+ */
 public class Viztool {
+    private Viztool() {
+    }
+
     /**
+     * TODO
      *
-     * @param printer
-     * @param parseRes
-     * @param count
-     * @return
+     * @param printer  TODO
+     * @param parseRes TODO
+     * @param count    TODO
+     * @return TODO
      */
     public static int dumpParseTreeHelp(final @NotNull PrintStream printer,
                                         final @NotNull List<Node> parseRes,
@@ -38,9 +45,10 @@ public class Viztool {
     }
 
     /**
+     * TODO
      *
-     * @param parseRes
-     * @return
+     * @param parseRes TODO
+     * @return TODO
      */
     private static @NotNull String getLabel(@NotNull List<Node> parseRes) {
         final @NotNull Node fpr = parseRes.getFirst();
@@ -56,12 +64,13 @@ public class Viztool {
     }
 
     /**
+     * TODO
      *
-     * @param dotFileNamePrefix
-     * @param parseRes
-     * @return
-     * @throws IOException
-     * @throws InterruptedException
+     * @param dotFileNamePrefix TODO
+     * @param parseRes          TODO
+     * @return TODO
+     * @throws IOException          TODO
+     * @throws InterruptedException TODO
      */
     public static int dumpParseTree(
             final @NotNull String dotFileNamePrefix,

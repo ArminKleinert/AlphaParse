@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- *
- * @param index
- * @param reason
- * @param line
- * @param column
- * @param text
+ * TODO
+ * @param index TODO
+ * @param reason TODO
+ * @param line TODO
+ * @param column TODO
+ * @param text TODO
  */
 public record AlphaParseFailure(int index,
                                 @NotNull List<ParseFailureReason> reason,
@@ -22,10 +22,19 @@ public record AlphaParseFailure(int index,
                                 @Nullable String text)
         implements AlphaIntermediateResult, AlphaParseResult {
 
+    /**
+     * TODO
+     * @param index TODO
+     * @param reason TODO
+     */
     public AlphaParseFailure(final int index, final @NotNull List<ParseFailureReason> reason) {
         this(index, reason, -1, -1, null);
     }
 
+    /**
+     * TODO
+     * @return TODO
+     */
     public @NotNull List<ParseFailureReason> getReasonList() {
         return reason;
     }
@@ -35,18 +44,22 @@ public record AlphaParseFailure(int index,
         return FailureUtil.pprintFailure(this);
     }
 
+    /**
+     * TODO
+     * @return TODO
+     */
     public @NotNull String contentsToString() {
         return "[" + index + ", " + reason + ", " + line + ", " + column + ", " + text + "]";
     }
 
     /**
-     *
-     * @param failIndex
-     * @param failColumn
-     * @param failLine
-     * @param failText
-     * @param failReasonList
-     * @return
+     * TODO
+     * @param failIndex TODO
+     * @param failColumn TODO
+     * @param failLine TODO
+     * @param failText TODO
+     * @param failReasonList TODO
+     * @return TODO
      */
     public @NotNull String checkCorrectness(
             final int failIndex,
@@ -68,6 +81,10 @@ public record AlphaParseFailure(int index,
         return sb.toString();
     }
 
+    /**
+     *  TODO
+     * @return TODO
+     */
     public @NotNull Object getResult() {
         throw new UnsupportedOperationException();
     }

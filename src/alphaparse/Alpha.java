@@ -14,14 +14,18 @@ import java.nio.file.Files;
 import java.util.Map;
 
 /**
- *
+ * TODO
  */
 public final class Alpha {
+    private Alpha() {
+    }
+
     /**
+     * TODO
      *
-     * @param parser
-     * @param unhide
-     * @return
+     * @param parser TODO
+     * @param unhide TODO
+     * @return TODO
      */
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Alpha.UnhideOptions unhide) {
@@ -39,11 +43,12 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param parser
-     * @param text
-     * @param options
-     * @return
+     * @param parser  TODO
+     * @param text    TODO
+     * @param options TODO
+     * @return TODO
      */
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
@@ -72,10 +77,11 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param parser
-     * @param text
-     * @return
+     * @param parser TODO
+     * @param text   TODO
+     * @return TODO
      */
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text) {
@@ -83,11 +89,12 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param parser
-     * @param text
-     * @param options
-     * @return
+     * @param parser  TODO
+     * @param text    TODO
+     * @param options TODO
+     * @return TODO
      */
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
@@ -106,10 +113,11 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param parser
-     * @param text
-     * @return
+     * @param parser TODO
+     * @param text   TODO
+     * @return TODO
      */
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text) {
@@ -117,11 +125,12 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param parser
-     * @param text
-     * @param options
-     * @return
+     * @param parser  TODO
+     * @param text    TODO
+     * @param options TODO
+     * @return TODO
      */
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
                                                              final @NotNull String text,
@@ -140,41 +149,45 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param grammar
-     * @return
+     * @param grammar TODO
+     * @return TODO
      */
     public static @NotNull Parser parser(final @NotNull String grammar) {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
     /**
+     * TODO
      *
-     * @param grammar
-     * @return
-     * @throws IOException
+     * @param grammar TODO
+     * @return TODO
+     * @throws IOException TODO
      */
     public static @NotNull Parser parser(final @NotNull File grammar) throws IOException {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
     /**
+     * TODO
      *
-     * @param grammar
-     * @param options
-     * @return
+     * @param grammar TODO
+     * @param options TODO
+     * @return TODO
      */
-     public static @NotNull Parser parser(final @NotNull String grammar,
-     final @NotNull Alpha.ParserCreationOptions options) {
-     return Cfg.buildParser(grammar, options);
-     }
+    public static @NotNull Parser parser(final @NotNull String grammar,
+                                         final @NotNull Alpha.ParserCreationOptions options) {
+        return Cfg.buildParser(grammar, options);
+    }
 
-     /* *
+    /**
+     * TODO
      *
-     * @param grammar
-     * @param options
-     * @return
-     * @throws IOException
+     * @param grammar TODO
+     * @param options TODO
+     * @return TODO
+     * @throws IOException TODO
      */
     public static @NotNull Parser parser(final @NotNull File grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) throws IOException {
@@ -183,11 +196,12 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param grammar
-     * @param options
-     * @return
-     * @throws IOException
+     * @param grammar TODO
+     * @param options TODO
+     * @return TODO
+     * @throws IOException TODO
      */
     public static @NotNull Parser parser(final @NotNull Grammar grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) throws IOException {
@@ -202,20 +216,50 @@ public final class Alpha {
     }
 
     /**
-     *
+     *  TODO
      */
     public enum UnhideOptions {
-        content, tags, all, none
+        /**
+         * TODO
+         */
+        content,
+        /**
+         * TODO
+         */
+        tags,
+        /**
+         * TODO
+         */
+        all,
+        /**
+         * TODO
+         */
+        none
     }
 
     /**
-     *
+     * TODO
      */
     public static class ParsingOptions {
+        /**
+         * TODO
+         */
         public static final @Nullable Keyword DEFAULT_START = null;
+        /**
+         * TODO
+         */
         public static final boolean DEFAULT_PARTIAL = false;
+        /**
+         * TODO
+         */
         public static final @NotNull Alpha.UnhideOptions DEFAULT_UNHIDE = UnhideOptions.none;
+        /**
+         * TODO
+         */
         public static final boolean DEFAULT_TOTAL = false;
+        /**
+         * TODO
+         */
         public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
 
         private final @Nullable Keyword start;
@@ -225,20 +269,22 @@ public final class Alpha {
         private final boolean optimizeMemory;
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public static @NotNull ParsingOptions getDefault() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
         }
 
         /**
+         * TODO
          *
-         * @param start
-         * @param partial
-         * @param unhide
-         * @param total
-         * @param optimizeMemory
+         * @param start          TODO
+         * @param partial        TODO
+         * @param unhide         TODO
+         * @param total          TODO
+         * @param optimizeMemory TODO
          */
         public ParsingOptions(final @Nullable Keyword start,
                               final boolean partial,
@@ -253,94 +299,105 @@ public final class Alpha {
         }
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public static @NotNull ParsingOptions optMemory() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, true);
         }
 
         /**
+         * TODO
          *
-         * @param defaultStart
-         * @return
+         * @param defaultStart TODO
+         * @return TODO
          */
         public @NotNull Keyword getStartOrDefault(final @NotNull Keyword defaultStart) {
             return start == null ? defaultStart : start;
         }
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public boolean usePartial() {
             return partial;
         }
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public @NotNull Alpha.UnhideOptions getUnhide() {
             return unhide;
         }
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public boolean isTotal() {
             return total;
         }
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public boolean isOptimizeMemory() {
             return optimizeMemory;
         }
 
         /**
+         * TODO
          *
-         * @param start
-         * @return
+         * @param start TODO
+         * @return TODO
          */
         public @NotNull ParsingOptions withStartingProdSetTo(final @Nullable Keyword start) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
+         * TODO
          *
-         * @param partial
-         * @return
+         * @param partial TODO
+         * @return TODO
          */
         public @NotNull ParsingOptions withPartialSetTo(final boolean partial) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
+         * TODO
          *
-         * @param unhide
-         * @return
+         * @param unhide TODO
+         * @return TODO
          */
         public @NotNull ParsingOptions withUnhideOptionsSetTo(final @NotNull Alpha.UnhideOptions unhide) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
+         * TODO
          *
-         * @param total
-         * @return
+         * @param total TODO
+         * @return TODO
          */
         public @NotNull ParsingOptions withTotalParseSetTo(final boolean total) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
+         * TODO
          *
-         * @param optimizeMemory
-         * @return
+         * @param optimizeMemory TODO
+         * @return TODO
          */
         public @NotNull ParsingOptions withOptMemorySetTo(final boolean optimizeMemory) {
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
@@ -348,11 +405,12 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param whitespaceParser
-     * @param startProduction
-     * @param stringCaseInsensitive
-     * @param outputFormat
+     * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
+     * @param startProduction       The starting production name of the parser.
+     * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
+     * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
@@ -363,19 +421,21 @@ public final class Alpha {
                 GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public static @NotNull ParserCreationOptions getDefault() {
             return DEFAULT;
         }
 
         /**
+         * TODO
          *
-         * @param whitespaceParser
-         * @param startProduction
-         * @param stringCaseInsensitive
-         * @param outputFormat
+         * @param whitespaceParser      TODO
+         * @param startProduction       TODO
+         * @param stringCaseInsensitive TODO
+         * @param outputFormat          TODO
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
@@ -392,8 +452,9 @@ public final class Alpha {
         }
 
         /**
+         * TODO
          *
-         * @param whitespaceParser
+         * @param whitespaceParser TODO
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser) {
             this(whitespaceParser, null,
@@ -402,8 +463,9 @@ public final class Alpha {
         }
 
         /**
+         * TODO
          *
-         * @param startProduction
+         * @param startProduction TODO
          */
         public ParserCreationOptions(final @Nullable Keyword startProduction) {
             this(null, startProduction,
@@ -412,8 +474,9 @@ public final class Alpha {
         }
 
         /**
+         * TODO
          *
-         * @param outputFormat
+         * @param outputFormat TODO
          */
         public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             this(null, null,
@@ -421,53 +484,59 @@ public final class Alpha {
         }
 
         /**
+         * TODO
          *
-         * @param whitespaceParser
-         * @return
+         * @param whitespaceParser TODO
+         * @return TODO
          */
         public @NotNull ParserCreationOptions withWhitespaceParser(final @Nullable Parser whitespaceParser) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
         /**
+         * TODO
          *
-         * @param startProduction
-         * @return
+         * @param startProduction TODO
+         * @return TODO
          */
         public @NotNull ParserCreationOptions withStartProduction(final @Nullable Keyword startProduction) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
         /**
+         * TODO
          *
-         * @param stringCaseInsensitive
-         * @return
+         * @param stringCaseInsensitive TODO
+         * @return TODO
          */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final @Nullable GlobalCaseInsensitivity stringCaseInsensitive) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
         /**
+         * TODO
          *
-         * @param stringCaseInsensitive
-         * @return
+         * @param stringCaseInsensitive TODO
+         * @return TODO
          */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final boolean stringCaseInsensitive) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive ? GlobalCaseInsensitivity.TRUE : GlobalCaseInsensitivity.FALSE, outputFormat);
         }
 
         /**
+         * TODO
          *
-         * @param outputFormat
-         * @return
+         * @param outputFormat TODO
+         * @return TODO
          */
         public @NotNull ParserCreationOptions withOutputFormat(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
         }
 
         /**
+         * TODO
          *
-         * @return
+         * @return TODO
          */
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
             return new ParserCreationOptions(
@@ -479,9 +548,10 @@ public final class Alpha {
     }
 
     /**
+     * TODO
      *
-     * @param wsParserName
-     * @return
+     * @param wsParserName TODO
+     * @return TODO
      */
     public static @Nullable Parser getPredefinedWhitespaceParser(final @Nullable Keyword wsParserName) {
         if (wsParserName == null) {

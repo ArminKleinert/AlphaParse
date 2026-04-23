@@ -6,12 +6,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
+/**
+ * TODO
+ */
 public final class TimeUtil {
+    private TimeUtil() {
+    }
+
     /**
-     * 
-     * @param n
-     * @param f
-     * @return
+     * TODO
+     *
+     * @param n TODO
+     * @param f TODO
+     * @return TODO
      */
     public static @NotNull String measureTimeMillis(final int n, final @NotNull Procedure f) {
         if (n < 1)

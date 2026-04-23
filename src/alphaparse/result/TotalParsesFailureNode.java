@@ -4,6 +4,14 @@ import alphaparse.Keyword;
 import alphaparse.list.PretenderList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO
+ *
+ * @param text  TODO
+ * @param key   TODO
+ * @param start TODO
+ * @param end   TODO
+ */
 public record TotalParsesFailureNode(
         @NotNull String text, @NotNull Keyword key,
         int start, int end)

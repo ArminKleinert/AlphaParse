@@ -7,14 +7,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Supplier;
 
-
 /**
- *
- * @return
+ * TODO
  */
 public sealed interface AlphaParsesResult
         extends List<ParseTree>
         permits AlphaParsesResult.LazyResultList, AlphaParsesResult.NoParsesResult, AlphaParsesResult.ParsesFailureResult, TotalParsesFailureNode {
+    /**
+     * TODO
+     *
+     * @param o TODO
+     * @return TODO
+     */
     static @NotNull AlphaParsesResult make(final @NotNull Object o) {
         return switch (o) {
             case TotalParsesFailureNode node -> node;
@@ -26,16 +30,18 @@ public sealed interface AlphaParsesResult
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default boolean isSuccess() {
         return this instanceof LazyResultList;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default @NotNull AlphaParsesResult castToParsesSuccess() {
         if (this instanceof TotalParsesFailureNode)
@@ -44,16 +50,18 @@ public sealed interface AlphaParsesResult
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default ParsesFailureResult castToParsesFailure() {
         return (ParsesFailureResult) this;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default List<?> hiccup() {
         if (this instanceof TotalParsesFailureNode)
@@ -62,24 +70,35 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     *
+     * TODO
      */
     final class LazyResultList extends LazySupplierList<ParseTree> implements AlphaParsesResult {
+        /**
+         * TODO
+         *
+         * @param nextFn     TODO
+         * @param maxResults TODO
+         */
         public LazyResultList(final @NotNull Supplier<ParseTree> nextFn, final int maxResults) {
             super(nextFn, maxResults);
         }
     }
 
     /**
-     *
+     * TODO
      */
     final class ParsesFailureResult implements AlphaParsesResult, PretenderList<ParseTree> {
         final @NotNull AlphaParseFailure alphaParseFailure;
 
-         ParsesFailureResult(final @NotNull AlphaParseFailure alphaParseFailure) {
+        ParsesFailureResult(final @NotNull AlphaParseFailure alphaParseFailure) {
             this.alphaParseFailure = alphaParseFailure;
         }
 
+        /**
+         * TODO
+         *
+         * @return TODO
+         */
         public @NotNull AlphaParseFailure asFailure() {
             return alphaParseFailure;
         }
@@ -113,7 +132,15 @@ public sealed interface AlphaParsesResult
         }
     }
 
+    /**
+     * TODO
+     */
     final class NoParsesResult extends AbstractList<ParseTree> implements AlphaParsesResult {
+        /**
+         * TODO
+         *
+         * @param ptl TODO
+         */
         public NoParsesResult(List<?> ptl) {
             if (!(ptl.isEmpty())) throw new IllegalStateException();
         }

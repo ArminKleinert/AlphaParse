@@ -27,7 +27,13 @@ import java.util.List;
 import java.util.SequencedSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * TODO
+ */
 public final class Gll {
+    private Gll() {
+    }
+
     private static @NotNull TrampolineListenerNode nodeGet(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
@@ -57,6 +63,13 @@ public final class Gll {
         return !node.listeners().isEmpty() || !node.fullListeners().isEmpty();
     }
 
+    /**
+     * TODO
+     *
+     * @param tramp   TODO
+     * @param nodeKey TODO
+     * @return TODO
+     */
     public static boolean resultExists_Q(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
@@ -74,6 +87,13 @@ public final class Gll {
         return tramp.getText().length() == success.index();
     }
 
+    /**
+     * TODO
+     *
+     * @param tramp            TODO
+     * @param creator          TODO
+     * @param negativeListener TODO
+     */
     public static void pushNegativeListener(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey creator,
@@ -122,7 +142,7 @@ public final class Gll {
     private static @Nullable ParseTree run(
             final @NotNull Tramp tramp,
             final @NotNull AtomicBoolean foundResult) {
-        for (;;) {
+        for (; ; ) {
             if (tramp.getSuccess() != null) {
                 final @NotNull var successResult = tramp.getSuccess();
                 final var resultTree = successResult.getResult();
@@ -159,6 +179,13 @@ public final class Gll {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param tramp    TODO
+     * @param nodeKey  TODO
+     * @param listener TODO
+     */
     public static void pushListener(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -178,6 +205,13 @@ public final class Gll {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param tramp    TODO
+     * @param nodeKey  TODO
+     * @param listener TODO
+     */
     public static void pushFullListener(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -200,6 +234,10 @@ public final class Gll {
      * Categorizes as either result or full-result.
      * Schedules notification to all existing listeners of result
      * (Full listeners only get notified about full results)
+     *
+     * @param tramp   TODO
+     * @param nodeKey TODO
+     * @param result  TODO
      */
     public static void pushResult(
             final @NotNull Tramp tramp,
@@ -249,6 +287,15 @@ public final class Gll {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar TODO
+     * @param start   TODO
+     * @param text    TODO
+     * @param partial TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParsesResult parses(
             final @NotNull Grammar grammar,
             final @NotNull Keyword start,
@@ -261,6 +308,15 @@ public final class Gll {
         return AlphaParsesResult.make(allParses);
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar TODO
+     * @param start   TODO
+     * @param text    TODO
+     * @param partial TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParsesResult parsesOrFailure(
             final @NotNull Grammar grammar,
             final @NotNull Keyword start,
@@ -279,6 +335,15 @@ public final class Gll {
         return AlphaParsesResult.make(allParses);
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar TODO
+     * @param start   TODO
+     * @param text    TODO
+     * @param partial TODO
+     * @return TODO
+     */
     static @NotNull AlphaParseResult parse(
             final @NotNull Grammar grammar,
             final @NotNull Keyword start,
@@ -296,6 +361,14 @@ public final class Gll {
         return AlphaParseResult.make(allParses.getFirst());
     }
 
+    /**
+     * TODO
+     *
+     * @param tramp   TODO
+     * @param nodeKey TODO
+     * @param result  TODO
+     * @param end     TODO
+     */
     public static void success(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -304,6 +377,14 @@ public final class Gll {
         pushResult(tramp, nodeKey, AlphaParseSuccess.create(end, result));
     }
 
+    /**
+     * TODO
+     *
+     * @param tramp   TODO
+     * @param nodeKey TODO
+     * @param index   TODO
+     * @param reason  TODO
+     */
     public static void fail(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -341,6 +422,15 @@ public final class Gll {
         return AlphaParsesResult.make(allParses);
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar TODO
+     * @param start   TODO
+     * @param text    TODO
+     * @param partial TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParsesResult parsesTotal(
             final @NotNull Grammar grammar,
             final @NotNull Keyword start,
@@ -366,6 +456,15 @@ public final class Gll {
         return buildFailureNode(start, text, 0, text.length());
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar TODO
+     * @param start   TODO
+     * @param text    TODO
+     * @param partial TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParseResult parseTotal(
             final @NotNull Grammar grammar,
             final @NotNull Keyword start,

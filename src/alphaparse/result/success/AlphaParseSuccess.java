@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * TODO
+ */
 public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResult permits
         AlphaParseSuccessList,
         AlphaParseSuccessNull,
@@ -20,10 +23,22 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
 
     private final int index;
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     */
     public AlphaParseSuccess(final int index) {
         this.index = index;
     }
 
+    /**
+     * TODO
+     *
+     * @param index  TODO
+     * @param result TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParseSuccess create(int index, final @Nullable Object result) {
         return switch (result) {
             case null -> new AlphaParseSuccessNull(index);
@@ -37,6 +52,13 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
         };
     }
 
+    /**
+     * TODO
+     *
+     * @param index  TODO
+     * @param result TODO
+     * @return TODO
+     */
     public static @NotNull AlphaParseSuccess create(int index, final @NotNull ParseTree result) {
         return new AlphaParseSuccessParseResult(index, result);
     }
@@ -56,10 +78,21 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
         return index;
     }
 
+    /**
+     * TODO
+     *
+     * @param result TODO
+     * @return TODO
+     */
     public @NotNull AlphaParseSuccess withResult(final @Nullable Object result) {
         return create(index, result);
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public abstract @Nullable Object getResult();
 
     @Override

@@ -2,16 +2,26 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Keyword;
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public final class NonTerminal extends Combinator {
     private final @NotNull Keyword keyword;
 
+    /**
+     * TODO
+     *
+     * @param keyword TODO
+     */
     public NonTerminal(final @NotNull Keyword keyword) {
         super();
         this.keyword = keyword;
@@ -41,6 +51,11 @@ public final class NonTerminal extends Combinator {
                 GllParserListeners.nodeListener(new TrampolineListenerKey(index, this), tramp));
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull Keyword getKeyword() {
         return keyword;
     }

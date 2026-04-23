@@ -1,14 +1,24 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO
+ */
 public final class StarCombinator extends CombinatorWithParser {
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     */
     public StarCombinator(final @NotNull Combinator parser) {
         super(parser);
     }

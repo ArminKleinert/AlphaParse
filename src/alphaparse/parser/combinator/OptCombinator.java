@@ -2,14 +2,24 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Keyword;
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO
+ */
 public final class OptCombinator extends CombinatorWithParser {
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     */
     public OptCombinator(final @NotNull Combinator parser) {
         super(parser);
     }

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public sealed abstract class CombinatorWithManyParsers
         extends Combinator
         permits AlternationCombinator, CatCombinator, OrderedCombinator {
@@ -25,20 +28,48 @@ public sealed abstract class CombinatorWithManyParsers
         this.parsers = new ArrayList<>(parsers);
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public final @NotNull CombinatorWithManyParsers unhideContent() {
         return withHideTag(false).withParsers(parsers.stream().map(Combinator::unhideContent).toList());
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull List<@NotNull Combinator> getParsers() {
         return parsers;
     }
 
+    /**
+     * TODO
+     *
+     * @param hide TODO
+     * @return TODO
+     */
     @Override
     public abstract @NotNull CombinatorWithManyParsers withHideTag(final boolean hide);
 
+    /**
+     * TODO
+     *
+     * @param red TODO
+     * @return TODO
+     */
     @Override
     public abstract @NotNull CombinatorWithManyParsers withReduction(final @NotNull ReductionType red);
 
+    /**
+     * TODO
+     *
+     * @param parsers TODO
+     * @return TODO
+     */
     public abstract @NotNull CombinatorWithManyParsers withParsers(final @NotNull List<@NotNull Combinator> parsers);
 
     @Override

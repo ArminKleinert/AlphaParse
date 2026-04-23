@@ -9,7 +9,12 @@ import java.util.regex.Pattern;
 
 import static java.lang.Character.isWhitespace;
 
+/**
+ * TODO
+ */
 public final class StrParser {
+    private StrParser() {
+    }
 
     // Converts a single-quoted string to a double-quoted one.
     private static @NotNull String escape(final @NotNull CharSequence s) {
@@ -33,6 +38,12 @@ public final class StrParser {
         return sb.toString();
     }
 
+    /**
+     * TODO
+     *
+     * @param s TODO
+     * @return TODO
+     */
     public static @NotNull String parse(final @NotNull CharSequence s) {
         final @NotNull StringBuilder sb = new StringBuilder();
         final @NotNull PushbackReader r = new PushbackReader(new StringReader(s.toString()));
@@ -134,8 +145,8 @@ public final class StrParser {
     /**
      * Converts single quoted string to double-quoted.
      *
-     * @param s
-     * @return
+     * @param s TODO
+     * @return TODO
      */
     public static @NotNull String processString(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(1, s.length() - 1);
@@ -146,8 +157,8 @@ public final class StrParser {
     /**
      * Converts single quoted regexp to double-quoted.
      *
-     * @param s
-     * @return
+     * @param s TODO
+     * @return TODO
      */
     public static @NotNull Pattern processRegexp(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(2, s.length() - 1);

@@ -2,13 +2,23 @@ package alphaparse.parser.combinator;
 
 import alphaparse.Keyword;
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO
+ */
 public final class LookaheadCombinator extends CombinatorWithParser {
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     */
     public LookaheadCombinator(final @NotNull Combinator parser) {
         super(parser);
     }
@@ -17,6 +27,12 @@ public final class LookaheadCombinator extends CombinatorWithParser {
         super(parser, hide, red);
     }
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
@@ -24,6 +40,12 @@ public final class LookaheadCombinator extends CombinatorWithParser {
                 GllParserListeners.lookListener(new TrampolineListenerKey(index, this), tramp));
     }
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void fullParse(final int index, final @NotNull Tramp tramp) {
         if (index == tramp.getText().length()) {

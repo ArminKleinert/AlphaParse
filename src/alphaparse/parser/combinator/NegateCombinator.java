@@ -8,7 +8,14 @@ import alphaparse.trampoline.Tramp;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO
+ */
 public final class NegateCombinator extends CombinatorWithParser {
+    /**
+     * TODO
+     * @param parser TODO
+     */
     public NegateCombinator(final @NotNull Combinator parser) {
         super(parser);
     }
@@ -17,6 +24,11 @@ public final class NegateCombinator extends CombinatorWithParser {
         super(parser, hide, red);
     }
 
+    /**
+     *  TODO
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void parse(final int index, final @NotNull Tramp tramp) {
         final @NotNull Combinator combinator = getParser();
@@ -39,6 +51,11 @@ public final class NegateCombinator extends CombinatorWithParser {
         });
     }
 
+    /**
+     *  TODO
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void fullParse(final int index, final @NotNull Tramp tramp) {
         parse(index, tramp);

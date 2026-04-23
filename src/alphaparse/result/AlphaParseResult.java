@@ -3,10 +3,16 @@ package alphaparse.result;
 import org.jetbrains.annotations.NotNull;
 
 /**
- *
+ * TODO
  */
 public sealed interface AlphaParseResult
         permits ParseTree, AlphaParseFailure, ParseFailureNode {
+    /**
+     * TODO
+     *
+     * @param o TODO
+     * @return TODO
+     */
     static @NotNull AlphaParseResult make(final @NotNull Object o) {
         return switch (o) {
             case ParseTree objects -> objects;
@@ -16,32 +22,36 @@ public sealed interface AlphaParseResult
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default boolean isSuccess() {
         return this instanceof ParseTree;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default boolean isFailure() {
         return !isSuccess();
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default @NotNull ParseTree castToParseSuccess() {
         return (ParseTree) this;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     default @NotNull AlphaParseFailure castToParseFailure() {
         return (AlphaParseFailure) this;

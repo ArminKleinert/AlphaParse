@@ -4,14 +4,25 @@ import alphaparse.Gll;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.Tramp;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * TODO
+ */
 public final class OrderedCombinator extends CombinatorWithManyParsers {
     private final @NotNull Combinator parser1;
     private final @NotNull Combinator parser2;
+
+    /**
+     * TODO
+     *
+     * @param parsers TODO
+     */
     public OrderedCombinator(final @NotNull List<Combinator> parsers) {
         this(setupParsers(parsers).parser1, setupParsers(parsers).parser2);
     }
@@ -21,8 +32,9 @@ public final class OrderedCombinator extends CombinatorWithManyParsers {
                               final @NotNull ReductionType red) {
         this(setupParsers(parsers).parser1, setupParsers(parsers).parser2, hide, red);
     }
+
     private OrderedCombinator(final @NotNull Combinator parser1,
-                             final @NotNull Combinator parser2) {
+                              final @NotNull Combinator parser2) {
         super(List.of(parser1, parser2));
         this.parser1 = parser1;
         this.parser2 = parser2;
@@ -87,6 +99,7 @@ public final class OrderedCombinator extends CombinatorWithManyParsers {
         return getReduction() == red1 ? this : new OrderedCombinator(getParsers(), isHidden(), red1);
     }
 
+    @Override
     public @NotNull OrderedCombinator withParsers(final @NotNull List<Combinator> parsers) {
         return new OrderedCombinator(parsers, isHidden(), getReduction());
     }

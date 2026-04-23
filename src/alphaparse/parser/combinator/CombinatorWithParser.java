@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public sealed abstract class CombinatorWithParser
         extends Combinator
         permits LookaheadCombinator, NegateCombinator, OptCombinator, PlusCombinator, RepetitionCombinator, StarCombinator {
@@ -23,6 +26,11 @@ public sealed abstract class CombinatorWithParser
         this.parser = parser;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull Combinator getParser() {
         return parser;
     }
@@ -33,6 +41,12 @@ public sealed abstract class CombinatorWithParser
     @Override
     public abstract @NotNull CombinatorWithParser withReduction(final @NotNull ReductionType red);
 
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     * @return TODO
+     */
     public abstract @NotNull CombinatorWithParser withParser(final @NotNull Combinator parser);
 
     public final @NotNull Combinator unhideContent() {

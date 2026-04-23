@@ -1,7 +1,9 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
@@ -12,10 +14,18 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * TODO
+ */
 public final class RegexpTerminal extends CombinatorTerminal {
     private long bufferedHashCode = Long.MIN_VALUE;
     private final @NotNull Pattern regexp;
 
+    /**
+     * TODO
+     *
+     * @param regexp TODO
+     */
     public RegexpTerminal(final @NotNull Pattern regexp) {
         super();
         this.regexp = regexp;
@@ -61,6 +71,11 @@ public final class RegexpTerminal extends CombinatorTerminal {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull Pattern getRegexp() {
         return regexp;
     }

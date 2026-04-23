@@ -4,11 +4,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-
+/**
+ * TODO
+ *
+ * @param <T> TODO
+ */
 public final class UnmodList<T> implements List<T> {
     private final Object[] inner;
     private int hashCode = 0;
 
+    /**
+     * TODO
+     *
+     * @param coll TODO
+     */
     public UnmodList(final @NotNull List<T> coll) {
         inner = new Object[coll.size()];
         int i = 0;
@@ -18,6 +27,11 @@ public final class UnmodList<T> implements List<T> {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param safeArray TODO
+     */
     public UnmodList(final Object[] safeArray) {
         inner = safeArray;
     }

@@ -1,7 +1,9 @@
 package alphaparse.parser.combinator;
 
 import alphaparse.Gll;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
 import alphaparse.trampoline.Tramp;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonEpsilon;
@@ -9,10 +11,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public final class EpsilonCombinator extends CombinatorTerminal {
     private static final @NotNull EpsilonCombinator epsilon = new EpsilonCombinator();
 
-    public static@NotNull EpsilonCombinator getDefault() {return epsilon;}
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
+    public static @NotNull EpsilonCombinator getDefault() {
+        return epsilon;
+    }
 
     private EpsilonCombinator() {
         super();
@@ -22,11 +34,23 @@ public final class EpsilonCombinator extends CombinatorTerminal {
         super(hide, red);
     }
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void parse(final int index, final @NotNull Tramp tramp) {
         Gll.success(tramp, new TrampolineListenerKey(index, this), null, index);
     }
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void fullParse(final int index, final @NotNull Tramp tramp) {
         if (index == tramp.getText().length())

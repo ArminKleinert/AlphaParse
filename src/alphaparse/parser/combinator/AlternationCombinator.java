@@ -10,7 +10,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * TODO
+ */
 public final class AlternationCombinator extends CombinatorWithManyParsers {
+    /**
+     * TODO
+     *
+     * @param parsers TODO
+     */
     public AlternationCombinator(final @NotNull List<Combinator> parsers) {
         super(parsers);
     }
@@ -21,6 +29,12 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
         super(parsers, hide, red);
     }
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void parse(final int index, final @NotNull Tramp tramp) {
         for (final @NotNull Combinator combinator : getParsers()) {
@@ -32,6 +46,12 @@ public final class AlternationCombinator extends CombinatorWithManyParsers {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param index TODO
+     * @param tramp TODO
+     */
     @Override
     public void fullParse(final int index, final @NotNull Tramp tramp) {
         for (final @NotNull Combinator parser : getParsers()) {

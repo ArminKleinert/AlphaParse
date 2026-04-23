@@ -6,9 +6,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public abstract class ParseFailureReason {
     private final boolean full;
 
+    /**
+     * TODO
+     *
+     * @param full TODO
+     */
     protected ParseFailureReason(final boolean full) {
         this.full = full;
     }
@@ -22,6 +30,11 @@ public abstract class ParseFailureReason {
                 '}';
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public String failureReasonString() {
         return Objects.toString(getExpecting());
     }
@@ -40,10 +53,25 @@ public abstract class ParseFailureReason {
         return Objects.hash(getTag(), getExpecting(), full);
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public abstract @NotNull Keyword getTag();
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public abstract @Nullable Object getExpecting();
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public boolean isFull() {
         return full;
     }

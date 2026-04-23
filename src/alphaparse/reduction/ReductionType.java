@@ -6,16 +6,29 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public final class ReductionType {
     private static ReductionType rawNonTerminalReduction = null;
     private static ReductionType nullReduction = null;
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public static @NotNull ReductionType rawNonTerminalReduction() {
         if (rawNonTerminalReduction == null)
             rawNonTerminalReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.RAW, true);
         return rawNonTerminalReduction;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public static @NotNull ReductionType nullReduction() {
         if (nullReduction == null)
             nullReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.NONE, true);
@@ -24,11 +37,28 @@ public final class ReductionType {
 
 
     /**
-     *
-     * @return
+     * TODO
      */
     public enum ReductionTypesAvailable {
-        NONE, HICCUP, RAW, ENLIVE;
+        /**
+         * TODO
+         */
+        NONE,
+        /**
+         * TODO
+         */
+        HICCUP,
+        /**
+         * TODO
+         */
+        RAW,
+        /**
+         * TODO
+         */
+        ENLIVE;
+        /**
+         * TODO
+         */
         public static final ReductionTypesAvailable defaultType = HICCUP;
     }
 
@@ -42,10 +72,23 @@ public final class ReductionType {
         this.hiddenOrRaw = hiddenOrRaw;
     }
 
+    /**
+     * TODO
+     *
+     * @param key TODO
+     * @return TODO
+     */
     public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
         return new ReductionType(key, ReductionType.ReductionTypesAvailable.defaultType, false);
     }
 
+    /**
+     * TODO
+     *
+     * @param key  TODO
+     * @param type TODO
+     * @return TODO
+     */
     public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
         return new ReductionType(key, type, type != ReductionTypesAvailable.NONE && type != ReductionTypesAvailable.RAW);
     }
@@ -62,10 +105,20 @@ public final class ReductionType {
         return Objects.hash(key, type, hiddenOrRaw);
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull Keyword getKey() {
         return key;
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public @NotNull ReductionTypesAvailable getReductionType() {
         return type;
     }
@@ -78,6 +131,11 @@ public final class ReductionType {
                 '}';
     }
 
+    /**
+     * TODO
+     *
+     * @return TODO
+     */
     public boolean isHiddenOrRaw() {
         return hiddenOrRaw;
     }

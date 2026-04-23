@@ -9,10 +9,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * TODO
+ */
 public final class CombinatorsSource {
     private final @NotNull EpsilonCombinator epsilon;
     private final @NotNull CombinatorBuffer buffer;
 
+    /**
+     * TODO
+     */
     public CombinatorsSource() {
         epsilon = EpsilonCombinator.getDefault();
         buffer = new CombinatorBuffer();
@@ -116,6 +122,12 @@ public final class CombinatorsSource {
         return buffer.getOrAdd(new NonTerminal(keyword));
     }
 
+    /**
+     * TODO
+     *
+     * @param keyword TODO
+     * @return TODO
+     */
     public static @NotNull NonTerminal staticMakeNonTerminal(final @NotNull Keyword keyword) {
         return new NonTerminal(keyword);
     }
@@ -137,7 +149,7 @@ public final class CombinatorsSource {
 
     @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
-        for (final@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (final @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             res.add(Grammar.entry(key, buffer.getOrAdd(value.unhideContent())));
@@ -148,7 +160,7 @@ public final class CombinatorsSource {
     @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
                                 final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
-        for (final@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (final @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
@@ -161,7 +173,7 @@ public final class CombinatorsSource {
     @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
                                final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
-        for (final@NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
+        for (final @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
@@ -201,6 +213,15 @@ public final class CombinatorsSource {
         };
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar   TODO
+     * @param start     TODO
+     * @param grammarWS TODO
+     * @param startWS   TODO
+     * @return TODO
+     */
     public @NotNull Grammar autoWhitespace(final @NotNull Grammar grammar,
                                            final @NotNull Keyword start,
                                            final @NotNull Grammar grammarWS,

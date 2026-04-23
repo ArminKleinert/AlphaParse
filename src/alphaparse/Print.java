@@ -10,7 +10,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+/**
+ * TODO
+ */
 public final class Print {
+    private Print() {
+    }
+
     private static @NotNull String parenForTags(
             final @NotNull Predicate<@NotNull Combinator> tags,
             final boolean hidden,
@@ -36,6 +42,12 @@ public final class Print {
                 .replace("\"", "\\\"");
     }
 
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     * @return TODO
+     */
     public static @NotNull String combinatorsToString(final @NotNull Combinator parser) {
         return combinatorsToString(parser, false);
     }
@@ -118,6 +130,12 @@ public final class Print {
             return startProd.getName() + " = " + combinatorsToString(parser);
     }
 
+    /**
+     * TODO
+     *
+     * @param p TODO
+     * @return TODO
+     */
     public static @NotNull String parserToString(final @NotNull Parser p) {
         final @NotNull Grammar grammar = p.grammar();
         final @NotNull Keyword start = p.startProduction();

@@ -10,7 +10,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * TODO
+ */
 public final class ParseConverterUtils {
+    private ParseConverterUtils() {
+    }
+
+    /**
+     * TODO
+     *
+     * @param pt TODO
+     * @return TODO
+     */
     public static @NotNull ParseTree parseTreeFromHiccup(final @NotNull List<?> pt) {
         if (pt.isEmpty()) throw new IllegalArgumentException();
         final @NotNull var tag = pt.getFirst();
@@ -24,6 +36,12 @@ public final class ParseConverterUtils {
         return Node.of(pt);
     }
 
+    /**
+     * TODO
+     *
+     * @param m TODO
+     * @return TODO
+     */
     public static @NotNull ParseTree parseTreeFromEnlive(final @NotNull Map<?, ?> m) {
         if (!(m.size() == 2 &&
                 m.containsKey(Keyword.intern("tag")) &&
@@ -91,6 +109,12 @@ public final class ParseConverterUtils {
         };
     }
 
+    /**
+     * TODO
+     *
+     * @param combinator TODO
+     * @return TODO
+     */
     public static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Combinator combinator) {
         final @NotNull Function<Combinator, String> classTagLookup = (combinator1) ->
                 switch (combinator1) {
@@ -112,6 +136,12 @@ public final class ParseConverterUtils {
         return parserToMap(combinator, classTagLookup);
     }
 
+    /**
+     * TODO
+     *
+     * @param parser TODO
+     * @return TODO
+     */
     public static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Parser parser) {
         final @NotNull Function<Combinator, String> classTagLookup = (combinator1) ->
                 switch (combinator1) {

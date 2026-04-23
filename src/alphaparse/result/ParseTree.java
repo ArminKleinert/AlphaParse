@@ -7,10 +7,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- *
+ * TODO
  */
 public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
+    /**
+     * TODO
+     */
     public static @NotNull String NULL_TAG_NAME = "\0\0\0\0";
+
+    /**
+     * TODO
+     */
     public static @NotNull Keyword NULL_TAG = Keyword.intern(NULL_TAG_NAME);
 
     private final @NotNull Node.NodeTreeTag tag;
@@ -21,11 +28,12 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     private final boolean usedMemoryOptimization;
 
     /**
+     * TODO
      *
-     * @param tag
-     * @param content
-     * @param isFlat
-     * @param usedMemoryOptimization
+     * @param tag                    TODO
+     * @param content                TODO
+     * @param isFlat                 TODO
+     * @param usedMemoryOptimization TODO
      */
     private ParseTree(final @NotNull Node.NodeTreeTag tag,
                       final @NotNull List<@NotNull Node> content,
@@ -40,32 +48,36 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     public @NotNull Node.NodeTreeTag getTag() {
         return tag;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     public @NotNull List<@NotNull Node> getContent() {
         return content;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     public boolean usedMemoryOptimization() {
         return usedMemoryOptimization;
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     public @NotNull List<@NotNull Node> toList() {
         final @NotNull List<@NotNull Node> alist = new ArrayList<>();
@@ -252,10 +264,11 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
+     * TODO
      *
-     * @param tag
-     * @param content
-     * @return
+     * @param tag     TODO
+     * @param content TODO
+     * @return TODO
      */
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content) {
@@ -263,11 +276,12 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
+     * TODO
      *
-     * @param tag
-     * @param content
-     * @param usedMemoryOptimization
-     * @return
+     * @param tag                    TODO
+     * @param content                TODO
+     * @param usedMemoryOptimization TODO
+     * @return TODO
      */
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content,
@@ -301,18 +315,20 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
+     * TODO
      *
-     * @param tag
-     * @param content
-     * @return
+     * @param tag     TODO
+     * @param content TODO
+     * @return TODO
      */
     public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
         return create(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
     }
 
     /**
+     * TODO
      *
-     * @return
+     * @return TODO
      */
     public @NotNull List<@NotNull Object> hiccup() {
         int i = 0;

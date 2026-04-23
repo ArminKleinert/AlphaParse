@@ -11,15 +11,24 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
+ * TODO
  *
- * @param grammar
- * @param startProduction
- * @param outputFormat
+ * @param grammar         TODO
+ * @param startProduction TODO
+ * @param outputFormat    TODO
  */
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
                      @NotNull ReductionType.ReductionTypesAvailable outputFormat)
         implements BiFunction<String, Alpha.ParsingOptions, AlphaParseResult> {
+
+    /**
+     * TODO
+     *
+     * @param grammar         TODO
+     * @param startProduction TODO
+     * @param outputFormat    TODO
+     */
     public Parser {
         if (!grammar.containsKey(startProduction))
             throw new IllegalArgumentException("Illegal start-production " + startProduction + ": not in grammar.");
@@ -27,10 +36,11 @@ public record Parser(@NotNull Grammar grammar,
     }
 
     /**
+     * TODO
      *
-     * @param text
-     * @param options
-     * @return
+     * @param text    TODO
+     * @param options TODO
+     * @return TODO
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text,
                                            final @NotNull Alpha.ParsingOptions options) {
@@ -38,19 +48,21 @@ public record Parser(@NotNull Grammar grammar,
     }
 
     /**
+     * TODO
      *
-     * @param text
-     * @return
+     * @param text TODO
+     * @return TODO
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text) {
         return Alpha.parse(this, text, Alpha.ParsingOptions.getDefault());
     }
 
     /**
+     * TODO
      *
-     * @param text
-     * @param options
-     * @return
+     * @param text    TODO
+     * @param options TODO
+     * @return TODO
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text,
                                              final @NotNull Alpha.ParsingOptions options) {
@@ -58,9 +70,10 @@ public record Parser(@NotNull Grammar grammar,
     }
 
     /**
+     * TODO
      *
-     * @param text
-     * @return
+     * @param text TODO
+     * @return TODO
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text) {
         return Alpha.parses(this, text, Alpha.ParsingOptions.getDefault());
@@ -84,16 +97,34 @@ public record Parser(@NotNull Grammar grammar,
         return Objects.hash(grammar, startProduction);
     }
 
+    /**
+     * TODO
+     *
+     * @param grammar TODO
+     * @return TODO
+     */
     public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
         if (this.grammar.equals(grammar))
             return this;
         return new Parser(grammar, startProduction, outputFormat);
     }
 
+    /**
+     * TODO
+     *
+     * @param startProduction TODO
+     * @return TODO
+     */
     public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
         return new Parser(grammar, startProduction, outputFormat);
     }
 
+    /**
+     * TODO
+     *
+     * @param whitespaceParser TODO
+     * @return TODO
+     */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
         return withGrammar((new CombinatorsSource()).autoWhitespace(
                 grammar(),
@@ -117,6 +148,13 @@ public record Parser(@NotNull Grammar grammar,
                 '}';
     }
 
+    /**
+     * TODO
+     *
+     * @param s              TODO
+     * @param parsingOptions TODO
+     * @return TODO
+     */
     @Override
     public @NotNull AlphaParseResult apply(
             final @NotNull String s,

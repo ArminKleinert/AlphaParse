@@ -2,6 +2,11 @@ package alphaparse.result.failure.failureReason;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *  TODO
+ * @param lo TODO
+ * @param hi TODO
+ */
 public record AlphaFailureReasonCharRange(int lo, int hi) {
     @Override
     public @NotNull String toString() {
