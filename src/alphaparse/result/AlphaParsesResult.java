@@ -5,6 +5,7 @@ import alphaparse.list.PretenderList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 /**
@@ -79,7 +80,7 @@ public sealed interface AlphaParsesResult
          * @param nextFn     TODO
          * @param maxResults TODO
          */
-        public LazyResultList(final @NotNull Supplier<ParseTree> nextFn, final int maxResults) {
+        public LazyResultList(final @NotNull IntFunction<ParseTree> nextFn, final int maxResults) {
             super(nextFn, maxResults);
         }
     }

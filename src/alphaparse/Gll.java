@@ -31,10 +31,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * TODO
  */
 public final class Gll {
-    private Gll() {
+    Gll() {
     }
 
-    private static @NotNull TrampolineListenerNode nodeGet(
+    private static @NotNull TrampolineListenerNode getOrCreateListenerNode(
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         @Nullable TrampolineListenerNode node = tramp.getNode(nodeKey);
@@ -136,7 +136,7 @@ public final class Gll {
     private static @NotNull AlphaParsesResult.LazyResultList run(
             final @NotNull Tramp tramp, final int maxResults) {
         final var foundResult = new AtomicBoolean(false);
-        return new AlphaParsesResult.LazyResultList(() -> run(tramp, foundResult), maxResults);
+        return new AlphaParsesResult.LazyResultList((i) -> run(tramp, foundResult), maxResults);
     }
 
     private static @Nullable ParseTree run(
@@ -191,7 +191,7 @@ public final class Gll {
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         final boolean listenerAlreadyExists = listenerExists_Q(tramp, nodeKey);
-        final @NotNull TrampolineListenerNode node = nodeGet(tramp, nodeKey);
+        final @NotNull TrampolineListenerNode node = getOrCreateListenerNode(tramp, nodeKey);
         final @NotNull List<Listener> listeners = node.listeners();
         listeners.add(listener);
         for (final @NotNull AlphaParseSuccess result : node.results()) {
@@ -218,7 +218,7 @@ public final class Gll {
             final @NotNull Listener listener) {
         //GllParsers.pushFullListenerCallback.invoke(tramp, nodeKey, listener);
         final var fullListenerAlreadyExists = fullListenerExists_Q(tramp, nodeKey);
-        final @NotNull var node = nodeGet(tramp, nodeKey);
+        final @NotNull var node = getOrCreateListenerNode(tramp, nodeKey);
         final @NotNull var listeners = node.fullListeners();
         listeners.add(listener);
         for (final @NotNull AlphaParseSuccess fullResult : node.fullResults()) {
@@ -243,7 +243,7 @@ public final class Gll {
             final @NotNull Tramp tramp,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             @NotNull AlphaParseSuccess result) {
-        final @NotNull TrampolineListenerNode node = nodeGet(tramp, nodeKey);
+        final @NotNull TrampolineListenerNode node = getOrCreateListenerNode(tramp, nodeKey);
         final @NotNull Combinator parser = nodeKey.parser();
         result = parser.isHidden()
                 ? result.withResult(null)

@@ -4,16 +4,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 /**
  * TODO
  * @param <T> TODO
  */
-public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional<T>> {
+public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optional<T>> {
     private @NotNull List<@NotNull T> evaluatedPart;
     private final int maxResults;
-    private Supplier<@Nullable T> nextFn;
+    private IntFunction<@Nullable T> nextFn;
     private boolean fullyEvaluated = false;
 
     /**
@@ -21,7 +22,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional
      * @param nextFn TODO
      * @param maxResults TODO
      */
-    public LazySupplierList(final @NotNull Supplier<@Nullable T> nextFn, final int maxResults) {
+    public LazySupplierList(final @NotNull IntFunction<@Nullable T> nextFn, final int maxResults) {
         this.evaluatedPart = new ArrayList<>();
         this.nextFn = nextFn;
         this.maxResults = maxResults;
@@ -31,18 +32,21 @@ public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional
      * TODO
      * @param nextFn TODO
      */
-    public LazySupplierList(final @NotNull Supplier<@Nullable T> nextFn) {
+    public LazySupplierList(final @NotNull IntFunction<@Nullable T> nextFn) {
         this(nextFn, Integer.MAX_VALUE);
     }
 
-    private @Nullable T evalutePart() {
+    private @Nullable T evalutePart(int i) {
+        if (i < evaluatedPart.size())
+            return evaluatedPart.get(i);
+
         if (evaluatedPart.size() >= maxResults)
             fullyEvaluated = true;
 
         if (fullyEvaluated)
             return null;
 
-        final var next = nextFn.get();
+        final var next = nextFn.apply(evaluatedPart.size());
         if (next == null) {
             fullyEvaluated = true;
             nextFn = null;
@@ -59,7 +63,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional
     public void evaluate() {
         @Nullable T ep;
         do {
-            ep = evalutePart();
+            ep = evalutePart(evaluatedPart.size());
         } while (ep != null);
     }
 
@@ -68,8 +72,8 @@ public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional
      * @return TODO
      */
     @Override
-    public Optional<T> get() {
-        return Optional.ofNullable(evalutePart());
+    public Optional<T> apply(int i) {
+        return Optional.ofNullable(evalutePart(i));
     }
 
     @Override
@@ -200,7 +204,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, Supplier<Optional
         int cursor = evaluatedPart.size();
         do {
             if (fullyEvaluated) return null;
-            final T next = evalutePart();
+            final T next = evalutePart(i);
             if (cursor == i) return next;
             cursor++;
         } while (true);

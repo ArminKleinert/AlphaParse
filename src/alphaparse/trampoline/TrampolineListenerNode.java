@@ -8,29 +8,29 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO
+ * These objects save listeners and results for a specific index and parser to ensure that no productions are ever repeated for a specific index.
  *
- * @param listeners     TODO
- * @param fullListeners TODO
- * @param results       TODO
- * @param fullResults   TODO
+ * @param listeners     Listener objects for parses.
+ * @param fullListeners Listeners that expect to be parsed to the end of the input text.
+ * @param results       Successes (or failures) for listeners.
+ * @param fullResults   Successes (or failures) for full listeners.
  */
 public record TrampolineListenerNode(@NotNull List<Listener> listeners,
                                      @NotNull List<Listener> fullListeners,
                                      @NotNull SequencedSet<AlphaParseSuccess> results,
                                      @NotNull SequencedSet<AlphaParseSuccess> fullResults) {
     /**
-     * TODO
+     * Creates a new instance.
      */
     public TrampolineListenerNode() {
         this(new ArrayList<>(), new ArrayList<>(), new LinkedHashSet<>(), new LinkedHashSet<>());
     }
 
     /**
-     * TODO
+     * These objects are used to index {@link TrampolineListenerNode} objects in a {@link Tramp}. They ensure that no productions are ever repeated at a specified index.
      *
-     * @param index  TODO
-     * @param parser TODO
+     * @param index  The index.
+     * @param parser The production.
      */
     public record TrampolineListenerKey(int index, @NotNull Combinator parser) {
     }

@@ -206,26 +206,26 @@ public final class Tramp {
     /**
      * Adds a listener to the message cache.
      *
-     * @param key        A pair of
-     * @param defaultVal TODO
+     * @param key        The key for the message.
+     * @param defaultVal The generation the listener is for.
      */
     public void addToMsgCache(final @NotNull TrampolineMsgCacheKey key, final int defaultVal) {
         msgCache.put(key, defaultVal);
     }
 
     /**
-     * TODO
+     * This function is used when the parser detects a failure. Parsing will be terminated when a failure is set.
      *
-     * @param failure TODO
+     * @param failure The failure.
      */
     public void setFailure(final @NotNull AlphaParseFailure failure) {
         this.failure = failure;
     }
 
     /**
-     * TODO
+     * Sets the last detected parsing success. This is usually a String for a parsed {@link alphaparse.parser.combinator.StringTerminal} or a finished {@link alphaparse.result.ParseTree}.
      *
-     * @param success TODO
+     * @param success The new success or null.
      */
     public void setSuccess(final @Nullable AlphaParseSuccess success) {
         this.success = success;
@@ -242,10 +242,10 @@ public final class Tramp {
     }
 
     /**
-     * TODO
+     * Adds a new listener-node.
      *
-     * @param key  TODO
-     * @param node TODO
+     * @param key  The key (position and production)
+     * @param node The node.
      */
     public void addToNodes(final @NotNull TrampolineListenerKey key,
                            final @NotNull TrampolineListenerNode node) {
@@ -253,7 +253,7 @@ public final class Tramp {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Tramp{" +
                 "grammar=" + grammar +
                 ", text='" + text + '\'' +
