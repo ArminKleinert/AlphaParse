@@ -88,8 +88,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return super.toString();
     }
 
-    private @NotNull Set<NonTerminal> listNonTerminals() {
-        final @NotNull Set<NonTerminal> result = new HashSet<>();
+    private @NotNull Set<CombinatorNonTerminal> listNonTerminals() {
+        final @NotNull Set<CombinatorNonTerminal> result = new HashSet<>();
         final @NotNull Set<Combinator> analyzedCombinators = new HashSet<>();
         final @NotNull ArrayList<@NotNull Combinator> combinatorStack = new ArrayList<>(values());
         @NotNull Combinator parser;
@@ -102,7 +102,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
             analyzedCombinators.add(parser);
 
             switch (parser) {
-                case NonTerminal nonTerminal -> result.add(nonTerminal);
+                case CombinatorNonTerminal combinatorNonTerminal -> result.add(combinatorNonTerminal);
                 case CombinatorTerminal ignored -> {
                 }
                 case CombinatorWithManyParsers combinatorWithManyParsers ->
@@ -122,7 +122,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(
                 keySet(),
-                listNonTerminals().stream().map(NonTerminal::getKeyword).collect(Collectors.toSet()));
+                listNonTerminals().stream().map(CombinatorNonTerminal::getKeyword).collect(Collectors.toSet()));
     }
 
     /**

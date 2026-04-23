@@ -1,7 +1,7 @@
 package alphaparse;
 
 import alphaparse.parser.Grammar;
-import alphaparse.parser.EpsilonCombinator;
+import alphaparse.parser.CombinatorEpsilon;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -30,9 +30,42 @@ class AlphaParserCreationTest {
     @Test
     void parserFromFile() {
         try {
-            final @NotNull var grammarFile = new File("grammars/c99.g");
+
+            final @NotNull String text = "aaaaabbbaaaabb";
+            final @NotNull var grammarFile = new File("grammars/as_and_bs.g");
+            final @NotNull var p = Alpha.parser(Files.readString(grammarFile.toPath()));
+            final @NotNull var grammarText = Files.readString(grammarFile.toPath());
+
+            Assertions.assertEquals(
+                    Alpha.parser(grammarText).parse(text),
+                    p.parse(text)
+            );
+            Assertions.assertEquals(
+                    Alpha.parser(grammarText),
+                    p
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            final @NotNull var grammarFile = new File("grammars/as_and_bs.g");
             final @NotNull var p = Alpha.parser(Files.readString(grammarFile.toPath()));
             Assertions.assertEquals(p, Alpha.parser(grammarFile));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            final @NotNull var grammarFile = new File("grammars/c99.g");
+            final @NotNull var pFromString = Alpha.parser(
+                    Files.readString(grammarFile.toPath()),
+                    Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            final @NotNull var pFromFile = Alpha.parser(
+                    Files.readString(grammarFile.toPath()),
+                    Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            final @NotNull var text = "void a(){}";
+            Assertions.assertEquals(pFromString.parses(text), pFromFile.parses(text));
+            Assertions.assertEquals(pFromString, pFromFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,8 +107,8 @@ class AlphaParserCreationTest {
         {
             // Error: No start symbol provided
             final @NotNull var grammar = new Grammar(Map.of(
-                    Keyword.intern("S"), EpsilonCombinator.getDefault(),
-                    Keyword.intern("A"), EpsilonCombinator.getDefault()
+                    Keyword.intern("S"), CombinatorEpsilon.getDefault(),
+                    Keyword.intern("A"), CombinatorEpsilon.getDefault()
             ));
             Assertions.assertThrows(IllegalArgumentException.class, () ->
                     Alpha.parser(grammar, Alpha.ParserCreationOptions.getDefault()));

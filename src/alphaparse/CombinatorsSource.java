@@ -12,42 +12,42 @@ import java.util.regex.Pattern;
  * TODO
  */
 public final class CombinatorsSource {
-    private final @NotNull EpsilonCombinator epsilon;
-    private final @NotNull CombinatorBuffer buffer;
+    private final @NotNull CombinatorEpsilon epsilon;
+    private final @NotNull BufferForCombinators buffer;
 
     /**
      * TODO
      */
     public CombinatorsSource() {
-        epsilon = EpsilonCombinator.getDefault();
-        buffer = new CombinatorBuffer();
+        epsilon = CombinatorEpsilon.getDefault();
+        buffer = new BufferForCombinators();
     }
 
     @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.size() == 1) return parsers.getFirst();
-        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
-        return buffer.getOrAdd(new AlternationCombinator(parsers));
+        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return CombinatorEpsilon.getDefault();
+        return buffer.getOrAdd(new CombinatorChoice(parsers));
     }
 
     @NotNull Combinator optionalCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return buffer.getOrAdd(new OptCombinator(parser));
+        return buffer.getOrAdd(new CombinatorOptional(parser));
     }
 
     @NotNull Combinator plusCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return buffer.getOrAdd(new PlusCombinator(parser));
+        return buffer.getOrAdd(new CombinatorPlus(parser));
     }
 
     @NotNull Combinator starCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return buffer.getOrAdd(new StarCombinator(parser));
+        return buffer.getOrAdd(new CombinatorStar(parser));
     }
 
     @NotNull Combinator repetitionCombinator(final int m, final int n, final @NotNull Combinator parser) {
         if (m < 0 || m > n) throw new IllegalArgumentException();
         if ((m == 0 && n == 0) || parser.equals(epsilon)) return epsilon;
-        return buffer.getOrAdd(new RepetitionCombinator(parser, m, n));
+        return buffer.getOrAdd(new CombinatorRepetition(parser, m, n));
     }
 
     @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
@@ -70,7 +70,7 @@ public final class CombinatorsSource {
             newParserList = newParserList.stream().filter(Objects::nonNull).toList();
 
         if (newParserList.size() == 1) return Objects.requireNonNull(newParserList.getFirst());
-        return buffer.getOrAdd(new OrderedCombinator(newParserList));
+        return buffer.getOrAdd(new CombinatorOrderedChoice(newParserList));
     }
 
     @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
@@ -92,33 +92,33 @@ public final class CombinatorsSource {
             parserList.add(parserStream.next());
         }
 
-        return buffer.getOrAdd(new CatCombinator(parserList));
+        return buffer.getOrAdd(new CombinatorConcatenation(parserList));
     }
 
     @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string, final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
-        return buffer.getOrAdd(new StringTerminal(string, caseInsensitive));
+        return buffer.getOrAdd(new CombinatorTerminalString(string, caseInsensitive));
     }
 
     @NotNull Combinator stringTerminal(final @NotNull String string) {
         if (string.isEmpty()) return epsilon;
-        return buffer.getOrAdd(new StringTerminal(string, false));
+        return buffer.getOrAdd(new CombinatorTerminalString(string, false));
     }
 
     @NotNull Combinator unicodeChar(final int lohi) {
-        return buffer.getOrAdd(new UnicodeCharTerminal(lohi, lohi));
+        return buffer.getOrAdd(new CombinatorTerminalUnicodeChar(lohi, lohi));
     }
 
     @NotNull Combinator unicodeChar(final int lo, final int hi) {
-        return buffer.getOrAdd(new UnicodeCharTerminal(lo, hi));
+        return buffer.getOrAdd(new CombinatorTerminalUnicodeChar(lo, hi));
     }
 
-    @NotNull RegexpTerminal createRegexTerminal(final @NotNull Pattern regex) {
-        return buffer.getOrAdd(new RegexpTerminal(regex));
+    @NotNull CombinatorTerminalRegexp createRegexTerminal(final @NotNull Pattern regex) {
+        return buffer.getOrAdd(new CombinatorTerminalRegexp(regex));
     }
 
-    @NotNull NonTerminal makeNonTerminal(final @NotNull Keyword keyword) {
-        return buffer.getOrAdd(new NonTerminal(keyword));
+    @NotNull CombinatorNonTerminal makeNonTerminal(final @NotNull Keyword keyword) {
+        return buffer.getOrAdd(new CombinatorNonTerminal(keyword));
     }
 
     /**
@@ -127,18 +127,18 @@ public final class CombinatorsSource {
      * @param keyword TODO
      * @return TODO
      */
-    public static @NotNull NonTerminal staticMakeNonTerminal(final @NotNull Keyword keyword) {
-        return new NonTerminal(keyword);
+    public static @NotNull CombinatorNonTerminal staticMakeNonTerminal(final @NotNull Keyword keyword) {
+        return new CombinatorNonTerminal(keyword);
     }
 
     @NotNull Combinator makeLookahead(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return buffer.getOrAdd(new LookaheadCombinator(parser));
+        return buffer.getOrAdd(new CombinatorLookahead(parser));
     }
 
     @NotNull Combinator negateRule(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return buffer.getOrAdd(new NegateCombinator(parser));
+        return buffer.getOrAdd(new CombinatorNegativeLookahead(parser));
     }
 
 
@@ -185,8 +185,8 @@ public final class CombinatorsSource {
     private @NotNull Combinator autoWhitespaceParser(final @NotNull Combinator parser,
                                                      final @NotNull Combinator wsParser) {
         return switch (parser) {
-            case NonTerminal ignored -> parser;
-            case EpsilonCombinator ignored2 -> parser;
+            case CombinatorNonTerminal ignored -> parser;
+            case CombinatorEpsilon ignored2 -> parser;
             case CombinatorWithParser parser1 ->
                     buffer.getOrAdd(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {

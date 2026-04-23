@@ -91,16 +91,10 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
         if (o == this)
             return true;
 
-        final @NotNull var otherIter = c.iterator();
-        if (!otherIter.hasNext()) return false;
-
-        for (var thisNext : this) {
-            if (!otherIter.hasNext()) return false;
-            final @NotNull var otherNext = otherIter.next();
-            if (!Objects.equals(thisNext, otherNext)) return false;
-        }
-
-        return !otherIter.hasNext();
+        return Arrays.equals(
+                toArray(),
+                ((List<?>) o).toArray()
+        );
     }
 
     @Override

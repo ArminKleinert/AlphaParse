@@ -156,7 +156,7 @@ final class Cfg {
                     return buildRepRule(tree, combinatorsSource, options);
                 }
                 case "epsilon" -> {
-                    return EpsilonCombinator.getDefault();
+                    return CombinatorEpsilon.getDefault();
                 }
                 case "paren" -> {
                     tree = (ParseTree) tree.getContent().getFirst().content();
