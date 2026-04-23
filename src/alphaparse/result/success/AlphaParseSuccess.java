@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * TODO
+ * A parsed "success" consists of an index and an object carrying more information.
+ * Usually, the wrapped object is a {@link ParseTree} (in a {@link AlphaParseSuccessParseResult}). But this class is also used to transport other types of objects.
  */
 public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResult permits
         AlphaParseSuccessList,
@@ -24,22 +25,23 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
     private final int index;
 
     /**
-     * TODO
+     * Simple, abstract constructor taking only the index. The wrapped object is defined in the specific subclasses.
      *
-     * @param index TODO
+     * @param index The index.
      */
     public AlphaParseSuccess(final int index) {
         this.index = index;
     }
 
     /**
-     * TODO
+     * Wraps an object in a {@link AlphaParseSuccess} for further use in the parsing algorithm.
      *
-     * @param index  TODO
-     * @param result TODO
-     * @return TODO
+     * @param index  The last index of the previous parse, exclusive.
+     * @param result The object to be wrapped. Can be null, String, {@link TotalParsesFailureNode}, {@link AutoFlattenSeq}, {@link ParseFailureNode} or {@link ParseTree}.
+     * @return A success object. The exact type depends on the input.
+     * @throws IllegalArgumentException If the input is not one of the listed types.
      */
-    public static @NotNull AlphaParseSuccess create(int index, final @Nullable Object result) {
+    public static @NotNull AlphaParseSuccess create(final int index, final @Nullable Object result) {
         return switch (result) {
             case null -> new AlphaParseSuccessNull(index);
             case String s -> new AlphaParseSuccessString(index, s);
@@ -48,18 +50,18 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
             case ParseFailureNode parseFailureNode -> new AlphaParseSuccessWithFailure(index, parseFailureNode);
             case ParseTree nodes -> new AlphaParseSuccessParseResult(index, nodes);
             default ->
-                    throw new UnsupportedOperationException("Cannot create success node from type " + result.getClass());
+                    throw new IllegalArgumentException("Cannot create success node from type " + result.getClass());
         };
     }
 
     /**
-     * TODO
+     * Creates a {@link AlphaParseSuccess} wrapping a ParseTree.
      *
-     * @param index  TODO
-     * @param result TODO
-     * @return TODO
+     * @param index  The last index of the previous parse, exclusive.
+     * @param result The {@link ParseTree}.
+     * @return The {@link ParseTree} wrapped into an instance of this class.
      */
-    public static @NotNull AlphaParseSuccess create(int index, final @NotNull ParseTree result) {
+    public static @NotNull AlphaParseSuccess create(final int index, final @NotNull ParseTree result) {
         return new AlphaParseSuccessParseResult(index, result);
     }
 
@@ -74,6 +76,7 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
         return Objects.hash(index, getResult());
     }
 
+    @Override
     public int index() {
         return index;
     }

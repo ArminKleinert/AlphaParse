@@ -193,20 +193,20 @@ public final class Tramp {
     }
 
     /**
-     * TODO
+     * Returns the "generation" a listener will belong to.
      *
-     * @param key        TODO
-     * @param defaultVal TODO
-     * @return TODO
+     * @param key        The key for the message.
+     * @param defaultVal The generation to use if the key was not registered.
+     * @return The generation.
      */
     public int getFromMsgCache(final @NotNull TrampolineMsgCacheKey key, final int defaultVal) {
         return msgCache.getOrDefault(key, defaultVal);
     }
 
     /**
-     * TODO
+     * Adds a listener to the message cache.
      *
-     * @param key        TODO
+     * @param key        A pair of
      * @param defaultVal TODO
      */
     public void addToMsgCache(final @NotNull TrampolineMsgCacheKey key, final int defaultVal) {

@@ -367,7 +367,7 @@ public final class Gll {
      * @param tramp   TODO
      * @param nodeKey TODO
      * @param result  TODO
-     * @param end     TODO
+     * @param end     The index the last production finished at.
      */
     public static void success(
             final @NotNull Tramp tramp,
