@@ -5,29 +5,27 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
- * TODO
+ * A parser contains a grammar and the name of the first production to try.
  *
- * @param grammar         TODO
- * @param startProduction TODO
- * @param outputFormat    TODO
+ * @param grammar         The grammar.
+ * @param startProduction The first production to try.
+ * @param outputFormat    The output format for the parses.
  */
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
                      @NotNull ReductionType.ReductionTypesAvailable outputFormat)
-        implements BiFunction<String, Alpha.ParsingOptions, AlphaParseResult> {
+        implements  Function<String, AlphaParseResult> {
 
     /**
-     * TODO
+     * Creates a new Parser.
      *
-     * @param grammar         TODO
-     * @param startProduction TODO
-     * @param outputFormat    TODO
+     * @param grammar         The grammar.
+     * @param startProduction The first production to try.
+     * @param outputFormat    The output format for the parses.
+     * @throws IllegalArgumentException if the parameters are invalid (for example, if the grammar does not contain the start-production symbol).
      */
     public Parser {
         if (!grammar.containsKey(startProduction))
@@ -36,11 +34,12 @@ public record Parser(@NotNull Grammar grammar,
     }
 
     /**
-     * TODO
+     * Same as {@link Alpha#parse(Parser, String, Alpha.ParsingOptions)} using {@code this} as the parser.
      *
-     * @param text    TODO
-     * @param options TODO
-     * @return TODO
+     * @param text    The text.
+     * @param options The options for the parse operation.
+     * @return The result of the parse.
+     * @see Alpha#parse(Parser, String)
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text,
                                            final @NotNull Alpha.ParsingOptions options) {
@@ -48,64 +47,73 @@ public record Parser(@NotNull Grammar grammar,
     }
 
     /**
-     * TODO
+     * Same as {@link Alpha#parse(Parser, String)} using {@code this} as the parser.
      *
-     * @param text TODO
-     * @return TODO
+     * @param text The text.
+     * @return The result of the parse.
+     * @see Alpha#parse(Parser, String)
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text) {
         return Alpha.parse(this, text, Alpha.ParsingOptions.getDefault());
     }
 
     /**
-     * TODO
+     * Same as {@link Alpha#parses(Parser, String, Alpha.ParsingOptions)} using {@code this} as the parser.
      *
-     * @param text    TODO
-     * @param options TODO
-     * @return TODO
+     * @param text    The text.
+     * @param options The options for the parse operation.
+     * @return The parse forest or error, as needed.
+     * @see Alpha#parses(Parser, String, alphaparse.Alpha.ParsingOptions)
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text,
                                              final @NotNull Alpha.ParsingOptions options) {
         return Alpha.parses(this, text, options);
     }
 
-    /**
-     * TODO
+    /**Same as {@link Alpha#parses(Parser, String)} using {@code this} as the parser.
      *
-     * @param text TODO
-     * @return TODO
+     * @param text The text.
+     * @return The parse forest or error, as needed.
+     * @see Alpha#parses(Parser, String)
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text) {
         return Alpha.parses(this, text, Alpha.ParsingOptions.getDefault());
     }
 
     /**
-     * TODO
+     * Creates a new Parser with the grammar changed. This method may fail if the input is invalid.
      *
-     * @param grammar TODO
-     * @return TODO
+     * @param grammar the new grammar.
+     * @return A new Parser.
+     * @throws IllegalArgumentException if the new grammar does not include a production for the current start production.
      */
     public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
         if (this.grammar.equals(grammar))
             return this;
+        if (!grammar.containsKey(startProduction))
+            throw new IllegalArgumentException();
         return new Parser(grammar, startProduction, outputFormat);
     }
 
     /**
-     * TODO
+     * Creates a new Parser with the start production changed. This method may fail if the input is invalid.
      *
-     * @param startProduction TODO
-     * @return TODO
+     * @param startProduction The new start production key.
+     * @return A new Parser.
+     * @throws IllegalArgumentException if the grammar does not include a production for the new start production.
      */
     public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
+        if (!grammar.containsKey(startProduction))
+            throw new IllegalArgumentException();
         return new Parser(grammar, startProduction, outputFormat);
     }
 
     /**
-     * TODO
+     * Creates a new parser with a whitespace-parser added.
      *
-     * @param whitespaceParser TODO
-     * @return TODO
+     * @param whitespaceParser The parser for whitespace.
+     * @return The new Parser.
+     * @see CombinatorFactory#autoWhitespace(Grammar, Keyword, Grammar, Keyword)
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
         return withGrammar((new CombinatorFactory(grammar.size() > 20)).autoWhitespace(
@@ -116,22 +124,14 @@ public record Parser(@NotNull Grammar grammar,
         ));
     }
 
-//    @Override
-//    public String toString() {
-//        return Print.parserToString(this);
-//    }
-
     /**
-     * TODO
+     * Same as {@link #parse(String)}.
      *
-     * @param s              TODO
-     * @param parsingOptions TODO
-     * @return TODO
+     * @param s              The string to parse.
+     * @return The result of the parse.
      */
     @Override
-    public @NotNull AlphaParseResult apply(
-            final @NotNull String s,
-            final @Nullable Alpha.ParsingOptions parsingOptions) {
-        return parse(s, parsingOptions == null ? Alpha.ParsingOptions.getDefault() : parsingOptions);
+    public @NotNull AlphaParseResult apply(final @NotNull String s) {
+        return parse(s);
     }
 }
