@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *  TODO
+ */
 public final class Reduction {
 
     private Reduction() {
@@ -30,6 +33,12 @@ public final class Reduction {
         return Grammar.fromProductions(m);
     }
 
+    /**
+     *  TODO
+     * @param f TODO
+     * @param result TODO
+     * @return TODO
+     */
    public  static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
         final @NotNull var afs = switch (result) {
             case null -> List.<Node>of();

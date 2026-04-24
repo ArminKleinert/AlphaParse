@@ -407,22 +407,24 @@ public final class Alpha {
     }
 
     /**
-     * TODO
-     *
-     * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
-     * @param startProduction       The starting production name of the parser.
+     * This class provides options for creating {@link Parser} instances.
+     * @param whitespaceParser A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
+     * @param startProduction The starting production name of the parser.
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
-     * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
+     * @param outputFormat The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
+     * @param useParserBuffering Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         @NotNull ReductionType.ReductionTypesAvailable outputFormat,
                                         boolean useParserBuffering) {
+        private static final boolean defaultUseParserBuffering = false;
+
         private static final @NotNull ParserCreationOptions DEFAULT = new ParserCreationOptions(
                 null, null,
                 GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType,
-                true);
+                defaultUseParserBuffering);
 
         /**
          * TODO
@@ -436,10 +438,11 @@ public final class Alpha {
         /**
          * TODO
          *
-         * @param whitespaceParser      TODO
-         * @param startProduction       TODO
-         * @param stringCaseInsensitive TODO
-         * @param outputFormat          TODO
+         * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
+         * @param startProduction       The starting production name of the parser.
+         * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
+         * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#defaultType} is used.
+         * @param useParserBuffering Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
@@ -466,7 +469,7 @@ public final class Alpha {
             this(whitespaceParser, null,
                     GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType,
-                    true);
+                    defaultUseParserBuffering);
         }
 
         /**
@@ -478,7 +481,7 @@ public final class Alpha {
             this(null, startProduction,
                     GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType,
-                    true);
+                    defaultUseParserBuffering);
         }
 
         /**
@@ -489,7 +492,7 @@ public final class Alpha {
         public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             this(null, null,
                     GlobalCaseInsensitivity.DEFAULT, outputFormat,
-                    true);
+                    defaultUseParserBuffering);
         }
 
         /**
@@ -501,7 +504,7 @@ public final class Alpha {
         public @NotNull ParserCreationOptions withWhitespaceParser(final @Nullable Parser whitespaceParser) {
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
-                    true);
+                    defaultUseParserBuffering);
         }
 
         /**
@@ -512,7 +515,7 @@ public final class Alpha {
          */
         public @NotNull ParserCreationOptions withStartProduction(final @Nullable Keyword startProduction) {
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, true);
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, defaultUseParserBuffering);
         }
 
         /**
@@ -523,7 +526,7 @@ public final class Alpha {
          */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final @Nullable GlobalCaseInsensitivity stringCaseInsensitive) {
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, true);
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, defaultUseParserBuffering);
         }
 
         /**
@@ -536,7 +539,7 @@ public final class Alpha {
             return new ParserCreationOptions(
                     whitespaceParser, startProduction,
                     stringCaseInsensitive ? GlobalCaseInsensitivity.TRUE : GlobalCaseInsensitivity.FALSE,
-                    outputFormat, true);
+                    outputFormat, defaultUseParserBuffering);
         }
 
         /**
@@ -547,7 +550,7 @@ public final class Alpha {
          */
         public @NotNull ParserCreationOptions withOutputFormat(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, true);
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, defaultUseParserBuffering);
         }
 
         /**
@@ -561,7 +564,7 @@ public final class Alpha {
                     null,
                     GlobalCaseInsensitivity.DEFAULT,
                     ReductionType.ReductionTypesAvailable.defaultType,
-                    true);
+                    defaultUseParserBuffering);
         }
     }
 

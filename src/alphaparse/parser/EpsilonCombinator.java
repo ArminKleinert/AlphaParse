@@ -6,6 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ */
 public record EpsilonCombinator(
         boolean hide,
         @NotNull ReductionType red) implements CombinatorTerminal {
@@ -16,6 +21,10 @@ public record EpsilonCombinator(
         this(defaultHidden, defaultRed);
     }
 
+    /**
+     *  TODO
+     * @return TODO
+     */
     public static @NotNull EpsilonCombinator getDefault() {
         return epsilon;
     }

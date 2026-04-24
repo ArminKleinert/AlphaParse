@@ -9,13 +9,26 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser TODO
+ * @param min TODO
+ * @param max TODO
+ */
 public record RepetitionCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser,
         int min,
         int max) implements CombinatorWithParser {
-
+    /**
+     *  TODO
+     * @param parser TODO
+     * @param min TODO
+     * @param max TODO
+     */
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
         this(defaultHidden, defaultRed, parser, min, max);
     }

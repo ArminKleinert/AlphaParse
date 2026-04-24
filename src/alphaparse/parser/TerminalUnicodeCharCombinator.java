@@ -9,14 +9,35 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param lo TODO
+ * @param hi TODO
+ */
 public record TerminalUnicodeCharCombinator(
         boolean hide,
         @NotNull ReductionType red,
         int lo, int hi) implements CombinatorTerminal {
+    /**
+     * TODO
+     * @param lo TODO
+     * @param hi TODO
+     * @throws IllegalArgumentException if the lowest codepoint value is greater than the maximum.
+     */
     public TerminalUnicodeCharCombinator(final int lo, final int hi) {
         this(defaultHidden, defaultRed, lo, hi);
     }
 
+    /**
+     *  TODO
+     * @param hide TODO
+     * @param red TODO
+     * @param lo TODO
+     * @param hi TODO
+     * @throws IllegalArgumentException if the lowest codepoint value is greater than the maximum.
+     */
     public TerminalUnicodeCharCombinator {
         if (lo > hi) throw new IllegalArgumentException();
     }
@@ -86,10 +107,18 @@ public record TerminalUnicodeCharCombinator(
         }
     }
 
+    /**
+     * TODO
+     * @return TODO
+     */
     public int getLo() {
         return lo;
     }
 
+    /**
+     * TODO
+     * @return TODO
+     */
     public int getHi() {
         return hi;
     }

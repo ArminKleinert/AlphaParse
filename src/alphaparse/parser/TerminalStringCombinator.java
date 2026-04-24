@@ -9,12 +9,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param string TODO
+ * @param caseInsensitive TODO
+ */
 public record TerminalStringCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull String string,
         boolean caseInsensitive) implements CombinatorTerminal {
-
+    /**
+     *  TODO
+     * @param string TODO
+     * @param caseInsensitive TODO
+     */
     public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
         this(defaultHidden, defaultRed, string, caseInsensitive);
     }
@@ -60,10 +71,18 @@ public record TerminalStringCombinator(
         }
     }
 
+    /**
+     *  TODO
+     * @return TODO
+     */
     public @NotNull String getString() {
         return string;
     }
 
+    /**
+     *  TODO
+     * @return TODO
+     */
     public boolean isCaseInsensitive() {
         return caseInsensitive;
     }

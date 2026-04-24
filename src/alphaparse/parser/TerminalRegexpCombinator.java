@@ -11,11 +11,20 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param regexp TODO
+ */
 public record TerminalRegexpCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Pattern regexp) implements CombinatorTerminal {
-
+    /**
+     *  TODO
+     * @param regexp TODO
+     */
     public TerminalRegexpCombinator(@NotNull Pattern regexp) {
         this(defaultHidden, defaultRed, regexp);
     }

@@ -7,11 +7,20 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser TODO
+ */
 public record CombinatorStar(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
-
+    /**
+     *  TODO
+     * @param parser TODO
+     */
     public CombinatorStar(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }

@@ -7,11 +7,20 @@ import org.jetbrains.annotations.NotNull;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser TODO
+ */
 public record LookaheadCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
-
+    /**
+     *  TODO
+     * @param parser TODO
+     */
     public LookaheadCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }

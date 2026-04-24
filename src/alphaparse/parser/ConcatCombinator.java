@@ -11,11 +11,20 @@ import java.util.List;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parsers TODO
+ */
 public record ConcatCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull List<Combinator> parsers) implements CombinatorWithManyParsers {
-
+    /**
+     *  TODO
+     * @param parsers TODO
+     */
     public ConcatCombinator(@NotNull List<Combinator> parsers) {
         this(defaultHidden, defaultRed, parsers);
     }

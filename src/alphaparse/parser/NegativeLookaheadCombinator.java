@@ -8,15 +8,25 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.trampoline.TrampolineListenerNode;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser TODO
+ */
 public record NegativeLookaheadCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
+    /**
+     *  TODO
+     * @param parser TODO
+     */
     public NegativeLookaheadCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }
 
-    public boolean resultExists_Q(
+    private boolean resultExists_Q(
             final @NotNull Gll runner,
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
         final TrampolineListenerNode node = runner.tramp().getNode(nodeKey);

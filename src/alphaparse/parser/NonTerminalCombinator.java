@@ -7,14 +7,28 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param keyword TODO
+ */
 public record NonTerminalCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Keyword keyword) implements Combinator {
+    /**
+     *  TODO
+     * @param keyword TODO
+     */
     public NonTerminalCombinator(final @NotNull Keyword keyword) {
         this(defaultHidden, defaultRed, keyword);
     }
 
+    /**
+     *  TODO
+     * @return TODO
+     */
     public Keyword getKeyword() {
         return keyword;
     }

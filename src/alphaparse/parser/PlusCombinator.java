@@ -9,11 +9,20 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser TODO
+ */
 public record PlusCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
-
+    /**
+     *  TODO
+     * @param parser TODO
+     */
     public PlusCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }

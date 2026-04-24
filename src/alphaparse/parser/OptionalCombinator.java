@@ -9,11 +9,20 @@ import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser TODO
+ */
 public record OptionalCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
-
+    /**
+     *  TODO
+     * @param parser TODO
+     */
     public OptionalCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }

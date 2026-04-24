@@ -9,12 +9,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parser1 TODO
+ * @param parser2 TODO
+ */
 public record OrderedChoiceCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser1,
         @NotNull Combinator parser2) implements CombinatorWithManyParsers {
-
+    /**
+     *  TODO
+     * @param parsers TODO
+     */
     public OrderedChoiceCombinator(final @NotNull List<Combinator> parsers) {
         this(setupParsers(parsers).parser1, setupParsers(parsers).parser2);
     }

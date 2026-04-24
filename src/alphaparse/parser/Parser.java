@@ -19,8 +19,7 @@ import java.util.function.BiFunction;
  */
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
-                     @NotNull ReductionType.ReductionTypesAvailable outputFormat,
-                     boolean useBuffering)
+                     @NotNull ReductionType.ReductionTypesAvailable outputFormat)
         implements BiFunction<String, Alpha.ParsingOptions, AlphaParseResult> {
 
     /**
@@ -89,7 +88,7 @@ public record Parser(@NotNull Grammar grammar,
     public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
         if (this.grammar.equals(grammar))
             return this;
-        return new Parser(grammar, startProduction, outputFormat, useBuffering);
+        return new Parser(grammar, startProduction, outputFormat);
     }
 
     /**
@@ -99,7 +98,7 @@ public record Parser(@NotNull Grammar grammar,
      * @return TODO
      */
     public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
-        return new Parser(grammar, startProduction, outputFormat, useBuffering);
+        return new Parser(grammar, startProduction, outputFormat);
     }
 
     /**
@@ -109,7 +108,7 @@ public record Parser(@NotNull Grammar grammar,
      * @return TODO
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
-        return withGrammar((new CombinatorFactory(useBuffering)).autoWhitespace(
+        return withGrammar((new CombinatorFactory(grammar.size() > 20)).autoWhitespace(
                 grammar(),
                 startProduction(),
                 whitespaceParser.grammar(),

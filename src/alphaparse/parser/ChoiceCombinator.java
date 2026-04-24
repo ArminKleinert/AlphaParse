@@ -8,21 +8,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ *  TODO
+ * @param hide TODO
+ * @param red TODO
+ * @param parsers TODO
+ */
 public record ChoiceCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull List<Combinator> parsers) implements CombinatorWithManyParsers {
-
+    /**
+     *  TODO
+     * @param parsers TODO
+     */
     public ChoiceCombinator(@NotNull List<Combinator> parsers) {
         this(defaultHidden, defaultRed, parsers);
     }
 
-    /**
-     * TODO
-     *  @param index TODO
-     *
-     * @param runner TODO
-     */
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         for (final @NotNull Combinator combinator : getParsers()) {
@@ -33,12 +36,6 @@ public record ChoiceCombinator(
         }
     }
 
-    /**
-     * TODO
-     *  @param index TODO
-     *
-     * @param runner TODO
-     */
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         for (final @NotNull Combinator parser : getParsers()) {

@@ -185,8 +185,7 @@ final class Cfg {
         return new Parser(
                 Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)),
                 options.startProduction(),
-                options.outputFormat(),
-                options.useParserBuffering());
+                options.outputFormat());
     }
 
     static @NotNull Parser buildParser(final @NotNull String spec,
@@ -223,6 +222,6 @@ final class Cfg {
             );
         }
 
-        return new Parser(grammar, startProduction, options.outputFormat(), options.useParserBuffering());
+        return new Parser(grammar, startProduction, options.outputFormat());
     }
 }

@@ -87,12 +87,12 @@ public final class CombinatorFactory {
 
     /**
      * Creates a {@link CombinatorStar} or an {@link EpsilonCombinator} if the input is epsilon.
-     * <cl>
+     * <ul>
      * <li>If minimum and maximum amount of repetitions is set to 0, return an {@link EpsilonCombinator}.</li>
      * <li>If minimum and maximum amount of repetitions is set to 1, may return the input parser.</li>
      * <li>If minimum and maximum amount of repetitions are equal, a {@link ConcatCombinator} might be returned instead.</li>
      * <li>Otherwise, does as normally expected.</li>
-     * </cl>
+     * </ul>
      *
      * @param m      The minimum amount of repetitions.
      * @param n      The maximum amount of repetitions.
