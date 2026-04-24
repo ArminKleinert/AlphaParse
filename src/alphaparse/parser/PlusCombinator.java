@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * TODO
+ * Represents a "once or more" parse. That is the {@code p+} operator (where p is an instance of {@link Combinator}).
  */
 public final class PlusCombinator extends CombinatorWithParser {
     private PlusCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
@@ -20,9 +20,9 @@ public final class PlusCombinator extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param parser TODO
+     * @param parser The inner element.
      */
     public PlusCombinator(final @NotNull Combinator parser) {
         super(defaultHidden, defaultRed, parser);

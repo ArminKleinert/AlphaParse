@@ -8,26 +8,30 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
- * TODO
+ * Represents string terminals (both case-sensitive or case-insensitive).
+ * <br/>
+ * Syntax: can be written with double quotes or single quotes, so {@code "..."} and {@code '...'} are equivalent.
  */
 public final class TerminalStringCombinator extends CombinatorTerminal {
     private final @NotNull String string;
     private final boolean caseInsensitive;
 
-    private TerminalStringCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull String string, final boolean caseInsensitive) {
+    private TerminalStringCombinator(final boolean hide,
+                                     final @NotNull ReductionType red,
+                                     final @NotNull String string,
+                                     final boolean caseInsensitive) {
         super(hide, red);
         this.string = string;
         this.caseInsensitive = caseInsensitive;
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param string          TODO
-     * @param caseInsensitive TODO
+     * @param string          The string to match.
+     * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
      */
     public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
         super();
@@ -77,18 +81,18 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
     }
 
     /**
-     * TODO
+     * Returns the string.
      *
-     * @return TODO
+     * @return The string.
      */
     public @NotNull String getString() {
         return string;
     }
 
     /**
-     * TODO
+     * True if the casing doesn't matter, false if it does matter.
      *
-     * @return TODO
+     * @return True if the casing doesn't matter, false if it does matter.
      */
     public boolean isCaseInsensitive() {
         return caseInsensitive;

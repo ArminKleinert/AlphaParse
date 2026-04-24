@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO
+ * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Combinator}).
  */
 public final class ChoiceCombinator extends CombinatorWithManyParsers {
     private ChoiceCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {
@@ -18,9 +18,9 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param parsers TODO
+     * @param parsers The different parsers in the choice.
      */
     public ChoiceCombinator(@NotNull List<Combinator> parsers) {
         super(parsers);

@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * TODO
+ * This class represents a concatenation of productions, written as {@code p1 p2 p3 ...} (where p1, p2, etc. are instances of {@link Combinator}).
+ * When parsing, it tries to match p1, then p2, then p3 and so on.
  */
 public final class ConcatCombinator extends CombinatorWithManyParsers {
     private ConcatCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {
@@ -21,9 +21,9 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param parsers TODO
+     * @param parsers The parsers.
      */
     public ConcatCombinator(@NotNull List<Combinator> parsers) {
         super(parsers);

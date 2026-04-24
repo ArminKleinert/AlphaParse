@@ -10,7 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * TODO
+ * Represents an ABNF unicode char range.
+ * TODO: Docs.
  */
 public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     private final int lo;
@@ -24,10 +25,11 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param lo TODO
-     * @param hi TODO
+     * @param lo The lowest codepoint.
+     * @param hi The highest codepoint.
+     * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
      */
     public TerminalUnicodeCharCombinator(final int lo, final int hi) {
         super();
@@ -102,18 +104,18 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     }
 
     /**
-     * TODO
+     * The lowest codepoint.
      *
-     * @return TODO
+     * @return The lowest codepoint as an int.
      */
     public int getLo() {
         return lo;
     }
 
     /**
-     * TODO
+     * The highest codepoint.
      *
-     * @return TODO
+     * @return The highest codepoint as an int.
      */
     public int getHi() {
         return hi;

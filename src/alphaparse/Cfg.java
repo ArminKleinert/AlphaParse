@@ -34,11 +34,11 @@ final class Cfg {
         }
         if (parts.length == 1) {
             final @NotNull var temp = new String[]{"", ""};
-            if (partsUncut.charAt(0) == '*') { // Only maximum provided
+            if (partsUncut.charAt(0) == '*') { // Only maximum provided (e.g. `*n p`)
                 temp[1] = parts[0];
-            } else if (partsUncut.charAt(partsUncut.length() - 1) == '*') {// Only minimum provided
+            } else if (partsUncut.charAt(partsUncut.length() - 1) == '*') {// Only minimum provided (e.g. `n* p`
                 temp[0] = parts[0];
-            } else { // Only an exact number is given: Both minimum and maximum.
+            } else { // Only an exact number is given: Both minimum and maximum. (e.g. `n p`).
                 temp[0] = parts[0];
                 temp[1] = temp[0];
             }

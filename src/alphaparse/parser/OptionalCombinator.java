@@ -12,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * TODO
+ * This class represents the {@code [p]} or {@code p?} operator (where p is an instance of {@link Combinator}).
+ * When parsing, the parser contained herein is optional (run zero times or once).
  */
 public final class OptionalCombinator extends CombinatorWithParser {
     private OptionalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
@@ -20,9 +21,9 @@ public final class OptionalCombinator extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param parser TODO
+     * @param parser The parser.
      */
     public OptionalCombinator(final @NotNull Combinator parser) {
         super(parser);

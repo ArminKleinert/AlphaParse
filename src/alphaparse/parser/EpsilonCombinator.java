@@ -9,7 +9,10 @@ import java.util.Objects;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * TODO
+ * This class represents the empty parse epsilon. It can be written in the following ways: "Epsilon", "epsilon", "EPSILON", "eps", "ε"
+ * <br/>
+ * When parsing, the process depends on whether a full parse is being done (matching to the end of the input):
+ * If yes, success if the end of input has been reached, fail otherwise. If no, always success.
  */
 public final class EpsilonCombinator extends CombinatorTerminal {
 
@@ -24,9 +27,9 @@ public final class EpsilonCombinator extends CombinatorTerminal {
     }
 
     /**
-     * TODO
+     * The default is always buffered. {@link #getReduction()} and {@link #isHidden()} have their default values.
      *
-     * @return TODO
+     * @return The canonical instance of Epsilon.
      */
     public static @NotNull EpsilonCombinator getDefault() {
         return epsilon;

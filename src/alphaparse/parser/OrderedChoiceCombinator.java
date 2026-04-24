@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO
+ * This class is an alternative to the {@link ChoiceCombinator}.
+ * It represents the ABNF choice operator {@code (p1 / p2)} (where p1 and p2 are instances of {@link Combinator})
+ * and should work like the PEG extension which makes it "ordered". As of now, it does not work right,
+ * so it can be considered a worse alternative to the {@link ChoiceCombinator}.
  */
 public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
     private final @NotNull Combinator parser1;
@@ -26,9 +29,9 @@ public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * TODO
+     * Creates a new instance from a list of {@link Combinator} objects.
      *
-     * @param parsers TODO
+     * @param parsers The choices.
      */
     public OrderedChoiceCombinator(final @NotNull List<Combinator> parsers) {
         this(setupParsers(parsers).parser1, setupParsers(parsers).parser2);

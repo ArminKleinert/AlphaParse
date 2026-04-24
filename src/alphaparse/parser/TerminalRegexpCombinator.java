@@ -12,7 +12,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * TODO
+ * Represents terminal expressions from regular expressions.
+ * This class has the property of being both more powerful and uniquely dangerous to use.
+ * When parsing, the regex is eagerly, not lazily, resolved.
+ * <br/>
+ * This means that the regex {@code "a+"} on the input "aaaab" will always match all four "a"s,
+ * instead of returning different results "a", "aa", "aaa" and "aaaa".
+ * <br/>
+ * Syntax: A string literal prefixed with a hash-symbol: {@code #"..."} and {@code #'...'} are equivalent.
  */
 public final class TerminalRegexpCombinator extends CombinatorTerminal {
     private final @NotNull Pattern regexp;
@@ -23,9 +30,9 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param regexp TODO
+     * @param regexp The regex.
      */
     public TerminalRegexpCombinator(final @NotNull Pattern regexp) {
         super();
@@ -68,9 +75,9 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     }
 
     /**
-     * TODO
+     * The regex/pattern.
      *
-     * @return TODO
+     * @return The regex.
      */
     public @NotNull Pattern getRegexp() {
         return regexp;

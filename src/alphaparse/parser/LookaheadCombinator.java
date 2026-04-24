@@ -10,7 +10,7 @@ import java.util.Objects;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * TODO
+ * This class represents the ABNF "lookahead" operator {@code &p} (where p is an instance of {@link Combinator}).
  */
 public final class LookaheadCombinator extends CombinatorWithParser {
     private LookaheadCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
@@ -18,9 +18,9 @@ public final class LookaheadCombinator extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param parser TODO
+     * @param parser The inner parser.
      */
     public LookaheadCombinator(final @NotNull Combinator parser) {
         super(parser);

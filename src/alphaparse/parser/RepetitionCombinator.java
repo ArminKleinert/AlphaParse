@@ -12,7 +12,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * TODO
+ * A class representing the ABNF counted repetition operator.
+ * There are multiple variants, depending on the syntax (where n1 and n2 are integers, and p is an instance of {@link Combinator}):
+ * <ul>
+ *     <li>Repeat a minimum of {@code n1} times and a maximum of {@code n2} times: {@code n1*n2 p}</li>
+ *     <li>Repeat a minimum of {@code n1} times: {@code n1* p}</li>
+ *     <li>Repeat a maximum of {@code n1} times: {@code *n1 p}</li>
+ *     <li>Repeat exactly of {@code n1} times: {@code n1 p}</li>
+ * </ul>
  */
 public final class RepetitionCombinator extends CombinatorWithParser {
     private final int min;
@@ -26,14 +33,17 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param parser TODO
-     * @param min    TODO
-     * @param max    TODO
+     * @param parser The inner element.
+     * @param min    Minimum repetitions.
+     * @param max    Maximum repetitions.
+     * @throws IllegalArgumentException if minimum or maximum is invalid.
      */
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
         super(parser);
+        if (min < 0 || min > max)
+            throw new IllegalArgumentException();
         this.min = min;
         this.max = max;
     }
@@ -133,18 +143,18 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Return the minimum number of repetitions.
      *
-     * @return TODO
+     * @return minimum
      */
     public int getMin() {
         return min;
     }
 
     /**
-     * TODO
+     * Return the maximum number of repetitions.
      *
-     * @return TODO
+     * @return maximum
      */
     public int getMax() {
         return max;
