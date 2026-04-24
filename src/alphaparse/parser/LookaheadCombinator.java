@@ -5,24 +5,25 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser TODO
+ * TODO
  */
-public record LookaheadCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser) implements CombinatorWithParser {
+public final class LookaheadCombinator extends CombinatorWithParser {
+    private LookaheadCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+        super(hide, red, parser);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parser TODO
      */
-    public LookaheadCombinator(@NotNull Combinator parser) {
-        this(defaultHidden, defaultRed, parser);
+    public LookaheadCombinator(final @NotNull Combinator parser) {
+        super(parser);
     }
 
     @Override
@@ -46,17 +47,29 @@ public record LookaheadCombinator(
     }
 
     @Override
-    public @NotNull LookaheadCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this :  new LookaheadCombinator(hide, red, parser);
+    public @NotNull LookaheadCombinator withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new LookaheadCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull LookaheadCombinator withReduction(@NotNull ReductionType red) {
+    public @NotNull LookaheadCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new LookaheadCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull LookaheadCombinator withParser(@NotNull Combinator parser) {
+    public @NotNull LookaheadCombinator withParser(final @NotNull Combinator parser) {
         return new LookaheadCombinator(hide, red, parser);
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof LookaheadCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parser());
+//    }
 }

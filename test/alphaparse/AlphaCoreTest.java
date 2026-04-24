@@ -495,9 +495,7 @@ class AlphaCoreTest {
         var tree =
                 ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S")))));
 
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.getDefault()));
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, null));
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.optMemory()));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text));
     }
 
     @Test
@@ -507,9 +505,7 @@ class AlphaCoreTest {
         var tree =
                 ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"), "a"), "a"), "a"), "a");
 
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.getDefault()));
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, null));
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text, Alpha.ParsingOptions.optMemory()));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text));
     }
 
     @Test

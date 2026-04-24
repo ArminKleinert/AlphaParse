@@ -8,25 +8,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parsers TODO
+ * TODO
  */
-public record ConcatCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull List<Combinator> parsers) implements CombinatorWithManyParsers {
+public final class ConcatCombinator extends CombinatorWithManyParsers {
+    private ConcatCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {
+        super(hide, red, parsers);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parsers TODO
      */
     public ConcatCombinator(@NotNull List<Combinator> parsers) {
-        this(defaultHidden, defaultRed, parsers);
+        super(parsers);
     }
 
     @Override
@@ -96,16 +96,27 @@ public record ConcatCombinator(
 
     @Override
     public @NotNull Combinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new ConcatCombinator(hide, red, parsers);
+        return isHidden() == hide ? this : new ConcatCombinator(hide, getReduction(), getParsers());
     }
 
     @Override
     public @NotNull Combinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new ConcatCombinator(hide, red, parsers);
+        return getReduction() == red ? this : new ConcatCombinator(isHidden(), red, getParsers());
     }
 
     @Override
     public @NotNull ConcatCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
-        return new ConcatCombinator(hide, red, parsers);
+        return new ConcatCombinator(isHidden(), getReduction(), parsers);
     }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof ConcatCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parsers(),that.parsers());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parsers());
+//    }
 }

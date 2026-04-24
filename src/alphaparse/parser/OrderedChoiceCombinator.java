@@ -8,21 +8,26 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser1 TODO
- * @param parser2 TODO
+ * TODO
  */
-public record OrderedChoiceCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser1,
-        @NotNull Combinator parser2) implements CombinatorWithManyParsers {
+public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
+    private final @NotNull Combinator parser1;
+    private final @NotNull Combinator parser2;
+
+    private OrderedChoiceCombinator(boolean hide, @NotNull ReductionType red,
+                                    @NotNull Combinator parser1,
+                                    @NotNull Combinator parser2) {
+        super(hide, red, List.of(parser1, parser2));
+        this.parser1 = parser1;
+        this.parser2 = parser2;
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parsers TODO
      */
     public OrderedChoiceCombinator(final @NotNull List<Combinator> parsers) {
@@ -95,8 +100,15 @@ public record OrderedChoiceCombinator(
         return new OrderedChoiceCombinator(parsers, isHidden(), getReduction());
     }
 
-    @Override
-    public @NotNull List<Combinator> parsers() {
-        return List.of(parser1, parser2);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof OrderedChoiceCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser1,that.parser1)&&Objects.equals(parser2,that.parser2);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parser1,parser2);
+//    }
 }

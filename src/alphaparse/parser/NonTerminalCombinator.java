@@ -7,29 +7,35 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param keyword TODO
+ * TODO
  */
-public record NonTerminalCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Keyword keyword) implements Combinator {
-    /**
-     *  TODO
-     * @param keyword TODO
-     */
-    public NonTerminalCombinator(final @NotNull Keyword keyword) {
-        this(defaultHidden, defaultRed, keyword);
+public final class NonTerminalCombinator extends Combinator {
+    private final @NotNull Keyword keyword;
+
+    private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Keyword keyword) {
+        super(hide, red);
+        this.keyword = keyword;
     }
 
     /**
-     *  TODO
+     * TODO
+     *
+     * @param keyword TODO
+     */
+    public NonTerminalCombinator(final @NotNull Keyword keyword) {
+        super();
+        this.keyword = keyword;
+    }
+
+    /**
+     * TODO
+     *
      * @return TODO
      */
-    public Keyword getKeyword() {
+    public @NotNull Keyword getKeyword() {
         return keyword;
     }
 
@@ -51,12 +57,24 @@ public record NonTerminalCombinator(
     }
 
     @Override
-    public @NotNull NonTerminalCombinator withHideTag(boolean hide) {
+    public @NotNull NonTerminalCombinator withHideTag(final boolean hide) {
         return isHidden() == hide ? this : new NonTerminalCombinator(hide, red, keyword);
     }
 
     @Override
-    public @NotNull NonTerminalCombinator withReduction(@NotNull ReductionType red) {
+    public @NotNull NonTerminalCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new NonTerminalCombinator(hide, red, keyword);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof NonTerminalCombinator that)) return false;
+        if (this == that) return true;
+        return hide == that.hide && Objects.equals(red, that.red) && Objects.equals(keyword, that.keyword);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hide, red, keyword);
     }
 }

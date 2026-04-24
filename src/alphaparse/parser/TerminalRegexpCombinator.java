@@ -12,21 +12,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param regexp TODO
+ * TODO
  */
-public record TerminalRegexpCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Pattern regexp) implements CombinatorTerminal {
+public final class TerminalRegexpCombinator extends CombinatorTerminal {
+    private final @NotNull Pattern regexp;
+
+    private TerminalRegexpCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Pattern regexp) {
+        super(hide, red);
+        this.regexp = regexp;
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param regexp TODO
      */
-    public TerminalRegexpCombinator(@NotNull Pattern regexp) {
-        this(defaultHidden, defaultRed, regexp);
+    public TerminalRegexpCombinator(final @NotNull Pattern regexp) {
+        super();
+        this.regexp = regexp;
     }
 
     private static @Nullable String reMatchAtFront(final @NotNull Pattern regexp, final @NotNull CharSequence text) {
@@ -74,18 +77,26 @@ public record TerminalRegexpCombinator(
     }
 
     @Override
-    public @NotNull TerminalRegexpCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this :  new TerminalRegexpCombinator(hide, red, regexp);
+    public @NotNull TerminalRegexpCombinator withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new TerminalRegexpCombinator(hide, red, regexp);
     }
 
     @Override
-    public @NotNull TerminalRegexpCombinator withReduction(@NotNull ReductionType red) {
+    public @NotNull TerminalRegexpCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new TerminalRegexpCombinator(hide, red, regexp);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TerminalRegexpCombinator(boolean hide1, ReductionType red1, Pattern regexp1))) return false;
-        return hide == hide1 && Objects.equals(regexp.pattern(), regexp1.pattern()) && Objects.equals(red, red1);
+        if (!(o instanceof TerminalRegexpCombinator that)) return false;
+        if (this == that) return true;
+        return hide == that.hide
+                && Objects.equals(red, that.red)
+                && Objects.equals(regexp.pattern(), that.getRegexp().pattern());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hide, red, regexp.pattern());
     }
 }

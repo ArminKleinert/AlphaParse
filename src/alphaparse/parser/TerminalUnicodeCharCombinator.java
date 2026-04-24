@@ -10,36 +10,30 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param lo TODO
- * @param hi TODO
+ * TODO
  */
-public record TerminalUnicodeCharCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        int lo, int hi) implements CombinatorTerminal {
-    /**
-     * TODO
-     * @param lo TODO
-     * @param hi TODO
-     * @throws IllegalArgumentException if the lowest codepoint value is greater than the maximum.
-     */
-    public TerminalUnicodeCharCombinator(final int lo, final int hi) {
-        this(defaultHidden, defaultRed, lo, hi);
+public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
+    private final int lo;
+    private final int hi;
+
+    private TerminalUnicodeCharCombinator(final boolean hide, final @NotNull ReductionType red, final int lo, final int hi) {
+        super(hide, red);
+        if (lo > hi) throw new IllegalArgumentException();
+        this.lo = lo;
+        this.hi = hi;
     }
 
     /**
-     *  TODO
-     * @param hide TODO
-     * @param red TODO
+     * TODO
+     *
      * @param lo TODO
      * @param hi TODO
-     * @throws IllegalArgumentException if the lowest codepoint value is greater than the maximum.
      */
-    public TerminalUnicodeCharCombinator {
+    public TerminalUnicodeCharCombinator(final int lo, final int hi) {
+        super();
         if (lo > hi) throw new IllegalArgumentException();
+        this.lo = lo;
+        this.hi = hi;
     }
 
     @Override
@@ -109,6 +103,7 @@ public record TerminalUnicodeCharCombinator(
 
     /**
      * TODO
+     *
      * @return TODO
      */
     public int getLo() {
@@ -117,6 +112,7 @@ public record TerminalUnicodeCharCombinator(
 
     /**
      * TODO
+     *
      * @return TODO
      */
     public int getHi() {
@@ -124,12 +120,27 @@ public record TerminalUnicodeCharCombinator(
     }
 
     @Override
-    public @NotNull TerminalUnicodeCharCombinator withHideTag(boolean hide) {
+    public @NotNull TerminalUnicodeCharCombinator withHideTag(final boolean hide) {
         return isHidden() == hide ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
     }
 
     @Override
-    public @NotNull TerminalUnicodeCharCombinator withReduction(@NotNull ReductionType red) {
+    public @NotNull TerminalUnicodeCharCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof TerminalUnicodeCharCombinator that)) return false;
+        if (this == that) return true;
+        return hide == that.hide
+                && Objects.equals(red, that.red)
+                && lo == that.lo
+                && hi == that.hi;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hide, red, lo, hi);
     }
 }

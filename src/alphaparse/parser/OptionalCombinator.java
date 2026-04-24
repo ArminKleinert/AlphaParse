@@ -9,22 +9,23 @@ import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser TODO
+ * TODO
  */
-public record OptionalCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser) implements CombinatorWithParser {
+public final class OptionalCombinator extends CombinatorWithParser {
+    private OptionalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+        super(hide, red, parser);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parser TODO
      */
-    public OptionalCombinator(@NotNull Combinator parser) {
-        this(defaultHidden, defaultRed, parser);
+    public OptionalCombinator(final @NotNull Combinator parser) {
+        super(parser);
     }
 
     @Override
@@ -64,4 +65,16 @@ public record OptionalCombinator(
     public @NotNull OptionalCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new OptionalCombinator(hide, red, parser);
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof OptionalCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parser());
+//    }
 }

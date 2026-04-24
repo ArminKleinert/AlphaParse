@@ -8,26 +8,31 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param string TODO
- * @param caseInsensitive TODO
+ * TODO
  */
-public record TerminalStringCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull String string,
-        boolean caseInsensitive) implements CombinatorTerminal {
+public final class TerminalStringCombinator extends CombinatorTerminal {
+    private final @NotNull String string;
+    private final boolean caseInsensitive;
+
+    private TerminalStringCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull String string, final boolean caseInsensitive) {
+        super(hide, red);
+        this.string = string;
+        this.caseInsensitive = caseInsensitive;
+    }
+
     /**
-     *  TODO
-     * @param string TODO
+     * TODO
+     *
+     * @param string          TODO
      * @param caseInsensitive TODO
      */
     public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
-        this(defaultHidden, defaultRed, string, caseInsensitive);
+        super();
+        this.string = string;
+        this.caseInsensitive = caseInsensitive;
     }
 
     @Override
@@ -72,7 +77,8 @@ public record TerminalStringCombinator(
     }
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
     public @NotNull String getString() {
@@ -80,7 +86,8 @@ public record TerminalStringCombinator(
     }
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
     public boolean isCaseInsensitive() {
@@ -88,12 +95,26 @@ public record TerminalStringCombinator(
     }
 
     @Override
-    public @NotNull TerminalStringCombinator withHideTag(boolean hide) {
+    public @NotNull TerminalStringCombinator withHideTag(final boolean hide) {
         return isHidden() == hide ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
     }
 
     @Override
-    public @NotNull TerminalStringCombinator withReduction(@NotNull ReductionType red) {
+    public @NotNull TerminalStringCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof TerminalStringCombinator that)) return false;
+        if (this == that) return true;
+        return hide == that.hide
+                && Objects.equals(red, that.red)
+                && Objects.equals(string, that.getString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hide, red, string);
     }
 }

@@ -7,23 +7,23 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parsers TODO
+ * TODO
  */
-public record ChoiceCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull List<Combinator> parsers) implements CombinatorWithManyParsers {
+public final class ChoiceCombinator extends CombinatorWithManyParsers {
+    private ChoiceCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {
+        super(hide, red, parsers);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parsers TODO
      */
     public ChoiceCombinator(@NotNull List<Combinator> parsers) {
-        this(defaultHidden, defaultRed, parsers);
+        super(parsers);
     }
 
     @Override
@@ -48,16 +48,28 @@ public record ChoiceCombinator(
 
     @Override
     public @NotNull ChoiceCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new ChoiceCombinator(hide, red, parsers);
+        return isHidden() == hide ? this : new ChoiceCombinator(hide, getReduction(), getParsers());
     }
 
     @Override
     public @NotNull ChoiceCombinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new ChoiceCombinator(hide, red, parsers);
+        return getReduction() == red ? this : new ChoiceCombinator(isHidden(), red, getParsers());
     }
 
     @Override
     public @NotNull ChoiceCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
-        return new ChoiceCombinator(hide, red, parsers);
+        return new ChoiceCombinator(isHidden(), getReduction(), parsers);
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof ChoiceCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parsers(),that.parsers());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parsers());
+//    }
 }

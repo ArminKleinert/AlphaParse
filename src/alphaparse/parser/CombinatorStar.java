@@ -7,22 +7,23 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser TODO
+ * TODO
  */
-public record CombinatorStar(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser) implements CombinatorWithParser {
+public final class CombinatorStar extends CombinatorWithParser {
+    private CombinatorStar(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+        super(hide, red, parser);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parser TODO
      */
-    public CombinatorStar(@NotNull Combinator parser) {
-        this(defaultHidden, defaultRed, parser);
+    public CombinatorStar(final @NotNull Combinator parser) {
+        super(parser);
     }
 
     @Override
@@ -63,4 +64,16 @@ public record CombinatorStar(
     public @NotNull CombinatorStar withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new CombinatorStar(hide, red, parser);
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof CombinatorStar that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parser());
+//    }
 }

@@ -9,22 +9,23 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser TODO
+ * TODO
  */
-public record PlusCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser) implements CombinatorWithParser {
+public final class PlusCombinator extends CombinatorWithParser {
+    private PlusCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+        super(hide, red, parser);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parser TODO
      */
-    public PlusCombinator(@NotNull Combinator parser) {
-        this(defaultHidden, defaultRed, parser);
+    public PlusCombinator(final @NotNull Combinator parser) {
+        super(defaultHidden, defaultRed, parser);
     }
 
     @Override
@@ -109,4 +110,16 @@ public record PlusCombinator(
     public @NotNull PlusCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new PlusCombinator(hide, red, parser);
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof PlusCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parser());
+//    }
 }

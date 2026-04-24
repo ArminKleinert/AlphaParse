@@ -3,97 +3,116 @@ package alphaparse.parser;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
- *  TODO
+ * TODO
  */
-public sealed interface Combinator permits CombinatorTerminal, NonTerminalCombinator, CombinatorWithManyParsers, CombinatorWithParser {
+public abstract sealed class Combinator permits CombinatorTerminal, NonTerminalCombinator, CombinatorWithManyParsers, CombinatorWithParser {
     /**
-     *  Default value for {@link Combinator#hide()}.
+     * Default value for {@link Combinator#isHidden()}.
      */
-    boolean defaultHidden = false;
+    static final boolean defaultHidden = false;
 
     /**
-     *  Default value for {@link Combinator#red()}
+     * Default value for {@link Combinator#getReduction()}
      */
-    ReductionType defaultRed = ReductionType.nullReduction();
+    static final ReductionType defaultRed = ReductionType.nullReduction();
+
+    protected final boolean hide;
+    protected final @NotNull ReductionType red;
+
+    protected Combinator(final boolean hide, final @NotNull ReductionType red) {
+        this.hide = hide;
+        this.red = red;
+    }
+
+    protected Combinator() {
+        this(defaultHidden, defaultRed);
+    }
 
     /**
-     *  TODO
-     * @param index TODO
+     * TODO
+     *
+     * @param index  TODO
      * @param runner TODO
      */
-    void parse(final int index, final @NotNull Gll runner);
+    public abstract void parse(final int index, final @NotNull Gll runner);
 
     /**
-     *  TODO
-     * @param index TODO
+     * TODO
+     *
+     * @param index  TODO
      * @param runner TODO
      */
-    void fullParse(final int index, final @NotNull Gll runner);
+    public abstract void fullParse(final int index, final @NotNull Gll runner);
 
     /**
-     *  TODO
-     * @return TODO
-     */
-    boolean hide();
-
-    /**
-     *  TODO
-     * @return TODO
-     */
-    @NotNull ReductionType red();
-
-    /**
-     *  TODO
+     * TODO
+     *
      * @param hide TODO
      * @return TODO
      */
-    @NotNull Combinator withHideTag(final boolean hide);
+    public abstract @NotNull Combinator withHideTag(final boolean hide);
 
     /**
-     *  TODO
+     * TODO
+     *
      * @param red TODO
      * @return TODO
      */
-    @NotNull Combinator withReduction(final @NotNull ReductionType red);
+    public abstract @NotNull Combinator withReduction(final @NotNull ReductionType red);
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
-    default boolean isHidden() {
-        return hide();
+    public boolean isHidden() {
+        return hide;
     }
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
-    default @NotNull ReductionType getReduction() {
-        return red();
+    public @NotNull ReductionType getReduction() {
+        return red;
     }
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
-    default @NotNull Combinator enableHideTag() {
+    public @NotNull Combinator enableHideTag() {
         return withHideTag(true);
     }
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
-    default @NotNull Combinator unhideContent() {
+    public @NotNull Combinator unhideContent() {
         return withHideTag(false);
     }
 
     /**
-     *  TODO
+     * TODO
+     *
      * @return TODO
      */
-    default @NotNull Combinator hideTag() {
+    public @NotNull Combinator hideTag() {
         return withReduction(ReductionType.rawNonTerminalReduction());
     }
+
+    // Force children to override this.
+    @Override
+    public abstract boolean equals(Object o);
+
+    // Force children to override this.
+    @Override
+    public abstract int hashCode();
 }

@@ -8,22 +8,23 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.trampoline.TrampolineListenerNode;
 
+import java.util.Objects;
+
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser TODO
+ * TODO
  */
-public record NegativeLookaheadCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser) implements CombinatorWithParser {
+public final class NegativeLookaheadCombinator extends CombinatorWithParser {
+    private NegativeLookaheadCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+        super(hide, red, parser);
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parser TODO
      */
-    public NegativeLookaheadCombinator(@NotNull Combinator parser) {
-        this(defaultHidden, defaultRed, parser);
+    public NegativeLookaheadCombinator(final @NotNull Combinator parser) {
+        super(parser);
     }
 
     private boolean resultExists_Q(
@@ -78,4 +79,16 @@ public record NegativeLookaheadCombinator(
     public @NotNull NegativeLookaheadCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new NegativeLookaheadCombinator(hide, red, parser);
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof NegativeLookaheadCombinator that)) return false;
+//        if (this==that ) return true;
+//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(hide(), red(),parser());
+//    }
 }

@@ -9,28 +9,33 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
- *  TODO
- * @param hide TODO
- * @param red TODO
- * @param parser TODO
- * @param min TODO
- * @param max TODO
+ * TODO
  */
-public record RepetitionCombinator(
-        boolean hide,
-        @NotNull ReductionType red,
-        @NotNull Combinator parser,
-        int min,
-        int max) implements CombinatorWithParser {
+public final class RepetitionCombinator extends CombinatorWithParser {
+    private final int min;
+    private final int max;
+
+    private RepetitionCombinator(final boolean hide, final @NotNull ReductionType red,
+                                 final @NotNull Combinator parser, final int min, final int max) {
+        super(hide, red, parser);
+        this.min = min;
+        this.max = max;
+    }
+
     /**
-     *  TODO
+     * TODO
+     *
      * @param parser TODO
-     * @param min TODO
-     * @param max TODO
+     * @param min    TODO
+     * @param max    TODO
      */
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
-        this(defaultHidden, defaultRed, parser, min, max);
+        super(parser);
+        this.min = min;
+        this.max = max;
     }
 
     @Override
@@ -158,5 +163,21 @@ public record RepetitionCombinator(
     @Override
     public @NotNull RepetitionCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new RepetitionCombinator(hide, red, parser, min, max);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RepetitionCombinator that)) return false;
+        if (this == that) return true;
+        return hide == that.hide
+                && Objects.equals(red, that.red)
+                && Objects.equals(parser, that.parser)
+                && Objects.equals(min, that.min)
+                && Objects.equals(max, that.max);
+    }
+
+    @Override
+    public int hashCode() {
+        return min * 31 + max * 31 + Objects.hash(hide, red, parser);
     }
 }
