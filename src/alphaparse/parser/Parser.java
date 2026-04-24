@@ -116,7 +116,7 @@ public record Parser(@NotNull Grammar grammar,
      * @see CombinatorFactory#autoWhitespace(Grammar, Keyword, Grammar, Keyword)
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
-        return withGrammar((new CombinatorFactory(grammar.size() > 20)).autoWhitespace(
+        return withGrammar((new CombinatorFactory(true)).autoWhitespace(
                 grammar(),
                 startProduction(),
                 whitespaceParser.grammar(),

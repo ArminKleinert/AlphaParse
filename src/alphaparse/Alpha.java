@@ -31,7 +31,7 @@ public final class Alpha {
      */
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Alpha.UnhideOptions unhide) {
-        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(false);
+        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(true);
 
         return switch (unhide) {
             case none -> parser;

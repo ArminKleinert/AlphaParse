@@ -19,8 +19,7 @@ public final class CombinatorFactory {
 
     /**
      * The constructor. The parameters allow buffering of created {@link Combinator} objects.
-     * Buffering can reduce memory consumption if the grammar is very big, but might increase memory consumption for very small grammars, too.
-     * Enabling buffering will likely be a tiny bit slower, though the difference should be insignificant.
+     * Buffering can reduce memory consumption if the grammar is very big, but might momentarily increase memory consumption for very small grammars, too. In general, using the buffer is a bit faster.
      *
      * @param useBuffer Set to true if buffering should be used, false otherwise.
      */
@@ -30,9 +29,8 @@ public final class CombinatorFactory {
         buffer = useBuffer ? new BufferForCombinators() : null;
     }
 
-    private <T extends Combinator> Combinator getFromOrAddToBuffer(T combinator) {
-        if (!useBuffer) return combinator;
-        return Objects.requireNonNull(buffer).getOrAdd(combinator);
+    private Combinator bufferIfRequested(Combinator c) {
+        return useBuffer ? buffer.getOrAdd(c) : c;
     }
 
     /**
@@ -49,7 +47,8 @@ public final class CombinatorFactory {
     public @NotNull Combinator choiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.size() == 1) return parsers.getFirst();
         if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
-        return getFromOrAddToBuffer(new ChoiceCombinator(parsers));
+        final @NotNull var result = new ChoiceCombinator(parsers);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -60,7 +59,8 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator optionalCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return getFromOrAddToBuffer(new OptionalCombinator(parser));
+        final @NotNull var result = new OptionalCombinator(parser);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -71,7 +71,8 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator plusCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return getFromOrAddToBuffer(new PlusCombinator(parser));
+        final @NotNull var result = new PlusCombinator(parser);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -82,7 +83,8 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator starCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return getFromOrAddToBuffer(new CombinatorStar(parser));
+        final @NotNull var result = new CombinatorStar(parser);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -109,7 +111,8 @@ public final class CombinatorFactory {
                 return catCombinator(Collections.nCopies(m, parser));
             // Otherwise fallthrough.
         }
-        return getFromOrAddToBuffer(new RepetitionCombinator(parser, m, n));
+        final @NotNull var result = new RepetitionCombinator(parser, m, n);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -143,7 +146,8 @@ public final class CombinatorFactory {
             newParserList = newParserList.stream().filter(Objects::nonNull).toList();
 
         if (newParserList.size() == 1) return Objects.requireNonNull(newParserList.getFirst());
-        return getFromOrAddToBuffer(new OrderedChoiceCombinator(newParserList));
+        final @NotNull var result = new OrderedChoiceCombinator(newParserList);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -176,7 +180,8 @@ public final class CombinatorFactory {
             parserList.add(parserStream.next());
         }
 
-        return getFromOrAddToBuffer(new ConcatCombinator(parserList));
+        final @NotNull var result = new ConcatCombinator(parserList);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -189,7 +194,8 @@ public final class CombinatorFactory {
     public @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string,
                                                         final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
-        return getFromOrAddToBuffer(new TerminalStringCombinator(string, caseInsensitive));
+        final @NotNull var result = new TerminalStringCombinator(string, caseInsensitive);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -200,8 +206,7 @@ public final class CombinatorFactory {
      * @see CombinatorFactory#stringOrStringCiTerminal(String, boolean)
      */
     public @NotNull Combinator stringTerminal(final @NotNull String string) {
-        if (string.isEmpty()) return epsilon;
-        return getFromOrAddToBuffer(new TerminalStringCombinator(string, false));
+        return stringOrStringCiTerminal(string, false);
     }
 
     /**
@@ -213,8 +218,8 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator unicodeChar(final int lohi) {
         final @NotNull var str = new StringBuilder(4).appendCodePoint(lohi).toString();
-        return getFromOrAddToBuffer(stringOrStringCiTerminal(str, false));
-        //return getFromOrAddToBuffer(new TerminalUnicodeCharCombinator(lohi, lohi));
+        //return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lohi, lohi));
+        return stringOrStringCiTerminal(str, false);
     }
 
     /**
@@ -241,7 +246,7 @@ public final class CombinatorFactory {
                 .toString();
         return createRegexTerminal(Pattern.compile(regex));
         //"[\\x{1F601}-\\x{1F64F}]"
-        //return getFromOrAddToBuffer(new TerminalUnicodeCharCombinator(lo, hi));
+        //return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lo, hi));
     }
 
     /**
@@ -251,7 +256,8 @@ public final class CombinatorFactory {
      * @return The new parser.
      */
     public @NotNull TerminalRegexpCombinator createRegexTerminal(final @NotNull Pattern regex) {
-        return (TerminalRegexpCombinator) getFromOrAddToBuffer(new TerminalRegexpCombinator(regex));
+        final @NotNull var result = new TerminalRegexpCombinator(regex);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -261,7 +267,8 @@ public final class CombinatorFactory {
      * @return The new parser.
      */
     public @NotNull NonTerminalCombinator makeNonTerminal(final @NotNull Keyword keyword) {
-        return (NonTerminalCombinator) getFromOrAddToBuffer(new NonTerminalCombinator(keyword));
+        final @NotNull var result = new NonTerminalCombinator(keyword);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -283,7 +290,8 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator makeLookahead(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return getFromOrAddToBuffer(new LookaheadCombinator(parser));
+        final @NotNull var result = new LookaheadCombinator(parser);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -295,9 +303,9 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator negateRule(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
-        return getFromOrAddToBuffer(new NegativeLookaheadCombinator(parser));
+        final @NotNull var result = new NegativeLookaheadCombinator(parser);
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
-
 
     /**
      * Hides the tag of a combinator in the result of a parse.
@@ -306,7 +314,8 @@ public final class CombinatorFactory {
      * @return The new parser.
      */
     public @NotNull Combinator hideTag(final @NotNull Combinator parser) {
-        return getFromOrAddToBuffer(parser.withReduction(ReductionType.rawNonTerminalReduction()));
+        final @NotNull var result = parser.withReduction(ReductionType.rawNonTerminalReduction());
+        return useBuffer ? buffer.getOrAdd(result) : result;
     }
 
     /**
@@ -321,7 +330,9 @@ public final class CombinatorFactory {
         for (final @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
-            res.add(Grammar.entry(key, getFromOrAddToBuffer(value.unhideContent())));
+            final @NotNull var pUnhide = value.unhideContent();
+            final @NotNull var pB = bufferIfRequested(pUnhide);
+            res.add(Grammar.entry(key, pB));
         }
         return Grammar.fromProductions(res);
     }
@@ -340,7 +351,9 @@ public final class CombinatorFactory {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
-            final @NotNull Combinator comb = getFromOrAddToBuffer(value.withReduction(reduction));
+
+            final @NotNull var pUnhide = value.withReduction(reduction);
+            final @NotNull var comb = bufferIfRequested(pUnhide);
             res.add(Grammar.entry(key, comb));
         }
         return Grammar.fromProductions(res);
@@ -360,7 +373,8 @@ public final class CombinatorFactory {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
             final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
-            final @NotNull Combinator comb = getFromOrAddToBuffer(value.unhideContent().withReduction(reduction));
+            final @NotNull var p = value.unhideContent().withReduction(reduction);
+            final @NotNull Combinator comb = bufferIfRequested(p);
             res.add(Grammar.entry(key, comb));
         }
         return Grammar.fromProductions(res);
@@ -372,13 +386,13 @@ public final class CombinatorFactory {
             case NonTerminalCombinator ignored -> parser;
             case EpsilonCombinator ignored2 -> parser;
             case CombinatorWithParser parser1 ->
-                    getFromOrAddToBuffer(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
+                    bufferIfRequested(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
                 final @NotNull List<Combinator> parsers = combWithParsers.getParsers()
                         .stream()
                         .map(p -> autoWhitespaceParser(p, wsParser))
                         .toList();
-                yield getFromOrAddToBuffer(combWithParsers.withParsers(parsers));
+                yield bufferIfRequested(combWithParsers.withParsers(parsers));
             }
             case CombinatorTerminal ignored -> {
                 final @NotNull List<Combinator> parsers = new ArrayList<>();
@@ -418,7 +432,7 @@ public final class CombinatorFactory {
             keywordCombinatorEntry.setValue(autoWhitespaceParser(keywordCombinatorEntry.getValue(), wsParser));
         }
 
-        final @NotNull Combinator startWithoutReduction = getFromOrAddToBuffer(
+        final @NotNull Combinator startWithoutReduction = bufferIfRequested(
                 finalGrammar.get(start)
                         .withReduction(ReductionType.nullReduction()));
         final @NotNull Combinator newStartComb =

@@ -5,14 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * TODO
- */
-public final class BufferForCombinators {
-    /**
-     * TODO
-     */
-    public BufferForCombinators() {
+final class BufferForCombinators {
+    BufferForCombinators() {
     }
 
     private <T extends Combinator> @NotNull T buffer(final @NotNull Map<@NotNull T, @NotNull T> buff, final @NotNull T c) {
@@ -22,14 +16,7 @@ public final class BufferForCombinators {
         return c;
     }
 
-    /**
-     * TODO
-     *
-     * @param combinator1 TODO
-     * @param <T>         TODO
-     * @return TODO
-     */
-    public @NotNull <T extends Combinator> Combinator getOrAdd(final @NotNull T combinator1) {
+    @NotNull <T extends Combinator> Combinator getOrAdd(final @NotNull T combinator1) {
         return switch (combinator1) {
             case NonTerminalCombinator combinator -> getOrAdd(combinator);
             case TerminalRegexpCombinator combinator -> getOrAdd(combinator);
@@ -50,169 +37,85 @@ public final class BufferForCombinators {
 
     private final @NotNull Map<@NotNull NonTerminalCombinator, @NotNull NonTerminalCombinator> nonTerminalSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull NonTerminalCombinator getOrAdd(final @NotNull NonTerminalCombinator combinator) {
+    @NotNull NonTerminalCombinator getOrAdd(final @NotNull NonTerminalCombinator combinator) {
         return buffer(nonTerminalSet, combinator);
     }
 
     private final @NotNull Map<@NotNull TerminalRegexpCombinator, @NotNull TerminalRegexpCombinator> regexpTerminalSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull TerminalRegexpCombinator getOrAdd(final @NotNull TerminalRegexpCombinator combinator) {
+    @NotNull TerminalRegexpCombinator getOrAdd(final @NotNull TerminalRegexpCombinator combinator) {
         return buffer(regexpTerminalSet, combinator);
     }
 
     private final @NotNull Map<@NotNull TerminalStringCombinator, @NotNull TerminalStringCombinator> combStringTerminalSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull TerminalStringCombinator getOrAdd(final @NotNull TerminalStringCombinator combinator) {
+    @NotNull TerminalStringCombinator getOrAdd(final @NotNull TerminalStringCombinator combinator) {
         return buffer(combStringTerminalSet, combinator);
     }
 
     private final @NotNull Map<@NotNull ChoiceCombinator, @NotNull ChoiceCombinator> alternationCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull ChoiceCombinator getOrAdd(final @NotNull ChoiceCombinator combinator) {
+    @NotNull ChoiceCombinator getOrAdd(final @NotNull ChoiceCombinator combinator) {
         return buffer(alternationCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull ConcatCombinator, @NotNull ConcatCombinator> catCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull ConcatCombinator getOrAdd(final @NotNull ConcatCombinator combinator) {
+    @NotNull ConcatCombinator getOrAdd(final @NotNull ConcatCombinator combinator) {
         return buffer(catCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull OptionalCombinator, @NotNull OptionalCombinator> alternationCombinators = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull OptionalCombinator getOrAdd(final @NotNull OptionalCombinator combinator) {
+    @NotNull OptionalCombinator getOrAdd(final @NotNull OptionalCombinator combinator) {
         return buffer(alternationCombinators, combinator);
     }
 
     private final @NotNull Map<@NotNull OrderedChoiceCombinator, @NotNull OrderedChoiceCombinator> orderedCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull OrderedChoiceCombinator getOrAdd(final @NotNull OrderedChoiceCombinator combinator) {
+    @NotNull OrderedChoiceCombinator getOrAdd(final @NotNull OrderedChoiceCombinator combinator) {
         return buffer(orderedCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull PlusCombinator, @NotNull PlusCombinator> plusCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull PlusCombinator getOrAdd(final @NotNull PlusCombinator combinator) {
+    @NotNull PlusCombinator getOrAdd(final @NotNull PlusCombinator combinator) {
         return buffer(plusCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull RepetitionCombinator, @NotNull RepetitionCombinator> repetitionCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull RepetitionCombinator getOrAdd(final @NotNull RepetitionCombinator combinator) {
+    @NotNull RepetitionCombinator getOrAdd(final @NotNull RepetitionCombinator combinator) {
         return buffer(repetitionCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull CombinatorStar, @NotNull CombinatorStar> starCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull CombinatorStar getOrAdd(final @NotNull CombinatorStar combinator) {
+    @NotNull CombinatorStar getOrAdd(final @NotNull CombinatorStar combinator) {
         return buffer(starCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull TerminalUnicodeCharCombinator, @NotNull TerminalUnicodeCharCombinator> unicodeCharTerminalSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull TerminalUnicodeCharCombinator getOrAdd(final @NotNull TerminalUnicodeCharCombinator combinator) {
+    @NotNull TerminalUnicodeCharCombinator getOrAdd(final @NotNull TerminalUnicodeCharCombinator combinator) {
         return buffer(unicodeCharTerminalSet, combinator);
     }
 
     private final @NotNull Map<@NotNull EpsilonCombinator, @NotNull EpsilonCombinator> epsilonCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull EpsilonCombinator getOrAdd(final @NotNull EpsilonCombinator combinator) {
+    @NotNull EpsilonCombinator getOrAdd(final @NotNull EpsilonCombinator combinator) {
         return buffer(epsilonCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull NegativeLookaheadCombinator, @NotNull NegativeLookaheadCombinator> negateCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull NegativeLookaheadCombinator getOrAdd(final @NotNull NegativeLookaheadCombinator combinator) {
+    @NotNull NegativeLookaheadCombinator getOrAdd(final @NotNull NegativeLookaheadCombinator combinator) {
         return buffer(negateCombinatorSet, combinator);
     }
 
     private final @NotNull Map<@NotNull LookaheadCombinator, @NotNull LookaheadCombinator> lookaheadCombinatorSet = new HashMap<>();
 
-    /**
-     * TODO
-     *
-     * @param combinator TODO
-     * @return TODO
-     */
-    public @NotNull LookaheadCombinator getOrAdd(final @NotNull LookaheadCombinator combinator) {
+    @NotNull LookaheadCombinator getOrAdd(final @NotNull LookaheadCombinator combinator) {
         return buffer(lookaheadCombinatorSet, combinator);
     }
 }
