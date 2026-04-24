@@ -11,12 +11,12 @@ import java.util.List;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-public record CombinatorConcatenation(
+public record ConcatCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull List<Combinator> parsers) implements CombinatorWithManyParsers {
 
-    public CombinatorConcatenation(@NotNull List<Combinator> parsers) {
+    public ConcatCombinator(@NotNull List<Combinator> parsers) {
         this(defaultHidden, defaultRed, parsers);
     }
 
@@ -87,16 +87,16 @@ public record CombinatorConcatenation(
 
     @Override
     public @NotNull Combinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorConcatenation(hide, red, parsers);
+        return isHidden() == hide ? this : new ConcatCombinator(hide, red, parsers);
     }
 
     @Override
     public @NotNull Combinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorConcatenation(hide, red, parsers);
+        return getReduction() == red ? this : new ConcatCombinator(hide, red, parsers);
     }
 
     @Override
-    public @NotNull CombinatorConcatenation withParsers(@NotNull List<@NotNull Combinator> parsers) {
-        return new CombinatorConcatenation(hide, red, parsers);
+    public @NotNull ConcatCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
+        return new ConcatCombinator(hide, red, parsers);
     }
 }

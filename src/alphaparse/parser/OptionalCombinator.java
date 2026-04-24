@@ -9,12 +9,12 @@ import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
-public record CombinatorOptional(
+public record OptionalCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
 
-    public CombinatorOptional(@NotNull Combinator parser) {
+    public OptionalCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }
 
@@ -42,17 +42,17 @@ public record CombinatorOptional(
     }
 
     @Override
-    public @NotNull CombinatorOptional withParser(final @NotNull Combinator parser) {
-        return new CombinatorOptional(hide, red, parser);
+    public @NotNull OptionalCombinator withParser(final @NotNull Combinator parser) {
+        return new OptionalCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorOptional withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorOptional(hide, red, parser);
+    public @NotNull OptionalCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new OptionalCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorOptional withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorOptional(hide, red, parser);
+    public @NotNull OptionalCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new OptionalCombinator(hide, red, parser);
     }
 }

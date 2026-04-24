@@ -19,7 +19,8 @@ import java.util.function.BiFunction;
  */
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
-                     @NotNull ReductionType.ReductionTypesAvailable outputFormat)
+                     @NotNull ReductionType.ReductionTypesAvailable outputFormat,
+                     boolean useBuffering)
         implements BiFunction<String, Alpha.ParsingOptions, AlphaParseResult> {
 
     /**
@@ -79,24 +80,6 @@ public record Parser(@NotNull Grammar grammar,
         return Alpha.parses(this, text, Alpha.ParsingOptions.getDefault());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Parser(
-                Grammar otherGrammar,
-                Keyword otherStartProduction,
-                ReductionType.ReductionTypesAvailable otherOutputFormat
-        )))
-            return false;
-        return Objects.equals(grammar, otherGrammar)
-                && Objects.equals(startProduction, otherStartProduction)
-                && outputFormat == otherOutputFormat;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(grammar, startProduction);
-    }
-
     /**
      * TODO
      *
@@ -106,7 +89,7 @@ public record Parser(@NotNull Grammar grammar,
     public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
         if (this.grammar.equals(grammar))
             return this;
-        return new Parser(grammar, startProduction, outputFormat);
+        return new Parser(grammar, startProduction, outputFormat, useBuffering);
     }
 
     /**
@@ -116,7 +99,7 @@ public record Parser(@NotNull Grammar grammar,
      * @return TODO
      */
     public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
-        return new Parser(grammar, startProduction, outputFormat);
+        return new Parser(grammar, startProduction, outputFormat, useBuffering);
     }
 
     /**
@@ -126,7 +109,7 @@ public record Parser(@NotNull Grammar grammar,
      * @return TODO
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
-        return withGrammar((new CombinatorsSource()).autoWhitespace(
+        return withGrammar((new CombinatorFactory(useBuffering)).autoWhitespace(
                 grammar(),
                 startProduction(),
                 whitespaceParser.grammar(),
@@ -138,15 +121,6 @@ public record Parser(@NotNull Grammar grammar,
 //    public String toString() {
 //        return Print.parserToString(this);
 //    }
-
-    @Override
-    public @NotNull String toString() {
-        return "Parser{" +
-                "grammar=" + grammar +
-                ", startProduction=" + startProduction +
-                ", outputFormat=" + outputFormat +
-                '}';
-    }
 
     /**
      * TODO

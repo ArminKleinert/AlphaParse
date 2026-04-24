@@ -9,37 +9,37 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record CombinatorOrderedChoice(
+public record OrderedChoiceCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser1,
         @NotNull Combinator parser2) implements CombinatorWithManyParsers {
 
-    public CombinatorOrderedChoice(final @NotNull List<Combinator> parsers) {
+    public OrderedChoiceCombinator(final @NotNull List<Combinator> parsers) {
         this(setupParsers(parsers).parser1, setupParsers(parsers).parser2);
     }
 
-    private CombinatorOrderedChoice(final @NotNull List<Combinator> parsers,
+    private OrderedChoiceCombinator(final @NotNull List<Combinator> parsers,
                                     final boolean hide,
                                     final @NotNull ReductionType red) {
         this(hide, red, setupParsers(parsers).parser1, setupParsers(parsers).parser2);
     }
 
-    private CombinatorOrderedChoice(final @NotNull Combinator parser1,
+    private OrderedChoiceCombinator(final @NotNull Combinator parser1,
                                     final @NotNull Combinator parser2) {
         this(defaultHidden, defaultRed, parser1, parser2);
     }
 
-    private static @NotNull CombinatorOrderedChoice setupParsers(
+    private static @NotNull OrderedChoiceCombinator setupParsers(
             final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.size() < 2)
             throw new IllegalArgumentException();
 
         if (parsers.size() == 2)
-            return new CombinatorOrderedChoice(parsers.get(0), parsers.get(1));
+            return new OrderedChoiceCombinator(parsers.get(0), parsers.get(1));
 
         var restParsers = parsers.subList(1, parsers.size());
-        return new CombinatorOrderedChoice(parsers.getFirst(), setupParsers(restParsers));
+        return new OrderedChoiceCombinator(parsers.getFirst(), setupParsers(restParsers));
     }
 
     @Override
@@ -71,18 +71,18 @@ public record CombinatorOrderedChoice(
     }
 
     @Override
-    public @NotNull CombinatorOrderedChoice withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new CombinatorOrderedChoice(getParsers(), hide, this.getReduction());
+    public @NotNull OrderedChoiceCombinator withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new OrderedChoiceCombinator(getParsers(), hide, this.getReduction());
     }
 
     @Override
-    public @NotNull CombinatorOrderedChoice withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorOrderedChoice(getParsers(), isHidden(), red);
+    public @NotNull OrderedChoiceCombinator withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new OrderedChoiceCombinator(getParsers(), isHidden(), red);
     }
 
     @Override
-    public @NotNull CombinatorOrderedChoice withParsers(final @NotNull List<Combinator> parsers) {
-        return new CombinatorOrderedChoice(parsers, isHidden(), getReduction());
+    public @NotNull OrderedChoiceCombinator withParsers(final @NotNull List<Combinator> parsers) {
+        return new OrderedChoiceCombinator(parsers, isHidden(), getReduction());
     }
 
     @Override

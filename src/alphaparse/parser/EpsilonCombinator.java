@@ -6,17 +6,17 @@ import org.jetbrains.annotations.NotNull;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-public record CombinatorEpsilon(
+public record EpsilonCombinator(
         boolean hide,
         @NotNull ReductionType red) implements CombinatorTerminal {
 
-    private static final @NotNull CombinatorEpsilon epsilon = new CombinatorEpsilon();
+    private static final @NotNull EpsilonCombinator epsilon = new EpsilonCombinator();
 
-    private CombinatorEpsilon() {
+    private EpsilonCombinator() {
         this(defaultHidden, defaultRed);
     }
 
-    public static @NotNull CombinatorEpsilon getDefault() {
+    public static @NotNull EpsilonCombinator getDefault() {
         return epsilon;
     }
 
@@ -35,12 +35,12 @@ public record CombinatorEpsilon(
     }
 
     @Override
-    public @NotNull CombinatorEpsilon withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorEpsilon(hide, red);
+    public @NotNull EpsilonCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new EpsilonCombinator(hide, red);
     }
 
     @Override
-    public @NotNull CombinatorEpsilon withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorEpsilon(hide, red);
+    public @NotNull EpsilonCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new EpsilonCombinator(hide, red);
     }
 }

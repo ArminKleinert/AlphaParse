@@ -1,6 +1,5 @@
 package alphaparse.parser;
 
-import alphaparse.CombinatorsSource;
 import alphaparse.Keyword;
 import alphaparse.Reduction;
 import alphaparse.functions.Listener;
@@ -75,11 +74,11 @@ public final class Gll {
 
     /**
      * TODO
-     *  @param creator          TODO
      *
+     * @param creator          TODO
      * @param negativeListener TODO
      */
-     void pushNegativeListener(
+    void pushNegativeListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey creator,
             final @NotNull NegativeListener negativeListener) {
         tramp.getNegativeListeners().put(creator.index(), negativeListener);
@@ -165,7 +164,7 @@ public final class Gll {
      *
      * @param listener TODO
      */
-     void pushListener(
+    void pushListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         final boolean listenerAlreadyExists = listenerExists_Q(nodeKey);
@@ -189,7 +188,7 @@ public final class Gll {
      *
      * @param listener TODO
      */
-     void pushFullListener(
+    void pushFullListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
         //GllParsers.pushFullListenerCallback.invoke(tramp, nodeKey, listener);
@@ -268,7 +267,7 @@ public final class Gll {
      * @param result TODO
      * @param end    The index the last production finished at.
      */
-     void success(
+    void success(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final Object result,
             final int end) {
@@ -282,7 +281,7 @@ public final class Gll {
      * @param index  TODO
      * @param reason TODO
      */
-     void fail(
+    void fail(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final int index,
             final @NotNull ParseFailureReason reason) {
@@ -312,7 +311,7 @@ public final class Gll {
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text, 0);
-        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
         var gll = new Gll(tramp);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -339,7 +338,7 @@ public final class Gll {
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
         var gll = new Gll(tramp);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -361,7 +360,7 @@ public final class Gll {
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
         var gll = new Gll(tramp);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -390,7 +389,7 @@ public final class Gll {
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text);
         var gll = new Gll(tramp);
-        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
         if (allParses.isEmpty()) {
@@ -427,7 +426,7 @@ public final class Gll {
             final int failIndex,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text, failIndex);
-        final @NotNull var parser = CombinatorsSource.staticMakeNonTerminal(start);
+        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
         var gll = new Gll(tramp);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);

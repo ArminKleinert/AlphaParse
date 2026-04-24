@@ -7,11 +7,11 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
-public record CombinatorNonTerminal(
+public record NonTerminalCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Keyword keyword) implements Combinator {
-    public CombinatorNonTerminal(final @NotNull Keyword keyword) {
+    public NonTerminalCombinator(final @NotNull Keyword keyword) {
         this(defaultHidden, defaultRed, keyword);
     }
 
@@ -37,12 +37,12 @@ public record CombinatorNonTerminal(
     }
 
     @Override
-    public @NotNull CombinatorNonTerminal withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorNonTerminal(hide, red, keyword);
+    public @NotNull NonTerminalCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new NonTerminalCombinator(hide, red, keyword);
     }
 
     @Override
-    public @NotNull CombinatorNonTerminal withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorNonTerminal(hide, red, keyword);
+    public @NotNull NonTerminalCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new NonTerminalCombinator(hide, red, keyword);
     }
 }

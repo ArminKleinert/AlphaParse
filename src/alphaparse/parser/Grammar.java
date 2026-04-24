@@ -1,6 +1,5 @@
 package alphaparse.parser;
 
-import alphaparse.CombinatorsSource;
 import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +73,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      */
     public @NotNull Combinator getOrMakeNonTerm(final @NotNull Keyword key) {
         final @Nullable Combinator p = getProduction(key);
-        if (p == null) return CombinatorsSource.staticMakeNonTerminal(key);
+        if (p == null) return CombinatorFactory.staticMakeNonTerminal(key);
         return p;
     }
 
@@ -88,8 +87,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return super.toString();
     }
 
-    private @NotNull Set<CombinatorNonTerminal> listNonTerminals() {
-        final @NotNull Set<CombinatorNonTerminal> result = new HashSet<>();
+    private @NotNull Set<NonTerminalCombinator> listNonTerminals() {
+        final @NotNull Set<NonTerminalCombinator> result = new HashSet<>();
         final @NotNull Set<Combinator> analyzedCombinators = new HashSet<>();
         final @NotNull ArrayList<@NotNull Combinator> combinatorStack = new ArrayList<>(values());
         @NotNull Combinator parser;
@@ -102,7 +101,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
             analyzedCombinators.add(parser);
 
             switch (parser) {
-                case CombinatorNonTerminal combinatorNonTerminal -> result.add(combinatorNonTerminal);
+                case NonTerminalCombinator nonTerminalCombinator -> result.add(nonTerminalCombinator);
                 case CombinatorTerminal ignored -> {
                 }
                 case CombinatorWithManyParsers combinatorWithManyParsers ->
@@ -122,7 +121,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(
                 keySet(),
-                listNonTerminals().stream().map(CombinatorNonTerminal::getKeyword).collect(Collectors.toSet()));
+                listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet()));
     }
 
     /**

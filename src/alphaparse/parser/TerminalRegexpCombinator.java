@@ -11,12 +11,12 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public record CombinatorTerminalRegexp(
+public record TerminalRegexpCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Pattern regexp) implements CombinatorTerminal {
 
-    public CombinatorTerminalRegexp(@NotNull Pattern regexp) {
+    public TerminalRegexpCombinator(@NotNull Pattern regexp) {
         this(defaultHidden, defaultRed, regexp);
     }
 
@@ -65,18 +65,18 @@ public record CombinatorTerminalRegexp(
     }
 
     @Override
-    public @NotNull CombinatorTerminalRegexp withHideTag(boolean hide) {
-        return isHidden() == hide ? this :  new CombinatorTerminalRegexp(hide, red, regexp);
+    public @NotNull TerminalRegexpCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this :  new TerminalRegexpCombinator(hide, red, regexp);
     }
 
     @Override
-    public @NotNull CombinatorTerminalRegexp withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorTerminalRegexp(hide, red, regexp);
+    public @NotNull TerminalRegexpCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new TerminalRegexpCombinator(hide, red, regexp);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof CombinatorTerminalRegexp(boolean hide1, ReductionType red1, Pattern regexp1))) return false;
+        if (!(o instanceof TerminalRegexpCombinator(boolean hide1, ReductionType red1, Pattern regexp1))) return false;
         return hide == hide1 && Objects.equals(regexp.pattern(), regexp1.pattern()) && Objects.equals(red, red1);
     }
 }

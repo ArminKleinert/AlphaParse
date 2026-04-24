@@ -9,14 +9,14 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record CombinatorRepetition(
+public record RepetitionCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser,
         int min,
         int max) implements CombinatorWithParser {
 
-    public CombinatorRepetition(final @NotNull Combinator parser, final int min, final int max) {
+    public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
         this(defaultHidden, defaultRed, parser, min, max);
     }
 
@@ -61,7 +61,7 @@ public record CombinatorRepetition(
 
     private @NotNull Listener repListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
                                           final int nResultsSoFar,
-                                          final @NotNull CombinatorRepetition parser,
+                                          final @NotNull RepetitionCombinator parser,
                                           final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey, final @NotNull Gll runner) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
@@ -133,17 +133,17 @@ public record CombinatorRepetition(
     }
 
     @Override
-    public @NotNull CombinatorRepetition withParser(final @NotNull Combinator parser) {
-        return new CombinatorRepetition(hide, red, parser, min, max);
+    public @NotNull RepetitionCombinator withParser(final @NotNull Combinator parser) {
+        return new RepetitionCombinator(hide, red, parser, min, max);
     }
 
     @Override
-    public @NotNull CombinatorRepetition withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorRepetition(hide, red, parser, min, max);
+    public @NotNull RepetitionCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new RepetitionCombinator(hide, red, parser, min, max);
     }
 
     @Override
-    public @NotNull CombinatorRepetition withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorRepetition(hide, red, parser, min, max);
+    public @NotNull RepetitionCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new RepetitionCombinator(hide, red, parser, min, max);
     }
 }

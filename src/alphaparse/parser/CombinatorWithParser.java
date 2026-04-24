@@ -2,7 +2,7 @@ package alphaparse.parser;
 
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface CombinatorWithParser extends Combinator permits CombinatorLookahead, CombinatorNegativeLookahead, CombinatorOptional, CombinatorPlus, CombinatorRepetition, CombinatorStar {
+public sealed interface CombinatorWithParser extends Combinator permits LookaheadCombinator, NegativeLookaheadCombinator, OptionalCombinator, PlusCombinator, RepetitionCombinator, CombinatorStar {
     Combinator parser();
 
     default Combinator getParser() {

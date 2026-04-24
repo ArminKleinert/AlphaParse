@@ -1,6 +1,7 @@
 package alphaparse;
 
 import alphaparse.parser.Combinator;
+import alphaparse.parser.CombinatorFactory;
 import alphaparse.parser.Grammar;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,311 +12,311 @@ import java.util.regex.Pattern;
 
 final class EbnfG {
     private static final @NotNull Combinator optWhitespace =
-            new CombinatorsSource().makeNonTerminal(Keyword.intern("opt-whitespace")).enableHideTag();
+            CombinatorFactory.staticMakeNonTerminal(Keyword.intern("opt-whitespace")).enableHideTag();
 
     private static @NotNull Pattern regexDoc(final @NotNull String patternString, final @NotNull String comment) {
         return Pattern.compile(patternString + "(?x) #" + comment);
     }
 
-    private static @NotNull Combinator makeCfgRulesRhs(final @NotNull CombinatorsSource combinatorsSource) {
-        final @NotNull Combinator rulesRule = combinatorsSource.catCombinator(
+    private static @NotNull Combinator makeCfgRulesRhs(final @NotNull CombinatorFactory combinatorFactory) {
+        final @NotNull Combinator rulesRule = combinatorFactory.catCombinator(
                         List.of(optWhitespace,
-                                combinatorsSource.plusCombinator(
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("rule")))))
+                                combinatorFactory.plusCombinator(
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("rule")))))
                 .hideTag();
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgCommentRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgCommentRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("(*"),
-                                combinatorsSource.makeNonTerminal(Keyword.intern("inside-comment")),
-                                combinatorsSource.stringTerminal("*)"))).hideTag();
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("(*"),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("inside-comment")),
+                                combinatorFactory.stringTerminal("*)"))).hideTag();
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgInsideCommentRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgInsideCommentRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Pattern insideComment = regexDoc("(?s)(?:(?!(?:\\(\\*|\\*\\))).)*", "Comment text");
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.createRegexTerminal(insideComment),
-                                combinatorsSource.starCombinator(
-                                        combinatorsSource.catCombinator(
-                                                List.of(combinatorsSource.makeNonTerminal(Keyword.intern("comment")),
-                                                        combinatorsSource.createRegexTerminal(insideComment))))));
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.createRegexTerminal(insideComment),
+                                combinatorFactory.starCombinator(
+                                        combinatorFactory.catCombinator(
+                                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("comment")),
+                                                        combinatorFactory.createRegexTerminal(insideComment))))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgOptWhitespaceRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOptWhitespaceRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Pattern ws = regexDoc("[,\\s]*", "optional whitespace");
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.createRegexTerminal(ws),
-                                combinatorsSource.starCombinator(
-                                        combinatorsSource.catCombinator(
-                                                List.of(combinatorsSource.makeNonTerminal(Keyword.intern("comment")),
-                                                        combinatorsSource.createRegexTerminal(ws))))));
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.createRegexTerminal(ws),
+                                combinatorFactory.starCombinator(
+                                        combinatorFactory.catCombinator(
+                                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("comment")),
+                                                        combinatorFactory.createRegexTerminal(ws))))));
         return rulesRule;
     }
 
 
-    private static Combinator makeCfgEpsilonRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static Combinator makeCfgEpsilonRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                        List.of(combinatorsSource.stringTerminal("Epsilon"),
-                                combinatorsSource.stringTerminal("epsilon"),
-                                combinatorsSource.stringTerminal("EPSILON"),
-                                combinatorsSource.stringTerminal("eps"),
-                                combinatorsSource.stringTerminal("ε")));
+                combinatorFactory.choiceCombinator(
+                        List.of(combinatorFactory.stringTerminal("Epsilon"),
+                                combinatorFactory.stringTerminal("epsilon"),
+                                combinatorFactory.stringTerminal("EPSILON"),
+                                combinatorFactory.stringTerminal("eps"),
+                                combinatorFactory.stringTerminal("ε")));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgFactorRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgFactorRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                                List.of(combinatorsSource.makeNonTerminal(Keyword.intern("nt")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("string")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("regexp")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("opt")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("star")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("plus")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("paren")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("hide")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("epsilon")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("rep"))))
+                combinatorFactory.choiceCombinator(
+                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("nt")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("string")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("regexp")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("opt")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("star")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("plus")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("paren")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("hide")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("epsilon")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("rep"))))
                         .hideTag();
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgPlusRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgPlusRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal("+").enableHideTag()));
+                                combinatorFactory.stringTerminal("+").enableHideTag()));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgRuleSeparatorRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRuleSeparatorRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                        List.of(combinatorsSource.stringTerminal(":"),
-                                combinatorsSource.stringTerminal(":="),
-                                combinatorsSource.stringTerminal("::="),
-                                combinatorsSource.stringTerminal("=")));
+                combinatorFactory.choiceCombinator(
+                        List.of(combinatorFactory.stringTerminal(":"),
+                                combinatorFactory.stringTerminal(":="),
+                                combinatorFactory.stringTerminal("::="),
+                                combinatorFactory.stringTerminal("=")));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgParenRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgParenRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("(").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("(").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal(")").enableHideTag()));
+                                combinatorFactory.stringTerminal(")").enableHideTag()));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgHideRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgHideRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("<").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("<").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal(">").enableHideTag()));
+                                combinatorFactory.stringTerminal(">").enableHideTag()));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgStringRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgStringRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Pattern singleQuotedString =
                 regexDoc("'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted string");
         final @NotNull Pattern doubleQuotedString =
                 regexDoc("\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted string");
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                        List.of(combinatorsSource.createRegexTerminal(singleQuotedString),
-                                combinatorsSource.createRegexTerminal(doubleQuotedString)));
+                combinatorFactory.choiceCombinator(
+                        List.of(combinatorFactory.createRegexTerminal(singleQuotedString),
+                                combinatorFactory.createRegexTerminal(doubleQuotedString)));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgRegexRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRegexRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Pattern singleQuotedRegex =
                 regexDoc("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted regexp");
         final @NotNull Pattern doubleQuotedRegex =
                 regexDoc("#\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted regexp");
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                        List.of(combinatorsSource.createRegexTerminal(singleQuotedRegex),
-                                combinatorsSource.createRegexTerminal(doubleQuotedRegex)));
+                combinatorFactory.choiceCombinator(
+                        List.of(combinatorFactory.createRegexTerminal(singleQuotedRegex),
+                                combinatorFactory.createRegexTerminal(doubleQuotedRegex)));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgRulesOrParserRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRulesOrParserRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                                List.of(combinatorsSource.makeNonTerminal(Keyword.intern("rules")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("alt-or-ord"))))
+                combinatorFactory.choiceCombinator(
+                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("rules")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord"))))
                         .hideTag();
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgNtRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgNtRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(List.of(
-                        combinatorsSource.negateRule(
-                                combinatorsSource.makeNonTerminal(Keyword.intern("epsilon"))),
-                        combinatorsSource.createRegexTerminal(
+                combinatorFactory.catCombinator(List.of(
+                        combinatorFactory.negateRule(
+                                combinatorFactory.makeNonTerminal(Keyword.intern("epsilon"))),
+                        combinatorFactory.createRegexTerminal(
                                 regexDoc("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]+", "Non-terminal"))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgRepRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgRepRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(List.of(
-                        combinatorsSource.alternationCombinator(
-                                List.of(combinatorsSource.createRegexTerminal(regexDoc("[0-9]+", "NUM")),
-                                        combinatorsSource.createRegexTerminal(regexDoc("[0-9]*\\*[0-9]+", "NUM")),
-                                        combinatorsSource.createRegexTerminal(regexDoc("[0-9]+\\*[0-9]*", "NUM")))),
+                combinatorFactory.catCombinator(List.of(
+                        combinatorFactory.choiceCombinator(
+                                List.of(combinatorFactory.createRegexTerminal(regexDoc("[0-9]+", "NUM")),
+                                        combinatorFactory.createRegexTerminal(regexDoc("[0-9]*\\*[0-9]+", "NUM")),
+                                        combinatorFactory.createRegexTerminal(regexDoc("[0-9]+\\*[0-9]*", "NUM")))),
                         optWhitespace,
-                        combinatorsSource.makeNonTerminal(Keyword.intern("factor"))));
+                        combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgLookRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgLookRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("&").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("&").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("factor"))));
+                                combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgNegRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgNegRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("!").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("!").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("factor"))));
+                                combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgOneOrMoreRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOneOrMoreRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRuleCurlies =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("{").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("{").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal("}").enableHideTag()));
+                                combinatorFactory.stringTerminal("}").enableHideTag()));
         final @NotNull Combinator rulesRuleStar =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal("*").enableHideTag()));
-        final @NotNull Combinator rule = combinatorsSource.alternationCombinator(
+                                combinatorFactory.stringTerminal("*").enableHideTag()));
+        final @NotNull Combinator rule = combinatorFactory.choiceCombinator(
                 List.of(rulesRuleCurlies, rulesRuleStar));
         return rule;
     }
 
-    private static @NotNull Combinator makeCfgOptRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOptRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesBrackets =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("[").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("[").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal("]").enableHideTag()));
+                                combinatorFactory.stringTerminal("]").enableHideTag()));
         final @NotNull Combinator rulesQuestionMark =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal("?").enableHideTag()));
+                                combinatorFactory.stringTerminal("?").enableHideTag()));
         final @NotNull Combinator rule =
-                combinatorsSource.alternationCombinator(List.of(rulesBrackets, rulesQuestionMark));
+                combinatorFactory.choiceCombinator(List.of(rulesBrackets, rulesQuestionMark));
         return rule;
     }
 
-    private static @NotNull Combinator makeCfgAltOrOrdRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgAltOrOrdRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.alternationCombinator(
-                                List.of(combinatorsSource.makeNonTerminal(Keyword.intern("alt")),
-                                        combinatorsSource.makeNonTerminal(Keyword.intern("ord"))))
+                combinatorFactory.choiceCombinator(
+                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("alt")),
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("ord"))))
                         .hideTag();
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgHideNtRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgHideNtRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.stringTerminal("<").enableHideTag(),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.stringTerminal("<").enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("nt")),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("nt")),
                                 optWhitespace,
-                                combinatorsSource.stringTerminal(">").enableHideTag()));
+                                combinatorFactory.stringTerminal(">").enableHideTag()));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgRuleRhs(final @NotNull CombinatorsSource combinatorsSource) {
-        final @NotNull Combinator optWs = combinatorsSource.makeNonTerminal(Keyword.intern("opt-whitespace"));
+    private static @NotNull Combinator makeCfgRuleRhs(final @NotNull CombinatorFactory combinatorFactory) {
+        final @NotNull Combinator optWs = combinatorFactory.makeNonTerminal(Keyword.intern("opt-whitespace"));
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.alternationCombinator(
-                                        List.of(combinatorsSource.makeNonTerminal(Keyword.intern("nt")),
-                                                combinatorsSource.makeNonTerminal(Keyword.intern("hide-nt")))),
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.choiceCombinator(
+                                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("nt")),
+                                                combinatorFactory.makeNonTerminal(Keyword.intern("hide-nt")))),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("rule-separator")).enableHideTag(),
+                                combinatorFactory.makeNonTerminal(Keyword.intern("rule-separator")).enableHideTag(),
                                 optWhitespace,
-                                combinatorsSource.makeNonTerminal(Keyword.intern("alt-or-ord")),
-                                combinatorsSource.alternationCombinator(
+                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.choiceCombinator(
                                                 List.of(optWs,
-                                                        combinatorsSource.catCombinator(
+                                                        combinatorFactory.catCombinator(
                                                                 List.of(optWs,
-                                                                        combinatorsSource.alternationCombinator(
-                                                                                List.of(combinatorsSource.stringTerminal(";"),
-                                                                                        combinatorsSource.stringTerminal("."))),
+                                                                        combinatorFactory.choiceCombinator(
+                                                                                List.of(combinatorFactory.stringTerminal(";"),
+                                                                                        combinatorFactory.stringTerminal("."))),
                                                                         optWs))))
                                         .enableHideTag()));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgOrdRhs(final @NotNull CombinatorsSource combinatorsSource) {
+    private static @NotNull Combinator makeCfgOrdRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
-                        List.of(combinatorsSource.makeNonTerminal(Keyword.intern("cat")),
-                                combinatorsSource.plusCombinator(
-                                        combinatorsSource.catCombinator(
+                combinatorFactory.catCombinator(
+                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("cat")),
+                                combinatorFactory.plusCombinator(
+                                        combinatorFactory.catCombinator(
                                                 List.of(optWhitespace,
-                                                        combinatorsSource.stringTerminal("/").enableHideTag(),
+                                                        combinatorFactory.stringTerminal("/").enableHideTag(),
                                                         optWhitespace,
-                                                        combinatorsSource.makeNonTerminal(Keyword.intern("cat")))))));
+                                                        combinatorFactory.makeNonTerminal(Keyword.intern("cat")))))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgAltRhs(final @NotNull CombinatorsSource combinatorsSource) {
-        final @NotNull Combinator catNt = combinatorsSource.makeNonTerminal(Keyword.intern("cat"));
+    private static @NotNull Combinator makeCfgAltRhs(final @NotNull CombinatorFactory combinatorFactory) {
+        final @NotNull Combinator catNt = combinatorFactory.makeNonTerminal(Keyword.intern("cat"));
         final @NotNull Combinator rulesRule =
-                combinatorsSource.catCombinator(
+                combinatorFactory.catCombinator(
                         List.of(catNt,
-                                combinatorsSource.starCombinator(combinatorsSource.catCombinator(
+                                combinatorFactory.starCombinator(combinatorFactory.catCombinator(
                                         List.of(
                                                 optWhitespace,
-                                                combinatorsSource.stringTerminal("|").enableHideTag(),
+                                                combinatorFactory.stringTerminal("|").enableHideTag(),
                                                 optWhitespace,
                                                 catNt)))));
         return rulesRule;
     }
 
-    private static @NotNull Combinator makeCfgCatRhs(final @NotNull CombinatorsSource combinatorsSource) {
-        final @NotNull Combinator factorLookNeg = combinatorsSource.alternationCombinator(List.of(
-                combinatorsSource.makeNonTerminal(Keyword.intern("factor")),
-                combinatorsSource.makeNonTerminal(Keyword.intern("look")),
-                combinatorsSource.makeNonTerminal(Keyword.intern("neg"))));
+    private static @NotNull Combinator makeCfgCatRhs(final @NotNull CombinatorFactory combinatorFactory) {
+        final @NotNull Combinator factorLookNeg = combinatorFactory.choiceCombinator(List.of(
+                combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
+                combinatorFactory.makeNonTerminal(Keyword.intern("look")),
+                combinatorFactory.makeNonTerminal(Keyword.intern("neg"))));
         final @NotNull Combinator rulesRule =
-                combinatorsSource.plusCombinator(
-                        combinatorsSource.catCombinator(
+                combinatorFactory.plusCombinator(
+                        combinatorFactory.catCombinator(
                                 List.of(optWhitespace,
                                         factorLookNeg,
                                         optWhitespace)));
@@ -324,7 +325,7 @@ final class EbnfG {
 
     static @NotNull Grammar makeCfg() {
         final @NotNull SequencedMap<Keyword, Combinator> grammarMap = new LinkedHashMap<>();
-        final @NotNull CombinatorsSource cs = new CombinatorsSource();
+        final @NotNull CombinatorFactory cs = new CombinatorFactory(true);
         grammarMap.put(Keyword.intern("rules"), makeCfgRulesRhs(cs));
         grammarMap.put(Keyword.intern("comment"), makeCfgCommentRhs(cs));
         grammarMap.put(Keyword.intern("inside-comment"), makeCfgInsideCommentRhs(cs));

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public sealed interface CombinatorWithManyParsers extends Combinator permits CombinatorChoice, CombinatorConcatenation, CombinatorOrderedChoice {
+public sealed interface CombinatorWithManyParsers extends Combinator permits ChoiceCombinator, ConcatCombinator, OrderedChoiceCombinator {
     List<Combinator> parsers();
 
     default List<Combinator> getParsers() {

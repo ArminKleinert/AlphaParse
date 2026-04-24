@@ -22,7 +22,7 @@ public record CombinatorStar(
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         runner.pushListener(
                 new TrampolineListenerKey(index, combinator),
-                CombinatorPlus.plusListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner)
+                PlusCombinator.plusListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner)
         );
         runner.success(nodeKeyForStar, null, index);
     }
@@ -36,7 +36,7 @@ public record CombinatorStar(
         } else {
             runner.pushListener(
                     new TrampolineListenerKey(index, combinator),
-                    CombinatorPlus.plusFullListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner));
+                    PlusCombinator.plusFullListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner));
         }
     }
 

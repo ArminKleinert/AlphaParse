@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record CombinatorChoice(
+public record ChoiceCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull List<Combinator> parsers) implements CombinatorWithManyParsers {
 
-    public CombinatorChoice(@NotNull List<Combinator> parsers) {
+    public ChoiceCombinator(@NotNull List<Combinator> parsers) {
         this(defaultHidden, defaultRed, parsers);
     }
 
@@ -50,17 +50,17 @@ public record CombinatorChoice(
     }
 
     @Override
-    public @NotNull CombinatorChoice withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorChoice(hide, red, parsers);
+    public @NotNull ChoiceCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new ChoiceCombinator(hide, red, parsers);
     }
 
     @Override
-    public @NotNull CombinatorChoice withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorChoice(hide, red, parsers);
+    public @NotNull ChoiceCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new ChoiceCombinator(hide, red, parsers);
     }
 
     @Override
-    public @NotNull CombinatorChoice withParsers(@NotNull List<@NotNull Combinator> parsers) {
-        return new CombinatorChoice(hide, red, parsers);
+    public @NotNull ChoiceCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
+        return new ChoiceCombinator(hide, red, parsers);
     }
 }

@@ -9,12 +9,12 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record CombinatorPlus(
+public record PlusCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
 
-    public CombinatorPlus(@NotNull Combinator parser) {
+    public PlusCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }
 
@@ -87,17 +87,17 @@ public record CombinatorPlus(
     }
 
     @Override
-    public @NotNull CombinatorPlus withParser(final @NotNull Combinator parser) {
-        return new CombinatorPlus(hide, red, parser);
+    public @NotNull PlusCombinator withParser(final @NotNull Combinator parser) {
+        return new PlusCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorPlus withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorPlus(hide, red, parser);
+    public @NotNull PlusCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new PlusCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorPlus withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorPlus(hide, red, parser);
+    public @NotNull PlusCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new PlusCombinator(hide, red, parser);
     }
 }

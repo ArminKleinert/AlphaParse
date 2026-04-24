@@ -74,7 +74,8 @@ import java.util.regex.Pattern;
                     null,
                     null,
                     GlobalCaseInsensitivity.TRUE,
-                    ReductionType.ReductionTypesAvailable.defaultType);
+                    ReductionType.ReductionTypesAvailable.defaultType,
+                    true);
             final @NotNull var p = Alpha.parser("S : 'ABC'", opts);
             IO2.println(Alpha.parses(p, "ABC"));
             IO2.println(Alpha.parses(p, "AbC"));

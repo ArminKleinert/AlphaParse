@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public record CombinatorTerminalString(
+public record TerminalStringCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull String string,
         boolean caseInsensitive) implements CombinatorTerminal {
 
-    public CombinatorTerminalString(final @NotNull String string, final boolean caseInsensitive) {
+    public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
         this(defaultHidden, defaultRed, string, caseInsensitive);
     }
 
@@ -69,12 +69,12 @@ public record CombinatorTerminalString(
     }
 
     @Override
-    public @NotNull CombinatorTerminalString withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorTerminalString(hide, red, string, caseInsensitive);
+    public @NotNull TerminalStringCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
     }
 
     @Override
-    public @NotNull CombinatorTerminalString withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorTerminalString(hide, red, string, caseInsensitive);
+    public @NotNull TerminalStringCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
     }
 }

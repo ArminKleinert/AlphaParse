@@ -55,19 +55,19 @@ public final class Print {
             return "<" + combinatorsToString(parser, true) + ">";
 
         switch (parser) {
-            case CombinatorEpsilon ignored -> {
+            case EpsilonCombinator ignored -> {
                 return "ε";
             }
-            case CombinatorOptional combinatorOptional -> {
-                return parenForCompound(hidden, combinatorOptional.getParser()) + "?";
+            case OptionalCombinator optionalCombinator -> {
+                return parenForCompound(hidden, optionalCombinator.getParser()) + "?";
             }
-            case CombinatorPlus combinatorPlus -> {
-                return parenForCompound(hidden, combinatorPlus.getParser()) + "+";
+            case PlusCombinator plusCombinator -> {
+                return parenForCompound(hidden, plusCombinator.getParser()) + "+";
             }
             case CombinatorStar combinatorStar -> {
                 return parenForCompound(hidden, combinatorStar.getParser()) + "*";
             }
-            case CombinatorRepetition repParser -> {
+            case RepetitionCombinator repParser -> {
                 final int min = repParser.getMin();
                 final int max = repParser.getMax();
                 final @NotNull StringBuilder sb = new StringBuilder(parenForCompound(hidden, repParser.getParser()));
@@ -76,46 +76,46 @@ public final class Print {
                 sb.append('}');
                 return sb.toString();
             }
-            case CombinatorChoice combinatorChoice -> {
+            case ChoiceCombinator choiceCombinator -> {
                 final @NotNull List<String> parserStrings =
-                        combinatorChoice.getParsers().stream()
+                        choiceCombinator.getParsers().stream()
                                 .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
                                 .toList();
                 return String.join(" | ", parserStrings);
             }
-            case CombinatorOrderedChoice combinatorOrderedChoice -> {
+            case OrderedChoiceCombinator orderedChoiceCombinator -> {
                 final @NotNull List<String> parserStrings =
-                        combinatorOrderedChoice.getParsers().stream()
+                        orderedChoiceCombinator.getParsers().stream()
                                 .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
                                 .toList();
                 return String.join(" / ", parserStrings);
             }
-            case CombinatorConcatenation combinatorConcatenation -> {
-                final @NotNull List<Combinator> parsers = combinatorConcatenation.getParsers();
+            case ConcatCombinator concatCombinator -> {
+                final @NotNull List<Combinator> parsers = concatCombinator.getParsers();
                 final @NotNull Predicate<Combinator> ks = (c) -> c instanceof CombinatorWithManyParsers;
                 final @NotNull Iterable<String> parserStrings =
                         parsers.stream().map(p -> parenForTags(ks, hidden, p)).toList();
                 return String.join(" ", parserStrings);
             }
-            case CombinatorTerminalString combinatorTerminalString -> {
-                return escape(combinatorTerminalString.getString());
+            case TerminalStringCombinator terminalStringCombinator -> {
+                return escape(terminalStringCombinator.getString());
             }
-            case CombinatorTerminalUnicodeChar combinatorTerminalUnicodeChar -> {
-                final int lo = combinatorTerminalUnicodeChar.getLo();
-                final int hi = combinatorTerminalUnicodeChar.getHi();
+            case TerminalUnicodeCharCombinator terminalUnicodeCharCombinator -> {
+                final int lo = terminalUnicodeCharCombinator.getLo();
+                final int hi = terminalUnicodeCharCombinator.getHi();
                 return lo == hi ? String.format("%%x%04x", lo) : String.format("%%x%04x-%04x", lo, hi);
             }
-            case CombinatorTerminalRegexp combinatorTerminalRegexp -> {
-                return "#\"" + combinatorTerminalRegexp.getRegexp().pattern() + '"';
+            case TerminalRegexpCombinator terminalRegexpCombinator -> {
+                return "#\"" + terminalRegexpCombinator.getRegexp().pattern() + '"';
             }
-            case CombinatorNonTerminal combinatorNonTerminal -> {
-                return combinatorNonTerminal.getKeyword().getName();
+            case NonTerminalCombinator nonTerminalCombinator -> {
+                return nonTerminalCombinator.getKeyword().getName();
             }
-            case CombinatorLookahead combinatorLookahead -> {
-                return "&" + parenForCompound(hidden, combinatorLookahead.getParser());
+            case LookaheadCombinator lookaheadCombinator -> {
+                return "&" + parenForCompound(hidden, lookaheadCombinator.getParser());
             }
-            case CombinatorNegativeLookahead combinatorNegativeLookahead -> {
-                return "!" + parenForCompound(hidden, combinatorNegativeLookahead.getParser());
+            case NegativeLookaheadCombinator negativeLookaheadCombinator -> {
+                return "!" + parenForCompound(hidden, negativeLookaheadCombinator.getParser());
             }
         }
     }

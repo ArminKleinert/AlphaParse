@@ -3,7 +3,7 @@ package alphaparse.parser;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface Combinator permits CombinatorTerminal, CombinatorNonTerminal, CombinatorWithManyParsers, CombinatorWithParser {
+public sealed interface Combinator permits CombinatorTerminal, NonTerminalCombinator, CombinatorWithManyParsers, CombinatorWithParser {
     boolean defaultHidden = false;
     ReductionType defaultRed = ReductionType.nullReduction();
 

@@ -15,17 +15,17 @@ import java.util.Objects;
 final class Cfg {
     private static @NotNull Combinator stringOrStringCaseInsensitiveCombinator(
             final @NotNull String s, final boolean caseInsensitiveByDefault,
-            final @NotNull CombinatorsSource combinatorsSource,
+            final @NotNull CombinatorFactory combinatorFactory,
             final @NotNull Alpha.ParserCreationOptions options) {
         return switch (options.stringCaseInsensitive()) {
-            case TRUE -> combinatorsSource.stringOrStringCiTerminal(s, true);
-            case FALSE -> combinatorsSource.stringOrStringCiTerminal(s, false);
-            default -> combinatorsSource.stringOrStringCiTerminal(s, caseInsensitiveByDefault);
+            case TRUE -> combinatorFactory.stringOrStringCiTerminal(s, true);
+            case FALSE -> combinatorFactory.stringOrStringCiTerminal(s, false);
+            default -> combinatorFactory.stringOrStringCiTerminal(s, caseInsensitiveByDefault);
         };
     }
 
     private static @NotNull Combinator buildRepRule(final @NotNull ParseTree tree,
-                                                    final @NotNull CombinatorsSource combinatorsSource,
+                                                    final @NotNull CombinatorFactory combinatorFactory,
                                                     final @NotNull Alpha.ParserCreationOptions options) {
         final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
         @NotNull var parts = partsUncut.split("\\*");
@@ -48,14 +48,14 @@ final class Cfg {
         final int max = parts[1].isBlank() ? Integer.MAX_VALUE : Integer.parseInt(parts[1]);
         final @NotNull var repeatedRule = (Combinator) buildRule((ParseTree)
                         tree.getContent().get(1).content(),
-                combinatorsSource,
+                combinatorFactory,
                 options);
-        return combinatorsSource.repetitionCombinator(min, max, repeatedRule);
+        return combinatorFactory.repetitionCombinator(min, max, repeatedRule);
     }
 
     private static @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> buildRuleRule(
             final @NotNull ParseTree tree,
-            final @NotNull CombinatorsSource combinatorsSource,
+            final @NotNull CombinatorFactory combinatorFactory,
             final @NotNull Alpha.ParserCreationOptions options) {
         final @NotNull var allContents = tree.getContent();
         final @NotNull var nt = (ParseTree) allContents.getFirst().content();
@@ -68,17 +68,17 @@ final class Cfg {
         if (Objects.equals(Keyword.intern("hide-nt"), nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
             key = Keyword.intern(content.toString());
-            rule = combinatorsSource.hideTag((Combinator) buildRule(altOrOrd, combinatorsSource, options));
+            rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd, combinatorFactory, options));
         } else {
             key = Keyword.intern((String) content.content());
-            rule = (Combinator) buildRule(altOrOrd, combinatorsSource, options);
+            rule = (Combinator) buildRule(altOrOrd, combinatorFactory, options);
         }
 
         return Grammar.entry(key, rule);
     }
 
     private static @NotNull Object buildRule(@NotNull ParseTree tree,
-                                             final @NotNull CombinatorsSource combinatorsSource,
+                                             final @NotNull CombinatorFactory combinatorFactory,
                                              final @NotNull Alpha.ParserCreationOptions options) {
         for (; ; ) {
             if (tree.getTag().content().equals(ParseTree.NULL_TAG)) {
@@ -89,74 +89,74 @@ final class Cfg {
             final @NotNull var tag = tree.getTag().content().getName();
             switch (tag) {
                 case "rule" -> {
-                    return buildRuleRule(tree, combinatorsSource, options);
+                    return buildRuleRule(tree, combinatorFactory, options);
                 }
                 case "nt" -> {
-                    return combinatorsSource.makeNonTerminal(
+                    return combinatorFactory.makeNonTerminal(
                             Keyword.intern((String) tree.getContent().getFirst().content()));
                 }
                 case "alt" -> {
-                    return combinatorsSource.alternationCombinator(tree.getContent()
+                    return combinatorFactory.choiceCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content(), combinatorsSource, options))
+                                    (ParseTree) c.content(), combinatorFactory, options))
                             .toList());
                 }
                 case "ord" -> {
-                    return combinatorsSource.orderedChoiceCombinator(tree.getContent()
+                    return combinatorFactory.orderedChoiceCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content(), combinatorsSource, options))
+                                    (ParseTree) c.content(), combinatorFactory, options))
                             .toList());
                 }
                 case "hide" -> {
                     return ((Combinator) buildRule(
                             ((Node.NodeParseTree) tree.getContent().getFirst()).content(),
-                            combinatorsSource, options)).enableHideTag();
+                            combinatorFactory, options)).enableHideTag();
                 }
                 case "cat" -> {
-                    return combinatorsSource.catCombinator(tree.getContent()
+                    return combinatorFactory.catCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content(), combinatorsSource, options))
+                                    (ParseTree) c.content(), combinatorFactory, options))
                             .toList());
                 }
                 case "string" -> {
                     return stringOrStringCaseInsensitiveCombinator(
                             StrParser.processString((String) tree.getContent().getFirst().content()),
-                            false, combinatorsSource, options);
+                            false, combinatorFactory, options);
                 }
                 case "string-ci" -> {
                     return stringOrStringCaseInsensitiveCombinator(
                             StrParser.processString((String) tree.getContent().getFirst().content()),
-                            true, combinatorsSource, options);
+                            true, combinatorFactory, options);
                 }
                 case "regexp" -> {
-                    return combinatorsSource.createRegexTerminal(
+                    return combinatorFactory.createRegexTerminal(
                             StrParser.processRegexp((String) tree.getContent().getFirst().content()));
                 }
                 case "neg" -> {
-                    return combinatorsSource.negateRule((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                    return combinatorFactory.negateRule((Combinator) buildRule(
+                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "opt" -> {
-                    return combinatorsSource.optionalCombinator((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                    return combinatorFactory.optionalCombinator((Combinator) buildRule(
+                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "star" -> {
-                    return combinatorsSource.starCombinator((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                    return combinatorFactory.starCombinator((Combinator) buildRule(
+                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "plus" -> {
-                    return combinatorsSource.plusCombinator((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                    return combinatorFactory.plusCombinator((Combinator) buildRule(
+                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "look" -> {
-                    return combinatorsSource.makeLookahead((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorsSource, options));
+                    return combinatorFactory.makeLookahead((Combinator) buildRule(
+                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "rep" -> {
-                    return buildRepRule(tree, combinatorsSource, options);
+                    return buildRepRule(tree, combinatorFactory, options);
                 }
                 case "epsilon" -> {
-                    return CombinatorEpsilon.getDefault();
+                    return EpsilonCombinator.getDefault();
                 }
                 case "paren" -> {
                     tree = (ParseTree) tree.getContent().getFirst().content();
@@ -185,7 +185,8 @@ final class Cfg {
         return new Parser(
                 Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)),
                 options.startProduction(),
-                options.outputFormat());
+                options.outputFormat(),
+                options.useParserBuffering());
     }
 
     static @NotNull Parser buildParser(final @NotNull String spec,
@@ -199,10 +200,11 @@ final class Cfg {
         }
 
         final @NotNull var productions = new ArrayList<Map.Entry<Keyword, Combinator>>();
-        final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
+        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(
+                options.useParserBuffering());
 
         for (final Node rule : rules.castToParseSuccess().getContent()) {
-            productions.add(buildRuleRule((ParseTree) rule.content(), combinatorsSource, options));
+            productions.add(buildRuleRule((ParseTree) rule.content(), combinatorFactory, options));
         }
 
         final @NotNull var startProduction = options.startProduction() != null
@@ -213,7 +215,7 @@ final class Cfg {
                 checkGrammarValidity(Reduction.applyStandardReductions(Grammar.fromProductions(productions)));
 
         if (options.whitespaceParser() != null) {
-            grammar = combinatorsSource.autoWhitespace(
+            grammar = combinatorFactory.autoWhitespace(
                     grammar,
                     startProduction,
                     options.whitespaceParser().grammar(),
@@ -221,6 +223,6 @@ final class Cfg {
             );
         }
 
-        return new Parser(grammar, startProduction, options.outputFormat());
+        return new Parser(grammar, startProduction, options.outputFormat(), options.useParserBuffering());
     }
 }

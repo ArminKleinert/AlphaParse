@@ -1,5 +1,6 @@
 package alphaparse;
 
+import alphaparse.parser.CombinatorFactory;
 import alphaparse.parser.Grammar;
 import alphaparse.parser.Parser;
 import alphaparse.parser.Gll;
@@ -30,16 +31,16 @@ public final class Alpha {
      */
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Alpha.UnhideOptions unhide) {
-        final @NotNull CombinatorsSource combinatorsSource = new CombinatorsSource();
+        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(false);
 
         return switch (unhide) {
             case none -> parser;
             case content -> parser.withGrammar(
-                    combinatorsSource.unhideAllContent(parser.grammar()));
+                    combinatorFactory.unhideAllContent(parser.grammar()));
             case tags -> parser.withGrammar(
-                    combinatorsSource.unhideTags(parser.outputFormat(), parser.grammar()));
+                    combinatorFactory.unhideTags(parser.outputFormat(), parser.grammar()));
             case all -> parser.withGrammar(
-                    combinatorsSource.unhideAll(parser.outputFormat(), parser.grammar()));
+                    combinatorFactory.unhideAll(parser.outputFormat(), parser.grammar()));
         };
     }
 
@@ -416,10 +417,12 @@ public final class Alpha {
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
-                                        @NotNull ReductionType.ReductionTypesAvailable outputFormat) {
+                                        @NotNull ReductionType.ReductionTypesAvailable outputFormat,
+                                        boolean useParserBuffering) {
         private static final @NotNull ParserCreationOptions DEFAULT = new ParserCreationOptions(
                 null, null,
-                GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType);
+                GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType,
+                true);
 
         /**
          * TODO
@@ -441,7 +444,8 @@ public final class Alpha {
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
                                      final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
-                                     final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
+                                     final @Nullable ReductionType.ReductionTypesAvailable outputFormat,
+                                     final boolean useParserBuffering) {
             this.whitespaceParser = whitespaceParser;
             this.startProduction = startProduction;
             this.stringCaseInsensitive = stringCaseInsensitive == null
@@ -450,6 +454,7 @@ public final class Alpha {
             this.outputFormat = outputFormat == null
                     ? ReductionType.ReductionTypesAvailable.defaultType
                     : outputFormat;
+            this.useParserBuffering = useParserBuffering;
         }
 
         /**
@@ -460,7 +465,8 @@ public final class Alpha {
         public ParserCreationOptions(final @Nullable Parser whitespaceParser) {
             this(whitespaceParser, null,
                     GlobalCaseInsensitivity.DEFAULT,
-                    ReductionType.ReductionTypesAvailable.defaultType);
+                    ReductionType.ReductionTypesAvailable.defaultType,
+                    true);
         }
 
         /**
@@ -471,7 +477,8 @@ public final class Alpha {
         public ParserCreationOptions(final @Nullable Keyword startProduction) {
             this(null, startProduction,
                     GlobalCaseInsensitivity.DEFAULT,
-                    ReductionType.ReductionTypesAvailable.defaultType);
+                    ReductionType.ReductionTypesAvailable.defaultType,
+                    true);
         }
 
         /**
@@ -481,7 +488,8 @@ public final class Alpha {
          */
         public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             this(null, null,
-                    GlobalCaseInsensitivity.DEFAULT, outputFormat);
+                    GlobalCaseInsensitivity.DEFAULT, outputFormat,
+                    true);
         }
 
         /**
@@ -491,7 +499,9 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParserCreationOptions withWhitespaceParser(final @Nullable Parser whitespaceParser) {
-            return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
+            return new ParserCreationOptions(
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
+                    true);
         }
 
         /**
@@ -501,7 +511,8 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParserCreationOptions withStartProduction(final @Nullable Keyword startProduction) {
-            return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
+            return new ParserCreationOptions(
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, true);
         }
 
         /**
@@ -511,7 +522,8 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final @Nullable GlobalCaseInsensitivity stringCaseInsensitive) {
-            return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
+            return new ParserCreationOptions(
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, true);
         }
 
         /**
@@ -521,7 +533,10 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParserCreationOptions withCaseInsensitivity(final boolean stringCaseInsensitive) {
-            return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive ? GlobalCaseInsensitivity.TRUE : GlobalCaseInsensitivity.FALSE, outputFormat);
+            return new ParserCreationOptions(
+                    whitespaceParser, startProduction,
+                    stringCaseInsensitive ? GlobalCaseInsensitivity.TRUE : GlobalCaseInsensitivity.FALSE,
+                    outputFormat, true);
         }
 
         /**
@@ -531,7 +546,8 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParserCreationOptions withOutputFormat(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
-            return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive, outputFormat);
+            return new ParserCreationOptions(
+                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, true);
         }
 
         /**
@@ -544,7 +560,8 @@ public final class Alpha {
                     getPredefinedWhitespaceParser(Keyword.intern("standard")),
                     null,
                     GlobalCaseInsensitivity.DEFAULT,
-                    ReductionType.ReductionTypesAvailable.defaultType);
+                    ReductionType.ReductionTypesAvailable.defaultType,
+                    true);
         }
     }
 

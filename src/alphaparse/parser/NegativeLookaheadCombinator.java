@@ -8,11 +8,11 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.trampoline.TrampolineListenerNode;
 
-public record CombinatorNegativeLookahead(
+public record NegativeLookaheadCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
-    public CombinatorNegativeLookahead(@NotNull Combinator parser) {
+    public NegativeLookaheadCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }
 
@@ -55,17 +55,17 @@ public record CombinatorNegativeLookahead(
     }
 
     @Override
-    public @NotNull CombinatorNegativeLookahead withParser(final @NotNull Combinator parser) {
-        return new CombinatorNegativeLookahead(hide, red, parser);
+    public @NotNull NegativeLookaheadCombinator withParser(final @NotNull Combinator parser) {
+        return new NegativeLookaheadCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorNegativeLookahead withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorNegativeLookahead(hide, red, parser);
+    public @NotNull NegativeLookaheadCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new NegativeLookaheadCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorNegativeLookahead withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorNegativeLookahead(hide, red, parser);
+    public @NotNull NegativeLookaheadCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new NegativeLookaheadCombinator(hide, red, parser);
     }
 }

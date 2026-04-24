@@ -94,16 +94,16 @@ public final class ParseConverterUtils {
         return switch (combinator) {
             case CombinatorWithManyParsers c ->
                     mapFromTagAndContents(c, classTagLookup, Keyword.intern("parsers"), c.getParsers());
-            case CombinatorRepetition c ->
+            case RepetitionCombinator c ->
                     mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser(),
                             Keyword.intern("min"), c.getMin(), Keyword.intern("max"), c.getMax());
             case CombinatorWithParser c ->
                     mapFromTagAndContents(c, classTagLookup, Keyword.intern("parser"), c.getParser());
-            case CombinatorEpsilon c -> mapFromTagAndContents(c, classTagLookup);
-            case CombinatorNonTerminal c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("keyword"), c.getKeyword());
-            case CombinatorTerminalRegexp c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("regexp"), c.getRegexp());
-            case CombinatorTerminalString c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
-            case CombinatorTerminalUnicodeChar c -> mapFromTagAndContents(c, classTagLookup,
+            case EpsilonCombinator c -> mapFromTagAndContents(c, classTagLookup);
+            case NonTerminalCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("keyword"), c.getKeyword());
+            case TerminalRegexpCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("regexp"), c.getRegexp());
+            case TerminalStringCombinator c -> mapFromTagAndContents(c, classTagLookup, Keyword.intern("string"), c.getString());
+            case TerminalUnicodeCharCombinator c -> mapFromTagAndContents(c, classTagLookup,
                     Keyword.intern("lo"), c.getLo(), Keyword.intern("hi"), c.getHi());
         };
     }
@@ -117,20 +117,20 @@ public final class ParseConverterUtils {
     public static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Combinator combinator) {
         final @NotNull Function<Combinator, String> classTagLookup = (combinator1) ->
                 switch (combinator1) {
-                    case CombinatorChoice ignored -> "alt";
-                    case CombinatorConcatenation ignored -> "cat";
-                    case CombinatorEpsilon ignored -> "eps";
-                    case CombinatorLookahead ignored -> "look";
-                    case CombinatorNegativeLookahead ignored -> "neg";
-                    case CombinatorNonTerminal ignored -> "nt";
-                    case CombinatorOptional ignored -> "opt";
-                    case CombinatorOrderedChoice ignored -> "ord";
-                    case CombinatorPlus ignored -> "plus";
-                    case CombinatorTerminalRegexp ignored -> "regex";
-                    case CombinatorRepetition ignored -> "rep";
+                    case ChoiceCombinator ignored -> "alt";
+                    case ConcatCombinator ignored -> "cat";
+                    case EpsilonCombinator ignored -> "eps";
+                    case LookaheadCombinator ignored -> "look";
+                    case NegativeLookaheadCombinator ignored -> "neg";
+                    case NonTerminalCombinator ignored -> "nt";
+                    case OptionalCombinator ignored -> "opt";
+                    case OrderedChoiceCombinator ignored -> "ord";
+                    case PlusCombinator ignored -> "plus";
+                    case TerminalRegexpCombinator ignored -> "regex";
+                    case RepetitionCombinator ignored -> "rep";
                     case CombinatorStar ignored -> "star";
-                    case CombinatorTerminalString st -> st.isCaseInsensitive() ? "string-ci" : "string";
-                    case CombinatorTerminalUnicodeChar ignored -> "char";
+                    case TerminalStringCombinator st -> st.isCaseInsensitive() ? "string-ci" : "string";
+                    case TerminalUnicodeCharCombinator ignored -> "char";
                 };
         return parserToMap(combinator, classTagLookup);
     }
@@ -144,20 +144,20 @@ public final class ParseConverterUtils {
     public static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Parser parser) {
         final @NotNull Function<Combinator, String> classTagLookup = (combinator1) ->
                 switch (combinator1) {
-                    case CombinatorChoice ignored -> "alt";
-                    case CombinatorConcatenation ignored -> "cat";
-                    case CombinatorEpsilon ignored -> "eps";
-                    case CombinatorLookahead ignored -> "look";
-                    case CombinatorNegativeLookahead ignored -> "neg";
-                    case CombinatorNonTerminal ignored -> "nt";
-                    case CombinatorOptional ignored -> "opt";
-                    case CombinatorOrderedChoice ignored -> "ord";
-                    case CombinatorPlus ignored -> "plus";
-                    case CombinatorTerminalRegexp ignored -> "regex";
-                    case CombinatorRepetition ignored -> "rep";
+                    case ChoiceCombinator ignored -> "alt";
+                    case ConcatCombinator ignored -> "cat";
+                    case EpsilonCombinator ignored -> "eps";
+                    case LookaheadCombinator ignored -> "look";
+                    case NegativeLookaheadCombinator ignored -> "neg";
+                    case NonTerminalCombinator ignored -> "nt";
+                    case OptionalCombinator ignored -> "opt";
+                    case OrderedChoiceCombinator ignored -> "ord";
+                    case PlusCombinator ignored -> "plus";
+                    case TerminalRegexpCombinator ignored -> "regex";
+                    case RepetitionCombinator ignored -> "rep";
                     case CombinatorStar ignored -> "star";
-                    case CombinatorTerminalString st -> st.isCaseInsensitive() ? "string-ci" : "string";
-                    case CombinatorTerminalUnicodeChar ignored -> "char";
+                    case TerminalStringCombinator st -> st.isCaseInsensitive() ? "string-ci" : "string";
+                    case TerminalUnicodeCharCombinator ignored -> "char";
                 };
         final @NotNull var start = parser.startProduction();
         final @NotNull var grammar = new LinkedHashMap<>();

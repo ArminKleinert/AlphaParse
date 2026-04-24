@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public record CombinatorTerminalUnicodeChar(
+public record TerminalUnicodeCharCombinator(
         boolean hide,
         @NotNull ReductionType red,
         int lo, int hi) implements CombinatorTerminal {
-    public CombinatorTerminalUnicodeChar(final int lo, final int hi) {
+    public TerminalUnicodeCharCombinator(final int lo, final int hi) {
         this(defaultHidden, defaultRed, lo, hi);
     }
 
-    public CombinatorTerminalUnicodeChar {
+    public TerminalUnicodeCharCombinator {
         if (lo > hi) throw new IllegalArgumentException();
     }
 
@@ -95,12 +95,12 @@ public record CombinatorTerminalUnicodeChar(
     }
 
     @Override
-    public @NotNull CombinatorTerminalUnicodeChar withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorTerminalUnicodeChar(hide, red, lo, hi);
+    public @NotNull TerminalUnicodeCharCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
     }
 
     @Override
-    public @NotNull CombinatorTerminalUnicodeChar withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorTerminalUnicodeChar(hide, red, lo, hi);
+    public @NotNull TerminalUnicodeCharCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
     }
 }

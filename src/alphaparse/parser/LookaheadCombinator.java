@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-public record CombinatorLookahead(
+public record LookaheadCombinator(
         boolean hide,
         @NotNull ReductionType red,
         @NotNull Combinator parser) implements CombinatorWithParser {
 
-    public CombinatorLookahead(@NotNull Combinator parser) {
+    public LookaheadCombinator(@NotNull Combinator parser) {
         this(defaultHidden, defaultRed, parser);
     }
 
@@ -37,17 +37,17 @@ public record CombinatorLookahead(
     }
 
     @Override
-    public @NotNull CombinatorLookahead withHideTag(boolean hide) {
-        return isHidden() == hide ? this :  new CombinatorLookahead(hide, red, parser);
+    public @NotNull LookaheadCombinator withHideTag(boolean hide) {
+        return isHidden() == hide ? this :  new LookaheadCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorLookahead withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorLookahead(hide, red, parser);
+    public @NotNull LookaheadCombinator withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new LookaheadCombinator(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorLookahead withParser(@NotNull Combinator parser) {
-        return new CombinatorLookahead(hide, red, parser);
+    public @NotNull LookaheadCombinator withParser(@NotNull Combinator parser) {
+        return new LookaheadCombinator(hide, red, parser);
     }
 }
