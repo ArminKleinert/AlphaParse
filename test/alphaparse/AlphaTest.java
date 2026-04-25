@@ -14,43 +14,54 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class AlphaTest {
-    @Test void parseRepetitionMinimumOnly(){{
-        final @NotNull var p = Alpha.parser("S : 2* 'a'");
-        Assertions.assertTrue(p.parse("").isFailure());
-        Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "a","a"), p.parse("aa"));
-        Assertions.assertEquals(ParseTree.create("S", "a","a","a"), p.parse("aaa"));
-        Assertions.assertEquals(ParseTree.create("S", "a","a","a","a"), p.parse("aaaa"));
-        Assertions.assertEquals(ParseTree.create("S", "a","a","a","a","a"), p.parse("aaaaa"));}}
-    @Test void parseRepetitionMaximumOnly(){
+
+    @Test
+    void parseRepetitionMinimumOnly() {
         {
-        final @NotNull var p = Alpha.parser("S : *2 'a'");
-        IO2.println(p.grammar().firstEntry().getValue());
-        IO2.println(p.parse("aaa"));
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "a","a"), p.parse("aa"));
-        Assertions.assertTrue(p.parse("aaa").isFailure());
-        Assertions.assertTrue(p.parse("aaaa").isFailure());
-        Assertions.assertTrue(p.parse("aaaaa").isFailure());
+            final @NotNull var p = Alpha.parser("S : 2* 'a'");
+            Assertions.assertTrue(p.parse("").isFailure());
+            Assertions.assertTrue(p.parse("a").isFailure());
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a", "a"), p.parse("aaaaa"));
+        }
+    }
+
+    @Test
+    void parseRepetitionMaximumOnly() {
+        {
+            final @NotNull var p = Alpha.parser("S : *2 'a'");
+            IO2.println(p.parse("aaa"));
+            Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
+            Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertTrue(p.parse("aaa").isFailure());
+            Assertions.assertTrue(p.parse("aaaa").isFailure());
+            Assertions.assertTrue(p.parse("aaaaa").isFailure());
         }
         {
-        final @NotNull var p = Alpha.parser("S : *0 'a'");
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertTrue(p.parse("aa").isFailure());
-        Assertions.assertTrue(p.parse("aaa").isFailure());
-        Assertions.assertTrue(p.parse("aaaa").isFailure());
-        Assertions.assertTrue(p.parse("aaaaa").isFailure());
-        }}
-    @Test void parseRepetitionMinMax(){{
-        final @NotNull var p = Alpha.parser("S : 2*4 'a'");
-        Assertions.assertTrue(p.parse("").isFailure());
-        Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "a","a"), p.parse("aa"));
-        Assertions.assertEquals(ParseTree.create("S", "a","a","a"), p.parse("aaa"));
-        Assertions.assertEquals(ParseTree.create("S", "a","a","a","a"), p.parse("aaaa"));
-        Assertions.assertTrue(p.parse("aaaaa").isFailure());}
+            final @NotNull var p = Alpha.parser("S : *0 'a'");
+            Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
+            Assertions.assertTrue(p.parse("a").isFailure());
+            Assertions.assertTrue(p.parse("aa").isFailure());
+            Assertions.assertTrue(p.parse("aaa").isFailure());
+            Assertions.assertTrue(p.parse("aaaa").isFailure());
+            Assertions.assertTrue(p.parse("aaaaa").isFailure());
+        }
+    }
+
+    @Test
+    void parseRepetitionMinMax() {
+        {
+            final @NotNull var p = Alpha.parser("S : 2*4 'a'");
+            Assertions.assertTrue(p.parse("").isFailure());
+            Assertions.assertTrue(p.parse("a").isFailure());
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
+            Assertions.assertTrue(p.parse("aaaaa").isFailure());
+        }
         {
             final @NotNull var p = Alpha.parser("S : 0*0 'a'");
             Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
@@ -58,25 +69,48 @@ class AlphaTest {
             Assertions.assertTrue(p.parse("aa").isFailure());
             Assertions.assertTrue(p.parse("aaa").isFailure());
             Assertions.assertTrue(p.parse("aaaa").isFailure());
-            Assertions.assertTrue(p.parse("aaaaa").isFailure());}}
-    @Test void parseRepetitionExact(){{
-        final @NotNull var p = Alpha.parser("S : 2 'a'");
-        Assertions.assertTrue(p.parse("").isFailure());
-        Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "a","a"), p.parse("aa"));
-        Assertions.assertTrue(p.parse("aaa").isFailure());
-        Assertions.assertTrue(p.parse("aaaa").isFailure());}}
-    @Test void createRepetitionParserFailure() {
+            Assertions.assertTrue(p.parse("aaaaa").isFailure());
+        }
+    }
+
+    @Test
+    void parseRepetitionExact() {
+        {
+            final @NotNull var p = Alpha.parser("S : 2 'a'");
+            Assertions.assertTrue(p.parse("").isFailure());
+            Assertions.assertTrue(p.parse("a").isFailure());
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertTrue(p.parse("aaa").isFailure());
+            Assertions.assertTrue(p.parse("aaaa").isFailure());
+        }
+    }
+
+    @Test
+    void createRepetitionParserFormatFailure() {
         // Negative minimum
-        Assertions.assertThrows(IllegalArgumentException.class, ()->Alpha.parser("S : -1*2"));
+        Assertions.assertThrows(IllegalStateException.class, () -> Alpha.parser("S : -1*2"));
         // Negative maximum
-        Assertions.assertThrows(IllegalArgumentException.class, ()->Alpha.parser("S : *-1"));
+        Assertions.assertThrows(IllegalStateException.class, () -> Alpha.parser("S : *-1"));
         // Negative minimum
-        Assertions.assertThrows(IllegalArgumentException.class, ()->Alpha.parser("S : -1*"));
+        Assertions.assertThrows(IllegalStateException.class, () -> Alpha.parser("S : -1*"));
         // Negative exact
-        Assertions.assertThrows(IllegalArgumentException.class, ()->Alpha.parser("S : -1"));
+        Assertions.assertThrows(IllegalStateException.class, () -> Alpha.parser("S : -1"));
         // Minimum greater than maximum
-        Assertions.assertThrows(IllegalArgumentException.class, ()->Alpha.parser("S : 4*2"));
+        Assertions.assertThrows(IllegalStateException.class, () -> Alpha.parser("S : 4*2"));
+    }
+
+    @Test
+    void createRepetitionParserFailure() {
+        // Negative minimum
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("S : -1*2 'a'"));
+        // Negative maximum
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("S : *-1 'a'"));
+        // Negative minimum
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("S : -1* 'a'"));
+        // Negative exact
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("S : -1 'a'"));
+        // Minimum greater than maximum
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("S : 4*2 'a'"));
     }
 
     @Test
@@ -109,6 +143,14 @@ class AlphaTest {
             final @NotNull var p = Alpha.parser("S : 'A' 'B' S | eps");
             Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
             Assertions.assertEquals(ParseTree.create("S", "A", "B", ParseTree.create("S")), Alpha.parse(p, "AB"));
+        }
+        {
+            final @NotNull var p = Alpha.parser("S : 'a' 'a' 'a'");
+            Assertions.assertTrue(p.parse("").isFailure());
+            Assertions.assertTrue(p.parse("a").isFailure());
+            Assertions.assertTrue(p.parse("aa").isFailure());
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
+            Assertions.assertTrue(p.parse("aaaa").isFailure());
         }
     }
 

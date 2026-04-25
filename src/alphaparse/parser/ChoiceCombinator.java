@@ -61,24 +61,4 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
     public @NotNull ChoiceCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
         return new ChoiceCombinator(isHidden(), getReduction(), parsers);
     }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ChoiceCombinator.class.getSimpleName() + "[", "]")
-                .add("parsers=" + getParsers())
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof ChoiceCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parsers(),that.parsers());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parsers());
-//    }
 }

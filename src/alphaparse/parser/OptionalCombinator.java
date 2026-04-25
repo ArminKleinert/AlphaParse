@@ -67,24 +67,4 @@ public final class OptionalCombinator extends CombinatorWithParser {
     public @NotNull OptionalCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new OptionalCombinator(hide, red, parser);
     }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", OptionalCombinator.class.getSimpleName() + "[", "]")
-                .add("parser=" + parser)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof OptionalCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parser());
-//    }
 }

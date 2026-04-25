@@ -95,15 +95,6 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", TerminalRegexpCombinator.class.getSimpleName() + "[", "]")
-                .add("regexp=" + regexp.pattern())
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (!(o instanceof TerminalRegexpCombinator that)) return false;
         if (this == that) return true;

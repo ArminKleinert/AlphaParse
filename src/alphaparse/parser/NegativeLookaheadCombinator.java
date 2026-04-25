@@ -79,23 +79,4 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
     public @NotNull NegativeLookaheadCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new NegativeLookaheadCombinator(hide, red, parser);
     }
-
-    @Override
-    public @NotNull String toString() {
-        return "NegativeLookaheadCombinator{" + "parser=" + parser +
-                ", hide=" + hide +
-                ", red=" + red +
-                '}';
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof NegativeLookaheadCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parser());
-//    }
 }

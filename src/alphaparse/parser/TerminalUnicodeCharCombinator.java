@@ -133,16 +133,6 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", TerminalUnicodeCharCombinator.class.getSimpleName() + "[", "]")
-                .add("lo=" + lo)
-                .add("hi=" + hi)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (!(o instanceof TerminalUnicodeCharCombinator that)) return false;
         if (this == that) return true;

@@ -177,9 +177,9 @@ final class EbnfG {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(List.of(
                         combinatorFactory.choiceCombinator(
-                                List.of(combinatorFactory.createRegexTerminal(regexDoc("[0-9]+", "NUM")),
-                                        combinatorFactory.createRegexTerminal(regexDoc("[0-9]*\\*[0-9]+", "NUM")),
-                                        combinatorFactory.createRegexTerminal(regexDoc("[0-9]+\\*[0-9]*", "NUM")))),
+                                List.of(combinatorFactory.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
+                                        combinatorFactory.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
+                                        combinatorFactory.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM")))),
                         optWhitespace,
                         combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
         return rulesRule;

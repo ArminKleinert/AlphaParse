@@ -6,6 +6,7 @@ import alphaparse.IO2;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
+import alphaparse.result.failure.failureReason.ParseFailureReasonExpectParser;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,6 @@ public final class RepetitionCombinator extends CombinatorWithParser {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        IO2.println("parse     "+this);
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey parserNodeKey = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerNode.TrampolineListenerKey combinatorNodeKey = new TrampolineListenerKey(index, combinator);
@@ -71,7 +71,6 @@ public final class RepetitionCombinator extends CombinatorWithParser {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        IO2.println("fullParse "+this);
         final @NotNull Combinator parser = getParser();
         final int minimum = getMin();
         final int maximum = getMax();
@@ -125,22 +124,6 @@ public final class RepetitionCombinator extends CombinatorWithParser {
                                               final int prevIndex,
                                               final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                               final @NotNull Gll runner) {
-    /*
-(defn RepFullListener
-  [results-so-far n-results-so-far parser m n prev-index node-key tramp]
-  (fn [result]
-    (let [{parsed-result :result continue-index :index} result]
-      (let [new-results-so-far (afs/conj-flat results-so-far parsed-result)
-            new-n-results-so-far (inc n-results-so-far)]
-        (if (= continue-index (count (:text tramp)))
-          (when (<= m new-n-results-so-far n)
-            (success tramp node-key new-results-so-far continue-index))
-          (when (< new-n-results-so-far n)
-            (push-listener tramp [continue-index parser]
-                           (RepFullListener new-results-so-far new-n-results-so-far
-                                            parser m n continue-index
-                                            node-key tramp))))))))
-     */
         return result -> {
             final @Nullable var parsedResult = result.getResult();
             final int continueIndex = result.index();
@@ -151,13 +134,14 @@ public final class RepetitionCombinator extends CombinatorWithParser {
             if (continueIndex == runner.tramp().getText().length()) {
                 if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum)
                     runner.success(nodeKey, newResultsSoFar, continueIndex);
+                else runner.fail(nodeKey, continueIndex, new ParseFailureReasonExpectParser(false, parser));
             } else {
                 if (newNResultsSoFar < maximum) {
                     final @NotNull var listener = repFullListener(
                             newResultsSoFar, newNResultsSoFar,
                             parser, minimum, maximum, continueIndex, nodeKey, runner);
                     runner.pushListener(new TrampolineListenerKey(continueIndex, parser), listener);
-                }
+                } else runner.fail(nodeKey, continueIndex, new ParseFailureReasonExpectParser(false, parser));
             }
         };
     }
@@ -193,17 +177,6 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     @Override
     public @NotNull RepetitionCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new RepetitionCombinator(hide, red, parser, min, max);
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", RepetitionCombinator.class.getSimpleName() + "[", "]")
-                .add("min=" + min)
-                .add("max=" + max)
-                .add("parser=" + parser)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
     }
 
     @Override

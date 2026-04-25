@@ -100,16 +100,6 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", TerminalStringCombinator.class.getSimpleName() + "[", "]")
-                .add("string='" + string + "'")
-                .add("caseInsensitive=" + caseInsensitive)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-
-    @Override
     public @NotNull TerminalStringCombinator withHideTag(final boolean hide) {
         return isHidden() == hide ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
     }
@@ -125,11 +115,12 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)
-                && Objects.equals(string, that.getString());
+                && Objects.equals(string, that.getString())
+                && caseInsensitive == that.caseInsensitive;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hide, red, string);
+        return Objects.hash(hide, red, string, caseInsensitive);
     }
 }

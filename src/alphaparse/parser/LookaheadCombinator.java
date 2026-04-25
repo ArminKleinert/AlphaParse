@@ -61,24 +61,4 @@ public final class LookaheadCombinator extends CombinatorWithParser {
     public @NotNull LookaheadCombinator withParser(final @NotNull Combinator parser) {
         return new LookaheadCombinator(hide, red, parser);
     }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", LookaheadCombinator.class.getSimpleName() + "[", "]")
-                .add("parser=" + parser)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof LookaheadCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parser());
-//    }
 }

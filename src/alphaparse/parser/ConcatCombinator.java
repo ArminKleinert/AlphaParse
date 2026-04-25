@@ -109,24 +109,4 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
     public @NotNull ConcatCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
         return new ConcatCombinator(isHidden(), getReduction(), parsers);
     }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ConcatCombinator.class.getSimpleName() + "[", "]")
-                .add("parsers=" + getParsers())
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof ConcatCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parsers(),that.parsers());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parsers());
-//    }
 }

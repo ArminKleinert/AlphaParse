@@ -4,6 +4,7 @@ import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * TODO
@@ -115,4 +116,9 @@ public abstract sealed class Combinator permits CombinatorTerminal, NonTerminalC
     // Force children to override this.
     @Override
     public abstract int hashCode();
+
+    @Override
+    public String toString() {
+        return alphaparse.Print.combinatorsToString(this);
+    }
 }

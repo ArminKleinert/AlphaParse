@@ -61,14 +61,6 @@ public final class EpsilonCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", EpsilonCombinator.class.getSimpleName() + "[", "]")
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EpsilonCombinator that)) return false;
         if (this == that) return true;

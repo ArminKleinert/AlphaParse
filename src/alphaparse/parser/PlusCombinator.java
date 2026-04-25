@@ -111,24 +111,4 @@ public final class PlusCombinator extends CombinatorWithParser {
     public @NotNull PlusCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new PlusCombinator(hide, red, parser);
     }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", PlusCombinator.class.getSimpleName() + "[", "]")
-                .add("parser=" + parser)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof PlusCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser(),that.parser());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parser());
-//    }
 }

@@ -68,15 +68,6 @@ public final class NonTerminalCombinator extends Combinator {
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", NonTerminalCombinator.class.getSimpleName() + "[", "]")
-                .add("keyword=" + keyword)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (!(o instanceof NonTerminalCombinator that)) return false;
         if (this == that) return true;

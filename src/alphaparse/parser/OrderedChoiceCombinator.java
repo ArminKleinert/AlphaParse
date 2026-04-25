@@ -103,25 +103,4 @@ public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
     public @NotNull OrderedChoiceCombinator withParsers(final @NotNull List<Combinator> parsers) {
         return new OrderedChoiceCombinator(parsers, isHidden(), getReduction());
     }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", OrderedChoiceCombinator.class.getSimpleName() + "[", "]")
-                .add("parser1=" + parser1)
-                .add("parser2=" + parser2)
-                .add("hide=" + hide)
-                .add("red=" + red)
-                .toString();
-    }
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof OrderedChoiceCombinator that)) return false;
-//        if (this==that ) return true;
-//        return hide() == that.hide() && Objects.equals(red(), that.red()) && Objects.equals(parser1,that.parser1)&&Objects.equals(parser2,that.parser2);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(hide(), red(),parser1,parser2);
-//    }
 }
