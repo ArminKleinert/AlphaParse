@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -107,6 +108,15 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
     @Override
     public @NotNull ConcatCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
         return new ConcatCombinator(isHidden(), getReduction(), parsers);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ConcatCombinator.class.getSimpleName() + "[", "]")
+                .add("parsers=" + getParsers())
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 //    @Override
 //    public boolean equals(Object o) {

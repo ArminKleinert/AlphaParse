@@ -8,6 +8,7 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents an ABNF unicode char range.
@@ -129,6 +130,16 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     @Override
     public @NotNull TerminalUnicodeCharCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TerminalUnicodeCharCombinator.class.getSimpleName() + "[", "]")
+                .add("lo=" + lo)
+                .add("hi=" + hi)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 
     @Override

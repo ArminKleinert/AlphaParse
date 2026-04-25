@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,6 +92,15 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     @Override
     public @NotNull TerminalRegexpCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new TerminalRegexpCombinator(hide, red, regexp);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TerminalRegexpCombinator.class.getSimpleName() + "[", "]")
+                .add("regexp=" + regexp.pattern())
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 
     @Override

@@ -80,6 +80,13 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
         return getReduction() == red ? this : new NegativeLookaheadCombinator(hide, red, parser);
     }
 
+    @Override
+    public @NotNull String toString() {
+        return "NegativeLookaheadCombinator{" + "parser=" + parser +
+                ", hide=" + hide +
+                ", red=" + red +
+                '}';
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof NegativeLookaheadCombinator that)) return false;

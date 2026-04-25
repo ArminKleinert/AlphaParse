@@ -2,6 +2,7 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+import alphaparse.IO2;
 import alphaparse.flat.AutoFlattenSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A class representing the ABNF counted repetition operator.
@@ -50,6 +52,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
+        IO2.println("parse     "+this);
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey parserNodeKey = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerNode.TrampolineListenerKey combinatorNodeKey = new TrampolineListenerKey(index, combinator);
@@ -59,31 +62,33 @@ public final class RepetitionCombinator extends CombinatorWithParser {
                 runner.pushListener(combinatorNodeKey,
                         repListener(AutoFlattenSeq.make(), 0, this, parserNodeKey, runner));
             }
+        } else {
+            runner.pushListener(
+                    combinatorNodeKey,
+                    repListener(AutoFlattenSeq.make(), 0, this, parserNodeKey, runner));
         }
-        runner.pushListener(
-                combinatorNodeKey,
-                repListener(AutoFlattenSeq.make(), 0, this, parserNodeKey, runner));
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
+        IO2.println("fullParse "+this);
         final @NotNull Combinator parser = getParser();
-        final int m = getMin();
-        final int n = getMax();
+        final int minimum = getMin();
+        final int maximum = getMax();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForParser = new TrampolineListenerKey(index, parser);
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull var emptyResults = AutoFlattenSeq.make();
-        if (m == 0) {
+        if (minimum == 0) {
             runner.success(new TrampolineListenerKey(index, this), null, index);
-            if (n >= 1) {
+            if (maximum >= 1) {
                 runner.pushListener(
                         nodeKeyForParser,
-                        repFullListener(emptyResults, 0, parser, 1, n, index, nodeKeyForThis, runner));
+                        repFullListener(emptyResults, 0, parser, 1, maximum, index, nodeKeyForThis, runner));
             }
         } else {
             runner.pushListener(
                     nodeKeyForParser,
-                    repFullListener(emptyResults, 0, parser, m, n, index, nodeKeyForThis, runner));
+                    repFullListener(emptyResults, 0, parser, minimum, maximum, index, nodeKeyForThis, runner));
         }
     }
 
@@ -112,15 +117,30 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         };
     }
 
-
     private @NotNull Listener repFullListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
                                               final int nResultsSoFar,
                                               final @NotNull Combinator parser,
-                                              final int m,
-                                              final int n,
+                                              final int minimum,
+                                              final int maximum,
                                               final int prevIndex,
                                               final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                               final @NotNull Gll runner) {
+    /*
+(defn RepFullListener
+  [results-so-far n-results-so-far parser m n prev-index node-key tramp]
+  (fn [result]
+    (let [{parsed-result :result continue-index :index} result]
+      (let [new-results-so-far (afs/conj-flat results-so-far parsed-result)
+            new-n-results-so-far (inc n-results-so-far)]
+        (if (= continue-index (count (:text tramp)))
+          (when (<= m new-n-results-so-far n)
+            (success tramp node-key new-results-so-far continue-index))
+          (when (< new-n-results-so-far n)
+            (push-listener tramp [continue-index parser]
+                           (RepFullListener new-results-so-far new-n-results-so-far
+                                            parser m n continue-index
+                                            node-key tramp))))))))
+     */
         return result -> {
             final @Nullable var parsedResult = result.getResult();
             final int continueIndex = result.index();
@@ -129,13 +149,13 @@ public final class RepetitionCombinator extends CombinatorWithParser {
                     : resultsSoFar.append(parsedResult);
             final int newNResultsSoFar = nResultsSoFar + 1;
             if (continueIndex == runner.tramp().getText().length()) {
-                if (m <= newNResultsSoFar && newNResultsSoFar <= n)
+                if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum)
                     runner.success(nodeKey, newResultsSoFar, continueIndex);
             } else {
-                if (newNResultsSoFar < n) {
+                if (newNResultsSoFar < maximum) {
                     final @NotNull var listener = repFullListener(
                             newResultsSoFar, newNResultsSoFar,
-                            parser, m, n, continueIndex, nodeKey, runner);
+                            parser, minimum, maximum, continueIndex, nodeKey, runner);
                     runner.pushListener(new TrampolineListenerKey(continueIndex, parser), listener);
                 }
             }
@@ -173,6 +193,17 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     @Override
     public @NotNull RepetitionCombinator withReduction(@NotNull ReductionType red) {
         return getReduction() == red ? this : new RepetitionCombinator(hide, red, parser, min, max);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", RepetitionCombinator.class.getSimpleName() + "[", "]")
+                .add("min=" + min)
+                .add("max=" + max)
+                .add("parser=" + parser)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * This class is an alternative to the {@link ChoiceCombinator}.
@@ -103,6 +104,15 @@ public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
         return new OrderedChoiceCombinator(parsers, isHidden(), getReduction());
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", OrderedChoiceCombinator.class.getSimpleName() + "[", "]")
+                .add("parser1=" + parser1)
+                .add("parser2=" + parser2)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof OrderedChoiceCombinator that)) return false;

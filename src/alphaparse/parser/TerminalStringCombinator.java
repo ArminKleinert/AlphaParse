@@ -8,6 +8,7 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents string terminals (both case-sensitive or case-insensitive).
@@ -96,6 +97,16 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
      */
     public boolean isCaseInsensitive() {
         return caseInsensitive;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TerminalStringCombinator.class.getSimpleName() + "[", "]")
+                .add("string='" + string + "'")
+                .add("caseInsensitive=" + caseInsensitive)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 
     @Override

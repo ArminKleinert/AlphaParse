@@ -8,6 +8,7 @@ import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * TODO
@@ -64,6 +65,15 @@ public final class NonTerminalCombinator extends Combinator {
     @Override
     public @NotNull NonTerminalCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new NonTerminalCombinator(hide, red, keyword);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", NonTerminalCombinator.class.getSimpleName() + "[", "]")
+                .add("keyword=" + keyword)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 
     @Override

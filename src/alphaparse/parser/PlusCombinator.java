@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a "once or more" parse. That is the {@code p+} operator (where p is an instance of {@link Combinator}).
@@ -111,6 +112,14 @@ public final class PlusCombinator extends CombinatorWithParser {
         return getReduction() == red ? this : new PlusCombinator(hide, red, parser);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PlusCombinator.class.getSimpleName() + "[", "]")
+                .add("parser=" + parser)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof PlusCombinator that)) return false;

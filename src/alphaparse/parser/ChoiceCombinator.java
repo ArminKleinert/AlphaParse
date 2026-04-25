@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Combinator}).
@@ -61,6 +62,14 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
         return new ChoiceCombinator(isHidden(), getReduction(), parsers);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ChoiceCombinator.class.getSimpleName() + "[", "]")
+                .add("parsers=" + getParsers())
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof ChoiceCombinator that)) return false;

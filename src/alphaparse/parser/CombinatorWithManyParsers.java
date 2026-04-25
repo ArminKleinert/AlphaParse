@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public sealed abstract class CombinatorWithManyParsers extends Combinator permits ChoiceCombinator, ConcatCombinator, OrderedChoiceCombinator {
     private long bufferedHashCode = Long.MIN_VALUE;
-    private final @NotNull List<Combinator> parsers;
+    protected final @NotNull List<Combinator> parsers;
 
     protected CombinatorWithManyParsers(final boolean hide, final @NotNull ReductionType red, final @NotNull List<Combinator> parsers) {
         super(hide, red);

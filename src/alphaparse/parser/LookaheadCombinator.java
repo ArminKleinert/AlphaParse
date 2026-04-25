@@ -6,6 +6,7 @@ import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -61,6 +62,14 @@ public final class LookaheadCombinator extends CombinatorWithParser {
         return new LookaheadCombinator(hide, red, parser);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", LookaheadCombinator.class.getSimpleName() + "[", "]")
+                .add("parser=" + parser)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof LookaheadCombinator that)) return false;

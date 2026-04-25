@@ -10,6 +10,7 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * This class represents the {@code [p]} or {@code p?} operator (where p is an instance of {@link Combinator}).
@@ -67,6 +68,14 @@ public final class OptionalCombinator extends CombinatorWithParser {
         return getReduction() == red ? this : new OptionalCombinator(hide, red, parser);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", OptionalCombinator.class.getSimpleName() + "[", "]")
+                .add("parser=" + parser)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof OptionalCombinator that)) return false;

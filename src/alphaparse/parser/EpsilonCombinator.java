@@ -5,6 +5,7 @@ import alphaparse.result.failure.failureReason.ParseFailureReasonEpsilon;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -57,6 +58,14 @@ public final class EpsilonCombinator extends CombinatorTerminal {
     @Override
     public @NotNull EpsilonCombinator withReduction(final @NotNull ReductionType red) {
         return getReduction() == red ? this : new EpsilonCombinator(hide, red);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", EpsilonCombinator.class.getSimpleName() + "[", "]")
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
     }
 
     @Override

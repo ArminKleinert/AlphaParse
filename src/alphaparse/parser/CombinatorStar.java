@@ -8,6 +8,7 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * TODO
@@ -65,6 +66,14 @@ public final class CombinatorStar extends CombinatorWithParser {
         return getReduction() == red ? this : new CombinatorStar(hide, red, parser);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", CombinatorStar.class.getSimpleName() + "[", "]")
+                .add("parser=" + parser)
+                .add("hide=" + hide)
+                .add("red=" + red)
+                .toString();
+    }
 //    @Override
 //    public boolean equals(Object o) {
 //        if (!(o instanceof CombinatorStar that)) return false;
