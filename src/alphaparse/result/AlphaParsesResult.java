@@ -44,10 +44,10 @@ public sealed interface AlphaParsesResult
      *
      * @return TODO
      */
-    default @NotNull AlphaParsesResult castToParsesSuccess() {
-        if (this instanceof TotalParsesFailureNode)
+    default @NotNull LazyResultList castToParsesSuccess() {
+        if (!(this instanceof LazyResultList))
             throw new ClassCastException("Cannot cast failure to success.");
-        return this;
+        return (LazyResultList) this;
     }
 
     /**

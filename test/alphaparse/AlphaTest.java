@@ -32,7 +32,6 @@ class AlphaTest {
     void parseRepetitionMaximumOnly() {
         {
             final @NotNull var p = Alpha.parser("S : *2 'a'");
-            IO2.println(p.parse("aaa"));
             Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
@@ -152,6 +151,36 @@ class AlphaTest {
             Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
             Assertions.assertTrue(p.parse("aaaa").isFailure());
         }
+    }
+
+    @Test void parsePlus() {
+        {final@NotNull var p = Alpha.parser("S : 'a'+");
+            Assertions.assertTrue(Alpha.parse(p, "").isFailure());
+            Assertions.assertEquals(ParseTree.create("S", "a"), Alpha.parse(p, "a"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), Alpha.parse(p, "aa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), Alpha.parse(p, "aaa"));}
+        {final@NotNull var p = Alpha.parser("S : ('a' | 'b')+");
+            Assertions.assertTrue(Alpha.parse(p, "").isFailure());
+            Assertions.assertEquals(ParseTree.create("S", "b"), Alpha.parse(p, "b"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "b", "a"), Alpha.parse(p, "aba"));}
+    }
+
+    @Test void parseStar() {
+        {final@NotNull var p = Alpha.parser("S : 'a'*");
+            Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
+            Assertions.assertEquals(ParseTree.create("S", "a"), Alpha.parse(p, "a"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), Alpha.parse(p, "aa"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), Alpha.parse(p, "aaa"));}
+        {final@NotNull var p = Alpha.parser("S : ('a' | 'b')*");
+            Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
+            Assertions.assertEquals(ParseTree.create("S", "b"), Alpha.parse(p, "b"));
+            Assertions.assertEquals(ParseTree.create("S", "a", "b", "a"), Alpha.parse(p, "aba"));}
+    }
+
+    @Test void parseSimpleComplex() {
+        {final@NotNull var p = Alpha.parser("S : epsilon | S");
+            var forest = p.parses("").castToParsesSuccess();
+            IO2.println(forest.stream().limit(5).toList());}
     }
 
     @Test

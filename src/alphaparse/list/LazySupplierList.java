@@ -5,21 +5,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 
 /**
  * TODO
+ *
  * @param <T> TODO
  */
 public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optional<T>> {
     private @NotNull List<@NotNull T> evaluatedPart;
     private final int maxResults;
-    private IntFunction<@Nullable T> nextFn;
+    private @Nullable IntFunction<@Nullable T> nextFn;
     private boolean fullyEvaluated = false;
 
     /**
      * TODO
-     * @param nextFn TODO
+     *
+     * @param nextFn     TODO
      * @param maxResults TODO
      */
     public LazySupplierList(final @NotNull IntFunction<@Nullable T> nextFn, final int maxResults) {
@@ -28,31 +29,35 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
         this.maxResults = maxResults;
     }
 
-    /**
-     * TODO
-     * @param nextFn TODO
-     */
-    public LazySupplierList(final @NotNull IntFunction<@Nullable T> nextFn) {
-        this(nextFn, Integer.MAX_VALUE);
-    }
-
     private @Nullable T evalutePart(int i) {
+        // Already calculated.
         if (i < evaluatedPart.size())
             return evaluatedPart.get(i);
 
+        // End reached.
         if (evaluatedPart.size() >= maxResults)
             fullyEvaluated = true;
 
+        // The list is fully evaluated. There is no element at index i.
         if (fullyEvaluated)
             return null;
 
+        // Fully evaluated but the function is gone? Impossible!
+        if (nextFn == null)
+            throw new IllegalStateException();
+
+        // Calculate the next element.
         final var next = nextFn.apply(evaluatedPart.size());
+
+        // End reached?
         if (next == null) {
             fullyEvaluated = true;
-            nextFn = null;
+            nextFn = null; // Discard the function.
             evaluatedPart = new UnmodList<>(evaluatedPart); // Everything evaluated. Compress the list.
             return null;
         }
+
+        // End not reached yet: Buffer the element and return it.
         evaluatedPart.add(next);
         return next;
     }
@@ -68,12 +73,13 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
     }
 
     /**
-     * TODO
-     * @return TODO
+     * Allows treating this list a function returning an optional value.
+     *
+     * @return An instance of Optional holding the element at index i, or {@link Optional#empty()} if the list is not that long.
      */
     @Override
-    public Optional<T> apply(int i) {
-        return Optional.ofNullable(evalutePart(i));
+    public Optional<T> apply(final int i) {
+        return Optional.ofNullable(getOrNull(i));
     }
 
     @Override
@@ -93,7 +99,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
 
         return Arrays.equals(
                 toArray(),
-                ((List<?>) o).toArray()
+                c.toArray()
         );
     }
 
@@ -123,6 +129,16 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Implemented to allow the use of {@link List#stream()} operations.
+     *
+     * @return A Spliterator for this list.
+     */
+    @Override
+    public @NotNull Spliterator<@Nullable T> spliterator() {
+        return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
     }
 
     @Override
@@ -173,11 +189,6 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
         }
     }
 
-    /**
-     *  TODO
-     * @param i TODO
-     * @return TODO
-     */
     @Override
     public T get(final int i) {
         final var at = getOrNull(i);
@@ -187,21 +198,26 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
     }
 
     /**
-     * TODO
-     * @param i TODO
-     * @return TODO
+     * Returns the element at index i. If the list has not been calculated up to that point yet, evaluate until the index is reached.
+     * This function runs in amortized O(1) time.
+     * If the list is fully evaluated and the index is too big, return null;
+     *
+     * @param i The index.
+     * @return The element at the provided index or null.
      */
     public T getOrNull(final int i) {
+        // If already calculated, return.
         if (i < evaluatedPart.size())
             return evaluatedPart.get(i);
 
+        // Not calculated yet: Do work and return.
         int cursor = evaluatedPart.size();
-        do {
-            if (fullyEvaluated) return null;
+        while (!fullyEvaluated) {
             final T next = evalutePart(i);
-            if (cursor == i) return next;
+            if (cursor == i) return next; // Yay. Found it.
             cursor++;
-        } while (true);
+        }
+        return null; // List too short. null :(
     }
 
     @Override
