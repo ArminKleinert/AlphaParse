@@ -1,19 +1,19 @@
 package alphaparse;
 
 /**
- * TODO
+ * Used for determining whether all string terminals should be made case-insensitive when parsing.
  */
 public enum GlobalCaseInsensitivity {
     /**
-     * TODO
+     * Yes, always parse case-insensitive.
      */
     TRUE,
     /**
-     * TODO
+     * No, never.
      */
     FALSE,
     /**
-     * TODO
+     * Eh, depends. E.g. for ABNF, would be true. False for EBNF. Leave it to the implementation of Alphaparse.
      */
     DEFAULT
 }

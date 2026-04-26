@@ -16,19 +16,12 @@ import java.nio.file.Files;
 import java.util.Map;
 
 /**
- * TODO
+ * Helpers for creating and using parsers.
  */
 public final class Alpha {
     private Alpha() {
     }
 
-    /**
-     * TODO
-     *
-     * @param parser TODO
-     * @param unhide TODO
-     * @return TODO
-     */
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Alpha.UnhideOptions unhide) {
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(true);

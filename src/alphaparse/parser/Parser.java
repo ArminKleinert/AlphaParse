@@ -134,4 +134,12 @@ public record Parser(@NotNull Grammar grammar,
     public @NotNull AlphaParseResult apply(final @NotNull String s) {
         return parse(s);
     }
+
+    /**
+     * Creates a string representing this parser.
+     * @return The string.
+     */
+    public @NotNull String show() {
+        return Print.parserToString(this);
+    }
 }

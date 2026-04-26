@@ -8,27 +8,27 @@ public class IO2 {
     }
 
     /**
-     * TODO
+     * Equivalent to {@code System.out.println(...);}
      *
-     * @param s TODO
+     * @param s The thing to print.
      */
     public static void println(Object s) {
         System.out.println(s);
     }
 
     /**
-     * TODO
+     * Equivalent to {@code System.out.println();}
      */
     public static void println() {
         System.out.println();
     }
 
     /**
-     * TODO
+     * Equivalent to {@code System.err.println(...);}
      *
-     * @param s TODO
+     * @param s The thing to print.
      */
-    public static void errln(String s) {
+    public static void errln(Object s) {
         System.err.println(s);
     }
 }
