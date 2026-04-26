@@ -1,15 +1,18 @@
 package alphaparse.parser;
 
 import alphaparse.reduction.ReductionType;
+import alphaparse.result.failure.failureReason.ParseFailureReason;
+import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * TODO
+ * A class representing the right-hand sides of productions.
  */
-public abstract sealed class Combinator permits CombinatorTerminal, NonTerminalCombinator, CombinatorWithManyParsers, CombinatorWithParser {
+public abstract sealed class Combinator
+        permits CombinatorTerminal, NonTerminalCombinator, CombinatorWithManyParsers, CombinatorWithParser {
     /**
      * Default value for {@link Combinator#isHidden()}.
      */
@@ -33,77 +36,84 @@ public abstract sealed class Combinator permits CombinatorTerminal, NonTerminalC
     }
 
     /**
-     * TODO
+     * Runs the parser from the provided index. The text is in the arguments.
+     * <p>
+     * Results (successes and failures) are saved using {@link Gll#success(TrampolineListenerNode.TrampolineListenerKey, Object, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
-     * @param index  TODO
-     * @param runner TODO
+     * @param index  The start index.
+     * @param runner Helper structure.
      */
     public abstract void parse(final int index, final @NotNull Gll runner);
 
     /**
-     * TODO
+     * Runs the parser from the provided index. The text is in the arguments. Unlike {@link Combinator#parse(int, Gll)}, this method tries to parse the text from the index until the end. If the string can't be matched to the end, results in a failure.
+     * <p>
+     * Results (successes and failures) are saved using {@link Gll#success(TrampolineListenerNode.TrampolineListenerKey, Object, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
-     * @param index  TODO
-     * @param runner TODO
+     * @param index  The start index.
+     * @param runner Helper structure.
      */
     public abstract void fullParse(final int index, final @NotNull Gll runner);
 
     /**
-     * TODO
+     * Hides or unhides content in output.
      *
-     * @param hide TODO
-     * @return TODO
+     * @param hide Whether to hide the content.
+     * @return An instance of the same class with the hide tag set to the parameter.
      */
     public abstract @NotNull Combinator withHideTag(final boolean hide);
 
     /**
-     * TODO
+     * Creates an instance of this class with the reduction type set.
      *
-     * @param red TODO
-     * @return TODO
+     * @param red The reduction type.
+     * @return An instance of the same class with the reduction type set to the parameter.
      */
     public abstract @NotNull Combinator withReduction(final @NotNull ReductionType red);
 
     /**
-     * TODO
+     * Check whether the content is hidden in the output.
      *
-     * @return TODO
+     * @return true if the content is hidden in the output, false otherwise.
      */
     public boolean isHidden() {
         return hide;
     }
 
     /**
-     * TODO
+     * Get the used reduction type.
      *
-     * @return TODO
+     * @return The current reduction type.
      */
     public @NotNull ReductionType getReduction() {
         return red;
     }
 
     /**
-     * TODO
+     * Hide content in output.
      *
-     * @return TODO
+     * @return An instance of the same class with the hide tag set to true.
+     * @see #withHideTag(boolean)
      */
     public @NotNull Combinator enableHideTag() {
         return withHideTag(true);
     }
 
     /**
-     * TODO
+     * Unhide content in output.
      *
-     * @return TODO
+     * @return An instance of the same class with the hide tag set to false.
+     * @see #withHideTag(boolean)
      */
     public @NotNull Combinator unhideContent() {
         return withHideTag(false);
     }
 
     /**
-     * TODO
+     * Hide the tag associated with this rule.
+     * Wrap this combinator around the entire right-hand side.
      *
-     * @return TODO
+     * @return A new instance of the same class.
      */
     public @NotNull Combinator hideTag() {
         return withReduction(ReductionType.rawNonTerminalReduction());

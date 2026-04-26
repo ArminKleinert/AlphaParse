@@ -314,7 +314,7 @@ public final class CombinatorFactory {
      * @return The new parser.
      */
     public @NotNull Combinator hideTag(final @NotNull Combinator parser) {
-        final @NotNull var result = parser.withReduction(ReductionType.rawNonTerminalReduction());
+        final @NotNull var result = parser.hideTag();
         return useBuffer ? buffer.getOrAdd(result) : result;
     }
 

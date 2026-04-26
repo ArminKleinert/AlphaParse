@@ -160,8 +160,8 @@ public final class Gll {
 
     /**
      * TODO
-     *  @param nodeKey  TODO
      *
+     * @param nodeKey  TODO
      * @param listener TODO
      */
     void pushListener(
@@ -184,8 +184,8 @@ public final class Gll {
 
     /**
      * TODO
-     *  @param nodeKey  TODO
      *
+     * @param nodeKey  TODO
      * @param listener TODO
      */
     void pushFullListener(

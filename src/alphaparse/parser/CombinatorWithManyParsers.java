@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO
+ * Abstraction of {@link Combinator} types which wrap multiple other {@link Combinator} instances. Examples: choices, concatenations.
  */
-public sealed abstract class CombinatorWithManyParsers extends Combinator permits ChoiceCombinator, ConcatCombinator, OrderedChoiceCombinator {
+public sealed abstract class CombinatorWithManyParsers
+        extends Combinator
+        permits ChoiceCombinator, ConcatCombinator, OrderedChoiceCombinator {
     private long bufferedHashCode = Long.MIN_VALUE;
     protected final @NotNull List<Combinator> parsers;
 
@@ -24,33 +26,24 @@ public sealed abstract class CombinatorWithManyParsers extends Combinator permit
     }
 
     /**
-     * TODO
+     * Set the inner {@link Combinator} list used for parsing and returns an instance of the same class.
      *
-     * @return TODO
-     */
-    public List<Combinator> parsers() {
-        return parsers;
-    }
-
-    /**
-     * TODO
-     *
-     * @return TODO
+     * @return The inner {@link Combinator} list.
      */
     public @NotNull List<Combinator> getParsers() {
-        return parsers();
+        return parsers;
     }
 
     @NotNull
     public CombinatorWithManyParsers unhideContent() {
-        return ((CombinatorWithManyParsers) withHideTag(false)).withParsers(parsers().stream().map(Combinator::unhideContent).toList());
+        return ((CombinatorWithManyParsers) withHideTag(false)).withParsers(getParsers().stream().map(Combinator::unhideContent).toList());
     }
 
     /**
-     * TODO
+     * Set the inner {@link Combinator} list used for parsing and returns an instance of the same class.
      *
-     * @param parsers TODO
-     * @return TODO
+     * @param parsers The new inner {@link Combinator}.
+     * @return A new instance.
      */
     public abstract @NotNull CombinatorWithManyParsers withParsers(final @NotNull List<@NotNull Combinator> parsers);
 

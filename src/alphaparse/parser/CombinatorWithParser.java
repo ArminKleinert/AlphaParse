@@ -6,9 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * TODO
+ * Abstraction of {@link Combinator} types which wrap one other {@link Combinator}. Examples: repetitions, optionals, lookahead.
  */
-public sealed abstract class CombinatorWithParser extends Combinator permits LookaheadCombinator, NegativeLookaheadCombinator, OptionalCombinator, PlusCombinator, RepetitionCombinator, CombinatorStar {
+public sealed abstract class CombinatorWithParser
+        extends Combinator
+        permits LookaheadCombinator, NegativeLookaheadCombinator, OptionalCombinator, PlusCombinator, RepetitionCombinator, CombinatorStar {
     private long bufferedHashCode = Long.MIN_VALUE;
     protected final @NotNull Combinator parser;
 
@@ -23,19 +25,19 @@ public sealed abstract class CombinatorWithParser extends Combinator permits Loo
     }
 
     /**
-     * TODO
+     * Get the inner {@link Combinator} used for parsing. For example, for a repetition {@code P+}, returns {@code P}.
      *
-     * @return TODO
+     * @return The inner {@link Combinator}.
      */
     public @NotNull Combinator getParser() {
         return parser;
     }
 
     /**
-     * TODO
+     * Set the inner {@link Combinator} used for parsing and returns an instance of the same class.
      *
-     * @param parser TODO
-     * @return TODO
+     * @param parser The new inner {@link Combinator}.
+     * @return A new instance.
      */
     public abstract @NotNull CombinatorWithParser withParser(final @NotNull Combinator parser);
 
