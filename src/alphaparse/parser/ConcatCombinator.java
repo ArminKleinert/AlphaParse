@@ -1,6 +1,6 @@
 package alphaparse.parser;
 
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -21,9 +21,10 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param parsers The parsers.
+     * @see CombinatorFactory#catCombinator(List)
      */
     public ConcatCombinator(@NotNull List<Combinator> parsers) {
         super(parsers);
@@ -34,7 +35,7 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
         final @NotNull List<@NotNull Combinator> parsers = getParsers();
         runner.pushListener(
                 new TrampolineListenerKey(index, parsers.getFirst()),
-                catListener(AutoFlattenSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
+                catListener(FlatSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
     }
 
     @Override
@@ -42,18 +43,18 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
         final @NotNull List<@NotNull Combinator> parsers = getParsers();
         runner.pushListener(
                 new TrampolineListenerKey(index, parsers.getFirst()),
-                catFullListener(AutoFlattenSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
+                catFullListener(FlatSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
     }
 
-    private @NotNull Listener catListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
+    private @NotNull Listener catListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                           final @NotNull List<Combinator> parserSequence,
                                           final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                           final @NotNull Gll runner) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.index();
-            final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
-                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+            final @NotNull FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
+                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
 
             if (parserSequence.isEmpty()) {
@@ -71,15 +72,15 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
         };
     }
 
-    private @NotNull Listener catFullListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
+    private @NotNull Listener catFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                               final @NotNull List<Combinator> parserSequence,
                                               final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                               final @NotNull Gll runner) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
             final var continueIndex = result.index();
-            final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
-                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+            final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
+                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
 
             if (parserSequence.size() == 1) {

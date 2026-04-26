@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,9 +30,10 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param regexp The regex.
+     * @see CombinatorFactory#createRegexTerminal(Pattern)
      */
     public TerminalRegexpCombinator(final @NotNull Pattern regexp) {
         super();

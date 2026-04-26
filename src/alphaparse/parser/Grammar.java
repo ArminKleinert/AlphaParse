@@ -10,14 +10,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * A type representing a Grammar.
  */
 public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 
     /**
-     * TODO
+     * Creates a new instance from a {@link Map}.
      *
-     * @param m TODO
+     * @param m The map.
      */
     public Grammar(final @NotNull Map<? extends Keyword, ? extends Combinator> m) {
         super(m);
@@ -42,10 +42,11 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * TODO
+     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(Keyword, Combinator)} can be used.
      *
-     * @param kvs TODO
-     * @return TODO
+     * @param kvs The productions.
+     * @return A new Grammar.
+     * @see Grammar#entry(Keyword, Combinator)
      */
     public static @NotNull Grammar fromProductions(final @NotNull List<Map.Entry<Keyword, Combinator>> kvs) {
         final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
@@ -56,20 +57,22 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * TODO
+     * Gets the right-hand side of the production associated with the key.
      *
-     * @param key TODO
-     * @return TODO
+     * @param key The right-hand side of the production.
+     * @return The production or null if not found.
      */
     public @Nullable Combinator getProduction(final @NotNull Keyword key) {
         return getOrDefault(key, null);
     }
 
     /**
-     * TODO
+     * Tries to find the production associated with a key. If none exists, return a new {@link NonTerminalCombinator} for the key.
      *
-     * @param key TODO
-     * @return TODO
+     * @param key The key.
+     * @return The left-hand side associated with the key or a new {@link NonTerminalCombinator} if no production could be found.
+     * @see Grammar#getProduction(Keyword)
+     * @see NonTerminalCombinator
      */
     public @NotNull Combinator getOrMakeNonTerm(final @NotNull Keyword key) {
         final @Nullable Combinator p = getProduction(key);
@@ -79,7 +82,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 
     @Override
     public Combinator get(Object key) {
-        throw new UnsupportedOperationException("get " + key);
+        throw new UnsupportedOperationException("Please use getProduction(key) instead of get(key).");
     }
 
     @Override
@@ -114,9 +117,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * TODO
+     * Returns some information about the Grammar.
      *
-     * @return TODO
+     * @return An instance of {@link GrammarInfo}.
+     * @see GrammarInfo
      */
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(
@@ -125,35 +129,51 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * TODO
+     * Holds some information about a grammar.
      *
-     * @param definedNTs TODO
-     * @param usedNTs    TODO
+     * @param definedNTs All non-terminals of the Grammar.
+     * @param usedNTs    All non-terminals which appear on the right-hand side of any production.
      */
     public record GrammarInfo(@NotNull Collection<@NotNull Keyword> definedNTs,
                               @NotNull Collection<@NotNull Keyword> usedNTs) {
         /**
-         * TODO
+         * Returns all NTs that are defined but unused. Effectively, this is a list of unused productions.
+         * <p>
+         * Note that the implementation makes no guarantees about the type, except that it's a {@link List} or {@link Set}.
+         * However, each key appears only once in the collection.
+         * </p>
+         * <p>
+         * Example:
+         *   S : 'a' 'b'
+         *   A : 'c'
+         * The key "A" is defined, but never used.
+         * </p>
          *
-         * @return TODO
+         * @return A collection of unused non-terminals.
          */
         public @NotNull Collection<Keyword> getUnusedNTs() {
             return definedNTs.stream().filter(it -> !usedNTs.contains(it)).collect(Collectors.toSet());
         }
 
         /**
-         * TODO
+         * Returns a Collection of keys that are used, but not defined. For any valid grammar, the returned collection is empty.
+         * <p>
+         * Example:
+         *   S : A 'b'
+         * The key "A" is used, but never defined.
+         * </p>
          *
-         * @return TODO
+         * @return A collection which is hopefully empty.
          */
         public @NotNull Collection<Keyword> getUndefinedUsedNTs() {
             return usedNTs.stream().filter(it -> !definedNTs.contains(it)).collect(Collectors.toSet());
         }
 
         /**
-         * TODO
+         * Checks whether the Grammar is valid.
          *
-         * @return TODO
+         * @return true or false
+         * @see GrammarInfo#getUndefinedUsedNTs()
          */
         public boolean isValid() {
             return getUndefinedUsedNTs().isEmpty();
@@ -183,13 +203,13 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * TODO
+     * Creates an instance of {@link Map.Entry}, specifically for use with {@link Grammar#fromProductions(List)}.
      *
-     * @param k TODO
-     * @param v TODO
-     * @return TODO
+     * @param k Key.
+     * @param v Value.
+     * @return An entry.
      */
-    public static Map.Entry<Keyword, Combinator> entry(final @NotNull Keyword k, final @NotNull Combinator v) {
+    public static @NotNull Map.Entry<Keyword, Combinator> entry(final @NotNull Keyword k, final @NotNull Combinator v) {
         return new Map.Entry<>() {
             final @NotNull Keyword key = k;
             @NotNull Combinator value = v;

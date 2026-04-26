@@ -5,18 +5,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO
+ * An unmodifiable random-access list type which is optimized for speed and size.
  *
- * @param <T> TODO
+ * @param <T> Generic type.
  */
-public final class UnmodList<T> implements List<T> {
+public final class UnmodList<T> implements List<T>, RandomAccess {
     private final Object[] inner;
     private int hashCode = 0;
 
     /**
-     * TODO
+     * Creates a new instance, copying over all elements from a collection.
      *
-     * @param coll TODO
+     * @param coll The other list.
      */
     public UnmodList(final @NotNull List<T> coll) {
         inner = new Object[coll.size()];
@@ -28,9 +28,9 @@ public final class UnmodList<T> implements List<T> {
     }
 
     /**
-     * TODO
+     * Creates a new instance from a trusted array. Attention: The array is NOT copied. It is assumed that the array will not be modified.
      *
-     * @param safeArray TODO
+     * @param safeArray The array.
      */
     public UnmodList(final Object[] safeArray) {
         inner = safeArray;
@@ -142,7 +142,7 @@ public final class UnmodList<T> implements List<T> {
 
     @Override
     public @NotNull Iterator<T> iterator() {
-        return listIterator();
+        return listIterator(0);
     }
 
     @Override

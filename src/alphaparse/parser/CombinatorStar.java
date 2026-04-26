@@ -2,16 +2,13 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-import java.util.StringJoiner;
-
 /**
- * TODO
+ * Represents a production which repeatedly ties to match an input. E.g. {@code P*} matches zero or more.
  */
 public final class CombinatorStar extends CombinatorWithParser {
     private CombinatorStar(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
@@ -19,9 +16,10 @@ public final class CombinatorStar extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
-     * @param parser TODO
+     * @param parser The {@link Combinator} to match repeatedly.
+     * @see CombinatorFactory#starCombinator(Combinator)
      */
     public CombinatorStar(final @NotNull Combinator parser) {
         super(parser);
@@ -33,7 +31,7 @@ public final class CombinatorStar extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         runner.pushListener(
                 new TrampolineListenerKey(index, combinator),
-                PlusCombinator.plusListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner)
+                PlusCombinator.plusListener(FlatSeq.make(), combinator, index, nodeKeyForStar, runner)
         );
         runner.success(nodeKeyForStar, null, index);
     }
@@ -47,7 +45,7 @@ public final class CombinatorStar extends CombinatorWithParser {
         } else {
             runner.pushListener(
                     new TrampolineListenerKey(index, combinator),
-                    PlusCombinator.plusFullListener(AutoFlattenSeq.make(), combinator, index, nodeKeyForStar, runner));
+                    PlusCombinator.plusFullListener(FlatSeq.make(), combinator, index, nodeKeyForStar, runner));
         }
     }
 

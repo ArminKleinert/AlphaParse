@@ -2,8 +2,7 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.IO2;
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonExpectParser;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  * A class representing the ABNF counted repetition operator.
@@ -36,12 +34,13 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param parser The inner element.
      * @param min    Minimum repetitions.
      * @param max    Maximum repetitions.
      * @throws IllegalArgumentException if minimum or maximum is invalid.
+     * @see CombinatorFactory#repetitionCombinator(int, int, Combinator)
      */
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
         super(parser);
@@ -60,12 +59,12 @@ public final class RepetitionCombinator extends CombinatorWithParser {
             runner.success(combinatorNodeKey, null, index);
             if (getMax() >= 1) {
                 runner.pushListener(combinatorNodeKey,
-                        repListener(AutoFlattenSeq.make(), 0, this, parserNodeKey, runner));
+                        repListener(FlatSeq.make(), 0, this, parserNodeKey, runner));
             }
         } else {
             runner.pushListener(
                     combinatorNodeKey,
-                    repListener(AutoFlattenSeq.make(), 0, this, parserNodeKey, runner));
+                    repListener(FlatSeq.make(), 0, this, parserNodeKey, runner));
         }
     }
 
@@ -76,7 +75,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         final int maximum = getMax();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForParser = new TrampolineListenerKey(index, parser);
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
-        final @NotNull var emptyResults = AutoFlattenSeq.make();
+        final @NotNull var emptyResults = FlatSeq.make();
         if (minimum == 0) {
             runner.success(new TrampolineListenerKey(index, this), null, index);
             if (maximum >= 1) {
@@ -91,7 +90,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         }
     }
 
-    private @NotNull Listener repListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
+    private @NotNull Listener repListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                           final int nResultsSoFar,
                                           final @NotNull RepetitionCombinator parser,
                                           final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey, final @NotNull Gll runner) {
@@ -99,8 +98,8 @@ public final class RepetitionCombinator extends CombinatorWithParser {
             final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.index();
 
-            final @NotNull AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
-                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+            final @NotNull FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
+                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
 
             final int newNResultsSoFar = nResultsSoFar + 1;
@@ -116,7 +115,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         };
     }
 
-    private @NotNull Listener repFullListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
+    private @NotNull Listener repFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                               final int nResultsSoFar,
                                               final @NotNull Combinator parser,
                                               final int minimum,
@@ -127,8 +126,8 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
             final int continueIndex = result.index();
-            final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
-                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+            final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
+                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             final int newNResultsSoFar = nResultsSoFar + 1;
             if (continueIndex == runner.tramp().getText().length()) {

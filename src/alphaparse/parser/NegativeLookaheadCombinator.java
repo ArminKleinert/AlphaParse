@@ -8,10 +8,10 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.trampoline.TrampolineListenerNode;
 
-import java.util.Objects;
-
 /**
- * TODO
+ * Represents a negative lookahead. Written {@code !P}.
+ * <p>
+ * Example: The production {@code S : !'a' ('a'|'b')+} matches any string of 'a' and 'b' which does NOT start with 'a'.
  */
 public final class NegativeLookaheadCombinator extends CombinatorWithParser {
     private NegativeLookaheadCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
@@ -19,9 +19,10 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
     }
 
     /**
-     * TODO
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
-     * @param parser TODO
+     * @param parser The thing to avoid.
+     * @see CombinatorFactory#negateRule(Combinator)
      */
     public NegativeLookaheadCombinator(final @NotNull Combinator parser) {
         super(parser);

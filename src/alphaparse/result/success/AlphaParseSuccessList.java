@@ -1,18 +1,18 @@
 package alphaparse.result.success;
 
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import org.jetbrains.annotations.NotNull;
 
 final class AlphaParseSuccessList extends AlphaParseSuccess {
-    private final @NotNull AutoFlattenSeq<Object> result; // TODO Do not use raw objects
+    private final @NotNull FlatSeq<Object> result; // TODO Do not use raw objects
 
-    AlphaParseSuccessList(final int index, final @NotNull AutoFlattenSeq<Object> result) {
+    AlphaParseSuccessList(final int index, final @NotNull FlatSeq<Object> result) {
         super(index);
         this.result = result;
     }
 
     @Override
-    public @NotNull AutoFlattenSeq<Object> getResult() {
+    public @NotNull FlatSeq<Object> getResult() {
         return result;
     }
 }

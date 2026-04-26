@@ -8,10 +8,9 @@ import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
- * TODO
+ * This type represents non-terminals.
  */
 public final class NonTerminalCombinator extends Combinator {
     private final @NotNull Keyword keyword;
@@ -22,9 +21,11 @@ public final class NonTerminalCombinator extends Combinator {
     }
 
     /**
-     * TODO
+     * Creates a new instance from a name. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
-     * @param keyword TODO
+     * @param keyword The name.
+     * @see CombinatorFactory#makeNonTerminal(Keyword)
+     * @see CombinatorFactory#staticMakeNonTerminal(Keyword)
      */
     public NonTerminalCombinator(final @NotNull Keyword keyword) {
         super();
@@ -32,9 +33,9 @@ public final class NonTerminalCombinator extends Combinator {
     }
 
     /**
-     * TODO
+     * Returns the name.
      *
-     * @return TODO
+     * @return The name.
      */
     public @NotNull Keyword getKeyword() {
         return keyword;

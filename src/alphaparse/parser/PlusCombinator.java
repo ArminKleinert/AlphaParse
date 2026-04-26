@@ -2,15 +2,12 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  * Represents a "once or more" parse. That is the {@code p+} operator (where p is an instance of {@link Combinator}).
@@ -21,9 +18,10 @@ public final class PlusCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param parser The inner element.
+     * @see CombinatorFactory#plusCombinator(Combinator)
      */
     public PlusCombinator(final @NotNull Combinator parser) {
         super(defaultHidden, defaultRed, parser);
@@ -34,7 +32,7 @@ public final class PlusCombinator extends CombinatorWithParser {
         final @NotNull Combinator parser = getParser();
         runner.pushListener(
                 new TrampolineListenerKey(index, parser),
-                plusListener(AutoFlattenSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
+                plusListener(FlatSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
         );
     }
 
@@ -43,12 +41,12 @@ public final class PlusCombinator extends CombinatorWithParser {
         final @NotNull Combinator parser = getParser();
         runner.pushListener(
                 new TrampolineListenerKey(index, parser),
-                plusFullListener(AutoFlattenSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
+                plusFullListener(FlatSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
         );
     }
 
     @NotNull
-    static Listener plusListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
+    static Listener plusListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                  final @NotNull Combinator parser,
                                  final int prevIndex,
                                  final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -62,8 +60,8 @@ public final class PlusCombinator extends CombinatorWithParser {
                 }
                 return;
             }
-            final AutoFlattenSeq<Object> newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
-                    ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+            final FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
+                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             runner.pushListener(new TrampolineListenerKey(continueIndex, parser), plusListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
             runner.success(nodeKey, newResultsSoFar, continueIndex);
@@ -72,7 +70,7 @@ public final class PlusCombinator extends CombinatorWithParser {
 
 
     @NotNull
-    static Listener plusFullListener(final @NotNull AutoFlattenSeq<Object> resultsSoFar,
+    static Listener plusFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                      final @NotNull Combinator parser,
                                      final int prevIndex,
                                      final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -84,8 +82,8 @@ public final class PlusCombinator extends CombinatorWithParser {
                 if (resultsSoFar.isEmpty())
                     runner.success(nodeKey, null, continueIndex);
             } else {
-                final @NotNull var newResultsSoFar = parsedResult instanceof AutoFlattenSeq<?>
-                        ? resultsSoFar.concat((AutoFlattenSeq<?>) parsedResult)
+                final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
+                        ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                         : resultsSoFar.append(parsedResult);
                 if (continueIndex == runner.tramp().getText().length()) {
                     runner.success(nodeKey, newResultsSoFar, continueIndex);

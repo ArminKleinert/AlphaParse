@@ -5,9 +5,6 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-import java.util.StringJoiner;
-
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
@@ -19,9 +16,10 @@ public final class LookaheadCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance.  Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param parser The inner parser.
+     * @see CombinatorFactory#makeLookahead(Combinator)
      */
     public LookaheadCombinator(final @NotNull Combinator parser) {
         super(parser);

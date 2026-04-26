@@ -7,8 +7,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Combinator}).
@@ -19,9 +17,10 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param parsers The different parsers in the choice.
+     * @see CombinatorFactory#choiceCombinator(List)
      */
     public ChoiceCombinator(@NotNull List<Combinator> parsers) {
         super(parsers);

@@ -8,7 +8,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  * Represents string terminals (both case-sensitive or case-insensitive).
@@ -29,10 +28,12 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param string          The string to match.
      * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
+     * @see CombinatorFactory#stringTerminal(String)
+     * @see CombinatorFactory#stringOrStringCiTerminal(String, boolean)
      */
     public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
         super();

@@ -9,7 +9,11 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO
+ * A class for string-alternatives that are slightly slower to create than strings, but provide interning and O(1) comparisons via the buildin {@code ==} operator. Optionally, this interning can be disabled, which may save memory if the keywords are often discarded. If interning is disabled, the fast comparison is disabled as well.
+ * <p>
+ * {@code Keyword k1 = Keyword.intern(str);
+ * Keyword k2 = Keyword.intern(str);
+ * k1 == k2 // Guarantied to be true.}
  */
 public class Keyword {
     private static final ConcurrentHashMap<String, Reference<Keyword>> table =
@@ -22,7 +26,7 @@ public class Keyword {
     private final @NotNull String sym;
 
     /**
-     * TODO
+     * Disable caching.
      */
     public static void disableCaching() {
         cachingDisabled = true;
@@ -31,10 +35,10 @@ public class Keyword {
     }
 
     /**
-     * TODO
+     * Creates a new keyword or returns an existing one.
      *
-     * @param sym TODO
-     * @return TODO
+     * @param sym The string for the keyword.
+     * @return The new or already existing keyword.
      */
     public static @NotNull Keyword intern(final @NotNull String sym) {
         if (cachingDisabled) {
@@ -76,9 +80,9 @@ public class Keyword {
     }
 
     /**
-     * TODO
+     * Returns the backing string.
      *
-     * @return TODO
+     * @return The backing string.
      */
     public @NotNull String getName() {
         return sym;

@@ -1,6 +1,6 @@
 package alphaparse.result.success;
 
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.TotalParsesFailureNode;
@@ -37,7 +37,7 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
      * Wraps an object in a {@link AlphaParseSuccess} for further use in the parsing algorithm.
      *
      * @param index  The last index of the previous parse, exclusive.
-     * @param result The object to be wrapped. Can be null, String, {@link TotalParsesFailureNode}, {@link AutoFlattenSeq}, {@link ParseFailureNode} or {@link ParseTree}.
+     * @param result The object to be wrapped. Can be null, String, {@link TotalParsesFailureNode}, {@link FlatSeq}, {@link ParseFailureNode} or {@link ParseTree}.
      * @return A success object. The exact type depends on the input.
      * @throws IllegalArgumentException If the input is not one of the listed types.
      */
@@ -46,7 +46,7 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
             case null -> new AlphaParseSuccessNull(index);
             case String s -> new AlphaParseSuccessString(index, s);
             case TotalParsesFailureNode parseTrees -> new AlphaParseSuccessWithTotalFailure(index, parseTrees);
-            case AutoFlattenSeq<?> objects -> new AlphaParseSuccessList(index, (AutoFlattenSeq<Object>) objects);
+            case FlatSeq<?> objects -> new AlphaParseSuccessList(index, (FlatSeq<Object>) objects);
             case ParseFailureNode parseFailureNode -> new AlphaParseSuccessWithFailure(index, parseFailureNode);
             case ParseTree nodes -> new AlphaParseSuccessParseResult(index, nodes);
             default ->

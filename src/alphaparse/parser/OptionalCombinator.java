@@ -9,9 +9,6 @@ import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-import java.util.StringJoiner;
-
 /**
  * This class represents the {@code [p]} or {@code p?} operator (where p is an instance of {@link Combinator}).
  * When parsing, the parser contained herein is optional (run zero times or once).
@@ -22,9 +19,10 @@ public final class OptionalCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param parser The parser.
+     * @see CombinatorFactory#optionalCombinator(Combinator)
      */
     public OptionalCombinator(final @NotNull Combinator parser) {
         super(parser);

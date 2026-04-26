@@ -48,6 +48,6 @@ public final class ParseFailureReasonNegative extends ParseFailureReason {
      * @return TODO
      */
     public String failureReasonString() {
-        return "{NOT " + (expecting == null ? "null" : Print.combinatorsToString(expecting)) + "}";
+        return "{NOT " + (expecting == null ? "null" : Print.combinatorToString(expecting)) + "}";
     }
 }

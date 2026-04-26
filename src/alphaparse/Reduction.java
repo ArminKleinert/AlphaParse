@@ -1,6 +1,6 @@
 package alphaparse;
 
-import alphaparse.flat.AutoFlattenSeq;
+import alphaparse.flat.FlatSeq;
 import alphaparse.parser.Grammar;
 import alphaparse.parser.Combinator;
 import alphaparse.reduction.ReductionType;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  TODO
+ * TODO
  */
 public final class Reduction {
 
@@ -34,15 +34,20 @@ public final class Reduction {
     }
 
     /**
-     *  TODO
-     * @param f TODO
+     * TODO
+     *
+     * @param f      TODO
      * @param result TODO
      * @return TODO
      */
-   public  static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
+    public static @NotNull ParseTree applyReduction(final @NotNull ReductionType f, final Object result) {
         final @NotNull var afs = switch (result) {
             case null -> List.<Node>of();
-            case AutoFlattenSeq<?> objects -> objects.toNodes();
+            case FlatSeq<?> objects -> {
+                final @NotNull var res = new ArrayList<Node>();
+                for (@NotNull var t : objects) res.add(Node.of(t));
+                yield res;
+            }
             case String ignored -> List.of(Node.of(result));
             case TotalParsesFailureNode ignored -> List.of(Node.of(result));
             case ParseFailureNode ignored -> List.of(Node.of(result));

@@ -5,9 +5,6 @@ import alphaparse.result.failure.failureReason.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-import java.util.StringJoiner;
-
 /**
  * A class representing the right-hand sides of productions.
  */
@@ -129,6 +126,6 @@ public abstract sealed class Combinator
 
     @Override
     public String toString() {
-        return alphaparse.Print.combinatorsToString(this);
+        return alphaparse.Print.combinatorToString(this);
     }
 }

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * TODO
+ * Helpers for things converting things to strings.
  */
 public final class Print {
     private Print() {
@@ -19,8 +19,8 @@ public final class Print {
             final @NotNull Predicate<@NotNull Combinator> tags,
             final boolean hidden,
             final @NotNull Combinator parser) {
-        if (!hidden && tags.test(parser)) return "(" + combinatorsToString(parser, false) + ")";
-        return combinatorsToString(parser, false);
+        if (!hidden && tags.test(parser)) return "(" + combinatorToString(parser, false) + ")";
+        return combinatorToString(parser, false);
     }
 
     private static @NotNull String parenForCompound(final boolean hidden, final @NotNull Combinator parser) {
@@ -41,18 +41,18 @@ public final class Print {
     }
 
     /**
-     * TODO
+     * Returns a string representing the argument.
      *
-     * @param parser TODO
-     * @return TODO
+     * @param parser The argument.
+     * @return A string.
      */
-    public static @NotNull String combinatorsToString(final @NotNull Combinator parser) {
-        return combinatorsToString(parser, false);
+    public static @NotNull String combinatorToString(final @NotNull Combinator parser) {
+        return combinatorToString(parser, false);
     }
 
-    private static @NotNull String combinatorsToString(final @NotNull Combinator parser, final boolean hidden) {
+    private static @NotNull String combinatorToString(final @NotNull Combinator parser, final boolean hidden) {
         if (!hidden && parser.isHidden())
-            return "<" + combinatorsToString(parser, true) + ">";
+            return "<" + combinatorToString(parser, true) + ">";
 
         switch (parser) {
             case EpsilonCombinator ignored -> {
@@ -123,16 +123,16 @@ public final class Print {
     private static @NotNull String ruleToString(final @NotNull Keyword startProd, final @NotNull Combinator parser) {
         final ReductionType red = parser.getReduction();
         if (red.isHiddenOrRaw())
-            return "<" + startProd.getName() + '>' + " = " + combinatorsToString(parser);
+            return "<" + startProd.getName() + '>' + " = " + combinatorToString(parser);
         else
-            return startProd.getName() + " = " + combinatorsToString(parser);
+            return startProd.getName() + " = " + combinatorToString(parser);
     }
 
     /**
-     * TODO
+     * Returns a (likely multiline) string representing a {@link Parser}.
      *
-     * @param p TODO
-     * @return TODO
+     * @param p The parser.
+     * @return A string.
      */
     public static @NotNull String parserToString(final @NotNull Parser p) {
         final @NotNull Grammar grammar = p.grammar();

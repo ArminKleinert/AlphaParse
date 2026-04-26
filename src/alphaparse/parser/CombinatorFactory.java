@@ -295,7 +295,7 @@ public final class CombinatorFactory {
     }
 
     /**
-     * Creates a lookahead combinator.
+     * Creates a negative lookahead combinator.
      * The output can be a {@link EpsilonCombinator} if the input is epsilon.
      *
      * @param parser The combinator to avoid.
