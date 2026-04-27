@@ -24,6 +24,27 @@ class AlphaTest {
         }
     }
 
+    @Test void testPartialParseOptionIgnoredOnSingleParse() {
+        {
+            var p = Alpha.parser("S = 'a'+");
+            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa", opts));
+        }
+        {
+            var p = Alpha.parser("S = 'a'");
+            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+            Assertions.assertTrue(p.parse("aa", opts).isFailure());
+        }
+    }
+
+    @Test void testPartialParseOptionIfNotInGrammar() {
+        {
+            var p = Alpha.parser("S = 'a'");
+            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+            Assertions.assertEquals(List.of(ParseTree.create("S", "a")), p.parses("aa", opts));
+        }
+    }
+
     @Test void parserCreationWithExplicitStartProduction() {
         {
             final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction(Keyword.intern("B"));

@@ -90,8 +90,9 @@ public class Keyword {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof Keyword)) return false;
-        if (cachingDisabled) return getName().equals(((Keyword) o).getName());
-        return o == this;
+        if (!cachingDisabled) return false;
+        return getName().equals(((Keyword) o).getName());
     }
 }

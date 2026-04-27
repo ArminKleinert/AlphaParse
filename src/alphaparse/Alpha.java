@@ -55,7 +55,12 @@ public final class Alpha {
      * Runs a parser on a text. If the parse is successful, returns a {@link ParseTree}. If the parse fails, returns a {@link AlphaParseFailure}
      *
      * The options apply as follows:
-     *
+     * <ul>
+     *     <li>{@link ParsingOptions#isOptimizeMemory()}: Try to use a different algorithm for parsing.</li>
+     *     <li>{@link ParsingOptions#isTotal()}: Return a {@link ParseTree} on failure, with the information included in the tree.</li>
+     *     <li>{@link ParsingOptions#getUnhide()}: Unhide some parts of the parser in the output.</li>
+     *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
+     * </ul>
      *
      * @param parser  The parser.
      * @param text    The text.
@@ -89,11 +94,13 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Runs the parse algorithm with default options.
      *
-     * @param parser TODO
-     * @param text   TODO
-     * @return TODO
+     * @param parser The parser.
+     * @param text   The text.
+     * @return The resulting tree or failure.
+     * @see #parse(Parser, String, ParsingOptions)
+     * @see ParsingOptions#getDefault()
      */
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text) {
@@ -101,12 +108,20 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Runs a parser on a string and returns a parse forest as a {@link AlphaParsesResult.LazyResultList}.
+     * <p>
+     * The following options apply:
+     * <ul>
+     *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
+     *     <li>{@link ParsingOptions#isTotal()}: Include failure information in parse trees.</li>
+     *     <li>{@link ParsingOptions#getUnhide()}: Unhide some parts of the parser in the output.</li>
+     *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
+     * </ul>
      *
-     * @param parser  TODO
-     * @param text    TODO
-     * @param options TODO
-     * @return TODO
+     * @param parser  The parser.
+     * @param text    The text.
+     * @param options The options.
+     * @return A (potentially empty) parse forest. ({@link AlphaParsesResult.LazyResultList})
      */
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
@@ -126,11 +141,13 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Runs the parses algorithm with default options.
      *
-     * @param parser TODO
-     * @param text   TODO
-     * @return TODO
+     * @param parser The parser.
+     * @param text   The text.
+     * @return The resulting trees.
+     * @see #parses(Parser, String, ParsingOptions)
+     * @see ParsingOptions#getDefault()
      */
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text) {
@@ -138,12 +155,21 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Runs a parser on a string and returns a parse forest as an {@link AlphaParsesResult.LazyResultList}.
+     * If no parse is successful, returns a {@link AlphaParsesResult.ParsesFailureResult} instead.
+     * <p>
+     * The following options apply:
+     * <ul>
+     *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
+     *     <li>{@link ParsingOptions#isTotal()}: Include failure information in parse trees.</li>
+     *     <li>{@link ParsingOptions#getUnhide()}: Unhide some parts of the parser in the output.</li>
+     *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
+     * </ul>
      *
-     * @param parser  TODO
-     * @param text    TODO
-     * @param options TODO
-     * @return TODO
+     * @param parser  The parser.
+     * @param text    The text.
+     * @param options The options.
+     * @return A {@link AlphaParsesResult.LazyResultList} (parse forest) if successful, {@link AlphaParsesResult.ParsesFailureResult} if not.
      */
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
                                                              final @NotNull String text,
