@@ -8,12 +8,15 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
+import alphaparse.result.ParseTree;
+import alphaparse.result.ParseFailureNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Helpers for creating and using parsers.
@@ -37,18 +40,33 @@ public final class Alpha {
         };
     }
 
+    private static @NotNull Keyword getStartProductionFromParserOrOptionsAndCheck(
+            final @NotNull ParsingOptions options,
+            final @NotNull Parser parser) {
+        final var startProduction = options.getStart();
+        if (startProduction == null)
+            return parser.startProduction();
+        if (!parser.grammar().containsKey(startProduction))
+            throw new IllegalArgumentException("Start production not in grammar: " + startProduction);
+        return startProduction;
+    }
+
     /**
-     * TODO
+     * Runs a parser on a text. If the parse is successful, returns a {@link ParseTree}. If the parse fails, returns a {@link AlphaParseFailure}
      *
-     * @param parser  TODO
-     * @param text    TODO
-     * @param options TODO
-     * @return TODO
+     * The options apply as follows:
+     *
+     *
+     * @param parser  The parser.
+     * @param text    The text.
+     * @param options Options.
+     * @return {@link ParseTree} if successful, {@link AlphaParseFailure} if not.
      */
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
-        final @NotNull var startProduction = options.getStartOrDefault(parser.startProduction());
+        final @NotNull var startProduction =
+                getStartProductionFromParserOrOptionsAndCheck(options,parser);
         final var usePartial = options.usePartial();
         //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
         final @NotNull var doUnhide = options.getUnhide();
@@ -94,7 +112,8 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
-        final @NotNull var startProduction = options.getStartOrDefault(parser.startProduction());
+        final @NotNull var startProduction =
+                getStartProductionFromParserOrOptionsAndCheck(options,parser);
         final var usePartial = options.usePartial();
         final @NotNull var doUnhide = options.getUnhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
@@ -130,7 +149,8 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
                                                              final @NotNull String text,
                                                              final @NotNull ParsingOptions options) {
-        final @NotNull var startProduction = options.getStartOrDefault(parser.startProduction());
+        final @NotNull var startProduction =
+                getStartProductionFromParserOrOptionsAndCheck(options,parser);
         final var usePartial = options.usePartial();
         final @NotNull var doUnhide = options.getUnhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
@@ -237,23 +257,23 @@ public final class Alpha {
      */
     public static class ParsingOptions {
         /**
-         * TODO
+         * Default for the start production name of a parse operation. ({@code null})
          */
         public static final @Nullable Keyword DEFAULT_START = null;
         /**
-         * TODO
+         * Default for the start production name of a parse operation. ({@code false})
          */
         public static final boolean DEFAULT_PARTIAL = false;
         /**
-         * TODO
+         * By default, leave the parse trees as intended (hidden parts stay hidden). The value is {@link UnhideOptions#none}
          */
         public static final @NotNull Alpha.UnhideOptions DEFAULT_UNHIDE = UnhideOptions.none;
         /**
-         * TODO
+         * By default, do not include failure nodes in parse trees. ({@code false})
          */
         public static final boolean DEFAULT_TOTAL = false;
         /**
-         * TODO
+         * By default, use the normal parse algorithm, not the more memory-efficient one. ({@code false})
          */
         public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
 
@@ -264,22 +284,34 @@ public final class Alpha {
         private final boolean optimizeMemory;
 
         /**
-         * TODO
+         * Calls {@link ParsingOptions#ParsingOptions(Keyword, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
          *
-         * @return TODO
+         * @return An instance of this class, using all the static DEFAULT_* values.
+         *
+         * @see ParsingOptions#DEFAULT_START
+         * @see ParsingOptions#DEFAULT_PARTIAL
+         * @see ParsingOptions#DEFAULT_UNHIDE
+         * @see ParsingOptions#DEFAULT_TOTAL
+         * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
          */
         public static @NotNull ParsingOptions getDefault() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
         }
 
         /**
-         * TODO
+         * Creates a new instance.
          *
-         * @param start          TODO
-         * @param partial        TODO
-         * @param unhide         TODO
-         * @param total          TODO
-         * @param optimizeMemory TODO
+         * @param start          Start production for the parse. Use {@code null} to use the Parser's start production.
+         * @param partial        Whether to return partial (incomplete) parses.
+         * @param unhide         What (if anything) to "unhide" in the results.
+         * @param total          Whether to return parse trees containing failure nodes or just return the failure itself.
+         * @param optimizeMemory Whether to attempt using more memory-efficient algorithms for parsing.
+         *
+         * @see ParsingOptions#DEFAULT_START
+         * @see ParsingOptions#DEFAULT_PARTIAL
+         * @see ParsingOptions#DEFAULT_UNHIDE
+         * @see ParsingOptions#DEFAULT_TOTAL
+         * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
          */
         public ParsingOptions(final @Nullable Keyword start,
                               final boolean partial,
@@ -294,28 +326,59 @@ public final class Alpha {
         }
 
         /**
-         * TODO
+         * An instance of this class with the {@link ParsingOptions#optimizeMemory} set to true.
          *
-         * @return TODO
+         * @return An instance of this class with the {@link ParsingOptions#optimizeMemory} set to true.
          */
         public static @NotNull ParsingOptions optMemory() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, true);
         }
 
         /**
-         * TODO
+         * When a parser is created, it carries its own start production. With this option, the start production can be forcefully changed for a parse. If the parser's start should be used, this method returns {@code null}.
+         * <p>
+         * Example:
+         * <pre>
+         * {@code
+         *      // The grammar has these two, unrelated productions. The first production is A. So that is the production the parser uses.
+         *      //    A = 'a'
+         *      //    B = 'b'
+         *      var p = Alpha.parser("A = 'a'\nB = 'b'");
          *
-         * @param defaultStart TODO
-         * @return TODO
+         *      println(p.parse("a")); // Success: [:A, a]
+         *      println(p.parse("b")); // Failure: 'b' could not be parsed from production A.
+         *
+         *      // With the start production explicitly changed, it works:
+         *      println(p.parse("b", Alpha.ParsingOptions.getDefault().withStartingProdSetTo(Keyword.intern("B")))); // [:B, b]
+         * }
+         * </pre>
+         * This can be useful if the grammar has multiple unrelated parts.
+         * @return A keyword.
          */
-        public @NotNull Keyword getStartOrDefault(final @NotNull Keyword defaultStart) {
-            return start == null ? defaultStart : start;
+        public @Nullable Keyword getStart() {
+            return start;
         }
 
         /**
-         * TODO
+         * When generating a parse tree, the parser tries to parse the full string first. With this option, partial parses can be made available.
+         * <br>
+         * The option only applies when requesting the full parse forest (e.g. {@link Alpha#parses(Parser, String, ParsingOptions)} and {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)}), but not when only a single parse is requested (e.g. {@link Alpha#parse(Parser, String, ParsingOptions)}).
+         * <pre>
+         * {@code
+         *      var p = Alpha.parser("S = 'a'+");
+         *      println(p.parses("aa")); // [[:S, a, a]]
          *
-         * @return TODO
+         *      var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+         *      println(p.parses("aa", opts)); // [[:S, a], [:S, a, a]]
+         *
+         *      // The option has no effect on single parse:
+         *      println(p.parse("aa", opts)); // [:S, a, a]
+         * }
+         * </pre>
+         *
+         * @return true or false
+         * @see ParsingOptions#DEFAULT_PARTIAL
+         * @see ParsingOptions#getDefault()
          */
         public boolean usePartial() {
             return partial;
@@ -325,36 +388,61 @@ public final class Alpha {
          * TODO
          *
          * @return TODO
+         * @see ParsingOptions#DEFAULT_UNHIDE
+         * @see ParsingOptions#getDefault()
          */
         public @NotNull Alpha.UnhideOptions getUnhide() {
             return unhide;
         }
 
         /**
-         * TODO
+         * If true, a failed parse results in a {@link ParseTree}, as a success would, but a {@link ParseFailureNode} is embedded in the tree.
+         * <pre>
+         * {@code
+         *      var p = Alpha.parser("S = #'a'+");
+         *      var text = "ab":
          *
-         * @return TODO
+         *      // A normal parse results in a failure.
+         *      println(p.parse("ab").castToParseFailure().contentsToString());
+         *      //   => [1, [{tag=:regex, expecting=a, full=false}], 1, 2, ab]
+         *
+         *      // With the total option, a parsetree is returned, potentially providing more information about the failure.
+         *      var opts = Alpha.ParsingOptions.getDefault().withTotalParseSetTo(true);
+         *      println(p.parse("ab", opts));
+         *      // => [:S, a, [:failure, could not parse "b" at 1..2]]
+         * }
+         * </pre>
+         * @return true or false
+         * @see ParsingOptions#DEFAULT_TOTAL
+         * @see ParsingOptions#getDefault()
          */
         public boolean isTotal() {
             return total;
         }
 
         /**
-         * TODO
+         * Whether to use a more memory efficient algorithm. Attention: This option has no influence on methods that return a parse forest.
          *
-         * @return TODO
+         * @return true or false.
+         * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
+         * @see ParsingOptions#getDefault()
+         * @see ParsingOptions#optMemory()
          */
         public boolean isOptimizeMemory() {
             return optimizeMemory;
         }
 
         /**
-         * TODO
+         * Sets the start production explicitly.
          *
-         * @param start TODO
-         * @return TODO
+         * @param start The new start production.
+         * @return A new instance.
+         * @see ParsingOptions#getStart()
+         * @see ParsingOptions#DEFAULT_START
+         * @see ParsingOptions#getDefault()
          */
         public @NotNull ParsingOptions withStartingProdSetTo(final @Nullable Keyword start) {
+            if (Objects.equals(this.start, start)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
@@ -365,6 +453,7 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParsingOptions withPartialSetTo(final boolean partial) {
+            if (Objects.equals(this.partial, partial)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
@@ -375,6 +464,7 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParsingOptions withUnhideOptionsSetTo(final @NotNull Alpha.UnhideOptions unhide) {
+            if (Objects.equals(this.unhide, unhide)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
@@ -385,6 +475,7 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParsingOptions withTotalParseSetTo(final boolean total) {
+            if (Objects.equals(this.total, total)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
@@ -395,6 +486,7 @@ public final class Alpha {
          * @return TODO
          */
         public @NotNull ParsingOptions withOptMemorySetTo(final boolean optimizeMemory) {
+            if (Objects.equals(this.optimizeMemory, optimizeMemory)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
     }

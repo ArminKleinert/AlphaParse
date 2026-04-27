@@ -7,18 +7,18 @@ import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 /**
- * TODO
+ * Utilities for measuring runtime performance.
  */
 public final class TimeUtil {
     private TimeUtil() {
     }
 
     /**
-     * TODO
+     * Runs a procedure a few times and creates some statistics. Time is represented as milliseconds.
      *
-     * @param n TODO
-     * @param f TODO
-     * @return TODO
+     * @param n How often to run the procedure.
+     * @param f The procedure.
+     * @return The analysis result as a string.
      */
     public static @NotNull String measureTimeMillis(final int n, final @NotNull Procedure f) {
         if (n < 1)

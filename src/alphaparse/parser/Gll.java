@@ -72,12 +72,6 @@ public final class Gll {
         return tramp.getText().length() == success.index();
     }
 
-    /**
-     * TODO
-     *
-     * @param creator          TODO
-     * @param negativeListener TODO
-     */
     void pushNegativeListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey creator,
             final @NotNull NegativeListener negativeListener) {
@@ -158,12 +152,6 @@ public final class Gll {
         }
     }
 
-    /**
-     * TODO
-     *
-     * @param nodeKey  TODO
-     * @param listener TODO
-     */
     void pushListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
@@ -182,12 +170,6 @@ public final class Gll {
         }
     }
 
-    /**
-     * TODO
-     *
-     * @param nodeKey  TODO
-     * @param listener TODO
-     */
     void pushFullListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull Listener listener) {
@@ -209,9 +191,6 @@ public final class Gll {
      * Categorizes as either result or full-result.
      * Schedules notification to all existing listeners of result
      * (Full listeners only get notified about full results)
-     *
-     * @param nodeKey TODO
-     * @param result  TODO
      */
     private void pushResult(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
@@ -260,13 +239,6 @@ public final class Gll {
         }
     }
 
-    /**
-     * TODO
-     *  @param nodeKey TODO
-     *
-     * @param result TODO
-     * @param end    The index the last production finished at.
-     */
     void success(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final Object result,
@@ -274,13 +246,6 @@ public final class Gll {
         pushResult(nodeKey, AlphaParseSuccess.create(end, result));
     }
 
-    /**
-     * TODO
-     *  @param nodeKey TODO
-     *
-     * @param index  TODO
-     * @param reason TODO
-     */
     void fail(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final int index,
