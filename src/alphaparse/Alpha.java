@@ -67,7 +67,6 @@ public final class Alpha {
                                                   final @NotNull ParsingOptions options) {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options,parser);
-        final var usePartial = options.usePartial();
         //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
         final @NotNull var doUnhide = options.getUnhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
@@ -75,15 +74,15 @@ public final class Alpha {
         final @NotNull AlphaParseResult parsingResult;
         if (options.isTotal()) {
             parsingResult = AlphaParseResult.make(
-                    Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, usePartial));
-        } else if (options.isOptimizeMemory() && !usePartial) {
+                    Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false));
+        } else if (options.isOptimizeMemory()) {
             @NotNull var result = Repeat.tryRepeatingParseStrategy(parser, text, startProduction);
             if (result instanceof AlphaParseFailure)
                 result = Gll.parse(parser.grammar(), startProduction, text, false);
             parsingResult = AlphaParseResult.make(result);
         } else {
             parsingResult = AlphaParseResult.make(
-                    Gll.parse(unhiddenParser.grammar(), startProduction, text, usePartial));
+                    Gll.parse(unhiddenParser.grammar(), startProduction, text, false));
         }
 
         return parsingResult;
