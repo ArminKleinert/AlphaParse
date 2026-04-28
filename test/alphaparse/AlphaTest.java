@@ -5,6 +5,7 @@ import alphaparse.result.ParseTree;
 import java.util.HashSet;
 import java.util.Set;
 
+import alphaparse.util.ClassUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -23,6 +24,11 @@ class AlphaTest {
 //        IO2.println(Viztool.dumpParseTree("vizoutput", c));
 //        }
 //    }
+    @Test void testMostDerived() {
+        IO2.println(ClassUtil.mostDerived(List.of("abc", "abc")));
+        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), new StringBuffer("abc"))));
+        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), "abc")));
+    }
 
     @Test
     void singleOrDoubleQuotationEquivalenceForStrings(){

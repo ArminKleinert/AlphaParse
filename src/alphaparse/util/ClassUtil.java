@@ -14,17 +14,24 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO
+ * Utilities for tests.
  */
 public class ClassUtil {
     private ClassUtil() {
     }
 
     /**
-     * TODO
+     * Takes a collection of objects and returns the superclass used by all objects. Note that it can't notice interfaces.
+     * <pre>
+     * {@code
+     *   println(ClassUtil.mostDerived(List.of("abc", "abc"))); // class java.lang.String
+     *   println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), new StringBuffer("abc")))); // class java.lang.AbstractStringBuilder
+     *   println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), "abc"))); // class java.lang.Object (not CharSequence)
+     * }
+     * </pre>
      *
-     * @param objects TODO
-     * @return TODO
+     * @param objects The objects.
+     * @return The most common superclass.
      */
     public static @Nullable Class<?> mostDerived(final @NotNull Collection<?> objects) {
         List<Class<?>> common = null;
@@ -54,14 +61,16 @@ public class ClassUtil {
         return common != null ? (!common.isEmpty() ? common.getFirst() : Object.class) : null;
     }
 
-    private static final List<String> uniqueStrings = new ArrayList<>();
+    private static @Nullable List<String> uniqueStrings = null;
 
     /**
-     * TODO
+     * Logs a string into a file unless it was already logged.
      *
-     * @param s TODO
+     * @param s The string.
      */
     public static void fileLog(String s) {
+        if (uniqueStrings == null)
+            uniqueStrings = new ArrayList<>();
         if (uniqueStrings.contains(s))
             return;
         uniqueStrings.add(s);
@@ -74,12 +83,12 @@ public class ClassUtil {
     }
 
     /**
-     * TODO
+     * Clears a reference queue and removes references to deallocated objects from the concurrent hashmap.
      *
-     * @param rq    TODO
-     * @param table TODO
-     * @param <K>   TODO
-     * @param <T>   TODO
+     * @param rq    The reference queue.
+     * @param table The table.
+     * @param <K>   Key type.
+     * @param <T>   Value type.
      */
     public static <K, T> void clearReferenceCache(
             final @NotNull ReferenceQueue<T> rq,

@@ -1,24 +1,25 @@
 package alphaparse.result;
 
+import alphaparse.Alpha;
 import alphaparse.list.LazySupplierList;
 import alphaparse.list.PretenderList;
+import alphaparse.parser.Parser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 
 /**
- * TODO
+ * A class for the results of multiple parses. This typically covers {@link LazyResultList} and {@link ParsesFailureResult}.
  */
 public sealed interface AlphaParsesResult
         extends List<ParseTree>
-        permits AlphaParsesResult.LazyResultList, AlphaParsesResult.NoParsesResult, AlphaParsesResult.ParsesFailureResult, TotalParsesFailureNode {
+        permits AlphaParsesResult.LazyResultList, AlphaParsesResult.ParsesFailureResult, TotalParsesFailureNode {
     /**
-     * TODO
+     * Takes an object and returns an appropriate subtype associated with its type.
      *
-     * @param o TODO
-     * @return TODO
+     * @param o The input.
+     * @return Output as {@link AlphaParsesResult}.
      */
     static @NotNull AlphaParsesResult make(final @NotNull Object o) {
         return switch (o) {
@@ -31,18 +32,18 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     * TODO
+     * True if this is the result of a successful parse.
      *
-     * @return TODO
+     * @return True if this is the result of a successful parse.
      */
     default boolean isSuccess() {
         return this instanceof LazyResultList;
     }
 
     /**
-     * TODO
+     * Casts the result to a list of {@link ParseTree}.
      *
-     * @return TODO
+     * @return A list of {@link ParseTree}.
      */
     default @NotNull LazyResultList castToParsesSuccess() {
         if (!(this instanceof LazyResultList))
@@ -51,34 +52,34 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     * TODO
+     * Casts the result to an instance of {@link ParsesFailureResult}.
      *
-     * @return TODO
+     * @return An instance of {@link ParsesFailureResult}.
      */
     default ParsesFailureResult castToParsesFailure() {
         return (ParsesFailureResult) this;
     }
 
     /**
-     * TODO
+     * Converts the parse forest input into a list, each parse tree is converted using {@link ParseTree#hiccup()}.
      *
-     * @return TODO
+     * @return The parse forest as a list of lists.
      */
-    default List<?> hiccup() {
-        if (this instanceof TotalParsesFailureNode)
+    default List<List<Object>> hiccup() {
+        if (!this.isSuccess())
             throw new ClassCastException("Cannot cast failure to success.");
         return stream().map(ParseTree::hiccup).toList();
     }
 
     /**
-     * TODO
+     * A class for successful results of parses.
      */
     final class LazyResultList extends LazySupplierList<ParseTree> implements AlphaParsesResult {
         /**
-         * TODO
+         * Creates a new instance (a list of parse trees).
          *
-         * @param nextFn     TODO
-         * @param maxResults TODO
+         * @param nextFn     The function.
+         * @param maxResults Maximum number of results.
          */
         public LazyResultList(final @NotNull IntFunction<ParseTree> nextFn, final int maxResults) {
             super(nextFn, maxResults);
@@ -86,7 +87,7 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     * TODO
+     * This class is used for {@link Alpha#parsesOrFailure(Parser, String, Alpha.ParsingOptions)} to represent the failure.
      */
     final class ParsesFailureResult implements AlphaParsesResult, PretenderList<ParseTree> {
         final @NotNull AlphaParseFailure alphaParseFailure;
@@ -96,9 +97,9 @@ public sealed interface AlphaParsesResult
         }
 
         /**
-         * TODO
+         * Extracts the wrapped failure object.
          *
-         * @return TODO
+         * @return The wrapped failure.
          */
         public @NotNull AlphaParseFailure asFailure() {
             return alphaParseFailure;
@@ -130,31 +131,6 @@ public sealed interface AlphaParsesResult
         @Override
         public String toString() {
             return alphaParseFailure.toString();
-        }
-    }
-
-    /**
-     * TODO
-     */
-    final class NoParsesResult extends AbstractList<ParseTree> implements AlphaParsesResult {
-        /**
-         * TODO
-         *
-         * @param ptl TODO
-         */
-        public NoParsesResult(List<?> ptl) {
-            if (!(ptl.isEmpty())) throw new IllegalStateException();
-        }
-
-        @Override
-        public ParseTree get(final int i) {
-            Objects.checkIndex(i, 0);
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public int size() {
-            return 0;
         }
     }
 }

@@ -4,10 +4,10 @@ import alphaparse.functions.Listener;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO
+ * A key for the trampoline's message cache.
  *
- * @param index    TODO
- * @param listener TODO
+ * @param index    The index.
+ * @param listener The listener.
  */
 public record TrampolineMsgCacheKey(int index, @NotNull Listener listener) {
 }

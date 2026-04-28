@@ -3,15 +3,15 @@ package alphaparse.result;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO
+ * A class for the results of single parses. This typically covers {@link ParseTree} and {@link AlphaParseFailure}.
  */
 public sealed interface AlphaParseResult
         permits ParseTree, AlphaParseFailure, ParseFailureNode {
     /**
-     * TODO
+     * Takes an object and returns an appropriate subtype associated with its type.
      *
-     * @param o TODO
-     * @return TODO
+     * @param o The input.
+     * @return Output as {@link AlphaParseResult}.
      */
     static @NotNull AlphaParseResult make(final @NotNull Object o) {
         return switch (o) {
@@ -22,36 +22,36 @@ public sealed interface AlphaParseResult
     }
 
     /**
-     * TODO
+     * True if this is the result of a successful parse.
      *
-     * @return TODO
+     * @return True if this is the result of a successful parse.
      */
     default boolean isSuccess() {
         return this instanceof ParseTree;
     }
 
     /**
-     * TODO
+     * True if this is the result of a failed parse.
      *
-     * @return TODO
+     * @return True if this is the result of a failed parse.
      */
     default boolean isFailure() {
         return !isSuccess();
     }
 
     /**
-     * TODO
+     * Casts the result to a {@link ParseTree}.
      *
-     * @return TODO
+     * @return A {@link ParseTree}.
      */
     default @NotNull ParseTree castToParseSuccess() {
         return (ParseTree) this;
     }
 
     /**
-     * TODO
+     * Casts the result to an instance of {@link AlphaParseFailure}.
      *
-     * @return TODO
+     * @return An instance of {@link AlphaParseFailure}.
      */
     default @NotNull AlphaParseFailure castToParseFailure() {
         return (AlphaParseFailure) this;

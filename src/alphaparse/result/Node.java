@@ -8,14 +8,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * TODO
+ * This class is used for the parts of a {@link ParseTree}.
  */
 public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.NodeString, Node.NodeTreeTag {
     /**
-     * TODO
+     * Takes an object and returns a node representing that object.
      *
-     * @param o TODO
-     * @return TODO
+     * @param o The object.
+     * @return A node.
      */
     static @NotNull Node of(final @Nullable Object o) {
         if (o == null)

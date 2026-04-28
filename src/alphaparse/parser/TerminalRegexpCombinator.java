@@ -63,7 +63,7 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Pattern regexp = this.getRegexp();
-        final @NotNull String text = runner.tramp().getSegment();
+        final @NotNull String text = runner.tramp().getText();
         final @NotNull String substring = text.substring(index);
         final @Nullable String match = reMatchAtFront(regexp, substring);
         final int desiredLength = text.length() - index;

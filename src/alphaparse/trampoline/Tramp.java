@@ -14,12 +14,11 @@ import java.util.*;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * TODO
+ * This class carries the inner state during the parsing process. It should not be used directly.
  */
 public final class Tramp {
     private final @NotNull Grammar grammar;
     private final @NotNull String text;
-    private final @NotNull String segment;
     private final int failIndex;
     private final @NotNull List<@NotNull Procedure> stack;
     private final @NotNull List<@NotNull Procedure> nextStack;
@@ -31,34 +30,25 @@ public final class Tramp {
     private @Nullable AlphaParseFailure failure;
 
     /**
-     * TODO
+     * Normal constructor.
      *
-     * @param grammar TODO
-     * @param text    TODO
+     * @param grammar The grammar.
+     * @param text    The text.
      */
     public Tramp(final @NotNull Grammar grammar, final @NotNull String text) {
-        this(grammar, text, text, -1);
+        this(grammar, text, -1);
     }
 
     /**
-     * TODO
+     * Used to continue parsing after a failure.
      *
-     * @param grammar   TODO
-     * @param text      TODO
-     * @param failIndex TODO
+     * @param grammar The grammar.
+     * @param text    The text.
+     * @param failIndex The index at which to continue.
      */
     public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final int failIndex) {
-        this(grammar, text, text, failIndex);
-    }
-
-//     Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment) {
-//        this(grammar, text, segment, -1);
-//    }
-
-    private Tramp(final @NotNull Grammar grammar, final @NotNull String text, final @NotNull String segment, final int failIndex) {
         this.grammar = grammar;
         this.text = text;
-        this.segment = segment;
         this.failIndex = failIndex;
         this.stack = new ArrayList<>();
         this.nextStack = new ArrayList<>();
@@ -72,122 +62,107 @@ public final class Tramp {
     }
 
     /**
-     * TODO
+     * Get the grammar.
      *
-     * @return TODO
+     * @return The grammar.
      */
     public @NotNull Grammar getGrammar() {
         return grammar;
     }
 
     /**
-     * TODO
+     * Get the text.
      *
-     * @return TODO
+     * @return The text.
      */
     public @NotNull String getText() {
         return text;
     }
 
     /**
-     * TODO
+     * Get the index at which parsing started. This is only important if parsing had to be restarted after a failure.
      *
-     * @return TODO
-     */
-    public @NotNull String getSegment() {
-        return segment;
-    }
-
-    /**
-     * TODO
-     *
-     * @return TODO
+     * @return Get the index at which parsing started..
      */
     public int getFailIndex() {
         return failIndex;
     }
 
     /**
-     * TODO
+     * A stack of derivative parse procedures of the current generation.
      *
-     * @return TODO
+     * @return A stack of derivative parse procedures of the current generation.
      */
     public @NotNull List<@NotNull Procedure> getStack() {
         return stack;
     }
 
     /**
-     * TODO
+     * The current generation of derivatives.
      *
-     * @return TODO
+     * @return The current generation of derivatives.
      */
     public int getGeneration() {
         return generation;
     }
 
     /**
-     * TODO
+     * Sequential map of negative lookaheads.
      *
-     * @return TODO
+     * @return Sequential map of negative lookaheads.
      */
     public @NotNull SequencedMap<@NotNull Integer, @NotNull NegativeListener> getNegativeListeners() {
         return negativeListeners;
     }
 
     /**
-     * TODO
+     * Last registered success.
      *
-     * @return TODO
+     * @return Last registered success.
      */
     public @Nullable AlphaParseSuccess getSuccess() {
         return success;
     }
 
     /**
-     * TODO
+     * If parsing failed, a failure is set.
      *
-     * @return TODO
+     * @return If parsing failed, a failure is set.
      */
     public @Nullable AlphaParseFailure getFailure() {
         return failure;
     }
 
     /**
-     * TODO
+     * Increments the generation.
      */
-    public void incGeneration() {
+    public void nextGeneration() {
         generation = generation + 1;
-    }
-
-    /**
-     * TODO
-     *
-     * @param frame TODO
-     */
-    public void addToStack(final @NotNull Procedure frame) {
-        this.stack.add(frame);
-    }
-
-    /**
-     * TODO
-     */
-    public void popStack() {
-        stack.removeLast();
-    }
-
-    /**
-     * TODO
-     */
-    public void swapStack() {
         stack.clear();
         stack.addAll(nextStack);
         nextStack.clear();
     }
 
     /**
-     * TODO
+     * Adds a procedure to the stack.
      *
-     * @param frame TODO
+     * @param frame The frame.
+     */
+    public void addToStack(final @NotNull Procedure frame) {
+        this.stack.add(frame);
+    }
+
+    /**
+     * Removes the top of the stack.
+     */
+    public void popStack() {
+        stack.removeLast();
+    }
+
+    /**
+     * Adds an element to the stack for the next generation.
+     *
+     * @param frame The next frame.
      */
     public void addToNextStack(final @NotNull Procedure frame) {
         nextStack.add(frame);
@@ -233,10 +208,10 @@ public final class Tramp {
     }
 
     /**
-     * TODO
+     * Gets a listener node (if registered) from the trampoline.
      *
-     * @param nodeKey TODO
-     * @return TODO
+     * @param nodeKey The key (position and production).
+     * @return The node or null.
      */
     public @Nullable TrampolineListenerNode getNode(final @NotNull TrampolineListenerKey nodeKey) {
         return nodes.get(nodeKey);
@@ -258,7 +233,6 @@ public final class Tramp {
         return "Tramp{" +
                 "grammar=" + grammar +
                 ", text='" + text + '\'' +
-                ", segment=" + segment +
                 ", failIndex=" + failIndex +
                 ", stack=" + stack +
                 ", nextStack=" + nextStack +

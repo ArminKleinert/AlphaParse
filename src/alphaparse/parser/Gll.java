@@ -144,8 +144,7 @@ public final class Gll {
                 continue; // Take it to the top.
             }
             if (foundResult.get()) {
-                tramp.swapStack();
-                tramp.incGeneration();
+                tramp.nextGeneration();
                 foundResult.set(false);
                 continue; // Take it to the top.
             }
