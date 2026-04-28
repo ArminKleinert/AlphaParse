@@ -10,17 +10,18 @@ import java.util.*;
 import java.util.function.Function;
 
 /**
- * TODO
+ * Experimental class which provides utilities for converting between parse trees and Lists or Maps.
  */
 public final class ParseConverterUtils {
     private ParseConverterUtils() {
     }
 
     /**
-     * TODO
+     * Convert list to parse tree.
      *
-     * @param pt TODO
-     * @return TODO
+     * @param pt input.
+     * @return parse tree
+     * @throws IllegalArgumentException if the input has an invalid format.
      */
     public static @NotNull ParseTree parseTreeFromHiccup(final @NotNull List<?> pt) {
         if (pt.isEmpty()) throw new IllegalArgumentException();
@@ -36,10 +37,11 @@ public final class ParseConverterUtils {
     }
 
     /**
-     * TODO
+     * Convert map to parse tree.
      *
-     * @param m TODO
-     * @return TODO
+     * @param m input.
+     * @return parse tree
+     * @throws IllegalArgumentException if the input has an invalid format.
      */
     public static @NotNull ParseTree parseTreeFromEnlive(final @NotNull Map<?, ?> m) {
         if (!(m.size() == 2 &&
@@ -109,10 +111,10 @@ public final class ParseConverterUtils {
     }
 
     /**
-     * TODO
+     * Converts an instance of {@link Combinator} to a map.
      *
-     * @param combinator TODO
-     * @return TODO
+     * @param combinator input
+     * @return A map.
      */
     public static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Combinator combinator) {
         final @NotNull Function<Combinator, String> classTagLookup = (combinator1) ->
@@ -136,10 +138,10 @@ public final class ParseConverterUtils {
     }
 
     /**
-     * TODO
+     * Converts an instance of {@link Parser} to a map.
      *
-     * @param parser TODO
-     * @return TODO
+     * @param parser input
+     * @return A map.
      */
     public static @NotNull Map<Keyword, Object> parserToMap(final @NotNull Parser parser) {
         final @NotNull Function<Combinator, String> classTagLookup = (combinator1) ->

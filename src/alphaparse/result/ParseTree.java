@@ -7,18 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO
+ * This class represents parse trees. Throughout the documentation, trees are typically notated as lists.
  */
 public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
-     * TODO
+     * A technically invalid {@link Keyword}. It is used to mark trees "without" a tag.
      */
-    public static @NotNull String NULL_TAG_NAME = "\0\0\0\0";
-
-    /**
-     * TODO
-     */
-    public static @NotNull Keyword NULL_TAG = Keyword.intern(NULL_TAG_NAME);
+    public static @NotNull Keyword NULL_TAG = Keyword.intern("\0\0\0\0");
 
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
@@ -27,14 +22,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     private final boolean isFlat;
     private final boolean usedMemoryOptimization;
 
-    /**
-     * TODO
-     *
-     * @param tag                    TODO
-     * @param content                TODO
-     * @param isFlat                 TODO
-     * @param usedMemoryOptimization TODO
-     */
     private ParseTree(final @NotNull Node.NodeTreeTag tag,
                       final @NotNull List<@NotNull Node> content,
                       final boolean isFlat,
@@ -48,40 +35,58 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
-     * TODO
+     * The head of the tree. That is the name of the production used to generate the tree.
+     * <p>
+     * E.g. for the tree {@code [:S, "a", "b", "c"]}, the tag is {@code :S}.
      *
-     * @return TODO
+     * <pre>
+     * {@code
+     *   var pt = Alpha.parser("S : 'a' 'b' 'c'").parse("abc");
+     *   println(pt); // [:S, a, b, c]
+     *   println(pt.castToParseSuccess().getTag().content()); // :S
+     * }
+     * </pre>
+     *
+     * @return The tag of the tree.
      */
     public @NotNull Node.NodeTreeTag getTag() {
         return tag;
     }
 
     /**
-     * TODO
+     * The content of the tree, without the tag.
      *
-     * @return TODO
+     * <pre>
+     * {@code
+     *   var pt = Alpha.parser("S : 'a' 'b' 'c'").parse("abc");
+     *   println(pt); // [:S, a, b, c]
+     *   println(pt.castToParseSuccess().getContent()); // [a, b, c]
+     * }
+     * </pre>
+     *
+     * @return The content of the tree.
      */
     public @NotNull List<@NotNull Node> getContent() {
         return content;
     }
 
     /**
-     * TODO
+     * True if memory optimization was turned on when generating the tree.
      *
-     * @return TODO
+     * @return whether memory optimization was turned on when parsing.
      */
     public boolean usedMemoryOptimization() {
         return usedMemoryOptimization;
     }
 
     /**
-     * TODO
+     * Returns the tag ({@link #getTag()} and content ({@link #getContent()}) into a single list.
      *
-     * @return TODO
+     * @return The tree as a list of nodes.
      */
     public @NotNull List<@NotNull Node> toList() {
         final @NotNull List<@NotNull Node> alist = new ArrayList<>();
-        alist.add(tag);
+        if (!tag.content().equals(NULL_TAG)) alist.add(tag);
         alist.addAll(content);
         return new UnmodList<>(alist);
     }
@@ -264,11 +269,12 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
-     * TODO
+     * Creates a parse tree from a tag and content.
      *
-     * @param tag     TODO
-     * @param content TODO
-     * @return TODO
+     * @param tag     The tag as a node.
+     * @param content The content as a node.
+     * @return A new parse tree.
+     * @see #create(Node.NodeTreeTag, List, boolean)
      */
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content) {
@@ -276,12 +282,12 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
-     * TODO
+     * Creates a parse tree from a tag and content.
      *
-     * @param tag                    TODO
-     * @param content                TODO
-     * @param usedMemoryOptimization TODO
-     * @return TODO
+     * @param tag                    The tag as a node.
+     * @param content                The content as a node.
+     * @param usedMemoryOptimization Whether memory optimization was used when parsing.
+     * @return A new parse tree.
      */
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content,
@@ -315,20 +321,28 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
-     * TODO
+     * Convenience method for creating trees.
+     * <pre>
+     * {@code
+     *   var pt1 = ParseTree.create("S", "a", "a");
+     *   var pt2 = ParseTree.create((Node.NodeTreeTag) Node.of(Keyword.intern("S")), List.of(Node.of("a"), Node.of("a")));
+     *   Assertions.assertEquals(pt2, pt1);
+     * }
+     * </pre>
      *
-     * @param tag     TODO
-     * @param content TODO
-     * @return TODO
+     * @param tag     The tag as a string.
+     * @param content The content as variadic arguments.
+     * @return A new parse tree.
+     * @see #create(Node.NodeTreeTag, List)
      */
     public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
         return create(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
     }
 
     /**
-     * TODO
+     * Converts the tree into a nested list. Unlike {@link #toList()}, this method is recursive.
      *
-     * @return TODO
+     * @return A nested list of Objects.
      */
     public @NotNull List<@NotNull Object> hiccup() {
         int i = 0;

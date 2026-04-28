@@ -4,12 +4,12 @@ import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO
+ * This class represents parse failure embedded into a parse tree when parsing only for the first parse.
  *
- * @param text  TODO
- * @param key   TODO
- * @param start TODO
- * @param end   TODO
+ * @param text  The text.
+ * @param key   The production name which failed.
+ * @param start Start index of the failure.
+ * @param end   End index of the failure.
  */
 public record ParseFailureNode(
         @NotNull String text,

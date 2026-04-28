@@ -29,7 +29,7 @@ import java.util.SequencedSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * TODO
+ * This class provides the general parsing algorithms.
  */
 public final class Gll {
     private final @NotNull Tramp tramp;
@@ -198,7 +198,7 @@ public final class Gll {
         final @NotNull TrampolineListenerNode node = getOrCreateListenerNode(nodeKey);
         final @NotNull Combinator parser = nodeKey.parser();
         result = parser.isHidden()
-                ? result.withResult(null)
+                ? result.reset()
                 : result;
         if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.NONE) {
             final ParseTree resultR = Reduction.applyReduction(

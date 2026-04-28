@@ -5,10 +5,14 @@ import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
- * This class is used for the parts of a {@link ParseTree}.
+ * This type is used for the parts of a {@link ParseTree}. An instance of this class wraps an object that can be visible inside a parse tree. Namely, these types are:
+ * <ul>
+ *     <li>{@link NodeString} wraps String.</li>
+ *     <li>{@link NodeParseTree} wraps {@link ParseTree}.</li>
+ *     <li>{@link NodeFail} wraps {@link ParseFailureNode}. This happens only if failures are embedded in parse trees.</li>
+ *     <li>{@link NodeTreeTag} wraps {@link Keyword} and must be the head of a parse tree.</li>
+ * </ul>
  */
 public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.NodeString, Node.NodeTreeTag {
     /**
@@ -29,78 +33,42 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
     }
 
     /**
-     * TODO
+     * The inner object.
      *
-     * @return TODO
+     * @return The inner object.
      */
     @NotNull Object content();
 
     /**
-     * TODO
+     * Wraps a {@link Keyword} and must always be the head of a parse tree. A tag can not exist without a tree and a tree can not exist without a tag.
      *
-     * @param content TODO
+     * @param content The inner object.
      */
     record NodeTreeTag(@NotNull Keyword content) implements Node {
         @Override
-        public boolean equals(Object o) {
-            if (Objects.equals(content(), o)) return true;
-            if (!(o instanceof Node that)) return false;
-            return Objects.equals(content(), that.content());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(content());
-        }
-
-        @Override
         public @NotNull String toString() {
             return content().toString();
         }
     }
 
     /**
-     * TODO
+     * Wraps a {@link ParseTree}.
      *
-     * @param content TODO
+     * @param content The inner object.
      */
     record NodeParseTree(@NotNull ParseTree content) implements Node {
         @Override
-        public boolean equals(Object o) {
-            if (Objects.equals(content(), o)) return true;
-            if (!(o instanceof Node that)) return false;
-            return Objects.equals(content(), that.content());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(content());
-        }
-
-        @Override
         public @NotNull String toString() {
             return content().toString();
         }
     }
 
     /**
-     * TODO
+     * Wraps a {@link String}.
      *
-     * @param content TODO
+     * @param content The inner object.
      */
     record NodeString(@NotNull String content) implements Node {
-        @Override
-        public boolean equals(Object o) {
-            if (Objects.equals(content(), o)) return true;
-            if (!(o instanceof Node that)) return false;
-            return Objects.equals(content(), that.content());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(content());
-        }
-
         @Override
         public @NotNull String toString() {
             return content();
@@ -108,23 +76,11 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
     }
 
     /**
-     * TODO
+     * Wraps a {@link ParseFailureNode} and is only used to embed failures into the tree.
      *
-     * @param content TODO
+     * @param content The inner object.
      */
     record NodeFail(@NotNull ParseFailureNode content) implements Node {
-        @Override
-        public boolean equals(Object o) {
-            if (Objects.equals(content(), o)) return true;
-            if (!(o instanceof Node that)) return false;
-            return Objects.equals(content(), that.content());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(content());
-        }
-
         @Override
         public @NotNull String toString() {
             return content().toString();

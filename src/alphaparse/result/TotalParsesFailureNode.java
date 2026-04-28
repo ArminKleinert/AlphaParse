@@ -5,12 +5,12 @@ import alphaparse.list.PretenderList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO
+ * This class represents parse failure embedded into a parse tree when generating a parse forest.
  *
- * @param text  TODO
- * @param key   TODO
- * @param start TODO
- * @param end   TODO
+ * @param text  The text.
+ * @param key   The production name which failed.
+ * @param start Start index of the failure.
+ * @param end   End index of the failure.
  */
 public record TotalParsesFailureNode(
         @NotNull String text, @NotNull Keyword key,

@@ -1,5 +1,6 @@
 package alphaparse;
 
+import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 
 import java.util.HashSet;
@@ -15,23 +16,28 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class AlphaTest {
-//    @Test
-//    void outputForTemps() throws IOException, InterruptedException {
-//        {
-//                    String text = "abc";
-//        var p = Alpha.parser("S : A 'bc'\nA : 'a'");
-//        var c = Alpha.parse(p, text).castToParseSuccess(); // Parse tree [:S, [:A, 'a'], 'bc']
-//        IO2.println(Viztool.dumpParseTree("vizoutput", c));
-//        }
-//    }
-    @Test void testMostDerived() {
+    @Test
+    void outputForTemps() {
+        {
+        }
+    }
+
+    @Test
+    void testMostDerived() {
         IO2.println(ClassUtil.mostDerived(List.of("abc", "abc")));
         IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), new StringBuffer("abc"))));
         IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), "abc")));
     }
 
     @Test
-    void singleOrDoubleQuotationEquivalenceForStrings(){
+    void simplifiedParseTreeCreation() {
+        var pt1 = ParseTree.create("S", "a", "a");
+        var pt2 = ParseTree.create(new Node.NodeTreeTag(Keyword.intern("S")), List.of(Node.of("a"), Node.of("a")));
+        Assertions.assertEquals(pt2, pt1);
+    }
+
+    @Test
+    void singleOrDoubleQuotationEquivalenceForStrings() {
         var pSingleQuoted = """
                 S : 'a' 'b"c\\''
                 """;
@@ -56,7 +62,7 @@ class AlphaTest {
     }
 
     @Test
-    void singleOrDoubleQuotationEquivalenceForRegexes(){
+    void singleOrDoubleQuotationEquivalenceForRegexes() {
         var pSingleQuoted = """
                 S : #'a' #'b"c\\''
                 """;

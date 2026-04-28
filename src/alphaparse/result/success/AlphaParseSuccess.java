@@ -82,19 +82,18 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
     }
 
     /**
-     * TODO
+     * Creates a new instance of {@link AlphaParseSuccessNull} with the current index.
      *
-     * @param result TODO
-     * @return TODO
+     * @return A new instance of {@link AlphaParseSuccessNull} with the current index.
      */
-    public @NotNull AlphaParseSuccess withResult(final @Nullable Object result) {
-        return create(index, result);
+    public @NotNull AlphaParseSuccess reset() {
+        return new AlphaParseSuccessNull(index);
     }
 
     /**
-     * TODO
+     * The wrapped object.
      *
-     * @return TODO
+     * @return The wrapped object.
      */
     public abstract @Nullable Object getResult();
 
