@@ -185,7 +185,7 @@ import java.util.regex.Pattern;
             final var failColumn = parse.column();
             final var failLine = parse.line();
             final @NotNull var failReasonList = parse.getReasonList();
-            final @NotNull var failText = parse.text();
+            final var failText = parse.text();
             final @NotNull var failResult = List.of();//parse.getResult();
             IO2.println(failIndex + " " + failColumn + " " + failLine + " " + failReasonList + " " + failText + " " + failResult);
 

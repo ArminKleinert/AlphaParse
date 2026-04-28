@@ -1,5 +1,6 @@
 package alphaparse.result;
 
+import alphaparse.IO2;
 import alphaparse.result.failure.FailureUtil;
 import alphaparse.result.failure.failureReason.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,6 @@ public record AlphaParseFailure(int index,
                                 int column,
                                 @Nullable String text)
         implements  AlphaParseResult {
-
     /**
      * TODO
      * @param index TODO
