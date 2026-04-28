@@ -17,22 +17,60 @@ class AlphaTest {
     @Test
     void outputForTemps() {
         {
-            var p = Alpha.parser("S = 'a'+");
-            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
-            IO2.println(p.parses("aa", opts));
-            IO2.println(p.parse("aa", opts));
+            var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+
+            var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.none);
+            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
+
+            opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.tags);
+            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
+
+            opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.content);
+            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
+
+            opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.all);
+            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
         }
     }
+    @Test void testParserCreationNewWithStandardWhitespace() {
+        var p = Alpha.parser(
+                "S : ('a' | 'b')*",
+                Alpha.ParserCreationOptions.newWithStandardWhitespace()
+        );
+        var tree = ParseTree.create("S", "a", "b", "a", "b", "a");
+        IO2.println(p.parse("a b      a\tb\na"));
+        Assertions.assertEquals(tree, p.parse("a b      a\tb\na"));
+    }
+    @Test void testUnhideOptionsNone() {
+        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.none);
+        var tree = ParseTree.create("S", "a", "c", "a");
+    Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
+    @Test void testUnhideOptionsTags() {
+        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.tags);
+        var tree = ParseTree.create("S", "a", ParseTree.create("C", "c"), "a");
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
+    @Test void testUnhideOptionsContent() {
+        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.content);
+        var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), "c", "d", "a");
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
+    @Test void testUnhideOptionsAll() {
+        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.all);
+        var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), ParseTree.create("C", "c"), ParseTree.create("D", "d"), "a");
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
 
     @Test void testPartialParseOptionIgnoredOnSingleParse() {
         {
             var p = Alpha.parser("S = 'a'+");
-            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+            var opts = Alpha.ParsingOptions.getDefault().withPartial(true);
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa", opts));
         }
         {
             var p = Alpha.parser("S = 'a'");
-            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+            var opts = Alpha.ParsingOptions.getDefault().withPartial(true);
             Assertions.assertTrue(p.parse("aa", opts).isFailure());
         }
     }
@@ -40,7 +78,7 @@ class AlphaTest {
     @Test void testPartialParseOptionIfNotInGrammar() {
         {
             var p = Alpha.parser("S = 'a'");
-            var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
+            var opts = Alpha.ParsingOptions.getDefault().withPartial(true);
             Assertions.assertEquals(List.of(ParseTree.create("S", "a")), p.parses("aa", opts));
         }
     }
@@ -66,14 +104,14 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'");
 
-            final var opts = Alpha.ParsingOptions.getDefault().withStartingProdSetTo(Keyword.intern("B"));
+            final var opts = Alpha.ParsingOptions.getDefault().withStart(Keyword.intern("B"));
 
             Assertions.assertTrue(Alpha.parse(p, "b").isFailure());
             Assertions.assertEquals(ParseTree.create("B", "b"), Alpha.parse(p, "b", opts));
         }
         {
             // The production is not in the grammar => Fail
-            final var opts = Alpha.ParsingOptions.getDefault().withStartingProdSetTo(Keyword.intern("B"));
+            final var opts = Alpha.ParsingOptions.getDefault().withStart(Keyword.intern("B"));
             final @NotNull var p = Alpha.parser("A : 'a'");
             Assertions.assertThrows(IllegalArgumentException.class, ()-> Alpha.parse(p, "a", opts));
         }

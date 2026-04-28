@@ -5,6 +5,7 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Function;
 
 /**
@@ -17,7 +18,7 @@ import java.util.function.Function;
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Keyword startProduction,
                      @NotNull ReductionType.ReductionTypesAvailable outputFormat)
-        implements  Function<String, AlphaParseResult> {
+        implements Function<String, AlphaParseResult> {
 
     /**
      * Creates a new Parser.
@@ -70,7 +71,8 @@ public record Parser(@NotNull Grammar grammar,
         return Alpha.parses(this, text, options);
     }
 
-    /**Same as {@link Alpha#parses(Parser, String)} using {@code this} as the parser.
+    /**
+     * Same as {@link Alpha#parses(Parser, String)} using {@code this} as the parser.
      *
      * @param text The text.
      * @return The parse forest or error, as needed.
@@ -127,7 +129,7 @@ public record Parser(@NotNull Grammar grammar,
     /**
      * Same as {@link #parse(String)}.
      *
-     * @param s              The string to parse.
+     * @param s The string to parse.
      * @return The result of the parse.
      */
     @Override
@@ -137,6 +139,7 @@ public record Parser(@NotNull Grammar grammar,
 
     /**
      * Creates a string representing this parser.
+     *
      * @return The string.
      */
     public @NotNull String show() {

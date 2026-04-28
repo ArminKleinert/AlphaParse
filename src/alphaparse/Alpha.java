@@ -53,7 +53,7 @@ public final class Alpha {
 
     /**
      * Runs a parser on a text. If the parse is successful, returns a {@link ParseTree}. If the parse fails, returns a {@link AlphaParseFailure}
-     *
+     * <p>
      * The options apply as follows:
      * <ul>
      *     <li>{@link ParsingOptions#isOptimizeMemory()}: Try to use a different algorithm for parsing.</li>
@@ -71,7 +71,7 @@ public final class Alpha {
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
         final @NotNull var startProduction =
-                getStartProductionFromParserOrOptionsAndCheck(options,parser);
+                getStartProductionFromParserOrOptionsAndCheck(options, parser);
         //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
         final @NotNull var doUnhide = options.getUnhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
@@ -127,7 +127,7 @@ public final class Alpha {
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
         final @NotNull var startProduction =
-                getStartProductionFromParserOrOptionsAndCheck(options,parser);
+                getStartProductionFromParserOrOptionsAndCheck(options, parser);
         final var usePartial = options.usePartial();
         final @NotNull var doUnhide = options.getUnhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
@@ -175,7 +175,7 @@ public final class Alpha {
                                                              final @NotNull String text,
                                                              final @NotNull ParsingOptions options) {
         final @NotNull var startProduction =
-                getStartProductionFromParserOrOptionsAndCheck(options,parser);
+                getStartProductionFromParserOrOptionsAndCheck(options, parser);
         final var usePartial = options.usePartial();
         final @NotNull var doUnhide = options.getUnhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
@@ -189,32 +189,45 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Creates a parser from a grammar specification, using the default creation options.
      *
-     * @param grammar TODO
-     * @return TODO
+     * @param grammar The grammar as a string.
+     * @return The parser.
+     * @see #parser(String, ParserCreationOptions)
+     * @see ParserCreationOptions#getDefault()
      */
     public static @NotNull Parser parser(final @NotNull String grammar) {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
     /**
-     * TODO
+     * Creates a parser from a grammar specification, using the default creation options.
      *
-     * @param grammar TODO
-     * @return TODO
-     * @throws IOException TODO
+     * @param grammar The grammar as a file.
+     * @return The parser.
+     * @throws IOException If the file doesn't exist or can't be accessed.
+     * @see #parser(File, ParserCreationOptions)
+     * @see ParserCreationOptions#getDefault()
      */
     public static @NotNull Parser parser(final @NotNull File grammar) throws IOException {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
     /**
-     * TODO
+     * Creates a parser from a grammar specification.
+     * <p>
+     * The options are as follows:
+     * <ul>
+     *     <li>{@link ParserCreationOptions#whitespaceParser()}: Include another parser which is intended to filter out whitespace.</li>
+     *     <li>{@link ParserCreationOptions#startProduction()}: Explicitly set the starting production.</li>
+     *     <li>{@link ParserCreationOptions#stringCaseInsensitive()}: Make ll string terminals ignore casing.</li>
+     *     <li>{@link ParserCreationOptions#outputFormat()}: Set the output format this parser will give.</li>
+     *     <li>{@link ParserCreationOptions#useParserBuffering()}: Whether to use buffering for the productions to ensure that no productions are doubled.</li>
+     * </ul>
      *
-     * @param grammar TODO
-     * @param options TODO
-     * @return TODO
+     * @param grammar The grammar as a string.
+     * @param options The options.
+     * @return The parser.
      */
     public static @NotNull Parser parser(final @NotNull String grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) {
@@ -222,12 +235,12 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Creates a parser from a grammar specification. To see how options apply, see {@link #parser(String, ParserCreationOptions)}.
      *
-     * @param grammar TODO
-     * @param options TODO
-     * @return TODO
-     * @throws IOException TODO
+     * @param grammar The grammar as a file.
+     * @param options The options
+     * @return The parser.
+     * @throws IOException If the file doesn't exist or can't be accessed.
      */
     public static @NotNull Parser parser(final @NotNull File grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) throws IOException {
@@ -236,17 +249,21 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Creates a parser from a grammar. See {@link #parser(String, ParserCreationOptions)} for what the options do.
+     * Unlike the other creation methods, the options are mandatory, specifically {@link ParserCreationOptions#startProduction()}, which must not be null.
      *
-     * @param grammar TODO
-     * @param options TODO
-     * @return TODO
-     * @throws IOException TODO
+     * @param grammar The grammar.
+     * @param options The options, most importantly the start production.
+     * @return The parser.
+     * @throws IllegalArgumentException If the start production is invalid.
      */
     public static @NotNull Parser parser(final @NotNull Grammar grammar,
-                                         final @NotNull Alpha.ParserCreationOptions options) throws IOException {
+                                         final @NotNull Alpha.ParserCreationOptions options) {
         if (options.startProduction() == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Start production must be specified when creating a parser from a Grammar object.");
+
+        if (!grammar.containsKey(options.startProduction()))
+            throw new IllegalArgumentException("The start production " + options.startProduction() + " is not in the grammar.");
 
         @NotNull Parser parser = Cfg.buildParserFromCombinators(grammar, options);
         if (options.whitespaceParser() != null) {
@@ -256,29 +273,39 @@ public final class Alpha {
     }
 
     /**
-     *  TODO
+     * Options for unhiding parts of the output from a parse. A thorough description can be found in the description of the {@link ParsingOptions} class.
+     *
+     * @see ParsingOptions#getUnhide()
      */
     public enum UnhideOptions {
         /**
-         * TODO
+         * Do nothing.
+         *
+         * @see ParsingOptions#getUnhide()
          */
-        content,
+        none,
         /**
-         * TODO
+         * Unhide tags, do not show hidden contents.
+         *
+         * @see ParsingOptions#getUnhide()
          */
         tags,
         /**
-         * TODO
+         * Unhide contents, but keep tags hidden.
+         *
+         * @see ParsingOptions#getUnhide()
          */
-        all,
+        content,
         /**
-         * TODO
+         * Show both contents and tags.
+         *
+         * @see ParsingOptions#getUnhide()
          */
-        none
+        all
     }
 
     /**
-     * TODO
+     * Options for parsing with an already created parser.
      */
     public static class ParsingOptions {
         /**
@@ -312,7 +339,6 @@ public final class Alpha {
          * Calls {@link ParsingOptions#ParsingOptions(Keyword, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
          *
          * @return An instance of this class, using all the static DEFAULT_* values.
-         *
          * @see ParsingOptions#DEFAULT_START
          * @see ParsingOptions#DEFAULT_PARTIAL
          * @see ParsingOptions#DEFAULT_UNHIDE
@@ -331,7 +357,6 @@ public final class Alpha {
          * @param unhide         What (if anything) to "unhide" in the results.
          * @param total          Whether to return parse trees containing failure nodes or just return the failure itself.
          * @param optimizeMemory Whether to attempt using more memory-efficient algorithms for parsing.
-         *
          * @see ParsingOptions#DEFAULT_START
          * @see ParsingOptions#DEFAULT_PARTIAL
          * @see ParsingOptions#DEFAULT_UNHIDE
@@ -374,10 +399,11 @@ public final class Alpha {
          *      println(p.parse("b")); // Failure: 'b' could not be parsed from production A.
          *
          *      // With the start production explicitly changed, it works:
-         *      println(p.parse("b", Alpha.ParsingOptions.getDefault().withStartingProdSetTo(Keyword.intern("B")))); // [:B, b]
+         *      println(p.parse("b", Alpha.ParsingOptions.getDefault().withStart(Keyword.intern("B")))); // [:B, b]
          * }
          * </pre>
          * This can be useful if the grammar has multiple unrelated parts.
+         *
          * @return A keyword.
          */
         public @Nullable Keyword getStart() {
@@ -410,9 +436,45 @@ public final class Alpha {
         }
 
         /**
-         * TODO
+         * Determine which parts of a parse result to show when they would normally be hidden by the parser.
+         * <p>
+         * Consider the following grammar:
+         * <pre>
+         * {@code
+         *   S   = 'a' <B> C <D> 'e' (* Expects the string "abcde", but will hide the substrings parsed by productions B and D *)
+         *   B   = 'b'
+         *   <C> = 'c' (* Expects the string "c", but will "flatten" itself into the output. *)
+         *   <D> = 'd' (* Same as C *)
+         * }
+         * </pre>
+         * Explanation: Production S expects the string "abcde", but the outputs of productions B and D will be hidden. The result of production C will be shown in the output without the associated tag "C".
+         * <br>
+         * Now the code:
+         * <pre>
+         * {@code
+         *   var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
          *
-         * @return TODO
+         *   // No options.
+         *   println("Default => " + p.parse("abcda"));       // [:S, a, c, a]
+         *
+         *   var opts = Alpha.ParsingOptions.getDefault();
+         *   println("Default => " + p.parse("abcda"));       // [:S, a, c, a]
+         *
+         *   opts = opts.withUnhide(Alpha.UnhideOptions.none);
+         *   println("none    => " + p.parse("abcda", opts)); // [:S, a, c, a]
+         *
+         *   opts = opts.withUnhide(Alpha.UnhideOptions.tags);
+         *   println("tags    => " + p.parse("abcda", opts)); // [:S, a, [:C, c], a]
+         *
+         *   opts = opts.withUnhide(Alpha.UnhideOptions.content);
+         *   println("content => " + p.parse("abcda", opts)); // [:S, a, [:B, b], c, d, a]
+         *
+         *   opts = opts.withUnhide(Alpha.UnhideOptions.all);
+         *   println("all     => " + p.parse("abcda", opts)); // [:S, a, [:B, b], [:C, c], [:D, d], a]
+         * }
+         * </pre>
+         *
+         * @return The unhide option.
          * @see ParsingOptions#DEFAULT_UNHIDE
          * @see ParsingOptions#getDefault()
          */
@@ -432,11 +494,12 @@ public final class Alpha {
          *      //   => [1, [{tag=:regex, expecting=a, full=false}], 1, 2, ab]
          *
          *      // With the total option, a parsetree is returned, potentially providing more information about the failure.
-         *      var opts = Alpha.ParsingOptions.getDefault().withTotalParseSetTo(true);
+         *      var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
          *      println(p.parse("ab", opts));
          *      // => [:S, a, [:failure, could not parse "b" at 1..2]]
          * }
          * </pre>
+         *
          * @return true or false
          * @see ParsingOptions#DEFAULT_TOTAL
          * @see ParsingOptions#getDefault()
@@ -466,51 +529,55 @@ public final class Alpha {
          * @see ParsingOptions#DEFAULT_START
          * @see ParsingOptions#getDefault()
          */
-        public @NotNull ParsingOptions withStartingProdSetTo(final @Nullable Keyword start) {
+        public @NotNull ParsingOptions withStart(final @Nullable Keyword start) {
             if (Objects.equals(this.start, start)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
-         * TODO
+         * Makes a new instance with the "partial" parameter set to the argument.
          *
-         * @param partial TODO
-         * @return TODO
+         * @param partial The argument as a boolean.
+         * @return A new instance.
+         * @see #usePartial()
          */
-        public @NotNull ParsingOptions withPartialSetTo(final boolean partial) {
+        public @NotNull ParsingOptions withPartial(final boolean partial) {
             if (Objects.equals(this.partial, partial)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
-         * TODO
+         * Creates a new instance with the unhide option set to the parameter.
          *
-         * @param unhide TODO
-         * @return TODO
+         * @param unhide The new option.
+         * @return A new instance.
+         * @see #getUnhide()
          */
-        public @NotNull ParsingOptions withUnhideOptionsSetTo(final @NotNull Alpha.UnhideOptions unhide) {
+        public @NotNull ParsingOptions withUnhide(final @NotNull Alpha.UnhideOptions unhide) {
             if (Objects.equals(this.unhide, unhide)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
-         * TODO
+         * Creates a new instance with the total option set to the parameter.
          *
-         * @param total TODO
-         * @return TODO
+         * @param total The new (or old) setting.
+         * @return A new instance.
+         * @see #isTotal()
          */
-        public @NotNull ParsingOptions withTotalParseSetTo(final boolean total) {
+        public @NotNull ParsingOptions withTotal(final boolean total) {
             if (Objects.equals(this.total, total)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
 
         /**
-         * TODO
+         *  Creates a new instance with the optimizeMemory option set to the parameter.
          *
-         * @param optimizeMemory TODO
-         * @return TODO
+         * @param optimizeMemory The new (or old) setting.
+         * @return A new instance.
+         * @see #isOptimizeMemory()
          */
-        public @NotNull ParsingOptions withOptMemorySetTo(final boolean optimizeMemory) {
+        public @NotNull ParsingOptions withOptimizeMemory(final boolean optimizeMemory) {
             if (Objects.equals(this.optimizeMemory, optimizeMemory)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
@@ -518,41 +585,45 @@ public final class Alpha {
 
     /**
      * This class provides options for creating {@link Parser} instances.
-     * @param whitespaceParser A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
-     * @param startProduction The starting production name of the parser.
+     *
+     * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
+     * @param startProduction       The starting production name of the parser.
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
-     * @param outputFormat The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
-     * @param useParserBuffering Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+     * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
+     * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         @NotNull ReductionType.ReductionTypesAvailable outputFormat,
                                         boolean useParserBuffering) {
-        private static final boolean defaultUseParserBuffering = false;
+        private static final boolean defaultUseParserBuffering = true;
 
-        private static final @NotNull ParserCreationOptions DEFAULT = new ParserCreationOptions(
-                null, null,
-                GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType,
-                defaultUseParserBuffering);
+        private static ParserCreationOptions DEFAULT;
 
         /**
-         * TODO
+         * The default settings.
          *
-         * @return TODO
+         * @return default settings.
          */
         public static @NotNull ParserCreationOptions getDefault() {
+            if (DEFAULT == null) {
+                DEFAULT = new ParserCreationOptions(
+                        null, null,
+                        GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType,
+                        defaultUseParserBuffering);
+            }
             return DEFAULT;
         }
 
         /**
-         * TODO
+         * Constructor.
          *
          * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
          * @param startProduction       The starting production name of the parser.
          * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
          * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#defaultType} is used.
-         * @param useParserBuffering Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+         * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
@@ -571,102 +642,90 @@ public final class Alpha {
         }
 
         /**
-         * TODO
+         * Creates a new instance with the whitespace-ignoring parser set.
          *
-         * @param whitespaceParser TODO
+         * @param whitespaceParser The parser (or null).
+         * @return A new instance.
          */
-        public ParserCreationOptions(final @Nullable Parser whitespaceParser) {
-            this(whitespaceParser, null,
-                    GlobalCaseInsensitivity.DEFAULT,
-                    ReductionType.ReductionTypesAvailable.defaultType,
-                    defaultUseParserBuffering);
-        }
-
-        /**
-         * TODO
-         *
-         * @param startProduction TODO
-         */
-        public ParserCreationOptions(final @Nullable Keyword startProduction) {
-            this(null, startProduction,
-                    GlobalCaseInsensitivity.DEFAULT,
-                    ReductionType.ReductionTypesAvailable.defaultType,
-                    defaultUseParserBuffering);
-        }
-
-        /**
-         * TODO
-         *
-         * @param outputFormat TODO
-         */
-        public ParserCreationOptions(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
-            this(null, null,
-                    GlobalCaseInsensitivity.DEFAULT, outputFormat,
-                    defaultUseParserBuffering);
-        }
-
-        /**
-         * TODO
-         *
-         * @param whitespaceParser TODO
-         * @return TODO
-         */
-        public @NotNull ParserCreationOptions withWhitespaceParser(final @Nullable Parser whitespaceParser) {
+        public @NotNull ParserCreationOptions withWhitespaceParser(
+                final @Nullable Parser whitespaceParser) {
+            if (Objects.equals(this.whitespaceParser(), whitespaceParser))
+                return this;
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
                     defaultUseParserBuffering);
         }
 
         /**
-         * TODO
+         * Creates a new instance with the start production set.
          *
-         * @param startProduction TODO
-         * @return TODO
+         * @param startProduction The start production's name.
+         * @return A new instance.
          */
-        public @NotNull ParserCreationOptions withStartProduction(final @Nullable Keyword startProduction) {
+        public @NotNull ParserCreationOptions withStartProduction(
+                final @Nullable Keyword startProduction) {
+            if (Objects.equals(this.startProduction(), startProduction))
+                return this;
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, defaultUseParserBuffering);
         }
 
         /**
-         * TODO
+         * Creates a new instance with string case-insensitivity set to the parameter.
          *
-         * @param stringCaseInsensitive TODO
-         * @return TODO
+         * @param stringCaseInsensitive The setting for the case-insensitivity.
+         * @return A new instance.
          */
-        public @NotNull ParserCreationOptions withCaseInsensitivity(final @Nullable GlobalCaseInsensitivity stringCaseInsensitive) {
+        public @NotNull ParserCreationOptions withStringCaseInsensitive(
+                final @Nullable GlobalCaseInsensitivity stringCaseInsensitive) {
+            if (Objects.equals(this.stringCaseInsensitive(), stringCaseInsensitive))
+                return this;
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, defaultUseParserBuffering);
         }
 
         /**
-         * TODO
+         * Creates a new instance with string case-insensitivity set to the parameter. The parameter here is a boolean.
+         * {@code true} becomes {@link GlobalCaseInsensitivity#TRUE}. {@link GlobalCaseInsensitivity#FALSE}
          *
-         * @param stringCaseInsensitive TODO
-         * @return TODO
+         * @param stringCaseInsensitive The setting for the case-insensitivity.
+         * @return A new instance.
          */
-        public @NotNull ParserCreationOptions withCaseInsensitivity(final boolean stringCaseInsensitive) {
-            return new ParserCreationOptions(
-                    whitespaceParser, startProduction,
-                    stringCaseInsensitive ? GlobalCaseInsensitivity.TRUE : GlobalCaseInsensitivity.FALSE,
-                    outputFormat, defaultUseParserBuffering);
+        public @NotNull ParserCreationOptions withStringCaseInsensitive(
+                final boolean stringCaseInsensitive) {
+            return withStringCaseInsensitive(stringCaseInsensitive
+                    ? GlobalCaseInsensitivity.TRUE
+                    : GlobalCaseInsensitivity.FALSE);
         }
 
         /**
-         * TODO
+         * Creates a new instance with output format set to the parameter.
          *
-         * @param outputFormat TODO
-         * @return TODO
+         * @param outputFormat The setting for the output format.
+         * @return A new instance.
          */
-        public @NotNull ParserCreationOptions withOutputFormat(final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
+        public @NotNull ParserCreationOptions withOutputFormat(
+                final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive, outputFormat, defaultUseParserBuffering);
         }
 
         /**
-         * TODO
+         * Creates a new instance using the most common whitespace parser.
+         * <pre>
+         * {@code
          *
-         * @return TODO
+         *   // With whitespace parser:
+         *   var p = Alpha.parser("S : ('a' | 'b')*");
+         *   println(p.parse("a b      a\tb\na")); // Error
+         *
+         *   // With whitespace parser:
+         *   var p = Alpha.parser("S : ('a' | 'b')*", Alpha.ParserCreationOptions.newWithStandardWhitespace());
+         *   println(p.parse("a b      a\tb\na")); // [:S, a, b, a, b, a]
+         * }
+         * </pre>
+         *
+         * @return A new instance.
          */
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
             return new ParserCreationOptions(
@@ -679,12 +738,15 @@ public final class Alpha {
     }
 
     /**
-     * TODO
+     * Get a whitespace parser (for use in {@link ParserCreationOptions#withWhitespaceParser(Parser)}). The parser is accessed by a keyword.
+     * <p>
+     * The defined names are the keywords {@code :standard} (ignores spaces, tabs and newlines) and {@code :comma} (which also ignores commas).
      *
-     * @param wsParserName TODO
-     * @return TODO
+     * @param wsParserName The key.
+     * @return A parser or null.
      */
-    public static @Nullable Parser getPredefinedWhitespaceParser(final @Nullable Keyword wsParserName) {
+    public static @Nullable Parser getPredefinedWhitespaceParser(
+            final @Nullable Keyword wsParserName) {
         if (wsParserName == null) {
             return null;
         }
