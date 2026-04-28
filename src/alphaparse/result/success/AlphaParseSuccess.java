@@ -4,7 +4,6 @@ import alphaparse.flat.FlatSeq;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.TotalParsesFailureNode;
-import alphaparse.result.AlphaIntermediateResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +13,7 @@ import java.util.*;
  * A parsed "success" consists of an index and an object carrying more information.
  * Usually, the wrapped object is a {@link ParseTree} (in a {@link AlphaParseSuccessParseResult}). But this class is also used to transport other types of objects.
  */
-public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResult permits
+public sealed abstract class AlphaParseSuccess permits
         AlphaParseSuccessList,
         AlphaParseSuccessNull,
         AlphaParseSuccessParseResult,
@@ -76,7 +75,6 @@ public sealed abstract class AlphaParseSuccess implements AlphaIntermediateResul
         return Objects.hash(index, getResult());
     }
 
-    @Override
     public int index() {
         return index;
     }

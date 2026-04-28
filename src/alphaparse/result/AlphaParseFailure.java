@@ -20,7 +20,7 @@ public record AlphaParseFailure(int index,
                                 int line,
                                 int column,
                                 @Nullable String text)
-        implements AlphaIntermediateResult, AlphaParseResult {
+        implements  AlphaParseResult {
 
     /**
      * TODO
