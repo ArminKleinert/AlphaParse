@@ -30,7 +30,9 @@ public final class CombinatorFactory {
     }
 
     private Combinator bufferIfRequested(Combinator c) {
-        return useBuffer ? buffer.getOrAdd(c) : c;
+        if (!useBuffer) return c;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(c);
     }
 
     /**
@@ -48,7 +50,9 @@ public final class CombinatorFactory {
         if (parsers.size() == 1) return parsers.getFirst();
         if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
         final @NotNull var result = new ChoiceCombinator(parsers);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -60,7 +64,9 @@ public final class CombinatorFactory {
     public @NotNull Combinator optionalCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new OptionalCombinator(parser);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -72,7 +78,9 @@ public final class CombinatorFactory {
     public @NotNull Combinator plusCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new PlusCombinator(parser);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -84,7 +92,9 @@ public final class CombinatorFactory {
     public @NotNull Combinator starCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new CombinatorStar(parser);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -112,7 +122,9 @@ public final class CombinatorFactory {
             // Otherwise fallthrough.
         }
         final @NotNull var result = new RepetitionCombinator(parser, m, n);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -147,7 +159,9 @@ public final class CombinatorFactory {
 
         if (newParserList.size() == 1) return Objects.requireNonNull(newParserList.getFirst());
         final @NotNull var result = new OrderedChoiceCombinator(newParserList);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -181,7 +195,9 @@ public final class CombinatorFactory {
         }
 
         final @NotNull var result = new ConcatCombinator(parserList);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -195,7 +211,9 @@ public final class CombinatorFactory {
                                                         final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
         final @NotNull var result = new TerminalStringCombinator(string, caseInsensitive);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -257,7 +275,9 @@ public final class CombinatorFactory {
      */
     public @NotNull TerminalRegexpCombinator createRegexTerminal(final @NotNull Pattern regex) {
         final @NotNull var result = new TerminalRegexpCombinator(regex);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -268,7 +288,9 @@ public final class CombinatorFactory {
      */
     public @NotNull NonTerminalCombinator makeNonTerminal(final @NotNull Keyword keyword) {
         final @NotNull var result = new NonTerminalCombinator(keyword);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -291,7 +313,9 @@ public final class CombinatorFactory {
     public @NotNull Combinator makeLookahead(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new LookaheadCombinator(parser);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -304,7 +328,9 @@ public final class CombinatorFactory {
     public @NotNull Combinator negateRule(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new NegativeLookaheadCombinator(parser);
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -315,7 +341,9 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator hideTag(final @NotNull Combinator parser) {
         final @NotNull var result = parser.hideTag();
-        return useBuffer ? buffer.getOrAdd(result) : result;
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**

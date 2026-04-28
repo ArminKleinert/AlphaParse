@@ -1,5 +1,6 @@
 package alphaparse.parser;
 
+import alphaparse.Alpha;
 import alphaparse.Keyword;
 import alphaparse.Reduction;
 import alphaparse.functions.Listener;
@@ -289,13 +290,15 @@ public final class Gll {
     }
 
     /**
-     * TODO
+     * This method should not be called directly. Use {@link Alpha#parses(Parser, String)} or {@link Alpha#parses(Parser, String, Alpha.ParsingOptions)} instead.
      *
-     * @param grammar TODO
-     * @param start   TODO
-     * @param text    TODO
-     * @param partial TODO
-     * @return TODO
+     * @param grammar The grammar.
+     * @param start   The name of the start production.
+     * @param text    The text.
+     * @param partial Whether to include partial results.
+     * @return The parse forest.
+     * @see Alpha#parses(Parser, String)
+     * @see Alpha#parse(Parser, String, Alpha.ParsingOptions)
      */
     public static @NotNull AlphaParsesResult parses(
             final @NotNull Grammar grammar,
@@ -311,13 +314,14 @@ public final class Gll {
     }
 
     /**
-     * TODO
+     * This method should not be called directly. Use {@link Alpha#parsesOrFailure(Parser, String, Alpha.ParsingOptions)} instead.
      *
-     * @param grammar TODO
-     * @param start   TODO
-     * @param text    TODO
-     * @param partial TODO
-     * @return TODO
+     * @param grammar The grammar.
+     * @param start   The name of the start production.
+     * @param text    The text.
+     * @param partial Whether to include partial results.
+     * @return The parse forest or failure.
+     * @see Alpha#parsesOrFailure(Parser, String, Alpha.ParsingOptions)
      */
     public static @NotNull AlphaParsesResult parsesOrFailure(
             final @NotNull Grammar grammar,
@@ -339,13 +343,15 @@ public final class Gll {
     }
 
     /**
-     * TODO
+     * This method should not be called directly. Use {@link Alpha#parse(Parser, String)} or {@link Alpha#parse(Parser, String, Alpha.ParsingOptions)} instead.
      *
-     * @param grammar TODO
-     * @param start   TODO
-     * @param text    TODO
-     * @param partial TODO
-     * @return TODO
+     * @param grammar The grammar.
+     * @param start   The name of the start production.
+     * @param text    The text.
+     * @param partial Whether to include partial results.
+     * @return The parse tree or failure.
+     * @see Alpha#parse(Parser, String)
+     * @see Alpha#parse(Parser, String, Alpha.ParsingOptions)
      */
     public static @NotNull AlphaParseResult parse(
             final @NotNull Grammar grammar,
@@ -366,13 +372,15 @@ public final class Gll {
     }
 
     /**
-     * TODO
+     * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, Alpha.ParsingOptions)} with {@link Alpha.ParsingOptions#isTotal()} set to true instead.
      *
-     * @param grammar TODO
-     * @param start   TODO
-     * @param text    TODO
-     * @param partial TODO
-     * @return TODO
+     * @param grammar The grammar.
+     * @param start   The name of the start production.
+     * @param text    The text.
+     * @param partial Whether to include partial results.
+     * @return The parse forest.
+     * @see Alpha#parses(Parser, String, Alpha.ParsingOptions)
+     * @see Alpha.ParsingOptions#isTotal()
      */
     public static @NotNull AlphaParsesResult parsesTotal(
             final @NotNull Grammar grammar,
@@ -401,13 +409,15 @@ public final class Gll {
     }
 
     /**
-     * TODO
+     * This method should not be called directly. Use {@link Alpha#parse(Parser, String, Alpha.ParsingOptions)} with {@link Alpha.ParsingOptions#isTotal()} set to true instead.
      *
-     * @param grammar TODO
-     * @param start   TODO
-     * @param text    TODO
-     * @param partial TODO
-     * @return TODO
+     * @param grammar The grammar.
+     * @param start   The name of the start production.
+     * @param text    The text.
+     * @param partial Whether to include partial results.
+     * @return The parse tree or failure.
+     * @see Alpha#parse(Parser, String, Alpha.ParsingOptions)
+     * @see Alpha.ParsingOptions#isTotal()
      */
     public static @NotNull AlphaParseResult parseTotal(
             final @NotNull Grammar grammar,

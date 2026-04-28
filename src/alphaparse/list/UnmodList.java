@@ -94,7 +94,7 @@ public final class UnmodList<T> implements List<T>, RandomAccess {
     }
 
     @Override
-    public <T1> T1 @NotNull [] toArray(T1[] a) {
+    public <T1> T1 @NotNull [] toArray(T1 @NotNull [] a) {
         if (a.length < size()) {
             return (T1[]) Arrays.copyOf(inner, size(), a.getClass());
         } else {

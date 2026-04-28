@@ -9,7 +9,7 @@ import java.util.ListIterator;
 
 /**
  * An interface which pretends to be a list.
- * @param <T> TODO
+ * @param <T> The generic type.
  */
 public interface PretenderList<T> extends List<T> {
     @Override default int size() { throw new UnsupportedOperationException(); }

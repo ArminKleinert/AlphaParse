@@ -14,25 +14,82 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class AlphaTest {
+//    @Test
+//    void outputForTemps() throws IOException, InterruptedException {
+//        {
+//                    String text = "abc";
+//        var p = Alpha.parser("S : A 'bc'\nA : 'a'");
+//        var c = Alpha.parse(p, text).castToParseSuccess(); // Parse tree [:S, [:A, 'a'], 'bc']
+//        IO2.println(Viztool.dumpParseTree("vizoutput", c));
+//        }
+//    }
+
     @Test
-    void outputForTemps() {
-        {
-            var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+    void singleOrDoubleQuotationEquivalenceForStrings(){
+        var pSingleQuoted = """
+                S : 'a' 'b"c\\''
+                """;
+        var pDoubleQuoted = """
+                S : "a" "b\\"c'"
+                """;
 
-            var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.none);
-            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
+        // Valid parse
+        Assertions.assertEquals(
+                Alpha.parser(pSingleQuoted).parse("ab\"c'"),
+                Alpha.parser(pDoubleQuoted).parse("ab\"c'"));
 
-            opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.tags);
-            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
+        // Invalid parse
+        Assertions.assertEquals(
+                Alpha.parser(pSingleQuoted).parse(""),
+                Alpha.parser(pDoubleQuoted).parse(""));
 
-            opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.content);
-            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
-
-            opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.all);
-            IO2.println(opts.getUnhide() + " => "+p.parse("abcda", opts));
-        }
+        // The parsers are the same on the inside.
+        Assertions.assertEquals(
+                Alpha.parser(pSingleQuoted),
+                Alpha.parser(pDoubleQuoted));
     }
-    @Test void testParserCreationNewWithStandardWhitespace() {
+
+    @Test
+    void singleOrDoubleQuotationEquivalenceForRegexes(){
+        var pSingleQuoted = """
+                S : #'a' #'b"c\\''
+                """;
+        var pDoubleQuoted = """
+                S : #"a" #"b\\"c'"
+                """;
+
+        // Valid parse
+        Assertions.assertEquals(
+                Alpha.parser(pSingleQuoted).parse("ab\"c'"),
+                Alpha.parser(pDoubleQuoted).parse("ab\"c'"));
+
+        // Invalid parse
+        Assertions.assertEquals(
+                Alpha.parser(pSingleQuoted).parse(""),
+                Alpha.parser(pDoubleQuoted).parse(""));
+
+        // The parsers are the same on the inside.
+        Assertions.assertEquals(
+                Alpha.parser(pSingleQuoted),
+                Alpha.parser(pDoubleQuoted));
+    }
+
+    @Test
+    void testOptimizeMemoryDoesNotChangeOutput() {
+        var p = Alpha.parser("S : 'u' (('a'+ | #'b*') / C)\n<C> : 1*3 'c'");
+        var opt = Alpha.ParsingOptions.getDefault().withOptimizeMemory(true);
+
+        Assertions.assertTrue(p.parse("", opt).isFailure());
+        Assertions.assertEquals(p.parse(""), p.parse("", opt));
+
+        Assertions.assertEquals(p.parse("u"), p.parse("u", opt));
+        Assertions.assertEquals(p.parse("ua"), p.parse("ua", opt));
+        Assertions.assertEquals(p.parse("ucc"), p.parse("ucc", opt));
+        Assertions.assertEquals(p.parse("ucccc"), p.parse("ucccc", opt));
+    }
+
+    @Test
+    void testParserCreationNewWithStandardWhitespace() {
         var p = Alpha.parser(
                 "S : ('a' | 'b')*",
                 Alpha.ParserCreationOptions.newWithStandardWhitespace()
@@ -41,28 +98,41 @@ class AlphaTest {
         IO2.println(p.parse("a b      a\tb\na"));
         Assertions.assertEquals(tree, p.parse("a b      a\tb\na"));
     }
-    @Test void testUnhideOptionsNone() {
+
+    @Test
+    void testUnhideOptionsNone() {
         var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
         var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.none);
         var tree = ParseTree.create("S", "a", "c", "a");
-    Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
-    @Test void testUnhideOptionsTags() {
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
+    }
+
+    @Test
+    void testUnhideOptionsTags() {
         var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
         var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.tags);
         var tree = ParseTree.create("S", "a", ParseTree.create("C", "c"), "a");
-        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
-    @Test void testUnhideOptionsContent() {
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
+    }
+
+    @Test
+    void testUnhideOptionsContent() {
         var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
         var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.content);
         var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), "c", "d", "a");
-        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
-    @Test void testUnhideOptionsAll() {
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
+    }
+
+    @Test
+    void testUnhideOptionsAll() {
         var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
         var opts = Alpha.ParsingOptions.getDefault().withUnhide(Alpha.UnhideOptions.all);
         var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), ParseTree.create("C", "c"), ParseTree.create("D", "d"), "a");
-        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));}
+        Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
+    }
 
-    @Test void testPartialParseOptionIgnoredOnSingleParse() {
+    @Test
+    void testPartialParseOptionIgnoredOnSingleParse() {
         {
             var p = Alpha.parser("S = 'a'+");
             var opts = Alpha.ParsingOptions.getDefault().withPartial(true);
@@ -75,7 +145,8 @@ class AlphaTest {
         }
     }
 
-    @Test void testPartialParseOptionIfNotInGrammar() {
+    @Test
+    void testPartialParseOptionIfNotInGrammar() {
         {
             var p = Alpha.parser("S = 'a'");
             var opts = Alpha.ParsingOptions.getDefault().withPartial(true);
@@ -83,7 +154,8 @@ class AlphaTest {
         }
     }
 
-    @Test void parserCreationWithExplicitStartProduction() {
+    @Test
+    void parserCreationWithExplicitStartProduction() {
         {
             final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction(Keyword.intern("B"));
             final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'", opts);
@@ -96,11 +168,12 @@ class AlphaTest {
         {
             // The production is not in the grammar => Fail
             final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction(Keyword.intern("B"));
-            Assertions.assertThrows(IllegalArgumentException.class, ()-> Alpha.parser("A : 'a'", opts));
+            Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("A : 'a'", opts));
         }
     }
 
-    @Test void parseWithExplicitStartProduction() {
+    @Test
+    void parseWithExplicitStartProduction() {
         {
             final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'");
 
@@ -113,7 +186,7 @@ class AlphaTest {
             // The production is not in the grammar => Fail
             final var opts = Alpha.ParsingOptions.getDefault().withStart(Keyword.intern("B"));
             final @NotNull var p = Alpha.parser("A : 'a'");
-            Assertions.assertThrows(IllegalArgumentException.class, ()-> Alpha.parse(p, "a", opts));
+            Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parse(p, "a", opts));
         }
     }
 

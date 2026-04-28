@@ -1,12 +1,12 @@
 package alphaparse.functions;
 
 /**
- * TODO
+ * Equivalent type to a {@link Procedure}, but the name is clearer. This type is used for negative lookaheads when parsing.
  */
 @FunctionalInterface
 public interface NegativeListener {
     /**
-     * TODO
+     * Executes the function.
      */
     void execute();
 }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import static java.lang.Character.isWhitespace;
 
 /**
- * TODO
+ * Helper functions for creating parsers from strings.
  */
 public final class StrParser {
     private StrParser() {
@@ -39,10 +39,10 @@ public final class StrParser {
     }
 
     /**
-     * TODO
+     * Unescapes a string.
      *
-     * @param s TODO
-     * @return TODO
+     * @param s The input string.
+     * @return An unescaped string.
      */
     public static @NotNull String parse(final @NotNull CharSequence s) {
         final @NotNull StringBuilder sb = new StringBuilder();
@@ -144,9 +144,10 @@ public final class StrParser {
 
     /**
      * Converts single quoted string to double-quoted.
+     * The expected input has the format {@code '...'}.
      *
-     * @param s TODO
-     * @return TODO
+     * @param s The input string.
+     * @return A string.
      */
     public static @NotNull String processString(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(1, s.length() - 1);
@@ -155,10 +156,11 @@ public final class StrParser {
     }
 
     /**
-     * Converts single quoted regexp to double-quoted.
+     * Converts single quoted string to double-quoted and then compiles it to a regex.
+     * The expected input has the format {@code #'...'}.
      *
-     * @param s TODO
-     * @return TODO
+     * @param s The input string.
+     * @return A regex.
      */
     public static @NotNull Pattern processRegexp(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(2, s.length() - 1);

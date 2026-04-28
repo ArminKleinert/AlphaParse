@@ -7,9 +7,12 @@ import java.util.*;
 import java.util.function.IntFunction;
 
 /**
- * TODO
+ * Takes a function and lazily executes it repeatedly when requested.
+ * The results are buffered in a {@link List} for fast access.
+ * A maximum number of results can be specified.
+ * The function takes an {@code int} as input.
  *
- * @param <T> TODO
+ * @param <T> The result type for the function.
  */
 public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optional<T>> {
     private @NotNull List<@NotNull T> evaluatedPart;
@@ -18,10 +21,10 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
     private boolean fullyEvaluated = false;
 
     /**
-     * TODO
+     * Instantiates a new instance.
      *
-     * @param nextFn     TODO
-     * @param maxResults TODO
+     * @param nextFn     The function.
+     * @param maxResults Maximum number of results after which generation of results stops.
      */
     public LazySupplierList(final @NotNull IntFunction<@Nullable T> nextFn, final int maxResults) {
         this.evaluatedPart = new ArrayList<>();
@@ -63,13 +66,21 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
     }
 
     /**
-     * TODO
+     * Fully evaluates the list.
      */
     public void evaluate() {
         @Nullable T ep;
         do {
             ep = evalutePart(evaluatedPart.size());
         } while (ep != null);
+    }
+
+    /**
+     * True if the list is fully evaluated, false otherwise.
+     * @return true or false.
+     */
+    public boolean isFullyEvaluated() {
+        return fullyEvaluated;
     }
 
     /**
