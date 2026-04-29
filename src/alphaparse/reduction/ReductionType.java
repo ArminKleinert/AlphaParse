@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * TODO
+ * A class for output formats
  */
 public final class ReductionType {
     private static ReductionType rawNonTerminalReduction = null;
@@ -31,7 +31,7 @@ public final class ReductionType {
      */
     public static @NotNull ReductionType nullReduction() {
         if (nullReduction == null)
-            nullReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.NONE, true);
+            nullReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.nullType, true);
         return nullReduction;
     }
 
@@ -41,25 +41,29 @@ public final class ReductionType {
      */
     public enum ReductionTypesAvailable {
         /**
-         * TODO
+         * The default type.
          */
         NONE,
         /**
-         * TODO
+         * Default type. Represent parse trees as lists. Might be removed in the future.
          */
         HICCUP,
         /**
-         * TODO
+         * Has the same properties as {@link ReductionTypesAvailable#NONE}, but will not be replaced with the default type when finalizing the grammar.
          */
         RAW,
         /**
-         * TODO
+         * Represent parse trees as maps. Not implemented. Might be removed in the future.
          */
         ENLIVE;
         /**
-         * TODO
+         * Default output format.
          */
         public static final ReductionTypesAvailable defaultType = HICCUP;
+        /**
+         * The default type when creating instances of {@link alphaparse.parser.Combinator}.
+         */
+        public static final ReductionTypesAvailable nullType = NONE;
     }
 
     private final @NotNull Keyword key;

@@ -265,7 +265,7 @@ public final class Alpha {
         if (!grammar.containsKey(options.startProduction()))
             throw new IllegalArgumentException("The start production " + options.startProduction() + " is not in the grammar.");
 
-        @NotNull Parser parser = Cfg.buildParserFromCombinators(grammar, options);
+        @NotNull var parser = Cfg.buildParserFromCombinators(grammar, options);
         if (options.whitespaceParser() != null) {
             parser = parser.withWhitespaceParser(options.whitespaceParser());
         }

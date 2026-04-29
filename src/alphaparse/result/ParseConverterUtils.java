@@ -80,7 +80,7 @@ public final class ParseConverterUtils {
         m.put(Keyword.intern("tag"), tag);
         if (isHidden)
             m.put(Keyword.intern("hide"), isHidden);
-        if (!(Objects.equals(reductionType.getReductionType(), ReductionType.ReductionTypesAvailable.NONE)))
+        if (!(Objects.equals(reductionType.getReductionType(), ReductionType.ReductionTypesAvailable.nullType)))
             m.put(Keyword.intern("red"), reductionType);
         for (int i = 0; i < otherKeyAndValues.length; i += 2) {
             if (!(otherKeyAndValues[i] instanceof Keyword))

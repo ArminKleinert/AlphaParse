@@ -351,6 +351,6 @@ final class EbnfG {
         grammarMap.put(Keyword.intern("epsilon"), makeCfgEpsilonRhs(cs));
         grammarMap.put(Keyword.intern("factor"), makeCfgFactorRhs(cs));
         grammarMap.put(Keyword.intern("rules-or-parser"), makeCfgRulesOrParserRhs(cs));
-        return Reduction.applyStandardReductions(new Grammar(grammarMap));
+        return new Grammar(grammarMap).applyStandardReductions();
     }
 }

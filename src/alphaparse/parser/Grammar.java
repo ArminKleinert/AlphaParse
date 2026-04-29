@@ -1,6 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.Keyword;
+import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,6 +115,21 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         }
 
         return result;
+    }
+
+    /**
+     * Replaces all combinators that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#nullType} (the default when created) with combinators with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#defaultType}.
+     * @return A new grammar.
+     */
+    public @NotNull Grammar applyStandardReductions() {
+        final List<Map.Entry<Keyword, Combinator>> m = new ArrayList<>();
+        this.forEach((prodKey, pars) -> {
+            if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.nullType)
+                pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
+
+            m.add(Grammar.entry(prodKey, pars));
+        });
+        return Grammar.fromProductions(m);
     }
 
     /**

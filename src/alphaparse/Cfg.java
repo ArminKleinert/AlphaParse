@@ -183,7 +183,7 @@ final class Cfg {
         if (options.startProduction() == null)
             throw new IllegalArgumentException("No start production provided.");
         return new Parser(
-                Cfg.checkGrammarValidity(Reduction.applyStandardReductions(grammarMap)),
+                Cfg.checkGrammarValidity(grammarMap.applyStandardReductions()),
                 options.startProduction(),
                 options.outputFormat());
     }
@@ -211,7 +211,7 @@ final class Cfg {
                 : productions.getFirst().getKey();
 
         @NotNull var grammar =
-                checkGrammarValidity(Reduction.applyStandardReductions(Grammar.fromProductions(productions)));
+                checkGrammarValidity(Grammar.fromProductions(productions).applyStandardReductions());
 
         if (options.whitespaceParser() != null) {
             grammar = combinatorFactory.autoWhitespace(

@@ -2,7 +2,6 @@ package alphaparse.parser;
 
 import alphaparse.Alpha;
 import alphaparse.Keyword;
-import alphaparse.Reduction;
 import alphaparse.functions.Listener;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
@@ -200,9 +199,9 @@ public final class Gll {
         result = parser.isHidden()
                 ? result.reset()
                 : result;
-        if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.NONE) {
-            final ParseTree resultR = Reduction.applyReduction(
-                    parser.getReduction(),
+        if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.nullType) {
+            final ParseTree resultR = ParseTree.create(
+                    parser.getReduction().getKey(),
                     result.getResult());
             result = AlphaParseSuccess.create(result.index(), resultR);
         }

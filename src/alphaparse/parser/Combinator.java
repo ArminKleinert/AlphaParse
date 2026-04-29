@@ -13,12 +13,12 @@ public abstract sealed class Combinator
     /**
      * Default value for {@link Combinator#isHidden()}.
      */
-    static final boolean defaultHidden = false;
+    protected static final boolean defaultHidden = false;
 
     /**
      * Default value for {@link Combinator#getReduction()}
      */
-    static final ReductionType defaultRed = ReductionType.nullReduction();
+    protected static final ReductionType defaultRed = ReductionType.nullReduction();
 
     protected final boolean hide;
     protected final @NotNull ReductionType red;
