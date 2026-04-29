@@ -24,7 +24,7 @@ public final class PlusCombinator extends CombinatorWithParser {
      * @see CombinatorFactory#plusCombinator(Combinator)
      */
     public PlusCombinator(final @NotNull Combinator parser) {
-        super(defaultHidden, defaultRed, parser);
+        super(defaultHidden, ReductionType.standardInitialReduction(), parser);
     }
 
     @Override

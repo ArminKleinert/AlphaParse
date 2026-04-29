@@ -10,18 +10,18 @@ import java.util.Objects;
  * A class for output formats
  */
 public final class ReductionType {
-    private static ReductionType rawNonTerminalReduction = null;
-    private static ReductionType nullReduction = null;
+    private static ReductionType standardIntermediateReduction = null;
+    private static ReductionType standardInitialReduction = null;
 
     /**
      * TODO
      *
      * @return TODO
      */
-    public static @NotNull ReductionType rawNonTerminalReduction() {
-        if (rawNonTerminalReduction == null)
-            rawNonTerminalReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.RAW, true);
-        return rawNonTerminalReduction;
+    public static @NotNull ReductionType standardIntermediateReduction() {
+        if (standardIntermediateReduction == null)
+            standardIntermediateReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INTERMEDIATE, true);
+        return standardIntermediateReduction;
     }
 
     /**
@@ -29,10 +29,10 @@ public final class ReductionType {
      *
      * @return TODO
      */
-    public static @NotNull ReductionType nullReduction() {
-        if (nullReduction == null)
-            nullReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.nullType, true);
-        return nullReduction;
+    public static @NotNull ReductionType standardInitialReduction() {
+        if (standardInitialReduction == null)
+            standardInitialReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INITIAL, true);
+        return standardInitialReduction;
     }
 
 
@@ -43,27 +43,15 @@ public final class ReductionType {
         /**
          * The default type.
          */
-        NONE,
+        INITIAL,
+        /**
+         * Has the same properties as {@link ReductionTypesAvailable#INITIAL}, but will not be replaced with the default type when finalizing the grammar.
+         */
+        INTERMEDIATE,
         /**
          * Default type. Represent parse trees as lists. Might be removed in the future.
          */
-        HICCUP,
-        /**
-         * Has the same properties as {@link ReductionTypesAvailable#NONE}, but will not be replaced with the default type when finalizing the grammar.
-         */
-        RAW,
-        /**
-         * Represent parse trees as maps. Not implemented. Might be removed in the future.
-         */
-        ENLIVE;
-        /**
-         * Default output format.
-         */
-        public static final ReductionTypesAvailable defaultType = HICCUP;
-        /**
-         * The default type when creating instances of {@link alphaparse.parser.Combinator}.
-         */
-        public static final ReductionTypesAvailable nullType = NONE;
+        OUTPUT
     }
 
     private final @NotNull Keyword key;
@@ -83,7 +71,7 @@ public final class ReductionType {
      * @return TODO
      */
     public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
-        return new ReductionType(key, ReductionType.ReductionTypesAvailable.defaultType, false);
+        return new ReductionType(key, ReductionType.ReductionTypesAvailable.OUTPUT, false);
     }
 
     /**
@@ -94,7 +82,7 @@ public final class ReductionType {
      * @return TODO
      */
     public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
-        return new ReductionType(key, type, type != ReductionTypesAvailable.NONE && type != ReductionTypesAvailable.RAW);
+        return new ReductionType(key, type, type != ReductionTypesAvailable.INITIAL && type != ReductionTypesAvailable.INTERMEDIATE);
     }
 
     @Override

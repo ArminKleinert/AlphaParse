@@ -610,7 +610,7 @@ public final class Alpha {
             if (DEFAULT == null) {
                 DEFAULT = new ParserCreationOptions(
                         null, null,
-                        GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.defaultType,
+                        GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.OUTPUT,
                         defaultUseParserBuffering);
             }
             return DEFAULT;
@@ -622,7 +622,7 @@ public final class Alpha {
          * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
          * @param startProduction       The starting production name of the parser.
          * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
-         * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#defaultType} is used.
+         * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#OUTPUT} is used.
          * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
@@ -636,7 +636,7 @@ public final class Alpha {
                     ? GlobalCaseInsensitivity.DEFAULT
                     : stringCaseInsensitive;
             this.outputFormat = outputFormat == null
-                    ? ReductionType.ReductionTypesAvailable.defaultType
+                    ? ReductionType.ReductionTypesAvailable.OUTPUT
                     : outputFormat;
             this.useParserBuffering = useParserBuffering;
         }
@@ -732,7 +732,7 @@ public final class Alpha {
                     getPredefinedWhitespaceParser(Keyword.intern("standard")),
                     null,
                     GlobalCaseInsensitivity.DEFAULT,
-                    ReductionType.ReductionTypesAvailable.defaultType,
+                    ReductionType.ReductionTypesAvailable.OUTPUT,
                     defaultUseParserBuffering);
         }
     }

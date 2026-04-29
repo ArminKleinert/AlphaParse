@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
- final class Main {
+final class Main {
 
     private static String readFile(String path) {
         final @NotNull String text;
@@ -74,7 +74,7 @@ import java.util.regex.Pattern;
                     null,
                     null,
                     GlobalCaseInsensitivity.TRUE,
-                    ReductionType.ReductionTypesAvailable.defaultType,
+                    ReductionType.ReductionTypesAvailable.OUTPUT,
                     true);
             final @NotNull var p = Alpha.parser("S : 'ABC'", opts);
             IO2.println(Alpha.parses(p, "ABC"));
@@ -125,7 +125,7 @@ import java.util.regex.Pattern;
         }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 10, 100);
+        PerfTest.fullTest(true, c99GrammarText, 50, 500);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);

@@ -15,11 +15,6 @@ public abstract sealed class Combinator
      */
     protected static final boolean defaultHidden = false;
 
-    /**
-     * Default value for {@link Combinator#getReduction()}
-     */
-    protected static final ReductionType defaultRed = ReductionType.nullReduction();
-
     protected final boolean hide;
     protected final @NotNull ReductionType red;
 
@@ -29,7 +24,7 @@ public abstract sealed class Combinator
     }
 
     protected Combinator() {
-        this(defaultHidden, defaultRed);
+        this(defaultHidden, ReductionType.standardInitialReduction());
     }
 
     /**
@@ -113,7 +108,7 @@ public abstract sealed class Combinator
      * @return A new instance of the same class.
      */
     public @NotNull Combinator hideTag() {
-        return withReduction(ReductionType.rawNonTerminalReduction());
+        return withReduction(ReductionType.standardIntermediateReduction());
     }
 
     // Force children to override this.

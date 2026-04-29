@@ -199,7 +199,7 @@ public final class Gll {
         result = parser.isHidden()
                 ? result.reset()
                 : result;
-        if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.nullType) {
+        if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.INITIAL) {
             final ParseTree resultR = ParseTree.create(
                     parser.getReduction().getKey(),
                     result.getResult());

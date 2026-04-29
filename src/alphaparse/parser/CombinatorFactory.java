@@ -426,8 +426,8 @@ public final class CombinatorFactory {
                 final @NotNull List<Combinator> parsers = new ArrayList<>();
                 parsers.add(wsParser);
                 final @NotNull Combinator result;
-                if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.nullType) {
-                    parsers.add(parser.withReduction(ReductionType.nullReduction()));
+                if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.INITIAL) {
+                    parsers.add(parser.withReduction(ReductionType.standardInitialReduction()));
                     result = catCombinator(parsers).withReduction(parser.getReduction());
                 } else {
                     parsers.add(parser);
@@ -462,7 +462,7 @@ public final class CombinatorFactory {
 
         final @NotNull Combinator startWithoutReduction = bufferIfRequested(
                 finalGrammar.get(start)
-                        .withReduction(ReductionType.nullReduction()));
+                        .withReduction(ReductionType.standardInitialReduction()));
         final @NotNull Combinator newStartComb =
                 catCombinator(List.of(startWithoutReduction, wsParser))
                         .withReduction(finalGrammar.get(start).getReduction());

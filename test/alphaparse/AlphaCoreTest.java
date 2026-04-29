@@ -1,7 +1,6 @@
 package alphaparse;
 
 import alphaparse.parser.Parser;
-import alphaparse.reduction.ReductionType;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
@@ -271,7 +270,7 @@ class AlphaCoreTest {
             Alpha.ParserCreationOptions.getDefault().withWhitespaceParser(whitespace_or_comments));
 
     final @NotNull Parser eat_a = Alpha.parser("Aeater = #'[a]'+",
-            Alpha.ParserCreationOptions.getDefault().withOutputFormat(ReductionType.ReductionTypesAvailable.ENLIVE));
+            Alpha.ParserCreationOptions.getDefault());
 
     final @NotNull Parser int_or_double = Alpha.parser(
             """

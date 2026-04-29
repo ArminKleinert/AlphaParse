@@ -48,7 +48,7 @@ public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
 
     private OrderedChoiceCombinator(final @NotNull Combinator parser1,
                                     final @NotNull Combinator parser2) {
-        this(defaultHidden, defaultRed, parser1, parser2);
+        this(defaultHidden, ReductionType.standardInitialReduction(), parser1, parser2);
     }
 
     private static @NotNull OrderedChoiceCombinator setupParsers(

@@ -118,13 +118,13 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * Replaces all combinators that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#nullType} (the default when created) with combinators with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#defaultType}.
+     * Replaces all combinators that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with combinators with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#OUTPUT}.
      * @return A new grammar.
      */
     public @NotNull Grammar applyStandardReductions() {
         final List<Map.Entry<Keyword, Combinator>> m = new ArrayList<>();
         this.forEach((prodKey, pars) -> {
-            if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.nullType)
+            if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL)
                 pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
 
             m.add(Grammar.entry(prodKey, pars));
