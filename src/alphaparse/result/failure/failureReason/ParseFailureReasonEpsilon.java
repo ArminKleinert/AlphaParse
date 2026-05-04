@@ -4,27 +4,24 @@ import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO
+ * Failure reason for when end of string was expected, but there was more text remaining.
  */
 public final class ParseFailureReasonEpsilon extends ParseFailureReason {
-    private final @NotNull Keyword expecting;
 
     /**
-     * TODO
+     * The constructor.
      *
-     * @param expecting TODO
-     * @param full      TODO
+     * @param full      Whether the entire string was supposed to be covered by the epsilon production.
      */
-    public ParseFailureReasonEpsilon(final @NotNull Keyword expecting, final boolean full) {
+    public ParseFailureReasonEpsilon(final boolean full) {
         super(full);
-        this.expecting = expecting;
     }
 
     /**
-     * TODO
+     * Creates a new default instance.
      */
     public ParseFailureReasonEpsilon() {
-        this(Keyword.intern("end-of-string"), false);
+        this(false);
     }
 
     @Override
@@ -34,6 +31,6 @@ public final class ParseFailureReasonEpsilon extends ParseFailureReason {
 
     @Override
     public @NotNull Keyword getExpecting() {
-        return expecting;
+        return Keyword.intern("end-of-string");
     }
 }

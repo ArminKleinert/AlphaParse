@@ -131,14 +131,10 @@ public final class Gll {
                 continue; // Take it to the top.
             }
             if (!tramp.getNegativeListeners().isEmpty()) {
-                final @NotNull var iter = tramp.getNegativeListeners().entrySet().iterator();
-                final @NotNull var a = iter.next();
-                final @NotNull Integer index = a.getKey();
+                var a = tramp.getNegativeListeners().pollFirstEntry();
                 final @NotNull NegativeListener listener = a.getValue();
 
                 listener.execute();
-
-                tramp.getNegativeListeners().remove(index);
 
                 continue; // Take it to the top.
             }
@@ -386,7 +382,7 @@ public final class Gll {
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var allParses = parses(grammar, start, text, partial);
-        if (allParses.castToParsesSuccess().iterator().hasNext()) return AlphaParsesResult.make(allParses);
+        if (!allParses.castToParsesSuccess().isEmpty()) return AlphaParsesResult.make(allParses);
         return parsesTotalAfterFail(grammar, start, text, partial);
     }
 

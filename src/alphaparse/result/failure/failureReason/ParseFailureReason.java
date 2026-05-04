@@ -7,15 +7,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * TODO
+ * A failure lists reasons for the failure. This class represents the possible reasons.
  */
 public abstract class ParseFailureReason {
     private final boolean full;
 
     /**
-     * TODO
+     * Create a new instance.
      *
-     * @param full TODO
+     * @param full Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
      */
     protected ParseFailureReason(final boolean full) {
         this.full = full;
@@ -31,9 +31,9 @@ public abstract class ParseFailureReason {
     }
 
     /**
-     * TODO
+     * Representation of the failure reason as a string.
      *
-     * @return TODO
+     * @return A representation of the expected production as a string.
      */
     public String failureReasonString() {
         return Objects.toString(getExpecting());
@@ -54,23 +54,23 @@ public abstract class ParseFailureReason {
     }
 
     /**
-     * TODO
+     * The tag of the production.
      *
-     * @return TODO
+     * @return The tag of the production.
      */
     public abstract @NotNull Keyword getTag();
 
     /**
-     * TODO
+     * The expected object. This may be a string, a regex, a combinator or anything else.
      *
-     * @return TODO
+     * @return The expected object.
      */
     public abstract @Nullable Object getExpecting();
 
     /**
-     * TODO
+     * Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
      *
-     * @return TODO
+     * @return Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
      */
     public boolean isFull() {
         return full;

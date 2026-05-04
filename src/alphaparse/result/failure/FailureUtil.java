@@ -1,9 +1,7 @@
 package alphaparse.result.failure;
 
-import alphaparse.Keyword;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.failure.failureReason.ParseFailureReason;
-import alphaparse.result.failure.failureReason.AlphaFailureReasonCharRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 /**
- * TODO
+ * Utilities for printing and modifying failure objects. Calling these methods from outside the parsing algorithm is heavily discouraged and might result in immediate termination of the user.
  */
 public final class FailureUtil {
     private FailureUtil() {
@@ -23,16 +21,16 @@ public final class FailureUtil {
      * and accounts for horizontal tabs which might change
      * the alignment of the '^' to the error location.
      *
-     * @param failure1 TODO
-     * @param text     TODO
-     * @return TODO
+     * @param failure The failure.
+     * @param text    The text.
+     * @return A new string.
      */
-    public static @NotNull AlphaParseFailure augmentFailure(final @NotNull AlphaParseFailure failure1,
+    public static @NotNull AlphaParseFailure augmentFailure(final @NotNull AlphaParseFailure failure,
                                                             final @NotNull String text) {
         int line = 1;
         int col = 1;
 
-        final int index = failure1.index();
+        final int index = failure.index();
 
         final PrimitiveIterator.OfInt charCodes = text.chars().iterator();
         for (int counter = 0; counter < index; counter++) {
@@ -48,7 +46,7 @@ public final class FailureUtil {
         }
 
         final @NotNull Optional<String> lineText = text.lines().skip(line - 1).findFirst();
-        return new AlphaParseFailure(index, failure1.getReasonList(), line, col, lineText.orElse(null)
+        return new AlphaParseFailure(index, failure.getReasonList(), line, col, lineText.orElse(null)
         );
     }
 
@@ -57,9 +55,9 @@ public final class FailureUtil {
      * and accounts for horizontal tabs which might change
      * the alignment of the '^' to the error location.
      *
-     * @param text TODO
-     * @param n    TODO
-     * @return TODO
+     * @param text The text.
+     * @param n    The index.
+     * @return Indentation and marker.
      */
     public static @NotNull String marker(final String text, final int n) {
         if (text == null) return "<No text>";
@@ -71,12 +69,12 @@ public final class FailureUtil {
     }
 
     /**
-     * TODO
+     * Adds a failure reason to a failure object if the next index (parameter8 us greater than the failure's index.
      *
-     * @param failure   TODO
-     * @param newReason TODO
-     * @param nextIndex TODO
-     * @return TODO
+     * @param failure   The failure object.
+     * @param newReason The new reason.
+     * @param nextIndex The next index for the reason.
+     * @return A modified failure object.
      */
     public static @NotNull AlphaParseFailure modifyFailureByIndex(final @Nullable AlphaParseFailure failure,
                                                                   final ParseFailureReason newReason,
@@ -92,10 +90,10 @@ public final class FailureUtil {
     }
 
     /**
-     * TODO
+     * Creates a nicely formatted string for a failure object.
      *
-     * @param failure TODO
-     * @return TODO
+     * @param failure The failure.
+     * @return The string.
      */
     public static @NotNull String pprintFailure(final @NotNull AlphaParseFailure failure) {
         final int line = ((Number) failure.line()).intValue();
@@ -138,34 +136,28 @@ public final class FailureUtil {
         return sb.toString();
     }
 
-
-    // TODO HERE DONT USE GENERIC MAP
-    private static @NotNull String reasonString(final Object expected) {
-        if (expected instanceof Map<?, ?>) {
-            final Map<Object, Object> exp = (Map<Object, Object>) expected;
-            if (exp.containsKey(Keyword.intern("NOT"))) {
-                return "NOT " + exp.get(Keyword.intern("NOT"));
-            }
-            throw new IllegalArgumentException();
-        } else if (expected instanceof AlphaFailureReasonCharRange) {
-            return expected.toString();
-        } else if (expected instanceof Pattern) {
-            return expected.toString();
-        } else if (expected instanceof String) {
-            return expected.toString();
-        } else if (expected instanceof Keyword) {
-            return expected.toString();
-        }
-        //throw new IllegalArgumentException();
-        return expected.toString();
-    }
-
-    /**
-     * Provides special case for printing negative lookahead reasons.
-     *
-     * @param expected TODO
-     */
-    public static void printReason(final Object expected) {
-        System.out.println(reasonString(expected));
-    }
+//    // TODO HERE DONT USE GENERIC MAP
+//    private static @NotNull String reasonString(final Object expected) {
+//        if (expected instanceof Map<?, ?>) {
+//            final Map<Object, Object> exp = (Map<Object, Object>) expected;
+//            if (exp.containsKey(Keyword.intern("NOT"))) {
+//                return "NOT " + exp.get(Keyword.intern("NOT"));
+//            }
+//            throw new IllegalArgumentException();
+//        } else if (expected instanceof AlphaFailureReasonCharRange) {
+//            return expected.toString();
+//        } else if (expected instanceof Pattern) {
+//            return expected.toString();
+//        } else if (expected instanceof String) {
+//            return expected.toString();
+//        } else if (expected instanceof Keyword) {
+//            return expected.toString();
+//        }
+//        //throw new IllegalArgumentException();
+//        return expected.toString();
+//    }
+//
+//    private static void printReason(final Object expected) {
+//        System.out.println(reasonString(expected));
+//    }
 }

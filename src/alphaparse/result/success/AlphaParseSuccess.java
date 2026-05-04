@@ -28,7 +28,7 @@ public sealed abstract class AlphaParseSuccess permits
      *
      * @param index The index.
      */
-    public AlphaParseSuccess(final int index) {
+    protected AlphaParseSuccess(final int index) {
         this.index = index;
     }
 
@@ -75,6 +75,10 @@ public sealed abstract class AlphaParseSuccess permits
         return Objects.hash(index, getResult());
     }
 
+    /**
+     * The index of the success object.
+     * @return The index as an integer.
+     */
     public int index() {
         return index;
     }

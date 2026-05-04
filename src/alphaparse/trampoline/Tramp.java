@@ -82,7 +82,7 @@ public final class Tramp {
     /**
      * Get the index at which parsing started. This is only important if parsing had to be restarted after a failure.
      *
-     * @return Get the index at which parsing started..
+     * @return Get the index at which parsing started.
      */
     public int getFailIndex() {
         return failIndex;

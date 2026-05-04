@@ -130,7 +130,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
 
     @Override
     public boolean isEmpty() {
-        return !iterator().hasNext();
+        return evaluatedPart.isEmpty() && evalutePart(0) == null;
     }
 
     @Override
@@ -192,20 +192,18 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
     }
 
     @Override
-    public T getFirst() {
-        if (this.isEmpty()) {
-            throw new NoSuchElementException();
-        } else {
-            return get(0);
-        }
-    }
-
-    @Override
     public T get(final int i) {
         final var at = getOrNull(i);
         if (at == null)
             throw new IndexOutOfBoundsException("Cannot access index " + i + " because size is " + size());
         return at;
+    }
+
+    @Override public T getFirst() {
+        if (!evaluatedPart.isEmpty())
+            return evaluatedPart.getFirst();
+        evalutePart(0);
+        return evaluatedPart.getFirst();
     }
 
     /**
@@ -258,9 +256,10 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
     public @NotNull List<T> subList(final int i, final int i1) {
         List<T> res = new ArrayList<>();
         int cursor = 0;
-        for (var t : this)
+        for (var t : this) {
             if (cursor >= i && cursor < i1) res.add(t);
             else if (cursor >= i1) break;
+        }
         return Collections.unmodifiableList(res);
     }
 

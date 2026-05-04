@@ -52,6 +52,19 @@ public final class ParseFailureReasonChar extends ParseFailureReason {
         return Keyword.intern("char");
     }
 
+    /**
+     * This class just represents the int-pair required by the {@link ParseFailureReasonChar} class when printing the reason. It holds the high and low values of a char range, as needed for a {@link alphaparse.parser.TerminalUnicodeCharCombinator}.
+     * @param lo Lowest possible codepoint.
+     * @param hi Highest possible codepoint.
+     */
+    public record AlphaFailureReasonCharRange(int lo, int hi) {
+        @Override
+        public @NotNull String toString() {
+            if (lo == hi)
+                return String.format("%%x%04x", lo);
+            return String.format("%%x%04x-%04x", lo, hi);
+        }
+    }
     @Override
     public @NotNull AlphaFailureReasonCharRange getExpecting() {return new AlphaFailureReasonCharRange(lo, hi);}
 }
