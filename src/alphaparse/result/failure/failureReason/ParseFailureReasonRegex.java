@@ -6,16 +6,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.regex.Pattern;
 
 /**
- * TODO
+ * This class represents the failure to match a regex.
+ *
+ * @see alphaparse.parser.TerminalRegexpCombinator
  */
 public final class ParseFailureReasonRegex extends ParseFailureReason {
     private final @NotNull Pattern expecting;
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param expecting TODO
-     * @param full      TODO
+     * @param expecting The regex that was expected.
+     * @param full      Whether the entire string was supposed to be covered by the combinator.
      */
     public ParseFailureReasonRegex(final @NotNull Pattern expecting, final boolean full) {
         super(full);
@@ -23,9 +25,9 @@ public final class ParseFailureReasonRegex extends ParseFailureReason {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param expecting TODO
+     * @param expecting The regex that was expected.
      */
     public ParseFailureReasonRegex(final @NotNull Pattern expecting) {
         this(expecting, false);

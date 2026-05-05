@@ -47,6 +47,8 @@ public final class OptionalCombinator extends CombinatorWithParser {
         if (index == runner.tramp().getText().length()) {
             runner.success(thisNodeKey, null, index);
         } else {
+            // Was this supposed to be a full-parse error?
+            //  `runner.fail(thisNodeKey, index, new ParseFailureReasonOptional(Keyword.intern("end-of-string"), true));`
             runner.fail(thisNodeKey, index, new ParseFailureReasonOptional(Keyword.intern("end-of-string")));
         }
     }

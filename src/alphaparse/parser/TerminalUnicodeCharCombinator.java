@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * Represents an ABNF unicode char range.
- * TODO: Docs.
+ * Represents an ABNF Unicode char range.
  */
 public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     private final int lo;

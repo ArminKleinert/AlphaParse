@@ -5,13 +5,15 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Failure reason for when end of string was expected, but there was more text remaining.
+ *
+ * @see alphaparse.parser.EpsilonCombinator
  */
 public final class ParseFailureReasonEpsilon extends ParseFailureReason {
 
     /**
      * The constructor.
      *
-     * @param full      Whether the entire string was supposed to be covered by the epsilon production.
+     * @param full Whether the entire string was supposed to be covered by the epsilon production.
      */
     public ParseFailureReasonEpsilon(final boolean full) {
         super(full);

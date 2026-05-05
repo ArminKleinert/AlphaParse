@@ -7,16 +7,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * TODO
+ * This class represents the failure to NOT match a production in a {@link alphaparse.parser.NegativeLookaheadCombinator}.
+ *
+ * @see alphaparse.parser.NegativeLookaheadCombinator
  */
 public final class ParseFailureReasonNegative extends ParseFailureReason {
     private final @Nullable Combinator expecting;
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param expecting TODO
-     * @param full      TODO
+     * @param expecting The Combinator that was found when it was supposed to not be found.
+     * @param full      Whether the entire string was supposed to be covered by the combinator.
      */
     public ParseFailureReasonNegative(final @Nullable Combinator expecting, final boolean full) {
         super(full);
@@ -24,9 +26,9 @@ public final class ParseFailureReasonNegative extends ParseFailureReason {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param expecting TODO
+     * @param expecting The Combinator that was found when it was supposed to not be found.
      */
     public ParseFailureReasonNegative(final @Nullable Combinator expecting) {
         this(expecting, false);
@@ -43,9 +45,9 @@ public final class ParseFailureReasonNegative extends ParseFailureReason {
     }
 
     /**
-     * TODO
+     * A special method to create a string to represent the instance. This makes especially clear that it was supposed to be a negative lookahead.
      *
-     * @return TODO
+     * @return A string to represent the instance.
      */
     public String failureReasonString() {
         return "{NOT " + (expecting == null ? "null" : Print.combinatorToString(expecting)) + "}";

@@ -4,16 +4,18 @@ import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO
+ * This class represents the failure to match an optional production. This is often not a problem, but is included in a failure's description for completeness.
+ *
+ * @see alphaparse.parser.OptionalCombinator
  */
 public final class ParseFailureReasonOptional extends ParseFailureReason {
     private final @NotNull Keyword expecting;
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param expecting TODO
-     * @param full      TODO
+     * @param expecting The optionally expected production name.
+     * @param full      Whether the entire string was supposed to be covered by the combinator.
      */
     public ParseFailureReasonOptional(final @NotNull Keyword expecting, final boolean full) {
         super(full);
@@ -21,9 +23,9 @@ public final class ParseFailureReasonOptional extends ParseFailureReason {
     }
 
     /**
-     * TODO
+     * Creates a new instance.
      *
-     * @param expecting TODO
+     * @param expecting The optionally expected production name.
      */
     public ParseFailureReasonOptional(final @NotNull Keyword expecting) {
         this(expecting, false);
