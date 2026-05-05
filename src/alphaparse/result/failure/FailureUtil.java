@@ -46,7 +46,7 @@ public final class FailureUtil {
         }
 
         final @NotNull Optional<String> lineText = text.lines().skip(line - 1).findFirst();
-        return new AlphaParseFailure(index, failure.getReasonList(), line, col, lineText.orElse(null)
+        return new AlphaParseFailure(index, failure.reasonList(), line, col, lineText.orElse(null)
         );
     }
 
@@ -69,11 +69,11 @@ public final class FailureUtil {
     }
 
     /**
-     * Adds a failure reason to a failure object if the next index (parameter8 us greater than the failure's index.
+     * Adds a failure reasonList to a failure object if the next index (parameter8 us greater than the failure's index.
      *
      * @param failure   The failure object.
-     * @param newReason The new reason.
-     * @param nextIndex The next index for the reason.
+     * @param newReason The new reasonList.
+     * @param nextIndex The next index for the reasonList.
      * @return A modified failure object.
      */
     public static @NotNull AlphaParseFailure modifyFailureByIndex(final @Nullable AlphaParseFailure failure,
@@ -84,7 +84,7 @@ public final class FailureUtil {
             return new AlphaParseFailure(nextIndex, new ArrayList<>(Collections.singletonList(newReason)));
         if (nextIndex < currentIndex) return Objects.requireNonNull(failure);
 
-        final List<ParseFailureReason> newReasonList = new ArrayList<>(failure == null ? List.of() : failure.getReasonList());
+        final List<ParseFailureReason> newReasonList = new ArrayList<>(failure == null ? List.of() : failure.reasonList());
         newReasonList.add(newReason);
         return new AlphaParseFailure(nextIndex, newReasonList);
     }
@@ -99,7 +99,7 @@ public final class FailureUtil {
         final int line = ((Number) failure.line()).intValue();
         final int column = ((Number) failure.column()).intValue();
         final String text = failure.text();
-        final List<ParseFailureReason> reason = failure.getReasonList();
+        final List<ParseFailureReason> reason = failure.reasonList();
 
         final StringBuilder sb = new StringBuilder();
         sb.append("Parse error at line ").append(line).append(", column ").append(column).append(";\n");

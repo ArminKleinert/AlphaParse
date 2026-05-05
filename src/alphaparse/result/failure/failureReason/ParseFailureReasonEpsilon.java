@@ -4,7 +4,7 @@ import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Failure reason for when end of string was expected, but there was more text remaining.
+ * Failure reasonList for when end of string was expected, but there was more text remaining.
  *
  * @see alphaparse.parser.EpsilonCombinator
  */

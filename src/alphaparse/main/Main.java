@@ -184,17 +184,17 @@ final class Main {
             final var failIndex = parse.index();
             final var failColumn = parse.column();
             final var failLine = parse.line();
-            final @NotNull var failReasonList = parse.getReasonList();
+            final @NotNull var failReasonList = parse.reasonList();
             final var failText = parse.text();
             final @NotNull var failResult = List.of();//parse.getResult();
             IO2.println(failIndex + " " + failColumn + " " + failLine + " " + failReasonList + " " + failText + " " + failResult);
 
-            IO2.println(parse.checkCorrectness(2, 3, 1, "112",
-                    List.of(new ParseFailureReasonOptional(Keyword.intern("end-of-string")),
-                            new ParseFailureReasonRegex(Pattern.compile("\\s+"), true),
-                            new ParseFailureReasonString("1"),
-                            new ParseFailureReasonRegex(Pattern.compile("\\s+"))
-                    )));
+//            IO2.println(parse.checkCorrectness(2, 3, 1, "112",
+//                    List.of(new ParseFailureReasonOptional(Keyword.intern("end-of-string")),
+//                            new ParseFailureReasonRegex(Pattern.compile("\\s+"), true),
+//                            new ParseFailureReasonString("1"),
+//                            new ParseFailureReasonRegex(Pattern.compile("\\s+"))
+//                    )));
         }
 
         /**/

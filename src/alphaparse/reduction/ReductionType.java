@@ -7,16 +7,25 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * A class for output formats
+ * A class for output formats. This entire class might be removed in the future and replaced by an alternative {@link ParseTree} variant specifically for intermediate operations.
+ * <p></p>
+ * Unlike Instaparse's output formats, this class has no relevance for the final output.
+ * <p></p>
+ * None of this class's operations should be used by users of the library!
  */
 public final class ReductionType {
     private static ReductionType standardIntermediateReduction = null;
     private static ReductionType standardInitialReduction = null;
 
     /**
-     * TODO
+     * The default output format for intermediate operations. It has the following properties:
+     * <ul>
+     *     <li>The illegal NULL_TAG (see {@link ParseTree#NULL_TAG}) as its tag to mark it as an illegal final output.</li>
+     *     <li>The type is {@link ReductionTypesAvailable#INTERMEDIATE}.</li>
+     *     <li>{@link ReductionType#isHiddenOrRaw} returns true.</li>
+     * </ul>
      *
-     * @return TODO
+     * @return Default output format for intermediate operations.
      */
     public static @NotNull ReductionType standardIntermediateReduction() {
         if (standardIntermediateReduction == null)
@@ -25,9 +34,14 @@ public final class ReductionType {
     }
 
     /**
-     * TODO
+     * Default output format for new instances of {@link alphaparse.parser.Combinator}. It has the following properties:
+     * <ul>
+     *     <li>The illegal NULL_TAG (see {@link ParseTree#NULL_TAG}) as its tag to mark it as an illegal final output.</li>
+     *     <li>The type is {@link ReductionTypesAvailable#INITIAL}.</li>
+     *     <li>{@link ReductionType#isHiddenOrRaw} returns true.</li>
+     * </ul>
      *
-     * @return TODO
+     * @return Default output format for new instances of {@link alphaparse.parser.Combinator}.
      */
     public static @NotNull ReductionType standardInitialReduction() {
         if (standardInitialReduction == null)
@@ -37,15 +51,15 @@ public final class ReductionType {
 
 
     /**
-     * TODO
+     * The available types. They mark whether the parse operation is an intermediate operation or for the final output.
      */
     public enum ReductionTypesAvailable {
         /**
-         * The default type.
+         * The default type. This should not be used directly.
          */
         INITIAL,
         /**
-         * Has the same properties as {@link ReductionTypesAvailable#INITIAL}, but will not be replaced with the default type when finalizing the grammar.
+         * Has the same properties as {@link ReductionTypesAvailable#INITIAL}, but will not be replaced with the default type when finalizing the grammar. This should not be used directly.
          */
         INTERMEDIATE,
         /**
@@ -65,21 +79,21 @@ public final class ReductionType {
     }
 
     /**
-     * TODO
+     * Default output format for final operations whose result is not hidden in the parse tree.
      *
-     * @param key TODO
-     * @return TODO
+     * @param key The production's name.
+     * @return A new output descriptor.
      */
     public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
         return new ReductionType(key, ReductionType.ReductionTypesAvailable.OUTPUT, false);
     }
 
     /**
-     * TODO
+     * Default output format for final operations whose key is legal for output.
      *
-     * @param key  TODO
-     * @param type TODO
-     * @return TODO
+     * @param key  The production's name.
+     * @param type The type.
+     * @return A new output descriptor.
      */
     public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
         return new ReductionType(key, type, type != ReductionTypesAvailable.INITIAL && type != ReductionTypesAvailable.INTERMEDIATE);
@@ -98,18 +112,18 @@ public final class ReductionType {
     }
 
     /**
-     * TODO
+     * The production key this output format is for.
      *
-     * @return TODO
+     * @return The production key this output format is for.
      */
     public @NotNull Keyword getKey() {
         return key;
     }
 
     /**
-     * TODO
+     * The {@link ReductionTypesAvailable} type of this reduction.
      *
-     * @return TODO
+     * @return The {@link ReductionTypesAvailable} type of this reduction.
      */
     public @NotNull ReductionTypesAvailable getReductionType() {
         return type;
@@ -124,9 +138,9 @@ public final class ReductionType {
     }
 
     /**
-     * TODO
+     * If true, the intermediate result will be hidden in the final output tree.
      *
-     * @return TODO
+     * @return If true, the intermediate result will be hidden in the final output tree.
      */
     public boolean isHiddenOrRaw() {
         return hiddenOrRaw;

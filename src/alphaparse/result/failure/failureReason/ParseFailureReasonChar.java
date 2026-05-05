@@ -59,7 +59,7 @@ public final class ParseFailureReasonChar extends ParseFailureReason {
     }
 
     /**
-     * This class just represents the int-pair required by the {@link ParseFailureReasonChar} class when printing the reason. It holds the high and low values of a char range, as needed for a {@link alphaparse.parser.TerminalUnicodeCharCombinator}.
+     * This class just represents the int-pair required by the {@link ParseFailureReasonChar} class when printing the reasonList. It holds the high and low values of a char range, as needed for a {@link alphaparse.parser.TerminalUnicodeCharCombinator}.
      *
      * @param lo Lowest possible codepoint.
      * @param hi Highest possible codepoint.

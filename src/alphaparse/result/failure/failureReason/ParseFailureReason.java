@@ -31,7 +31,7 @@ public abstract class ParseFailureReason {
     }
 
     /**
-     * Representation of the failure reason as a string.
+     * Representation of the failure reasonList as a string.
      *
      * @return A representation of the expected production as a string.
      */
