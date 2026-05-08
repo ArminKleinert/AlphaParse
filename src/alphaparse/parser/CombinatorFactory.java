@@ -236,8 +236,8 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator unicodeChar(final int lohi) {
         final @NotNull var str = new StringBuilder(4).appendCodePoint(lohi).toString();
-        //return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lohi, lohi));
-        return stringOrStringCiTerminal(str, false);
+        return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lohi, lohi));
+        //return stringOrStringCiTerminal(str, false);
     }
 
     /**
@@ -255,16 +255,16 @@ public final class CombinatorFactory {
         if (lo == hi)
             return unicodeChar(lo);
 
-        final @NotNull String regex = new StringBuilder()
-                .append("[\\x{")
-                .append(Integer.toString(lo, 16))
-                .append("}-\\x{")
-                .append(Integer.toString(hi, 16))
-                .append("}]")
-                .toString();
-        return createRegexTerminal(Pattern.compile(regex));
+//        final @NotNull String regex = new StringBuilder()
+//                .append("[\\x{")
+//                .append(Integer.toString(lo, 16))
+//                .append("}-\\x{")
+//                .append(Integer.toString(hi, 16))
+//                .append("}]")
+//                .toString();
+//        return createRegexTerminal(Pattern.compile(regex));
         //"[\\x{1F601}-\\x{1F64F}]"
-        //return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lo, hi));
+        return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lo, hi));
     }
 
     /**

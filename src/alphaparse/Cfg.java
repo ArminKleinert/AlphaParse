@@ -162,6 +162,29 @@ final class Cfg {
                     tree = (ParseTree) tree.getContent().getFirst().content();
                     continue; // Open up the grouping and take it to the top.
                 }
+                case "num-val" -> {
+                    var prefix = (String) tree.getContent().getFirst().content();
+                    var firstNum = (String) tree.getContent().get(1).content();
+                    var lastNum = tree.getContent().size() > 2
+                            ? (String) tree.getContent().get(3).content()
+                            : firstNum;
+                    final int radix;
+                    switch (prefix) {
+                        case "%b" -> {
+                            radix = 2;
+                        }
+                        case "%d" -> {
+                            radix = 10;
+                        }
+                        case "%x" -> {
+                            radix = 16;
+                        }
+                        default -> throw new IllegalStateException();
+                    }
+                    final int rangeFirst = Integer.parseInt(firstNum, radix);
+                    final int rangeLast = Integer.parseInt(lastNum, radix);
+return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
+                }
             }
             throw new UnsupportedOperationException(tag);
         }

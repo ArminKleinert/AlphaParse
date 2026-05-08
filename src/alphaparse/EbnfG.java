@@ -84,7 +84,9 @@ final class EbnfG {
                                         combinatorFactory.makeNonTerminal(Keyword.intern("paren")),
                                         combinatorFactory.makeNonTerminal(Keyword.intern("hide")),
                                         combinatorFactory.makeNonTerminal(Keyword.intern("epsilon")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("rep"))))
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("rep")), // ABNF feature
+                                        combinatorFactory.makeNonTerminal(Keyword.intern("num-val")) // ABNF feature
+                                ))
                         .hideTag();
         return rulesRule;
     }
@@ -313,7 +315,8 @@ final class EbnfG {
         final @NotNull Combinator factorLookNeg = combinatorFactory.choiceCombinator(List.of(
                 combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
                 combinatorFactory.makeNonTerminal(Keyword.intern("look")),
-                combinatorFactory.makeNonTerminal(Keyword.intern("neg"))));
+                combinatorFactory.makeNonTerminal(Keyword.intern("neg"))
+        ));
         final @NotNull Combinator rulesRule =
                 combinatorFactory.plusCombinator(
                         combinatorFactory.catCombinator(
@@ -321,6 +324,49 @@ final class EbnfG {
                                         factorLookNeg,
                                         optWhitespace)));
         return rulesRule;
+    }
+
+    /*
+    <num-val> = <'%'> (bin-val | dec-val | hex-val);
+    bin-val = <'b'> bin-char
+              [ (<'.'> bin-char)+ | ('-' bin-char) ];
+    bin-char = ('0' | '1')+;
+    dec-val = <'d'> dec-char
+              [ (<'.'> dec-char)+ | ('-' dec-char) ];
+    dec-char = DIGIT+;
+    hex-val = <'x'> hex-char
+              [ (<'.'> hex-char)+ | ('-' hex-char) ];
+    hex-char = HEXDIG+;
+     */
+    private static @NotNull Combinator makeAbnfNumVal(final @NotNull CombinatorFactory combinatorFactory) {
+        final Combinator binaryVal = combinatorFactory.catCombinator(List.of(
+                combinatorFactory.stringTerminal("%b"), // binary indicator
+                combinatorFactory.createRegexTerminal(Pattern.compile("[01]+")),
+                combinatorFactory.optionalCombinator(combinatorFactory.catCombinator(
+                        List.of(
+                                combinatorFactory.stringTerminal("-"),
+                                combinatorFactory.createRegexTerminal(Pattern.compile("[01]+"))
+                        )))
+        ));
+        final Combinator decimalVal = combinatorFactory.catCombinator(List.of(
+                combinatorFactory.stringTerminal("%d"), // binary indicator
+                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9]+")),
+                combinatorFactory.optionalCombinator(combinatorFactory.catCombinator(
+                        List.of(
+                                combinatorFactory.stringTerminal("-"),
+                                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9]+"))
+                        )))
+        ));
+        final Combinator hexadecimalVal = combinatorFactory.catCombinator(List.of(
+                combinatorFactory.stringTerminal("%x"), // binary indicator
+                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9a-fA-F]+")),
+                combinatorFactory.optionalCombinator(combinatorFactory.catCombinator(
+                        List.of(
+                                combinatorFactory.stringTerminal("-"),
+                                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9a-fA-F]+"))
+                        )))
+        ));
+        return combinatorFactory.choiceCombinator(List.of(binaryVal, decimalVal, hexadecimalVal));
     }
 
     static @NotNull Grammar makeCfg() {
@@ -350,6 +396,7 @@ final class EbnfG {
         grammarMap.put(Keyword.intern("neg"), makeCfgNegRhs(cs));
         grammarMap.put(Keyword.intern("epsilon"), makeCfgEpsilonRhs(cs));
         grammarMap.put(Keyword.intern("factor"), makeCfgFactorRhs(cs));
+        grammarMap.put(Keyword.intern("num-val"), makeAbnfNumVal(cs));
         grammarMap.put(Keyword.intern("rules-or-parser"), makeCfgRulesOrParserRhs(cs));
         return new Grammar(grammarMap).applyStandardReductions();
     }
