@@ -1,5 +1,6 @@
 package alphaparse.parser;
 
+import alphaparse.Alpha;
 import alphaparse.Keyword;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,69 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      * @return A new Grammar.
      * @see Grammar#entry(Keyword, Combinator)
      */
-    public static @NotNull Grammar fromProductions(final @NotNull List<Map.Entry<Keyword, Combinator>> kvs) {
+    public static @NotNull Grammar fromProductions(
+            final @NotNull List<Map.Entry<Keyword, Combinator>> kvs,
+            final @NotNull Grammar.RedefinitionOption redefinitionOption) {
+        final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
+//        for (Map.Entry<Keyword, Combinator> kv : kvs)
+//            m.put(kv.getKey(), kv.getValue());
+
+        if (redefinitionOption == RedefinitionOption.OVERRIDE) { // Ignore existing
+            for (Map.Entry<Keyword, Combinator> kv : kvs)
+                m.put(kv.getKey(), kv.getValue());
+        } else if (redefinitionOption == RedefinitionOption.ERROR) { // Throw if any production exists with this name
+            for (Map.Entry<Keyword, Combinator> kv : kvs)
+                if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
+                    throw new IllegalArgumentException("Duplicate production: " + kv.getKey());
+        } else if (redefinitionOption == RedefinitionOption.CHOICE) { // Make a choice combinator if exists
+            for (Map.Entry<Keyword, Combinator> kv : kvs) {
+                var existing = m.get(kv.getKey()); // Fetch existing production
+
+                // There was no production previously -> Just add
+                if (existing == null) {
+                    m.put(kv.getKey(), kv.getValue());
+                    continue;
+                }
+
+                // Production already existed.
+
+                // Buffer the old one
+                var newValue = kv.getValue();
+
+                // The existing and the new production are the same -> no point in creating a choice combinator
+                if (Objects.equals(existing, newValue))
+                    continue;
+
+                // Make a new choice combinator
+                final @NotNull ChoiceCombinator choice;
+
+                if (existing instanceof ChoiceCombinator) {
+                    // The existing production was not a choice combinator -> Combine old and new
+                    final @NotNull var combs = new ArrayList<>(((ChoiceCombinator) existing).getParsers());
+                    combs.add(newValue);
+                    choice = new ChoiceCombinator(combs);
+                } else {
+                    // The existing production was not a choice combinator
+                    choice = new ChoiceCombinator(List.of(existing, newValue));
+                }
+
+                // Add new to grammar.
+                m.put(kv.getKey(), choice);
+            }
+        }
+
+        return new Grammar(m);
+    }
+
+    /**
+     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(Keyword, Combinator)} can be used.
+     *
+     * @param kvs The productions.
+     * @return A new Grammar.
+     * @see Grammar#entry(Keyword, Combinator)
+     */
+    public static @NotNull Grammar fromProductions(
+            final @NotNull List<Map.Entry<Keyword, Combinator>> kvs) {
         final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
         for (Map.Entry<Keyword, Combinator> kv : kvs) {
             m.put(kv.getKey(), kv.getValue());
@@ -119,6 +182,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 
     /**
      * Replaces all combinators that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with combinators with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#OUTPUT}.
+     *
      * @return A new grammar.
      */
     public @NotNull Grammar applyStandardReductions() {
@@ -144,6 +208,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet()));
     }
 
+    public enum RedefinitionOption {
+        OVERRIDE,
+        ERROR,
+        CHOICE,
+    }
+
     /**
      * Holds some information about a grammar.
      *
@@ -160,8 +230,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
          * </p>
          * <p>
          * Example:
-         *   S : 'a' 'b'
-         *   A : 'c'
+         * S : 'a' 'b'
+         * A : 'c'
          * The key "A" is defined, but never used.
          * </p>
          *
@@ -175,7 +245,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
          * Returns a Collection of keys that are used, but not defined. For any valid grammar, the returned collection is empty.
          * <p>
          * Example:
-         *   S : A 'b'
+         * S : A 'b'
          * The key "A" is used, but never defined.
          * </p>
          *

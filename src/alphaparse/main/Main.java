@@ -75,7 +75,8 @@ final class Main {
                     null,
                     GlobalCaseInsensitivity.TRUE,
                     ReductionType.ReductionTypesAvailable.OUTPUT,
-                    true);
+                    true,
+                    null);
             final @NotNull var p = Alpha.parser("S : 'ABC'", opts);
             IO2.println(Alpha.parses(p, "ABC"));
             IO2.println(Alpha.parses(p, "AbC"));

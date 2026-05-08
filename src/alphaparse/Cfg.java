@@ -168,19 +168,12 @@ final class Cfg {
                     var lastNum = tree.getContent().size() > 2
                             ? (String) tree.getContent().get(3).content()
                             : firstNum;
-                    final int radix;
-                    switch (prefix) {
-                        case "%b" -> {
-                            radix = 2;
-                        }
-                        case "%d" -> {
-                            radix = 10;
-                        }
-                        case "%x" -> {
-                            radix = 16;
-                        }
+                    final int radix = switch (prefix) {
+                        case "%b" -> 2;
+                        case "%d" -> 10;
+                        case "%x" -> 16;
                         default -> throw new IllegalStateException();
-                    }
+                    };
                     final int rangeFirst = Integer.parseInt(firstNum, radix);
                     final int rangeLast = Integer.parseInt(lastNum, radix);
 return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
@@ -233,8 +226,8 @@ return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
                 ? options.startProduction()
                 : productions.getFirst().getKey();
 
-        @NotNull var grammar =
-                checkGrammarValidity(Grammar.fromProductions(productions).applyStandardReductions());
+        @NotNull var grammar = checkGrammarValidity(
+                Grammar.fromProductions(productions, options.redefinitionOption()).applyStandardReductions());
 
         if (options.whitespaceParser() != null) {
             grammar = combinatorFactory.autoWhitespace(
