@@ -43,6 +43,46 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return true;
     }
 
+    private static void addProductionWithRedefinitionOptionChoice(
+            final @NotNull SequencedMap<Keyword, Combinator> m,
+            final @NotNull List<Map.Entry<Keyword, Combinator>> kvs
+    ) {
+        for (Map.Entry<Keyword, Combinator> kv : kvs) {
+            var existing = m.get(kv.getKey()); // Fetch existing production
+
+            // There was no production previously -> Just add
+            if (existing == null) {
+                m.put(kv.getKey(), kv.getValue());
+                continue;
+            }
+
+            // Production already existed.
+
+            // Buffer the old one
+            var newValue = kv.getValue();
+
+            // The existing and the new production are the same -> no point in creating a choice combinator
+            if (Objects.equals(existing, newValue))
+                continue;
+
+            // Make a new choice combinator
+            final @NotNull ChoiceCombinator choice;
+
+            if (existing instanceof ChoiceCombinator) {
+                // The existing production was not a choice combinator -> Combine old and new
+                final @NotNull var combs = new ArrayList<>(((ChoiceCombinator) existing).getParsers());
+                combs.add(newValue);
+                choice = new ChoiceCombinator(combs);
+            } else {
+                // The existing production was not a choice combinator
+                choice = new ChoiceCombinator(List.of(existing, newValue));
+            }
+
+            // Add new to grammar.
+            m.put(kv.getKey(), choice);
+        }
+    }
+
     /**
      * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(Keyword, Combinator)} can be used.
      *
@@ -57,49 +97,29 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 //        for (Map.Entry<Keyword, Combinator> kv : kvs)
 //            m.put(kv.getKey(), kv.getValue());
 
-        if (redefinitionOption == RedefinitionOption.OVERRIDE) { // Ignore existing
-            for (Map.Entry<Keyword, Combinator> kv : kvs)
-                m.put(kv.getKey(), kv.getValue());
-        } else if (redefinitionOption == RedefinitionOption.ERROR) { // Throw if any production exists with this name
-            for (Map.Entry<Keyword, Combinator> kv : kvs)
-                if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
-                    throw new IllegalArgumentException("Duplicate production: " + kv.getKey());
-        } else if (redefinitionOption == RedefinitionOption.CHOICE) { // Make a choice combinator if exists
-            for (Map.Entry<Keyword, Combinator> kv : kvs) {
-                var existing = m.get(kv.getKey()); // Fetch existing production
-
-                // There was no production previously -> Just add
-                if (existing == null) {
+        var usedOpt = switch (redefinitionOption) {
+            case RedefinitionOption.OVERRIDE -> { // Ignore existing
+                for (Map.Entry<Keyword, Combinator> kv : kvs)
                     m.put(kv.getKey(), kv.getValue());
-                    continue;
-                }
-
-                // Production already existed.
-
-                // Buffer the old one
-                var newValue = kv.getValue();
-
-                // The existing and the new production are the same -> no point in creating a choice combinator
-                if (Objects.equals(existing, newValue))
-                    continue;
-
-                // Make a new choice combinator
-                final @NotNull ChoiceCombinator choice;
-
-                if (existing instanceof ChoiceCombinator) {
-                    // The existing production was not a choice combinator -> Combine old and new
-                    final @NotNull var combs = new ArrayList<>(((ChoiceCombinator) existing).getParsers());
-                    combs.add(newValue);
-                    choice = new ChoiceCombinator(combs);
-                } else {
-                    // The existing production was not a choice combinator
-                    choice = new ChoiceCombinator(List.of(existing, newValue));
-                }
-
-                // Add new to grammar.
-                m.put(kv.getKey(), choice);
+                yield RedefinitionOption.OVERRIDE;
             }
-        }
+            case RedefinitionOption.ERROR -> { // Throw if any production exists with this name
+                for (Map.Entry<Keyword, Combinator> kv : kvs)
+                    if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
+                        throw new IllegalArgumentException("Duplicate production: " + kv.getKey());
+                yield RedefinitionOption.ERROR;
+            }
+            case RedefinitionOption.CHOICE -> { // Make a choice combinator if exists
+                addProductionWithRedefinitionOptionChoice(m, kvs);
+                yield RedefinitionOption.CHOICE;
+            }
+            case RedefinitionOption.KEEP_AND_WARN -> {
+                for (Map.Entry<Keyword, Combinator> kv : kvs)
+                    if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
+                        System.err.println("Duplicate production: " + kv.getKey());
+                yield RedefinitionOption.KEEP_AND_WARN;
+            }
+        };
 
         return new Grammar(m);
     }
@@ -208,10 +228,34 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet()));
     }
 
+    /**
+     * Options for deciding what to do when a production is added that already exists. This enum is specifically used in {@link Grammar#fromProductions(List, RedefinitionOption)}.
+     */
     public enum RedefinitionOption {
+        /**
+         * Ignore existing. Replace and forget.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" results in "S = B" and discards the first.
+         */
         OVERRIDE,
+        /**
+         * Throw exception if a duplicate is added.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" results in an error.
+         */
         ERROR,
+        /**
+         * Throw exception if a duplicate is added.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
+         */
         CHOICE,
+        /**
+         * Keep old value and show a warning if a duplicate appears.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" keeps "S = A" and shows a warning.
+         */
+        KEEP_AND_WARN
     }
 
     /**

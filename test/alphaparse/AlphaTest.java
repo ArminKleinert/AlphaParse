@@ -22,12 +22,12 @@ class AlphaTest {
         }
     }
 
-    @Test
-    void testMostDerived() {
-        IO2.println(ClassUtil.mostDerived(List.of("abc", "abc")));
-        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), new StringBuffer("abc"))));
-        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), "abc")));
-    }
+//    @Test
+//    void testMostDerived() {
+//        IO2.println(ClassUtil.mostDerived(List.of("abc", "abc")));
+//        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), new StringBuffer("abc"))));
+//        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), "abc")));
+//    }
 
     @Test
     void simplifiedParseTreeCreation() {
@@ -532,7 +532,6 @@ class AlphaTest {
         }
     }
 
-    @Contract(" -> new")
     private @NotNull @Unmodifiable List<ParseTree> r1r2r3Results() {
         return List.of(
                 ParseTree.create("S", ParseTree.create("r1", "a"), ParseTree.create("r1", "a")),
@@ -608,5 +607,27 @@ class AlphaTest {
                 ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r2", "a")),
                 ParseTree.create("S", ParseTree.create("r3", "a"), ParseTree.create("r1", "a"))
         );
+    }
+
+    @Test
+    void parserWithStart() {
+        final @NotNull var p = Alpha.parser("S1 : 'A'\nS2 : 'B'");
+        Assertions.assertEquals(ParseTree.create("S1", "A"), p.parse("A"));
+        Assertions.assertTrue(p.parse("B").isFailure());
+
+        var parserWithOtherStart = p.withStartProduction(Keyword.intern("S2"));
+        Assertions.assertTrue(parserWithOtherStart.parse("A").isFailure());
+        Assertions.assertEquals(ParseTree.create("S2", "B"), parserWithOtherStart.parse("B"));
+    }
+
+    @Test
+    void parseWithStart() {
+        final @NotNull var p = Alpha.parser("S1 : 'A'\nS2 : 'B'");
+        Assertions.assertEquals(ParseTree.create("S1", "A"), p.parse("A"));
+        Assertions.assertTrue(p.parse("B").isFailure());
+
+        var opts = Alpha.ParsingOptions.getDefault().withStart(Keyword.intern("S2"));
+        Assertions.assertTrue(p.parse("A", opts).isFailure());
+        Assertions.assertEquals(ParseTree.create("S2", "B"), p.parse("B", opts));
     }
 }

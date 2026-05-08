@@ -591,6 +591,7 @@ public final class Alpha {
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
      * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
      * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+     * @param redefinitionOption  Sets what to do when a production appears twice in the definition.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
@@ -624,6 +625,7 @@ public final class Alpha {
          * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
          * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#OUTPUT} is used.
          * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+         * @param redefinitionOption  Sets what to do when a production appears twice in the definition.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
@@ -703,6 +705,12 @@ public final class Alpha {
                     ? GlobalCaseInsensitivity.TRUE
                     : GlobalCaseInsensitivity.FALSE);
         }
+
+        /**
+         * Sets what to do when a production appears twice in the definition.
+         * @param redefinitionOption Sets what to do when a production appears twice in the definition.
+         * @return A new instance.
+         */
         public @NotNull ParserCreationOptions withRedefinitionOption(
                 final Grammar.RedefinitionOption redefinitionOption) {
             return new ParserCreationOptions(
