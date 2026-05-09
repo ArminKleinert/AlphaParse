@@ -210,8 +210,7 @@ final class Cfg {
             throw new IllegalArgumentException("No start production provided.");
         return new Parser(
                 Cfg.checkGrammarValidity(grammarMap.applyStandardReductions()),
-                options.startProduction(),
-                options.outputFormat());
+                options.startProduction());
     }
 
     static @NotNull Parser buildParser(final @NotNull String spec,
@@ -249,6 +248,6 @@ final class Cfg {
             );
         }
 
-        return new Parser(grammar, startProduction, options.outputFormat());
+        return new Parser(grammar, startProduction);
     }
 }

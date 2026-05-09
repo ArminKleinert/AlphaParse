@@ -4,12 +4,8 @@ import alphaparse.Alpha;
 import alphaparse.GlobalCaseInsensitivity;
 import alphaparse.IO2;
 import alphaparse.Keyword;
-import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.ParseConverterUtils;
-import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
-import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
-import alphaparse.result.failure.failureReason.ParseFailureReasonString;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
@@ -17,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Pattern;
 
 final class Main {
 
@@ -76,7 +71,6 @@ final class Main {
                     null,
                     null,
                     GlobalCaseInsensitivity.TRUE,
-                    ReductionType.ReductionTypesAvailable.OUTPUT,
                     true,
                     null);
             final @NotNull var p = Alpha.parser("S : 'ABC'", opts);
@@ -128,7 +122,7 @@ final class Main {
 //        }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
+        PerfTest.fullTest(true, c99GrammarText, 10, 100);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);

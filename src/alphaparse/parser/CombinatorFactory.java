@@ -373,17 +373,15 @@ public final class CombinatorFactory {
     /**
      * Applies the reduction-type to all entries in the grammar.
      *
-     * @param reductionType The reduction-type to apply.
      * @param grammar       The grammar.
      * @return The new grammar.
      */
-    public @NotNull Grammar unhideTags(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
-                                       final @NotNull Grammar grammar) {
+    public @NotNull Grammar unhideTags(final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (final @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
-            final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
+            final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key);
 
             final @NotNull var pUnhide = value.withReduction(reduction);
             final @NotNull var comb = bufferIfRequested(pUnhide);
@@ -395,17 +393,15 @@ public final class CombinatorFactory {
     /**
      * Applies the reduction-type to all entries in the grammar and applies {@link Combinator#unhideContent()}.
      *
-     * @param reductionType The reduction-type to apply.
      * @param grammar       The grammar.
      * @return The new grammar.
      */
-    public @NotNull Grammar unhideAll(final @NotNull ReductionType.ReductionTypesAvailable reductionType,
-                                      final @NotNull Grammar grammar) {
+    public @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
         final List<Map.Entry<Keyword, Combinator>> res = new ArrayList<>();
         for (final @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> keywordCombinatorEntry : grammar.entrySet()) {
             final @NotNull Keyword key = keywordCombinatorEntry.getKey();
             final @NotNull Combinator value = keywordCombinatorEntry.getValue();
-            final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key, reductionType);
+            final @NotNull ReductionType reduction = ReductionType.nonTerminalReduction(key);
             final @NotNull var p = value.unhideContent().withReduction(reduction);
             final @NotNull Combinator comb = bufferIfRequested(p);
             res.add(Grammar.entry(key, comb));

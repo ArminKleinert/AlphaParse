@@ -41,12 +41,9 @@ public final class Alpha {
 
         return switch (unhide) {
             case none -> parser;
-            case content -> parser.withGrammar(
-                    combinatorFactory.unhideAllContent(parser.grammar()));
-            case tags -> parser.withGrammar(
-                    combinatorFactory.unhideTags(parser.outputFormat(), parser.grammar()));
-            case all -> parser.withGrammar(
-                    combinatorFactory.unhideAll(parser.outputFormat(), parser.grammar()));
+            case content -> parser.withGrammar(combinatorFactory.unhideAllContent(parser.grammar()));
+            case tags -> parser.withGrammar(combinatorFactory.unhideTags(parser.grammar()));
+            case all -> parser.withGrammar(combinatorFactory.unhideAll(parser.grammar()));
         };
     }
 
@@ -231,7 +228,6 @@ public final class Alpha {
      *     <li>{@link ParserCreationOptions#whitespaceParser()}: Include another parser which is intended to filter out whitespace.</li>
      *     <li>{@link ParserCreationOptions#startProduction()}: Explicitly set the starting production.</li>
      *     <li>{@link ParserCreationOptions#stringCaseInsensitive()}: Make ll string terminals ignore casing.</li>
-     *     <li>{@link ParserCreationOptions#outputFormat()}: Set the output format this parser will give.</li>
      *     <li>{@link ParserCreationOptions#useParserBuffering()}: Whether to use buffering for the productions to ensure that no productions are doubled.</li>
      * </ul>
      *
@@ -599,14 +595,12 @@ public final class Alpha {
      * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
      * @param startProduction       The starting production name of the parser.
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
-     * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
      * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
-                                        @NotNull ReductionType.ReductionTypesAvailable outputFormat,
                                         boolean useParserBuffering,
                                         @Nullable Grammar.RedefinitionOption redefinitionOption) {
 
@@ -622,7 +616,7 @@ public final class Alpha {
         public static @NotNull ParserCreationOptions getDefault() {
             if (DEFAULT == null) {
                 DEFAULT = new ParserCreationOptions(
-                        null, null, null, null,
+                        null, null, null,
                         defaultUseParserBuffering, null);
             }
             return DEFAULT;
@@ -634,14 +628,12 @@ public final class Alpha {
          * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
          * @param startProduction       The starting production name of the parser.
          * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
-         * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#OUTPUT} is used.
          * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
          * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
                                      final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
-                                     final @Nullable ReductionType.ReductionTypesAvailable outputFormat,
                                      final boolean useParserBuffering,
                                      final @Nullable Grammar.RedefinitionOption redefinitionOption) {
             this.whitespaceParser = whitespaceParser;
@@ -649,7 +641,6 @@ public final class Alpha {
             this.stringCaseInsensitive = stringCaseInsensitive == null
                     ? GlobalCaseInsensitivity.DEFAULT
                     : stringCaseInsensitive;
-            this.outputFormat = ReductionType.ReductionTypesAvailable.OUTPUT;
             this.useParserBuffering = useParserBuffering;
             this.redefinitionOption = redefinitionOption;
         }
@@ -665,7 +656,7 @@ public final class Alpha {
             if (Objects.equals(this.whitespaceParser(), whitespaceParser))
                 return this;
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
+                    whitespaceParser, startProduction, stringCaseInsensitive,
                     defaultUseParserBuffering, redefinitionOption);
         }
 
@@ -680,7 +671,7 @@ public final class Alpha {
             if (Objects.equals(this.startProduction(), startProduction))
                 return this;
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
+                    whitespaceParser, startProduction, stringCaseInsensitive,
                     defaultUseParserBuffering, redefinitionOption);
         }
 
@@ -695,7 +686,7 @@ public final class Alpha {
             if (Objects.equals(this.stringCaseInsensitive(), stringCaseInsensitive))
                 return this;
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
+                    whitespaceParser, startProduction, stringCaseInsensitive,
                     defaultUseParserBuffering, redefinitionOption);
         }
 
@@ -722,20 +713,7 @@ public final class Alpha {
         public @NotNull ParserCreationOptions withRedefinitionOption(
                 final Grammar.RedefinitionOption redefinitionOption) {
             return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
-                    defaultUseParserBuffering, redefinitionOption);
-        }
-
-        /**
-         * Creates a new instance with output format set to the parameter.
-         *
-         * @param outputFormat The setting for the output format.
-         * @return A new instance.
-         */
-        public @NotNull ParserCreationOptions withOutputFormat(
-                final @Nullable ReductionType.ReductionTypesAvailable outputFormat) {
-            return new ParserCreationOptions(
-                    whitespaceParser, startProduction, stringCaseInsensitive, outputFormat,
+                    whitespaceParser, startProduction, stringCaseInsensitive,
                     defaultUseParserBuffering, redefinitionOption);
         }
 

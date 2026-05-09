@@ -13,11 +13,9 @@ import java.util.function.Function;
  *
  * @param grammar         The grammar.
  * @param startProduction The first production to try.
- * @param outputFormat    The output format for the parses.
  */
 public record Parser(@NotNull Grammar grammar,
-                     @NotNull Keyword startProduction,
-                     @NotNull ReductionType.ReductionTypesAvailable outputFormat)
+                     @NotNull Keyword startProduction)
         implements Function<String, AlphaParseResult> {
 
     /**
@@ -25,7 +23,6 @@ public record Parser(@NotNull Grammar grammar,
      *
      * @param grammar         The grammar.
      * @param startProduction The first production to try.
-     * @param outputFormat    The output format for the parses.
      * @throws IllegalArgumentException if the parameters are invalid (for example, if the grammar does not contain the start-production symbol).
      */
     public Parser {
@@ -94,7 +91,7 @@ public record Parser(@NotNull Grammar grammar,
             return this;
         if (!grammar.containsKey(startProduction))
             throw new IllegalArgumentException();
-        return new Parser(grammar, startProduction, outputFormat);
+        return new Parser(grammar, startProduction);
     }
 
     /**
@@ -107,7 +104,7 @@ public record Parser(@NotNull Grammar grammar,
     public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
         if (!grammar.containsKey(startProduction))
             throw new IllegalArgumentException();
-        return new Parser(grammar, startProduction, outputFormat);
+        return new Parser(grammar, startProduction);
     }
 
     /**

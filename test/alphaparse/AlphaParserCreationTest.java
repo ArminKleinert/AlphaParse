@@ -101,7 +101,7 @@ class AlphaParserCreationTest {
             final @NotNull var grammar = "S : 'abc'";
             final @NotNull var options = new Alpha.ParserCreationOptions(
                     null, Keyword.intern("C"),
-                    GlobalCaseInsensitivity.DEFAULT, ReductionType.ReductionTypesAvailable.OUTPUT,
+                    GlobalCaseInsensitivity.DEFAULT,
                     true, null);
             Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser(grammar, options));
         }

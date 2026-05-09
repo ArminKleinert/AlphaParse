@@ -49,7 +49,6 @@ public final class ReductionType {
         return standardInitialReduction;
     }
 
-
     /**
      * The available types. They mark whether the parse operation is an intermediate operation or for the final output.
      */
@@ -65,7 +64,7 @@ public final class ReductionType {
         /**
          * Default type. Represent parse trees as lists. Might be removed in the future.
          */
-        OUTPUT
+        TAGGED_PARSE_TREE
     }
 
     private final @NotNull Keyword key;
@@ -85,18 +84,17 @@ public final class ReductionType {
      * @return A new output descriptor.
      */
     public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
-        return new ReductionType(key, ReductionType.ReductionTypesAvailable.OUTPUT, false);
+        return new ReductionType(key, ReductionType.ReductionTypesAvailable.TAGGED_PARSE_TREE, false);
     }
 
     /**
      * Default output format for final operations whose key is legal for output.
      *
      * @param key  The production's name.
-     * @param type The type.
      * @return A new output descriptor.
      */
-    public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key, final @NotNull ReductionType.ReductionTypesAvailable type) {
-        return new ReductionType(key, type, type != ReductionTypesAvailable.INITIAL && type != ReductionTypesAvailable.INTERMEDIATE);
+    public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key) {
+        return new ReductionType(key, ReductionTypesAvailable.TAGGED_PARSE_TREE, false);
     }
 
     @Override
