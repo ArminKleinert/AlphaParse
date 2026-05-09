@@ -113,18 +113,15 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
     }
 
     /**
-     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(String, Combinator)} can be used.
+     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides.
      *
      * @param kvs The productions.
      * @return A new Grammar.
-     * @see Grammar#entry(String, Combinator)
      */
     public static @NotNull Grammar fromProductions(
             final @NotNull List<Map.Entry<String, Combinator>> kvs,
             @Nullable Grammar.RedefinitionOption redefinitionOption) {
         final @NotNull SequencedMap<String, Combinator> m = new LinkedHashMap<>();
-//        for (Map.Entry<Keyword, Combinator> kv : kvs)
-//            m.put(kv.getKey(), kv.getValue());
 
         if (redefinitionOption == null)
             redefinitionOption = RedefinitionOption.defaultOption;
@@ -154,22 +151,6 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
             }
         };
 
-        return new Grammar(m);
-    }
-
-    /**
-     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(String, Combinator)} can be used.
-     *
-     * @param kvs The productions.
-     * @return A new Grammar.
-     * @see Grammar#entry(String, Combinator)
-     */
-    public static @NotNull Grammar fromProductions(
-            final @NotNull List<Map.Entry<String, Combinator>> kvs) {
-        final @NotNull SequencedMap<String, Combinator> m = new LinkedHashMap<>();
-        for (Map.Entry<String, Combinator> kv : kvs) {
-            m.put(kv.getKey(), kv.getValue());
-        }
         return new Grammar(m);
     }
 
@@ -224,16 +205,15 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
      *
      * @return A new grammar.
      */
-    public @NotNull Grammar applyStandardReductions() {
-        final List<Map.Entry<String, Combinator>> m = new ArrayList<>();
+    public @NotNull Grammar applyStandardReductions(final @NotNull CombinatorFactory cf) {
+        final LinkedHashMap<String, Combinator> m = new LinkedHashMap<>();
         this.forEach((prodKey, pars) -> {
             if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
-                pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
+                pars = cf.buffer(pars.withReduction(ReductionType.defaultNonRawReduction(prodKey)));
             }
-
-            m.add(Grammar.entry(prodKey, pars));
+            m.put(prodKey, pars);
         });
-        return Grammar.fromProductions(m);
+        return new Grammar(m);
     }
 
     /**
@@ -320,49 +300,6 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
                     ", isValid=" + isValid() +
                     ']';
         }
-    }
-
-    /**
-     * Creates an instance of {@link Map.Entry}, specifically for use with {@link Grammar#fromProductions(List)}.
-     *
-     * @param k Key.
-     * @param v Value.
-     * @return An entry.
-     */
-    public static @NotNull Map.Entry<String, Combinator> entry(final @NotNull String k, final @NotNull Combinator v) {
-        return new Map.Entry<>() {
-            final @NotNull String key = k;
-            @NotNull Combinator value = v;
-
-            @Override
-            public @NotNull String getKey() {
-                return key;
-            }
-
-            @Override
-            public @NotNull Combinator getValue() {
-                return value;
-            }
-
-            @Override
-            public Combinator setValue(final @NotNull Combinator combinator) {
-                final Combinator old = value;
-                value = combinator;
-                return old;
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(key, value);
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (!(obj instanceof Map.Entry<?, ?> that)) return false;
-                return Objects.equals(getKey(), that.getKey()) &&
-                        Objects.equals(getValue(), that.getValue());
-            }
-        };
     }
 
     @Override

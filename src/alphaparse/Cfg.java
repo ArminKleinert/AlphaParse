@@ -73,7 +73,7 @@ final class Cfg {
             rule = (Combinator) buildRule(altOrOrd, combinatorFactory, options);
         }
 
-        return Grammar.entry(key, rule);
+        return Map.entry(key, rule);
     }
 
     private static @NotNull Object buildRule(@NotNull ParseTree tree,
@@ -203,20 +203,20 @@ final class Cfg {
         return g;
     }
 
-    static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammarMap,
+    static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammar,
                                                       final @NotNull Alpha.ParserCreationOptions options) {
         if (options.startProduction() == null)
             throw new IllegalArgumentException("No start production provided.");
         return new Parser(
-                Cfg.checkGrammarValidity(grammarMap.applyStandardReductions()),
+                Cfg.checkGrammarValidity(grammar.applyStandardReductions(new CombinatorFactory(true))),
                 options.startProduction());
     }
 
     static @NotNull Parser buildParser(final @NotNull String spec,
                                        final @NotNull Alpha.ParserCreationOptions options,
-                                       final @NotNull Grammar ebnfGrammar) {
+                                       final @NotNull Grammar grammarGrammar) {
         final @NotNull var rules = Gll.parse(
-                ebnfGrammar,
+                grammarGrammar,
                 "rules",
                 spec, false);
         if (rules instanceof AlphaParseFailure) {
@@ -236,7 +236,8 @@ final class Cfg {
                 : productions.getFirst().getKey();
 
         @NotNull var grammar = checkGrammarValidity(
-                Grammar.fromProductions(productions, options.redefinitionOption()).applyStandardReductions());
+                Grammar.fromProductions(productions, options.redefinitionOption())
+                        .applyStandardReductions(combinatorFactory));
 
         if (options.whitespaceParser() != null) {
             grammar = combinatorFactory.autoWhitespace(

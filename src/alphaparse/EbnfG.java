@@ -386,6 +386,6 @@ final class EbnfG {
         grammarMap.put(("factor"), makeCfgFactorRhs(cs));
         grammarMap.put(("num-val"), makeABNFNumVal(cs)); // ABNF
         grammarMap.put(("rules-or-parser"), makeCfgRulesOrParserRhs(cs));
-        return new Grammar(grammarMap).applyStandardReductions();
+        return new Grammar(grammarMap).applyStandardReductions(cs);
     }
 }

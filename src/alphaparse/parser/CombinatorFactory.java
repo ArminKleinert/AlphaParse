@@ -28,7 +28,14 @@ public final class CombinatorFactory {
         buffer = useBuffer ? new BufferForCombinators() : null;
     }
 
-    private Combinator bufferIfRequested(Combinator c) {
+    /**
+     * Ensures that as long as the factory exists, the following is true:
+     * {@code if (Objects.equals(x, y)) { combinatorFactory.buffer(x) == combinatorFactory.buffer(y); }}
+     *
+     * @param c A combinator.
+     * @return The input or a buffered equivalent.
+     */
+    public Combinator buffer(final Combinator c) {
         if (!useBuffer) return c;
         assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(c);
@@ -358,15 +365,15 @@ public final class CombinatorFactory {
      * @see Alpha.ParsingOptions#getUnhide()
      */
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
-        final List<Map.Entry<String, Combinator>> res = new ArrayList<>();
+        final @NotNull LinkedHashMap<String, Combinator> res = new LinkedHashMap<>();
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var pUnhide = value.unhideContent();
-            final @NotNull var pB = bufferIfRequested(pUnhide);
-            res.add(Grammar.entry(key, pB));
+            final @NotNull var pB = buffer(pUnhide);
+            res.put(key, pB);
         }
-        return Grammar.fromProductions(res);
+        return new Grammar(res);
     }
 
     /**
@@ -376,17 +383,17 @@ public final class CombinatorFactory {
      * @return The new grammar.
      */
     public @NotNull Grammar unhideTags(final @NotNull Grammar grammar) {
-        final List<Map.Entry<String, Combinator>> res = new ArrayList<>();
+        final @NotNull LinkedHashMap<String, Combinator> res = new LinkedHashMap<>();
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
 
             final @NotNull var pUnhide = value.withReduction(reduction);
-            final @NotNull var comb = bufferIfRequested(pUnhide);
-            res.add(Grammar.entry(key, comb));
+            final @NotNull var comb = buffer(pUnhide);
+            res.put(key, comb);
         }
-        return Grammar.fromProductions(res);
+        return new Grammar(res);
     }
 
     /**
@@ -396,16 +403,16 @@ public final class CombinatorFactory {
      * @return The new grammar.
      */
     public @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
-        final List<Map.Entry<String, Combinator>> res = new ArrayList<>();
+        final @NotNull LinkedHashMap<String, Combinator> res = new LinkedHashMap<>();
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
             final @NotNull var p = value.unhideContent().withReduction(reduction);
-            final @NotNull var comb = bufferIfRequested(p);
-            res.add(Grammar.entry(key, comb));
+            final @NotNull var comb = buffer(p);
+            res.put(key, comb);
         }
-        return Grammar.fromProductions(res);
+        return new Grammar(res);
     }
 
     private @NotNull Combinator autoWhitespaceHelper(final @NotNull Combinator parser,
@@ -414,20 +421,21 @@ public final class CombinatorFactory {
             case NonTerminalCombinator ignored -> parser;
             case EpsilonCombinator ignored2 -> parser;
             case CombinatorWithParser parser1 ->
-                    bufferIfRequested(parser1.withParser(autoWhitespaceHelper(parser1.getParser(), wsParser)));
+                    buffer(parser1.withParser(autoWhitespaceHelper(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
                 final @NotNull List<Combinator> parsers = combWithParsers.getParsers()
                         .stream()
                         .map(p -> autoWhitespaceHelper(p, wsParser))
                         .toList();
-                yield bufferIfRequested(combWithParsers.withParsers(parsers));
+                yield buffer(combWithParsers.withParsers(parsers));
             }
             case CombinatorTerminal ignored -> {
                 final @NotNull List<Combinator> parsers = new ArrayList<>();
                 parsers.add(wsParser);
                 final @NotNull Combinator result;
                 if (!parser.getReduction().isHiddenOrRaw()) {
-                    parsers.add(parser.withReduction(ReductionType.standardInitialReduction()));
+                    // Hide the terminal in the output. It still appears in the tree, but is flattened into the concatenation.
+                    parsers.add(parser.withReduction(ReductionType.standardIntermediateReduction()));
                     result = catCombinator(parsers).withReduction(parser.getReduction());
                 } else {
                     parsers.add(parser);
@@ -460,7 +468,7 @@ public final class CombinatorFactory {
             keywordCombinatorEntry.setValue(autoWhitespaceHelper(keywordCombinatorEntry.getValue(), wsParser));
         }
 
-        final @NotNull Combinator startWithoutReduction = bufferIfRequested(
+        final @NotNull Combinator startWithoutReduction = buffer(
                 finalGrammar.get(start)
                         .withReduction(ReductionType.standardInitialReduction()));
         final @NotNull Combinator newStartComb =

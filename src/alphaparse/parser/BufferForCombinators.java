@@ -5,6 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * As long as this buffer exists, the following is true:
+ * {@code if (Objects.equals(x, y)) { buffer.getOrAdd(x) == buffer.getOrAdd(y); }}
+ */
 final class BufferForCombinators {
     BufferForCombinators() {
     }
@@ -16,7 +20,7 @@ final class BufferForCombinators {
         return c;
     }
 
-    @NotNull <T extends Combinator> Combinator getOrAdd(final @NotNull T combinator1) {
+    @NotNull Combinator getOrAdd(final @NotNull Combinator combinator1) {
         return switch (combinator1) {
             case NonTerminalCombinator combinator -> getOrAdd(combinator);
             case TerminalRegexpCombinator combinator -> getOrAdd(combinator);

@@ -28,7 +28,8 @@ public final class ReductionType {
      */
     public static @NotNull ReductionType standardIntermediateReduction() {
         if (standardIntermediateReduction == null)
-            standardIntermediateReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INTERMEDIATE, true);
+            standardIntermediateReduction =
+                    new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INTERMEDIATE, true);
         return standardIntermediateReduction;
     }
 
@@ -44,7 +45,8 @@ public final class ReductionType {
      */
     public static @NotNull ReductionType standardInitialReduction() {
         if (standardInitialReduction == null)
-            standardInitialReduction = new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INITIAL, true);
+            standardInitialReduction =
+                    new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INITIAL, true);
         return standardInitialReduction;
     }
 
@@ -89,7 +91,7 @@ public final class ReductionType {
     /**
      * Default output format for final operations whose key is legal for output.
      *
-     * @param key  The production's name.
+     * @param key The production's name.
      * @return A new output descriptor.
      */
     public static @NotNull ReductionType nonTerminalReduction(final @NotNull String key) {
