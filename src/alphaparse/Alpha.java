@@ -22,6 +22,16 @@ import java.util.Objects;
  * Helpers for creating and using parsers.
  */
 public final class Alpha {
+    private static Grammar bufferedEbnfGrammar = null;
+
+    public static void bufferEbnfGrammar(final boolean setting) {
+        if (!setting) {
+            bufferedEbnfGrammar = null;
+        } else if (bufferedEbnfGrammar == null) {
+            bufferedEbnfGrammar = EbnfG.makeCfg();
+        }
+    }
+
     private Alpha() {
     }
 
@@ -231,7 +241,7 @@ public final class Alpha {
      */
     public static @NotNull Parser parser(final @NotNull String grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) {
-        return Cfg.buildParser(grammar, options);
+        return Cfg.buildParser(grammar, options, bufferedEbnfGrammar == null ? EbnfG.makeCfg() : bufferedEbnfGrammar);
     }
 
     /**
@@ -591,14 +601,15 @@ public final class Alpha {
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
      * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}.
      * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
-     * @param redefinitionOption  Sets what to do when a production appears twice in the definition.
+     * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Keyword startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         @NotNull ReductionType.ReductionTypesAvailable outputFormat,
                                         boolean useParserBuffering,
-                                        @NotNull Grammar.RedefinitionOption redefinitionOption) {
+                                        @Nullable Grammar.RedefinitionOption redefinitionOption) {
+
         private static final boolean defaultUseParserBuffering = true;
 
         private static ParserCreationOptions DEFAULT;
@@ -625,7 +636,7 @@ public final class Alpha {
          * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
          * @param outputFormat          The output format for successful parses. Currently, the only output for valid parses is {@link alphaparse.result.ParseTree}. If null, {@link ReductionType.ReductionTypesAvailable#OUTPUT} is used.
          * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
-         * @param redefinitionOption  Sets what to do when a production appears twice in the definition.
+         * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Keyword startProduction,
@@ -638,13 +649,9 @@ public final class Alpha {
             this.stringCaseInsensitive = stringCaseInsensitive == null
                     ? GlobalCaseInsensitivity.DEFAULT
                     : stringCaseInsensitive;
-            this.outputFormat = outputFormat == null
-                    ? ReductionType.ReductionTypesAvailable.OUTPUT
-                    : outputFormat;
+            this.outputFormat = ReductionType.ReductionTypesAvailable.OUTPUT;
             this.useParserBuffering = useParserBuffering;
-            this.redefinitionOption = redefinitionOption == null
-                    ? Grammar.RedefinitionOption.OVERRIDE
-                    : redefinitionOption;
+            this.redefinitionOption = redefinitionOption;
         }
 
         /**
@@ -708,6 +715,7 @@ public final class Alpha {
 
         /**
          * Sets what to do when a production appears twice in the definition.
+         *
          * @param redefinitionOption Sets what to do when a production appears twice in the definition.
          * @return A new instance.
          */

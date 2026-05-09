@@ -88,7 +88,7 @@ class AlphaTest {
 
     @Test
     void testOptimizeMemoryDoesNotChangeOutput() {
-        var p = Alpha.parser("S : 'u' (('a'+ | #'b*') / C)\n<C> : 1*3 'c'");
+        var p = Alpha.parser("S : 'u' (('a'+ | #'b*') / C)\n<C> : 'c'+");
         var opt = Alpha.ParsingOptions.getDefault().withOptimizeMemory(true);
 
         Assertions.assertTrue(p.parse("", opt).isFailure());

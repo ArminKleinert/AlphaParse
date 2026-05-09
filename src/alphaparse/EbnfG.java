@@ -326,52 +326,40 @@ final class EbnfG {
         return rulesRule;
     }
 
-    /*
-    <num-val> = <'%'> (bin-val | dec-val | hex-val);
-    bin-val = <'b'> bin-char
-              [ (<'.'> bin-char)+ | ('-' bin-char) ];
-    bin-char = ('0' | '1')+;
-    dec-val = <'d'> dec-char
-              [ (<'.'> dec-char)+ | ('-' dec-char) ];
-    dec-char = DIGIT+;
-    hex-val = <'x'> hex-char
-              [ (<'.'> hex-char)+ | ('-' hex-char) ];
-    hex-char = HEXDIG+;
-     */
-    private static @NotNull Combinator makeAbnfNumVal(final @NotNull CombinatorFactory combinatorFactory) {
+    private static @NotNull Combinator makeABNFNumVal(final @NotNull CombinatorFactory combinatorFactory) {
+        final @NotNull Combinator connectingMinusTerminal = combinatorFactory.stringTerminal("-").enableHideTag();
+
+        @NotNull Combinator regexCombinatorBin = combinatorFactory.createRegexTerminal(Pattern.compile("[01]+"));
         final Combinator binaryVal = combinatorFactory.catCombinator(List.of(
-                combinatorFactory.stringTerminal("%b"), // binary indicator
-                combinatorFactory.createRegexTerminal(Pattern.compile("[01]+")),
+                combinatorFactory.stringTerminal("b"), // binary indicator
+                regexCombinatorBin,
                 combinatorFactory.optionalCombinator(combinatorFactory.catCombinator(
-                        List.of(
-                                combinatorFactory.stringTerminal("-"),
-                                combinatorFactory.createRegexTerminal(Pattern.compile("[01]+"))
-                        )))
+                        List.of(connectingMinusTerminal, regexCombinatorBin)))
         ));
+
+        @NotNull Combinator regexCombinatorDec = combinatorFactory.createRegexTerminal(Pattern.compile("[0-9]+"));
         final Combinator decimalVal = combinatorFactory.catCombinator(List.of(
-                combinatorFactory.stringTerminal("%d"), // binary indicator
-                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9]+")),
+                combinatorFactory.stringTerminal("d"), // decimal indicator
+                regexCombinatorDec,
                 combinatorFactory.optionalCombinator(combinatorFactory.catCombinator(
-                        List.of(
-                                combinatorFactory.stringTerminal("-"),
-                                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9]+"))
-                        )))
+                        List.of(connectingMinusTerminal, regexCombinatorDec)))
         ));
+
+        @NotNull Combinator regexCombinatorHex = combinatorFactory.createRegexTerminal(Pattern.compile("[0-9a-fA-F]+"));
         final Combinator hexadecimalVal = combinatorFactory.catCombinator(List.of(
-                combinatorFactory.stringTerminal("%x"), // binary indicator
-                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9a-fA-F]+")),
+                combinatorFactory.stringTerminal("x"), // hexadecimal indicator
+                regexCombinatorHex,
                 combinatorFactory.optionalCombinator(combinatorFactory.catCombinator(
-                        List.of(
-                                combinatorFactory.stringTerminal("-"),
-                                combinatorFactory.createRegexTerminal(Pattern.compile("[0-9a-fA-F]+"))
-                        )))
+                        List.of(connectingMinusTerminal, regexCombinatorHex)))
         ));
-        return combinatorFactory.choiceCombinator(List.of(binaryVal, decimalVal, hexadecimalVal));
+        return combinatorFactory.catCombinator(List.of(
+                combinatorFactory.stringTerminal("%").enableHideTag(),
+                combinatorFactory.choiceCombinator(List.of(binaryVal, decimalVal, hexadecimalVal))));
     }
 
     static @NotNull Grammar makeCfg() {
         final @NotNull SequencedMap<Keyword, Combinator> grammarMap = new LinkedHashMap<>();
-        final @NotNull CombinatorFactory cs = new CombinatorFactory(true);
+        final @NotNull CombinatorFactory cs = new CombinatorFactory(false);
         grammarMap.put(Keyword.intern("rules"), makeCfgRulesRhs(cs));
         grammarMap.put(Keyword.intern("comment"), makeCfgCommentRhs(cs));
         grammarMap.put(Keyword.intern("inside-comment"), makeCfgInsideCommentRhs(cs));
@@ -382,11 +370,11 @@ final class EbnfG {
         grammarMap.put(Keyword.intern("hide-nt"), makeCfgHideNtRhs(cs));
         grammarMap.put(Keyword.intern("alt-or-ord"), makeCfgAltOrOrdRhs(cs));
         grammarMap.put(Keyword.intern("alt"), makeCfgAltRhs(cs));
-        grammarMap.put(Keyword.intern("ord"), makeCfgOrdRhs(cs));
+        grammarMap.put(Keyword.intern("ord"), makeCfgOrdRhs(cs)); // Technically ABNF, but should be included without it as a PAKRAT extension.
         grammarMap.put(Keyword.intern("paren"), makeCfgParenRhs(cs));
         grammarMap.put(Keyword.intern("hide"), makeCfgHideRhs(cs));
         grammarMap.put(Keyword.intern("cat"), makeCfgCatRhs(cs));
-        grammarMap.put(Keyword.intern("rep"), makeCfgRepRhs(cs));
+        grammarMap.put(Keyword.intern("rep"), makeCfgRepRhs(cs)); // ABNF
         grammarMap.put(Keyword.intern("string"), makeCfgStringRhs(cs));
         grammarMap.put(Keyword.intern("regexp"), makeCfgRegexRhs(cs));
         grammarMap.put(Keyword.intern("opt"), makeCfgOptRhs(cs));
@@ -396,7 +384,7 @@ final class EbnfG {
         grammarMap.put(Keyword.intern("neg"), makeCfgNegRhs(cs));
         grammarMap.put(Keyword.intern("epsilon"), makeCfgEpsilonRhs(cs));
         grammarMap.put(Keyword.intern("factor"), makeCfgFactorRhs(cs));
-        grammarMap.put(Keyword.intern("num-val"), makeAbnfNumVal(cs));
+        grammarMap.put(Keyword.intern("num-val"), makeABNFNumVal(cs)); // ABNF
         grammarMap.put(Keyword.intern("rules-or-parser"), makeCfgRulesOrParserRhs(cs));
         return new Grammar(grammarMap).applyStandardReductions();
     }

@@ -145,6 +145,7 @@ final class Cfg {
                             (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "plus" -> {
+
                     return combinatorFactory.plusCombinator((Combinator) buildRule(
                             (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
@@ -159,24 +160,33 @@ final class Cfg {
                     return EpsilonCombinator.getDefault();
                 }
                 case "paren" -> {
+                    // The parse tree is wrapped in hidden "(" ")".
                     tree = (ParseTree) tree.getContent().getFirst().content();
                     continue; // Open up the grouping and take it to the top.
                 }
                 case "num-val" -> {
-                    var prefix = (String) tree.getContent().getFirst().content();
-                    var firstNum = (String) tree.getContent().get(1).content();
-                    var lastNum = tree.getContent().size() > 2
-                            ? (String) tree.getContent().get(3).content()
-                            : firstNum;
-                    final int radix = switch (prefix) {
-                        case "%b" -> 2;
-                        case "%d" -> 10;
-                        case "%x" -> 16;
+                    /*
+                    The parse tree looks like this:
+                        [:num-val <"%"> "b"/"d"/"x" num1]
+                    or
+                        [:num-val <"%"> "b"/"d"/"x" num1 <"-"> num2]
+                    We can safely skip the "%" prefix and go to the inner parse tree.
+                     */
+                    var content = tree.getContent();
+                    var prefix = (String) content.get(0).content(); // "b"/"d"/"x"
+                    final int radix = switch (prefix.charAt(0)) {
+                        case 'b' -> 2;
+                        case 'd' -> 10;
+                        case 'x' -> 16;
                         default -> throw new IllegalStateException();
                     };
-                    final int rangeFirst = Integer.parseInt(firstNum, radix);
-                    final int rangeLast = Integer.parseInt(lastNum, radix);
-return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
+                    var rangeFirst = Integer.parseInt(
+                            (String) content.get(1).content(),
+                            radix);
+                    var rangeLast = content.size() > 2
+                            ? Integer.parseInt((String) content.get(2).content(), radix)
+                            : rangeFirst;
+                    return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
                 }
             }
             throw new UnsupportedOperationException(tag);
@@ -205,9 +215,10 @@ return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
     }
 
     static @NotNull Parser buildParser(final @NotNull String spec,
-                                       final @NotNull Alpha.ParserCreationOptions options) {
+                                       final @NotNull Alpha.ParserCreationOptions options,
+                                       final @NotNull Grammar ebnfGrammar) {
         final @NotNull var rules = Gll.parse(
-                EbnfG.makeCfg(),
+                ebnfGrammar,
                 Keyword.intern("rules"),
                 spec, false);
         if (rules instanceof AlphaParseFailure) {

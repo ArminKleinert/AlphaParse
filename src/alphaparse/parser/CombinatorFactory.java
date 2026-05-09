@@ -235,9 +235,10 @@ public final class CombinatorFactory {
      * @return The new parser.
      */
     public @NotNull Combinator unicodeChar(final int lohi) {
-        final @NotNull var str = new StringBuilder(4).appendCodePoint(lohi).toString();
-        return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lohi, lohi));
-        //return stringOrStringCiTerminal(str, false);
+        final @NotNull var result = new TerminalUnicodeCharCombinator(lohi, lohi);
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -264,7 +265,11 @@ public final class CombinatorFactory {
 //                .toString();
 //        return createRegexTerminal(Pattern.compile(regex));
         //"[\\x{1F601}-\\x{1F64F}]"
-        return buffer.getOrAdd(new TerminalUnicodeCharCombinator(lo, hi));
+
+        final @NotNull var result = new TerminalUnicodeCharCombinator(lo, hi);
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
@@ -408,17 +413,17 @@ public final class CombinatorFactory {
         return Grammar.fromProductions(res);
     }
 
-    private @NotNull Combinator autoWhitespaceParser(final @NotNull Combinator parser,
+    private @NotNull Combinator autoWhitespaceHelper(final @NotNull Combinator parser,
                                                      final @NotNull Combinator wsParser) {
         return switch (parser) {
             case NonTerminalCombinator ignored -> parser;
             case EpsilonCombinator ignored2 -> parser;
             case CombinatorWithParser parser1 ->
-                    bufferIfRequested(parser1.withParser(autoWhitespaceParser(parser1.getParser(), wsParser)));
+                    bufferIfRequested(parser1.withParser(autoWhitespaceHelper(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
                 final @NotNull List<Combinator> parsers = combWithParsers.getParsers()
                         .stream()
-                        .map(p -> autoWhitespaceParser(p, wsParser))
+                        .map(p -> autoWhitespaceHelper(p, wsParser))
                         .toList();
                 yield bufferIfRequested(combWithParsers.withParsers(parsers));
             }
@@ -426,7 +431,7 @@ public final class CombinatorFactory {
                 final @NotNull List<Combinator> parsers = new ArrayList<>();
                 parsers.add(wsParser);
                 final @NotNull Combinator result;
-                if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.INITIAL) {
+                if (!parser.getReduction().isHiddenOrRaw()) {
                     parsers.add(parser.withReduction(ReductionType.standardInitialReduction()));
                     result = catCombinator(parsers).withReduction(parser.getReduction());
                 } else {
@@ -457,7 +462,7 @@ public final class CombinatorFactory {
         final @NotNull SequencedMap<@NotNull Keyword, @NotNull Combinator> finalGrammar =
                 new LinkedHashMap<>(grammar);
         for (var keywordCombinatorEntry : finalGrammar.entrySet()) {
-            keywordCombinatorEntry.setValue(autoWhitespaceParser(keywordCombinatorEntry.getValue(), wsParser));
+            keywordCombinatorEntry.setValue(autoWhitespaceHelper(keywordCombinatorEntry.getValue(), wsParser));
         }
 
         final @NotNull Combinator startWithoutReduction = bufferIfRequested(

@@ -1,6 +1,5 @@
 package alphaparse.parser;
 
-import alphaparse.Alpha;
 import alphaparse.Keyword;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -84,6 +83,38 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
+     * Options for deciding what to do when a production is added that already exists. This enum is specifically used in {@link Grammar#fromProductions(List, RedefinitionOption)}.
+     */
+    public enum RedefinitionOption {
+        /**
+         * Ignore existing. Replace and forget.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" results in "S = B" and discards the first.
+         */
+        OVERRIDE,
+        /**
+         * Throw exception if a duplicate is added.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" results in an error.
+         */
+        ERROR,
+        /**
+         * Throw exception if a duplicate is added.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
+         */
+        CHOICE,
+        /**
+         * Keep old value.
+         * <p>
+         *  Example: Adding Grammar productions "S = A" and "S = "B" keeps "S = A".
+         */
+        KEEP;
+
+        final static RedefinitionOption defaultOption = OVERRIDE;
+    }
+
+    /**
      * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(Keyword, Combinator)} can be used.
      *
      * @param kvs The productions.
@@ -92,12 +123,16 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      */
     public static @NotNull Grammar fromProductions(
             final @NotNull List<Map.Entry<Keyword, Combinator>> kvs,
-            final @NotNull Grammar.RedefinitionOption redefinitionOption) {
+            @Nullable Grammar.RedefinitionOption redefinitionOption) {
         final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
 //        for (Map.Entry<Keyword, Combinator> kv : kvs)
 //            m.put(kv.getKey(), kv.getValue());
 
-        var usedOpt = switch (redefinitionOption) {
+        if (redefinitionOption == null)
+            redefinitionOption = RedefinitionOption.defaultOption;
+
+        // Using an assignment here is not strictly necessary. I use it to force the switch to be exhaustive by default.
+        @SuppressWarnings("unused") var usedOpt = switch (redefinitionOption) {
             case RedefinitionOption.OVERRIDE -> { // Ignore existing
                 for (Map.Entry<Keyword, Combinator> kv : kvs)
                     m.put(kv.getKey(), kv.getValue());
@@ -113,11 +148,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 addProductionWithRedefinitionOptionChoice(m, kvs);
                 yield RedefinitionOption.CHOICE;
             }
-            case RedefinitionOption.KEEP_AND_WARN -> {
+            case RedefinitionOption.KEEP -> {
                 for (Map.Entry<Keyword, Combinator> kv : kvs)
-                    if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
-                        System.err.println("Duplicate production: " + kv.getKey());
-                yield RedefinitionOption.KEEP_AND_WARN;
+                    m.putIfAbsent(kv.getKey(), kv.getValue());
+                yield RedefinitionOption.KEEP;
             }
         };
 
@@ -226,36 +260,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         return new GrammarInfo(
                 keySet(),
                 listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet()));
-    }
-
-    /**
-     * Options for deciding what to do when a production is added that already exists. This enum is specifically used in {@link Grammar#fromProductions(List, RedefinitionOption)}.
-     */
-    public enum RedefinitionOption {
-        /**
-         * Ignore existing. Replace and forget.
-         * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" results in "S = B" and discards the first.
-         */
-        OVERRIDE,
-        /**
-         * Throw exception if a duplicate is added.
-         * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" results in an error.
-         */
-        ERROR,
-        /**
-         * Throw exception if a duplicate is added.
-         * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
-         */
-        CHOICE,
-        /**
-         * Keep old value and show a warning if a duplicate appears.
-         * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" keeps "S = A" and shows a warning.
-         */
-        KEEP_AND_WARN
     }
 
     /**

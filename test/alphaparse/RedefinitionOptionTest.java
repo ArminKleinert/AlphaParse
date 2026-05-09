@@ -51,7 +51,7 @@ class RedefinitionOptionTest {
     void optionKeepTest() {
         var redefinitionOpts = Alpha.ParserCreationOptions
                 .getDefault()
-                .withRedefinitionOption(Grammar.RedefinitionOption.KEEP_AND_WARN);
+                .withRedefinitionOption(Grammar.RedefinitionOption.KEEP);
         var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
         Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());

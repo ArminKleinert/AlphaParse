@@ -52,6 +52,8 @@ final class Main {
 //
 //        System.exit(0);
 
+        Alpha.bufferEbnfGrammar(true);
+
         /**/
         {
             final var p = Alpha.parser("S : <'a'>");
@@ -116,17 +118,17 @@ final class Main {
             IO2.println();
         }
 
-        /**/
-        {
-            final @NotNull var p = Alpha.parser("S : 1*3 #'\\d'");
-            IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
-            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println();
-        }
+//        /**/
+//        {
+//            final @NotNull var p = Alpha.parser("S : 1*3 #'\\d'");
+//            IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
+//            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
+//            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
+//            IO2.println();
+//        }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 10, 100);
+        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);
