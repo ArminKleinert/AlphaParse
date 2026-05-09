@@ -29,7 +29,7 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
         if (g.size() != size())
             return false;
 
-        for (Map.Entry<@NotNull String, Combinator> keywordCombinatorEntry : entrySet()) {
+        for (Map.Entry<@NotNull String, Combinator> keywordCombinatorEntry : sequencedEntrySet()) {
             if (!Objects.equals(
                     g.getProduction(keywordCombinatorEntry.getKey()),
                     keywordCombinatorEntry.getValue())) {
@@ -87,25 +87,25 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
         /**
          * Ignore existing. Replace and forget.
          * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" results in "S = B" and discards the first.
+         * Example: Adding Grammar productions "S = A" and "S = "B" results in "S = B" and discards the first.
          */
         OVERRIDE,
         /**
          * Throw exception if a duplicate is added.
          * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" results in an error.
+         * Example: Adding Grammar productions "S = A" and "S = "B" results in an error.
          */
         ERROR,
         /**
          * Throw exception if a duplicate is added.
          * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
+         * Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
          */
         CHOICE,
         /**
          * Keep old value.
          * <p>
-         *  Example: Adding Grammar productions "S = A" and "S = "B" keeps "S = A".
+         * Example: Adding Grammar productions "S = A" and "S = "B" keeps "S = A".
          */
         KEEP;
 
@@ -130,7 +130,8 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
             redefinitionOption = RedefinitionOption.defaultOption;
 
         // Using an assignment here is not strictly necessary. I use it to force the switch to be exhaustive by default.
-        @SuppressWarnings("unused") var usedOpt = switch (redefinitionOption) {
+        @SuppressWarnings("unused")
+        var usedOpt = switch (redefinitionOption) {
             case RedefinitionOption.OVERRIDE -> { // Ignore existing
                 for (Map.Entry<String, Combinator> kv : kvs)
                     m.put(kv.getKey(), kv.getValue());
@@ -180,20 +181,6 @@ public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
      */
     public @Nullable Combinator getProduction(final @NotNull String key) {
         return getOrDefault(key, null);
-    }
-
-    /**
-     * Tries to find the production associated with a key. If none exists, return a new {@link NonTerminalCombinator} for the key.
-     *
-     * @param key The key.
-     * @return The left-hand side associated with the key or a new {@link NonTerminalCombinator} if no production could be found.
-     * @see Grammar#getProduction(String)
-     * @see NonTerminalCombinator
-     */
-    public @NotNull Combinator getOrMakeNonTerm(final @NotNull String key) {
-        final @Nullable Combinator p = getProduction(key);
-        if (p == null) return CombinatorFactory.staticMakeNonTerminal(key);
-        return p;
     }
 
     @Override

@@ -359,7 +359,7 @@ public final class CombinatorFactory {
      */
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final List<Map.Entry<String, Combinator>> res = new ArrayList<>();
-        for (final @NotNull var keywordCombinatorEntry : grammar.entrySet()) {
+        for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var pUnhide = value.unhideContent();
@@ -372,12 +372,12 @@ public final class CombinatorFactory {
     /**
      * Applies the reduction-type to all entries in the grammar.
      *
-     * @param grammar       The grammar.
+     * @param grammar The grammar.
      * @return The new grammar.
      */
     public @NotNull Grammar unhideTags(final @NotNull Grammar grammar) {
         final List<Map.Entry<String, Combinator>> res = new ArrayList<>();
-        for (final @NotNull var keywordCombinatorEntry : grammar.entrySet()) {
+        for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
@@ -392,12 +392,12 @@ public final class CombinatorFactory {
     /**
      * Applies the reduction-type to all entries in the grammar and applies {@link Combinator#unhideContent()}.
      *
-     * @param grammar       The grammar.
+     * @param grammar The grammar.
      * @return The new grammar.
      */
     public @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
         final List<Map.Entry<String, Combinator>> res = new ArrayList<>();
-        for (final @NotNull var keywordCombinatorEntry : grammar.entrySet()) {
+        for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
@@ -456,7 +456,7 @@ public final class CombinatorFactory {
 
         final @NotNull SequencedMap<@NotNull String, @NotNull Combinator> finalGrammar =
                 new LinkedHashMap<>(grammar);
-        for (var keywordCombinatorEntry : finalGrammar.entrySet()) {
+        for (var keywordCombinatorEntry : finalGrammar.sequencedEntrySet()) {
             keywordCombinatorEntry.setValue(autoWhitespaceHelper(keywordCombinatorEntry.getValue(), wsParser));
         }
 

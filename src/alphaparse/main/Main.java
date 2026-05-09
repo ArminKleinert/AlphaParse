@@ -4,7 +4,6 @@ import alphaparse.Alpha;
 import alphaparse.GlobalCaseInsensitivity;
 import alphaparse.IO2;
 import alphaparse.result.AlphaParseFailure;
-import alphaparse.result.ParseConverterUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
@@ -68,7 +67,7 @@ final class Main {
         {
             final @NotNull var opts = new Alpha.ParserCreationOptions(
                     null,
-                    (String)null,
+                    (String) null,
                     GlobalCaseInsensitivity.TRUE,
                     true,
                     null);
@@ -247,9 +246,10 @@ final class Main {
             final @NotNull var p = Alpha.parser(grammar);
             final @NotNull var parses = Alpha.parses(p, text);
 
-            final @NotNull var expected = List.of(List.of("S"),
+            final @NotNull var expected = List.of(
+                    List.of("S",
                             List.of("T", List.of("r1", "a")),
-                            List.of("T", List.of("r2", "b")),
+                            List.of("T", List.of("r2", "b"))),
                     List.of("S",
                             List.of("T", List.of("r3", "a")),
                             List.of("T", List.of("r2", "b"))));
