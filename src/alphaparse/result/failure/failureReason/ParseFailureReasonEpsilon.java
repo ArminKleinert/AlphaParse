@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,12 +26,12 @@ public final class ParseFailureReasonEpsilon extends ParseFailureReason {
     }
 
     @Override
-    public @NotNull Keyword getTag() {
-        return Keyword.intern("epsilon");
+    public @NotNull String getTag() {
+        return "epsilon";
     }
 
     @Override
-    public @NotNull Keyword getExpecting() {
-        return Keyword.intern("end-of-string");
+    public @NotNull String getExpecting() {
+        return "end-of-string";
     }
 }

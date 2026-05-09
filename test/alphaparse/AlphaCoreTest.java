@@ -207,7 +207,7 @@ class AlphaCoreTest {
                     <A> = '='*
                     B = 'b' '='
                     """,
-            Alpha.ParserCreationOptions.getDefault().withStartProduction(Keyword.intern("S"))
+            Alpha.ParserCreationOptions.getDefault().withStartProduction("S")
     );
 
     final @NotNull Parser whitespace = Alpha.parser(
@@ -239,7 +239,7 @@ class AlphaCoreTest {
                     <B> = #'\\d+'
                     """,
             Alpha.ParserCreationOptions.getDefault().withWhitespaceParser(
-                    Alpha.getPredefinedWhitespaceParser(Keyword.intern("standard"))));
+                    Alpha.getPredefinedWhitespaceParser("standard")));
 
     final @NotNull Parser words_and_numbers_auto_whitespace2 = Alpha.parser(
             """
@@ -249,7 +249,7 @@ class AlphaCoreTest {
                     number = #'[0-9]+'
                     """,
             Alpha.ParserCreationOptions.getDefault().withWhitespaceParser(
-                    Alpha.getPredefinedWhitespaceParser(Keyword.intern("standard"))));
+                    Alpha.getPredefinedWhitespaceParser("standard")));
 
     final @NotNull Parser whitespace_or_comments = Alpha.parser(
             """
@@ -280,7 +280,7 @@ class AlphaCoreTest {
                     <ConstExpr> = Int | Double;
                     Input = ConstExpr <ws> ConstExpr;
                     """,
-            Alpha.ParserCreationOptions.getDefault().withStartProduction(Keyword.intern("Input")));
+            Alpha.ParserCreationOptions.getDefault().withStartProduction("Input"));
 
     final @NotNull Parser case_insensitive_regexp = Alpha.parser(
             """
@@ -347,11 +347,11 @@ class AlphaCoreTest {
                 ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a", "a"), ParseTree.create("B", "b", "b", "b")),
                 ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a"), ParseTree.create("B", "b", "b"))
         );
-        var abTag = Keyword.intern("AB");
-        var aTag = Keyword.intern("A");
-        var bTag = Keyword.intern("B");
+        var abTag = ("AB");
+        var aTag = ("A");
+        var bTag = ("B");
         final @NotNull List<Object> treeHiccup = List.of(
-                Keyword.intern("S"),
+                ("S"),
                 List.of(abTag, List.of(aTag, "a", "a", "a", "a", "a"), List.of(bTag, "b", "b", "b")),
                 List.of(abTag, List.of(aTag, "a", "a", "a", "a"), List.of(bTag, "b", "b"))
         );
@@ -399,7 +399,7 @@ class AlphaCoreTest {
                 "S",
                 "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
         var resList = List.of(
-                Keyword.intern("S"),
+                "S",
                 "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
 
         Assertions.assertEquals(
@@ -477,7 +477,7 @@ class AlphaCoreTest {
         // Sadly, AlphaParse can not output untagged trees.
         // The expected result for Instaparse is as follows:
         //    (paren-ab-hide-both-tags "(aba)") ;=> ("a" "b" "a")
-        var tree = ParseTree.create(ParseTree.NULL_TAG.getName(), "a", "b", "a");
+        var tree = ParseTree.create(ParseTree.NULL_TAG, "a", "b", "a");
 
         // That raw output can be achieved by manual conversion:
         Assertions.assertEquals(List.of("a", "b", "a"), tree.hiccup());
@@ -915,7 +915,7 @@ class AlphaCoreTest {
         var tree = ParseTree.create(
                 "Aeater",
                 "a", "a", "a", "a", "a", "a", "a", "a",
-                new ParseFailureNode("bbbbbb", Keyword.intern("failure"), 8, 14)
+                new ParseFailureNode("bbbbbb", "failure", 8, 14)
         );
 
         final @NotNull Parser p = eat_a;
@@ -983,7 +983,7 @@ class AlphaCoreTest {
                 ParseTree.create("S",
                         new ParseFailureNode(
                                 "AaaAaa",
-                                Keyword.intern("failure"),
+                                "failure",
                                 0, 6)),
                 p.parse("AaaAaa", opts)
         );
@@ -1008,7 +1008,7 @@ class AlphaCoreTest {
                 ParseTree.create("S",
                         new ParseFailureNode(
                                 "AaaAaa",
-                                Keyword.intern("failure"),
+                                "failure",
                                 0, 6)),
                 p.parse("AaaAaa", opts)
         );

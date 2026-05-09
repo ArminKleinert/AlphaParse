@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,13 +43,12 @@ public abstract class ParseFailureReason {
         if (o == null || getClass() != o.getClass()) return false;
         final @NotNull ParseFailureReason that = (ParseFailureReason) o;
         return full == that.isFull() &&
-                Objects.equals(getTag(), that.getTag()) &&
                 Objects.equals(Objects.toString(getExpecting()), Objects.toString(that.getExpecting()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTag(), getExpecting(), full);
+        return Objects.hash(getExpecting(), full);
     }
 
     /**
@@ -58,7 +56,7 @@ public abstract class ParseFailureReason {
      *
      * @return The tag of the production.
      */
-    public abstract @NotNull Keyword getTag();
+    public abstract @NotNull String getTag();
 
     /**
      * The expected object. This may be a string, a regex, a combinator or anything else.

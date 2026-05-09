@@ -3,7 +3,6 @@ package alphaparse.main;
 import alphaparse.Alpha;
 import alphaparse.GlobalCaseInsensitivity;
 import alphaparse.IO2;
-import alphaparse.Keyword;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.ParseConverterUtils;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +68,7 @@ final class Main {
         {
             final @NotNull var opts = new Alpha.ParserCreationOptions(
                     null,
-                    null,
+                    (String)null,
                     GlobalCaseInsensitivity.TRUE,
                     true,
                     null);
@@ -80,12 +79,12 @@ final class Main {
             IO2.println();
         }
 
-        /**/
-        {
-            IO2.println(ParseConverterUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")));
-            IO2.println(ParseConverterUtils.parseTreeFromHiccup(List.of(Keyword.intern("S"), "ABC")).getClass());
-            IO2.println();
-        }
+//        /**/
+//        {
+//            IO2.println(ParseConverterUtils.parseTreeFromHiccup(List.of("S", "ABC")));
+//            IO2.println(ParseConverterUtils.parseTreeFromHiccup(List.of("S", "ABC")).getClass());
+//            IO2.println();
+//        }
 
         /**/
         {
@@ -122,7 +121,7 @@ final class Main {
 //        }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 10, 100);
+        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);
@@ -248,12 +247,12 @@ final class Main {
             final @NotNull var p = Alpha.parser(grammar);
             final @NotNull var parses = Alpha.parses(p, text);
 
-            final @NotNull var expected = List.of(List.of(Keyword.intern("S"),
-                            List.of(Keyword.intern("T"), List.of(Keyword.intern("r1"), "a")),
-                            List.of(Keyword.intern("T"), List.of(Keyword.intern("r2"), "b"))),
-                    List.of(Keyword.intern("S"),
-                            List.of(Keyword.intern("T"), List.of(Keyword.intern("r3"), "a")),
-                            List.of(Keyword.intern("T"), List.of(Keyword.intern("r2"), "b"))));
+            final @NotNull var expected = List.of(List.of("S"),
+                            List.of("T", List.of("r1", "a")),
+                            List.of("T", List.of("r2", "b")),
+                    List.of("S",
+                            List.of("T", List.of("r3", "a")),
+                            List.of("T", List.of("r2", "b"))));
 
             IO2.println(Objects.equals(
                     parses.castToParsesSuccess().hiccup(),

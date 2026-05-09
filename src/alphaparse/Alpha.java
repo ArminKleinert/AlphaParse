@@ -4,7 +4,6 @@ import alphaparse.parser.CombinatorFactory;
 import alphaparse.parser.Grammar;
 import alphaparse.parser.Parser;
 import alphaparse.parser.Gll;
-import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
@@ -47,7 +46,7 @@ public final class Alpha {
         };
     }
 
-    private static @NotNull Keyword getStartProductionFromParserOrOptionsAndCheck(
+    private static @NotNull String getStartProductionFromParserOrOptionsAndCheck(
             final @NotNull ParsingOptions options,
             final @NotNull Parser parser) {
         final var startProduction = options.getStart();
@@ -317,7 +316,7 @@ public final class Alpha {
         /**
          * Default for the start production name of a parse operation. ({@code null})
          */
-        public static final @Nullable Keyword DEFAULT_START = null;
+        public static final @Nullable String DEFAULT_START = null;
         /**
          * Default for the start production name of a parse operation. ({@code false})
          */
@@ -335,14 +334,14 @@ public final class Alpha {
          */
         public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
 
-        private final @Nullable Keyword start;
+        private final @Nullable String start;
         private final boolean partial;
         private final @NotNull Alpha.UnhideOptions unhide;
         private final boolean total;
         private final boolean optimizeMemory;
 
         /**
-         * Calls {@link ParsingOptions#ParsingOptions(Keyword, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
+         * Calls {@link ParsingOptions#ParsingOptions(String, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
          *
          * @return An instance of this class, using all the static DEFAULT_* values.
          * @see ParsingOptions#DEFAULT_START
@@ -369,7 +368,7 @@ public final class Alpha {
          * @see ParsingOptions#DEFAULT_TOTAL
          * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
          */
-        public ParsingOptions(final @Nullable Keyword start,
+        public ParsingOptions(final @Nullable String start,
                               final boolean partial,
                               final @NotNull Alpha.UnhideOptions unhide,
                               final boolean total,
@@ -412,7 +411,7 @@ public final class Alpha {
          *
          * @return A keyword.
          */
-        public @Nullable Keyword getStart() {
+        public @Nullable String getStart() {
             return start;
         }
 
@@ -535,7 +534,7 @@ public final class Alpha {
          * @see ParsingOptions#DEFAULT_START
          * @see ParsingOptions#getDefault()
          */
-        public @NotNull ParsingOptions withStart(final @Nullable Keyword start) {
+        public @NotNull ParsingOptions withStart(final @Nullable String start) {
             if (Objects.equals(this.start, start)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
@@ -599,7 +598,7 @@ public final class Alpha {
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
-                                        @Nullable Keyword startProduction,
+                                        @Nullable String startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         boolean useParserBuffering,
                                         @Nullable Grammar.RedefinitionOption redefinitionOption) {
@@ -632,7 +631,7 @@ public final class Alpha {
          * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
-                                     final @Nullable Keyword startProduction,
+                                     final @Nullable String startProduction,
                                      final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
                                      final boolean useParserBuffering,
                                      final @Nullable Grammar.RedefinitionOption redefinitionOption) {
@@ -667,7 +666,7 @@ public final class Alpha {
          * @return A new instance.
          */
         public @NotNull ParserCreationOptions withStartProduction(
-                final @Nullable Keyword startProduction) {
+                final @Nullable String startProduction) {
             if (Objects.equals(this.startProduction(), startProduction))
                 return this;
             return new ParserCreationOptions(
@@ -737,7 +736,7 @@ public final class Alpha {
         public static @NotNull ParserCreationOptions newWithStandardWhitespace() {
             return ParserCreationOptions
                     .getDefault()
-                    .withWhitespaceParser(getPredefinedWhitespaceParser(Keyword.intern("standard")));
+                    .withWhitespaceParser(getPredefinedWhitespaceParser("standard"));
         }
     }
 
@@ -750,18 +749,18 @@ public final class Alpha {
      * @return A parser or null.
      */
     public static @Nullable Parser getPredefinedWhitespaceParser(
-            final @Nullable Keyword wsParserName) {
+            final @Nullable String wsParserName) {
         if (wsParserName == null) {
             return null;
         }
         if (predefinedWsParsers == null) {
             predefinedWsParsers = Map.of(
-                    Keyword.intern("standard"), parser("whitespace = #'\\s+'", ParserCreationOptions.getDefault()),
-                    Keyword.intern("comma"), parser("whitespace = #'[,\\s]+'", ParserCreationOptions.getDefault())
+                    "standard", parser("whitespace = #'\\s+'", ParserCreationOptions.getDefault()),
+                    "comma", parser("whitespace = #'[,\\s]+'", ParserCreationOptions.getDefault())
             );
         }
         return predefinedWsParsers.get(wsParserName);
     }
 
-    private static @Nullable Map<Keyword, Parser> predefinedWsParsers = null;
+    private static @Nullable Map<String, Parser> predefinedWsParsers = null;
 }

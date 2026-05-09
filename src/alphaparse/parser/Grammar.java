@@ -1,6 +1,5 @@
 package alphaparse.parser;
 
-import alphaparse.Keyword;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,14 +12,13 @@ import java.util.stream.Collectors;
 /**
  * A type representing a Grammar.
  */
-public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
-
+public final class Grammar extends LinkedHashMap<@NotNull String, Combinator> {
     /**
      * Creates a new instance from a {@link Map}.
      *
      * @param m The map.
      */
-    public Grammar(final @NotNull Map<? extends Keyword, ? extends Combinator> m) {
+    public Grammar(final @NotNull Map<? extends String, ? extends Combinator> m) {
         super(m);
     }
 
@@ -31,7 +29,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         if (g.size() != size())
             return false;
 
-        for (Map.Entry<@NotNull Keyword, Combinator> keywordCombinatorEntry : entrySet()) {
+        for (Map.Entry<@NotNull String, Combinator> keywordCombinatorEntry : entrySet()) {
             if (!Objects.equals(
                     g.getProduction(keywordCombinatorEntry.getKey()),
                     keywordCombinatorEntry.getValue())) {
@@ -43,10 +41,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     private static void addProductionWithRedefinitionOptionChoice(
-            final @NotNull SequencedMap<Keyword, Combinator> m,
-            final @NotNull List<Map.Entry<Keyword, Combinator>> kvs
+            final @NotNull SequencedMap<String, Combinator> m,
+            final @NotNull List<Map.Entry<String, Combinator>> kvs
     ) {
-        for (Map.Entry<Keyword, Combinator> kv : kvs) {
+        for (Map.Entry<String, Combinator> kv : kvs) {
             var existing = m.get(kv.getKey()); // Fetch existing production
 
             // There was no production previously -> Just add
@@ -115,16 +113,16 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(Keyword, Combinator)} can be used.
+     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(String, Combinator)} can be used.
      *
      * @param kvs The productions.
      * @return A new Grammar.
-     * @see Grammar#entry(Keyword, Combinator)
+     * @see Grammar#entry(String, Combinator)
      */
     public static @NotNull Grammar fromProductions(
-            final @NotNull List<Map.Entry<Keyword, Combinator>> kvs,
+            final @NotNull List<Map.Entry<String, Combinator>> kvs,
             @Nullable Grammar.RedefinitionOption redefinitionOption) {
-        final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
+        final @NotNull SequencedMap<String, Combinator> m = new LinkedHashMap<>();
 //        for (Map.Entry<Keyword, Combinator> kv : kvs)
 //            m.put(kv.getKey(), kv.getValue());
 
@@ -134,12 +132,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
         // Using an assignment here is not strictly necessary. I use it to force the switch to be exhaustive by default.
         @SuppressWarnings("unused") var usedOpt = switch (redefinitionOption) {
             case RedefinitionOption.OVERRIDE -> { // Ignore existing
-                for (Map.Entry<Keyword, Combinator> kv : kvs)
+                for (Map.Entry<String, Combinator> kv : kvs)
                     m.put(kv.getKey(), kv.getValue());
                 yield RedefinitionOption.OVERRIDE;
             }
             case RedefinitionOption.ERROR -> { // Throw if any production exists with this name
-                for (Map.Entry<Keyword, Combinator> kv : kvs)
+                for (Map.Entry<String, Combinator> kv : kvs)
                     if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
                         throw new IllegalArgumentException("Duplicate production: " + kv.getKey());
                 yield RedefinitionOption.ERROR;
@@ -149,7 +147,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
                 yield RedefinitionOption.CHOICE;
             }
             case RedefinitionOption.KEEP -> {
-                for (Map.Entry<Keyword, Combinator> kv : kvs)
+                for (Map.Entry<String, Combinator> kv : kvs)
                     m.putIfAbsent(kv.getKey(), kv.getValue());
                 yield RedefinitionOption.KEEP;
             }
@@ -159,16 +157,16 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     /**
-     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(Keyword, Combinator)} can be used.
+     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides. For creating productions, {@link Grammar#entry(String, Combinator)} can be used.
      *
      * @param kvs The productions.
      * @return A new Grammar.
-     * @see Grammar#entry(Keyword, Combinator)
+     * @see Grammar#entry(String, Combinator)
      */
     public static @NotNull Grammar fromProductions(
-            final @NotNull List<Map.Entry<Keyword, Combinator>> kvs) {
-        final @NotNull SequencedMap<Keyword, Combinator> m = new LinkedHashMap<>();
-        for (Map.Entry<Keyword, Combinator> kv : kvs) {
+            final @NotNull List<Map.Entry<String, Combinator>> kvs) {
+        final @NotNull SequencedMap<String, Combinator> m = new LinkedHashMap<>();
+        for (Map.Entry<String, Combinator> kv : kvs) {
             m.put(kv.getKey(), kv.getValue());
         }
         return new Grammar(m);
@@ -180,7 +178,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      * @param key The right-hand side of the production.
      * @return The production or null if not found.
      */
-    public @Nullable Combinator getProduction(final @NotNull Keyword key) {
+    public @Nullable Combinator getProduction(final @NotNull String key) {
         return getOrDefault(key, null);
     }
 
@@ -189,10 +187,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      *
      * @param key The key.
      * @return The left-hand side associated with the key or a new {@link NonTerminalCombinator} if no production could be found.
-     * @see Grammar#getProduction(Keyword)
+     * @see Grammar#getProduction(String)
      * @see NonTerminalCombinator
      */
-    public @NotNull Combinator getOrMakeNonTerm(final @NotNull Keyword key) {
+    public @NotNull Combinator getOrMakeNonTerm(final @NotNull String key) {
         final @Nullable Combinator p = getProduction(key);
         if (p == null) return CombinatorFactory.staticMakeNonTerminal(key);
         return p;
@@ -240,7 +238,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      * @return A new grammar.
      */
     public @NotNull Grammar applyStandardReductions() {
-        final List<Map.Entry<Keyword, Combinator>> m = new ArrayList<>();
+        final List<Map.Entry<String, Combinator>> m = new ArrayList<>();
         this.forEach((prodKey, pars) -> {
             if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
                 pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
@@ -269,8 +267,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      * @param definedNTs All non-terminals of the Grammar.
      * @param usedNTs    All non-terminals which appear on the right-hand side of any production.
      */
-    public record GrammarInfo(@NotNull Collection<@NotNull Keyword> definedNTs,
-                              @NotNull Collection<@NotNull Keyword> usedNTs) {
+    public record GrammarInfo(@NotNull Collection<@NotNull String> definedNTs,
+                              @NotNull Collection<@NotNull String> usedNTs) {
         /**
          * Returns all NTs that are defined but unused. Effectively, this is a list of unused productions.
          * <p>
@@ -286,7 +284,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
          *
          * @return A collection of unused non-terminals.
          */
-        public @NotNull Collection<Keyword> getUnusedNTs() {
+        public @NotNull Collection<String> getUnusedNTs() {
             return definedNTs.stream().filter(it -> !usedNTs.contains(it)).collect(Collectors.toSet());
         }
 
@@ -300,7 +298,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
          *
          * @return A collection which is hopefully empty.
          */
-        public @NotNull Collection<Keyword> getUndefinedUsedNTs() {
+        public @NotNull Collection<String> getUndefinedUsedNTs() {
             return usedNTs.stream().filter(it -> !definedNTs.contains(it)).collect(Collectors.toSet());
         }
 
@@ -316,7 +314,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof GrammarInfo(Collection<Keyword> nTs, Collection<Keyword> ts))) return false;
+            if (!(o instanceof GrammarInfo(Collection<String> nTs, Collection<String> ts))) return false;
             return Objects.equals(definedNTs(), nTs) && Objects.equals(usedNTs(), ts);
         }
 
@@ -344,13 +342,13 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
      * @param v Value.
      * @return An entry.
      */
-    public static @NotNull Map.Entry<Keyword, Combinator> entry(final @NotNull Keyword k, final @NotNull Combinator v) {
+    public static @NotNull Map.Entry<String, Combinator> entry(final @NotNull String k, final @NotNull Combinator v) {
         return new Map.Entry<>() {
-            final @NotNull Keyword key = k;
+            final @NotNull String key = k;
             @NotNull Combinator value = v;
 
             @Override
-            public @NotNull Keyword getKey() {
+            public @NotNull String getKey() {
                 return key;
             }
 
@@ -386,27 +384,27 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     @Override
-    public Map.Entry<Keyword, Combinator> pollFirstEntry() {
+    public Map.Entry<String, Combinator> pollFirstEntry() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Map.Entry<Keyword, Combinator> pollLastEntry() {
+    public Map.Entry<String, Combinator> pollLastEntry() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator putFirst(Keyword k, Combinator v) {
+    public Combinator putFirst(String k, Combinator v) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator putLast(Keyword k, Combinator v) {
+    public Combinator putLast(String k, Combinator v) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator put(Keyword key, Combinator value) {
+    public Combinator put(String key, Combinator value) {
         throw new UnsupportedOperationException();
     }
 
@@ -416,7 +414,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     @Override
-    public void putAll(Map<? extends @NotNull Keyword, ? extends Combinator> m) {
+    public void putAll(Map<? extends @NotNull String, ? extends Combinator> m) {
         throw new UnsupportedOperationException();
     }
 
@@ -426,12 +424,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     @Override
-    public void replaceAll(BiFunction<? super @NotNull Keyword, ? super Combinator, ? extends Combinator> function) {
+    public void replaceAll(BiFunction<? super @NotNull String, ? super Combinator, ? extends Combinator> function) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator putIfAbsent(Keyword key, Combinator value) {
+    public Combinator putIfAbsent(String key, Combinator value) {
         throw new UnsupportedOperationException();
     }
 
@@ -441,32 +439,32 @@ public final class Grammar extends LinkedHashMap<@NotNull Keyword, Combinator> {
     }
 
     @Override
-    public boolean replace(Keyword key, Combinator oldValue, Combinator newValue) {
+    public boolean replace(String key, Combinator oldValue, Combinator newValue) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator replace(Keyword key, Combinator value) {
+    public Combinator replace(String key, Combinator value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator computeIfAbsent(@NotNull Keyword key, Function<? super @NotNull Keyword, ? extends Combinator> mappingFunction) {
+    public Combinator computeIfAbsent(@NotNull String key, Function<? super @NotNull String, ? extends Combinator> mappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator computeIfPresent(Keyword key, BiFunction<? super Keyword, ? super Combinator, ? extends Combinator> remappingFunction) {
+    public Combinator computeIfPresent(String key, BiFunction<? super String, ? super Combinator, ? extends Combinator> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator compute(Keyword key, BiFunction<? super Keyword, ? super Combinator, ? extends Combinator> remappingFunction) {
+    public Combinator compute(String key, BiFunction<? super String, ? super Combinator, ? extends Combinator> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator merge(Keyword key, Combinator value, BiFunction<? super Combinator, ? super Combinator, ? extends Combinator> remappingFunction) {
+    public Combinator merge(String key, Combinator value, BiFunction<? super Combinator, ? super Combinator, ? extends Combinator> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 }

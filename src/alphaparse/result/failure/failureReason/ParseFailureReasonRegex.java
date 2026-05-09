@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
@@ -39,7 +38,7 @@ public final class ParseFailureReasonRegex extends ParseFailureReason {
     }
 
     @Override
-    public @NotNull Keyword getTag() {
-        return Keyword.intern("regex");
+    public @NotNull String getTag() {
+        return "regex";
     }
 }

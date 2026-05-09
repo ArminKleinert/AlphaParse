@@ -2,7 +2,6 @@ package alphaparse;
 
 import alphaparse.parser.Grammar;
 import alphaparse.parser.EpsilonCombinator;
-import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -100,7 +99,7 @@ class AlphaParserCreationTest {
             // Error: Starting symbol not in grammar
             final @NotNull var grammar = "S : 'abc'";
             final @NotNull var options = new Alpha.ParserCreationOptions(
-                    null, Keyword.intern("C"),
+                    null, "C",
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null);
             Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser(grammar, options));
@@ -108,8 +107,8 @@ class AlphaParserCreationTest {
         {
             // Error: No start symbol provided
             final @NotNull var grammar = new Grammar(Map.of(
-                    Keyword.intern("S"), EpsilonCombinator.getDefault(),
-                    Keyword.intern("A"), EpsilonCombinator.getDefault()
+                    "S", EpsilonCombinator.getDefault(),
+                    "A", EpsilonCombinator.getDefault()
             ));
             Assertions.assertThrows(IllegalArgumentException.class, () ->
                     Alpha.parser(grammar, Alpha.ParserCreationOptions.getDefault()));

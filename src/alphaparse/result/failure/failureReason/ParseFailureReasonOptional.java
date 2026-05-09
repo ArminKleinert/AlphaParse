@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @see alphaparse.parser.OptionalCombinator
  */
 public final class ParseFailureReasonOptional extends ParseFailureReason {
-    private final @NotNull Keyword expecting;
+    private final @NotNull String expecting;
 
     /**
      * Creates a new instance.
@@ -17,7 +16,7 @@ public final class ParseFailureReasonOptional extends ParseFailureReason {
      * @param expecting The optionally expected production name.
      * @param full      Whether the entire string was supposed to be covered by the combinator.
      */
-    public ParseFailureReasonOptional(final @NotNull Keyword expecting, final boolean full) {
+    public ParseFailureReasonOptional(final @NotNull String expecting, final boolean full) {
         super(full);
         this.expecting = expecting;
     }
@@ -27,17 +26,17 @@ public final class ParseFailureReasonOptional extends ParseFailureReason {
      *
      * @param expecting The optionally expected production name.
      */
-    public ParseFailureReasonOptional(final @NotNull Keyword expecting) {
+    public ParseFailureReasonOptional(final @NotNull String expecting) {
         this(expecting, false);
     }
 
     @Override
-    public @NotNull Keyword getTag() {
-        return Keyword.intern("optional");
+    public @NotNull String getTag() {
+        return "optional";
     }
 
     @Override
-    public @NotNull Keyword getExpecting() {
+    public @NotNull String getExpecting() {
         return expecting;
     }
 }

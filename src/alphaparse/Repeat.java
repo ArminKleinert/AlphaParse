@@ -21,7 +21,7 @@ final class Repeat {
     public static @NotNull AlphaParseResult tryRepeatingParseStrategy(
             final @NotNull Parser parser,
             final @NotNull String text,
-            final Keyword startProduction) {
+            final String startProduction) {
         return new AlphaParseFailure(0, List.of(new ParseFailureReasonEpsilon()));
     }
 }

@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -54,8 +53,8 @@ public final class ParseFailureReasonChar extends ParseFailureReason {
     }
 
     @Override
-    public @NotNull Keyword getTag() {
-        return Keyword.intern("char");
+    public @NotNull String getTag() {
+        return "char";
     }
 
     /**

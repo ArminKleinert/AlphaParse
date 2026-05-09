@@ -1,7 +1,6 @@
 package alphaparse.parser;
 
 import alphaparse.*;
-import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ import java.util.function.Function;
  * @param startProduction The first production to try.
  */
 public record Parser(@NotNull Grammar grammar,
-                     @NotNull Keyword startProduction)
+                     @NotNull String startProduction)
         implements Function<String, AlphaParseResult> {
 
     /**
@@ -89,8 +88,6 @@ public record Parser(@NotNull Grammar grammar,
     public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
         if (this.grammar.equals(grammar))
             return this;
-        if (!grammar.containsKey(startProduction))
-            throw new IllegalArgumentException();
         return new Parser(grammar, startProduction);
     }
 
@@ -101,9 +98,7 @@ public record Parser(@NotNull Grammar grammar,
      * @return A new Parser.
      * @throws IllegalArgumentException if the grammar does not include a production for the new start production.
      */
-    public @NotNull Parser withStartProduction(final @NotNull Keyword startProduction) {
-        if (!grammar.containsKey(startProduction))
-            throw new IllegalArgumentException();
+    public @NotNull Parser withStartProduction(final @NotNull String startProduction) {
         return new Parser(grammar, startProduction);
     }
 
@@ -112,7 +107,7 @@ public record Parser(@NotNull Grammar grammar,
      *
      * @param whitespaceParser The parser for whitespace.
      * @return The new Parser.
-     * @see CombinatorFactory#autoWhitespace(Grammar, Keyword, Grammar, Keyword)
+     * @see CombinatorFactory#autoWhitespace(Grammar, String, Grammar, String)
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
         return withGrammar((new CombinatorFactory(true)).autoWhitespace(

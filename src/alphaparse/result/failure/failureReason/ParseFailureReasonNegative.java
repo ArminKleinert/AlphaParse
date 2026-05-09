@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import alphaparse.Print;
 import alphaparse.parser.Combinator;
 import org.jetbrains.annotations.NotNull;
@@ -35,8 +34,8 @@ public final class ParseFailureReasonNegative extends ParseFailureReason {
     }
 
     @Override
-    public @NotNull Keyword getTag() {
-        return Keyword.intern("negative-look");
+    public @NotNull String getTag() {
+        return "negative-look";
     }
 
     @Override

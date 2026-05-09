@@ -1,6 +1,5 @@
 package alphaparse.result.failure.failureReason;
 
-import alphaparse.Keyword;
 import alphaparse.parser.Combinator;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,8 +23,8 @@ public final class ParseFailureReasonExpectRepetitionParser extends ParseFailure
     }
 
     @Override
-    public @NotNull Keyword getTag() {
-        return Keyword.intern("rep");
+    public @NotNull String getTag() {
+        return "rep";
     }
 
     @Override

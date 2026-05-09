@@ -1,11 +1,10 @@
 package alphaparse.parser;
 
-import alphaparse.Keyword;
-
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -13,9 +12,9 @@ import java.util.Objects;
  * This type represents non-terminals.
  */
 public final class NonTerminalCombinator extends Combinator {
-    private final @NotNull Keyword keyword;
+    private final @NotNull String keyword;
 
-    private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Keyword keyword) {
+    private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull String keyword) {
         super(hide, red);
         this.keyword = keyword;
     }
@@ -24,10 +23,10 @@ public final class NonTerminalCombinator extends Combinator {
      * Creates a new instance from a name. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param keyword The name.
-     * @see CombinatorFactory#makeNonTerminal(Keyword)
-     * @see CombinatorFactory#staticMakeNonTerminal(Keyword)
+     * @see CombinatorFactory#makeNonTerminal(String)
+     * @see CombinatorFactory#staticMakeNonTerminal(String)
      */
-    public NonTerminalCombinator(final @NotNull Keyword keyword) {
+    public NonTerminalCombinator(final @NotNull String keyword) {
         super();
         this.keyword = keyword;
     }
@@ -37,13 +36,15 @@ public final class NonTerminalCombinator extends Combinator {
      *
      * @return The name.
      */
-    public @NotNull Keyword getKeyword() {
+    public @NotNull String getKeyword() {
         return keyword;
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = runner.tramp().getGrammar().getOrMakeNonTerm(this.getKeyword());
+        final @Nullable Combinator combinator = runner.tramp().getGrammar().getProduction(this.getKeyword());
+        if (combinator == null)
+            throw new IllegalStateException("Cannot use non terminal. Should be checked when initializing parser.");
         runner.pushListener(
                 new TrampolineListenerKey(index, combinator),
                 runner.nodeListener(new TrampolineListenerKey(index, this))
@@ -52,7 +53,9 @@ public final class NonTerminalCombinator extends Combinator {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = runner.tramp().getGrammar().getOrMakeNonTerm(this.getKeyword());
+        final @Nullable Combinator combinator = runner.tramp().getGrammar().getProduction(this.getKeyword());
+        if (combinator == null)
+            throw new IllegalStateException("Cannot use non terminal. Should be checked when initializing parser.");
         runner.pushFullListener(
                 new TrampolineListenerKey(index, combinator),
                 runner.nodeListener(new TrampolineListenerKey(index, this)));

@@ -1,17 +1,12 @@
 package alphaparse.parser;
 
 import alphaparse.Alpha;
-import alphaparse.Keyword;
 import alphaparse.functions.Listener;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.ParseTree;
-import alphaparse.result.AlphaParseResult;
-import alphaparse.result.AlphaParsesResult;
+import alphaparse.result.*;
 import alphaparse.result.failure.FailureUtil;
-import alphaparse.result.AlphaParseFailure;
-import alphaparse.result.ParseFailureNode;
 import alphaparse.result.success.AlphaParseSuccess;
 import alphaparse.result.failure.failureReason.ParseFailureReason;
 import alphaparse.trampoline.TrampolineMsgCacheKey;
@@ -252,13 +247,13 @@ public final class Gll {
             final int textLen = tramp.getText().length();
             success(
                     nodeKey,
-                    buildFailureNode(Keyword.intern("failure"), subSeq, index, tramp.getText().length()),
+                    buildFailureNode("failure", subSeq, index, tramp.getText().length()),
                     textLen);
         }
     }
 
     private @NotNull ParseFailureNode buildFailureNode(
-            final @NotNull Keyword key,
+            final @NotNull String key,
             final @NotNull String text,
             final int start,
             final int end) {
@@ -267,7 +262,7 @@ public final class Gll {
 
     private static @NotNull AlphaParsesResult parsesTotalAfterFail(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text, 0);
@@ -296,7 +291,7 @@ public final class Gll {
      */
     public static @NotNull AlphaParsesResult parses(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text);
@@ -319,7 +314,7 @@ public final class Gll {
      */
     public static @NotNull AlphaParsesResult parsesOrFailure(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text);
@@ -349,7 +344,7 @@ public final class Gll {
      */
     public static @NotNull AlphaParseResult parse(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var tramp = new Tramp(grammar, text);
@@ -378,7 +373,7 @@ public final class Gll {
      */
     public static @NotNull AlphaParsesResult parsesTotal(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var allParses = parses(grammar, start, text, partial);
@@ -388,7 +383,7 @@ public final class Gll {
 
     private static @NotNull AlphaParseResult parseTotalAfterFail(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final int failIndex,
             final boolean partial) {
@@ -415,7 +410,7 @@ public final class Gll {
      */
     public static @NotNull AlphaParseResult parseTotal(
             final @NotNull Grammar grammar,
-            final @NotNull Keyword start,
+            final @NotNull String start,
             final @NotNull String text,
             final boolean partial) {
         final @NotNull var result = parse(grammar, start, text, partial);

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 final class EbnfG {
     private static final @NotNull Combinator optWhitespace =
-            CombinatorFactory.staticMakeNonTerminal(Keyword.intern("opt-whitespace")).enableHideTag();
+            CombinatorFactory.staticMakeNonTerminal("opt-whitespace").enableHideTag();
 
     private static @NotNull Pattern regexDoc(final @NotNull String patternString, final @NotNull String comment) {
         return Pattern.compile(patternString + "(?x) #" + comment);
@@ -22,7 +22,7 @@ final class EbnfG {
         final @NotNull Combinator rulesRule = combinatorFactory.catCombinator(
                         List.of(optWhitespace,
                                 combinatorFactory.plusCombinator(
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("rule")))))
+                                        combinatorFactory.makeNonTerminal("rule"))))
                 .hideTag();
         return rulesRule;
     }
@@ -31,7 +31,7 @@ final class EbnfG {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("(*"),
-                                combinatorFactory.makeNonTerminal(Keyword.intern("inside-comment")),
+                                combinatorFactory.makeNonTerminal("inside-comment"),
                                 combinatorFactory.stringTerminal("*)"))).hideTag();
         return rulesRule;
     }
@@ -43,7 +43,7 @@ final class EbnfG {
                         List.of(combinatorFactory.createRegexTerminal(insideComment),
                                 combinatorFactory.starCombinator(
                                         combinatorFactory.catCombinator(
-                                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("comment")),
+                                                List.of(combinatorFactory.makeNonTerminal("comment"),
                                                         combinatorFactory.createRegexTerminal(insideComment))))));
         return rulesRule;
     }
@@ -55,7 +55,7 @@ final class EbnfG {
                         List.of(combinatorFactory.createRegexTerminal(ws),
                                 combinatorFactory.starCombinator(
                                         combinatorFactory.catCombinator(
-                                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("comment")),
+                                                List.of(combinatorFactory.makeNonTerminal("comment"),
                                                         combinatorFactory.createRegexTerminal(ws))))));
         return rulesRule;
     }
@@ -75,17 +75,17 @@ final class EbnfG {
     private static @NotNull Combinator makeCfgFactorRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.choiceCombinator(
-                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("nt")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("string")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("regexp")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("opt")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("star")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("plus")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("paren")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("hide")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("epsilon")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("rep")), // ABNF feature
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("num-val")) // ABNF feature
+                                List.of(combinatorFactory.makeNonTerminal("nt"),
+                                        combinatorFactory.makeNonTerminal("string"),
+                                        combinatorFactory.makeNonTerminal("regexp"),
+                                        combinatorFactory.makeNonTerminal("opt"),
+                                        combinatorFactory.makeNonTerminal("star"),
+                                        combinatorFactory.makeNonTerminal("plus"),
+                                        combinatorFactory.makeNonTerminal("paren"),
+                                        combinatorFactory.makeNonTerminal("hide"),
+                                        combinatorFactory.makeNonTerminal("epsilon"),
+                                        combinatorFactory.makeNonTerminal("rep"), // ABNF feature
+                                        combinatorFactory.makeNonTerminal("num-val") // ABNF feature
                                 ))
                         .hideTag();
         return rulesRule;
@@ -94,7 +94,7 @@ final class EbnfG {
     private static @NotNull Combinator makeCfgPlusRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(
-                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
+                        List.of(combinatorFactory.makeNonTerminal("factor"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal("+").enableHideTag()));
         return rulesRule;
@@ -115,7 +115,7 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("(").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal("alt-or-ord"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal(")").enableHideTag()));
         return rulesRule;
@@ -126,7 +126,7 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("<").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal("alt-or-ord"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal(">").enableHideTag()));
         return rulesRule;
@@ -159,8 +159,8 @@ final class EbnfG {
     private static @NotNull Combinator makeCfgRulesOrParserRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.choiceCombinator(
-                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("rules")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord"))))
+                                List.of(combinatorFactory.makeNonTerminal("rules"),
+                                        combinatorFactory.makeNonTerminal("alt-or-ord")))
                         .hideTag();
         return rulesRule;
     }
@@ -169,7 +169,7 @@ final class EbnfG {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(List.of(
                         combinatorFactory.negateRule(
-                                combinatorFactory.makeNonTerminal(Keyword.intern("epsilon"))),
+                                combinatorFactory.makeNonTerminal("epsilon")),
                         combinatorFactory.createRegexTerminal(
                                 regexDoc("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]+", "Non-terminal"))));
         return rulesRule;
@@ -183,7 +183,7 @@ final class EbnfG {
                                         combinatorFactory.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
                                         combinatorFactory.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM")))),
                         optWhitespace,
-                        combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
+                        combinatorFactory.makeNonTerminal("factor")));
         return rulesRule;
     }
 
@@ -192,7 +192,7 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("&").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
+                                combinatorFactory.makeNonTerminal("factor")));
         return rulesRule;
     }
 
@@ -201,7 +201,7 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("!").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("factor"))));
+                                combinatorFactory.makeNonTerminal("factor")));
         return rulesRule;
     }
 
@@ -210,12 +210,12 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("{").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal("alt-or-ord"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal("}").enableHideTag()));
         final @NotNull Combinator rulesRuleStar =
                 combinatorFactory.catCombinator(
-                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
+                        List.of(combinatorFactory.makeNonTerminal("factor"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal("*").enableHideTag()));
         final @NotNull Combinator rule = combinatorFactory.choiceCombinator(
@@ -228,12 +228,12 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("[").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal("alt-or-ord"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal("]").enableHideTag()));
         final @NotNull Combinator rulesQuestionMark =
                 combinatorFactory.catCombinator(
-                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
+                        List.of(combinatorFactory.makeNonTerminal("factor"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal("?").enableHideTag()));
         final @NotNull Combinator rule =
@@ -244,8 +244,8 @@ final class EbnfG {
     private static @NotNull Combinator makeCfgAltOrOrdRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.choiceCombinator(
-                                List.of(combinatorFactory.makeNonTerminal(Keyword.intern("alt")),
-                                        combinatorFactory.makeNonTerminal(Keyword.intern("ord"))))
+                                List.of(combinatorFactory.makeNonTerminal("alt"),
+                                        combinatorFactory.makeNonTerminal("ord")))
                         .hideTag();
         return rulesRule;
     }
@@ -255,23 +255,23 @@ final class EbnfG {
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.stringTerminal("<").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("nt")),
+                                combinatorFactory.makeNonTerminal("nt"),
                                 optWhitespace,
                                 combinatorFactory.stringTerminal(">").enableHideTag()));
         return rulesRule;
     }
 
     private static @NotNull Combinator makeCfgRuleRhs(final @NotNull CombinatorFactory combinatorFactory) {
-        final @NotNull Combinator optWs = combinatorFactory.makeNonTerminal(Keyword.intern("opt-whitespace"));
+        final @NotNull Combinator optWs = combinatorFactory.makeNonTerminal("opt-whitespace");
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(
                         List.of(combinatorFactory.choiceCombinator(
-                                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("nt")),
-                                                combinatorFactory.makeNonTerminal(Keyword.intern("hide-nt")))),
+                                        List.of(combinatorFactory.makeNonTerminal("nt"),
+                                                combinatorFactory.makeNonTerminal("hide-nt"))),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("rule-separator")).enableHideTag(),
+                                combinatorFactory.makeNonTerminal("rule-separator").enableHideTag(),
                                 optWhitespace,
-                                combinatorFactory.makeNonTerminal(Keyword.intern("alt-or-ord")),
+                                combinatorFactory.makeNonTerminal("alt-or-ord"),
                                 combinatorFactory.choiceCombinator(
                                                 List.of(optWs,
                                                         combinatorFactory.catCombinator(
@@ -287,18 +287,18 @@ final class EbnfG {
     private static @NotNull Combinator makeCfgOrdRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(
-                        List.of(combinatorFactory.makeNonTerminal(Keyword.intern("cat")),
+                        List.of(combinatorFactory.makeNonTerminal("cat"),
                                 combinatorFactory.plusCombinator(
                                         combinatorFactory.catCombinator(
                                                 List.of(optWhitespace,
                                                         combinatorFactory.stringTerminal("/").enableHideTag(),
                                                         optWhitespace,
-                                                        combinatorFactory.makeNonTerminal(Keyword.intern("cat")))))));
+                                                        combinatorFactory.makeNonTerminal("cat"))))));
         return rulesRule;
     }
 
     private static @NotNull Combinator makeCfgAltRhs(final @NotNull CombinatorFactory combinatorFactory) {
-        final @NotNull Combinator catNt = combinatorFactory.makeNonTerminal(Keyword.intern("cat"));
+        final @NotNull Combinator catNt = combinatorFactory.makeNonTerminal("cat");
         final @NotNull Combinator rulesRule =
                 combinatorFactory.catCombinator(
                         List.of(catNt,
@@ -313,9 +313,9 @@ final class EbnfG {
 
     private static @NotNull Combinator makeCfgCatRhs(final @NotNull CombinatorFactory combinatorFactory) {
         final @NotNull Combinator factorLookNeg = combinatorFactory.choiceCombinator(List.of(
-                combinatorFactory.makeNonTerminal(Keyword.intern("factor")),
-                combinatorFactory.makeNonTerminal(Keyword.intern("look")),
-                combinatorFactory.makeNonTerminal(Keyword.intern("neg"))
+                combinatorFactory.makeNonTerminal("factor"),
+                combinatorFactory.makeNonTerminal("look"),
+                combinatorFactory.makeNonTerminal("neg")
         ));
         final @NotNull Combinator rulesRule =
                 combinatorFactory.plusCombinator(
@@ -358,34 +358,34 @@ final class EbnfG {
     }
 
     static @NotNull Grammar makeCfg() {
-        final @NotNull SequencedMap<Keyword, Combinator> grammarMap = new LinkedHashMap<>();
+        final @NotNull SequencedMap<String, Combinator> grammarMap = new LinkedHashMap<>();
         final @NotNull CombinatorFactory cs = new CombinatorFactory(false);
-        grammarMap.put(Keyword.intern("rules"), makeCfgRulesRhs(cs));
-        grammarMap.put(Keyword.intern("comment"), makeCfgCommentRhs(cs));
-        grammarMap.put(Keyword.intern("inside-comment"), makeCfgInsideCommentRhs(cs));
-        grammarMap.put(Keyword.intern("opt-whitespace"), makeCfgOptWhitespaceRhs(cs));
-        grammarMap.put(Keyword.intern("rule-separator"), makeCfgRuleSeparatorRhs(cs));
-        grammarMap.put(Keyword.intern("rule"), makeCfgRuleRhs(cs));
-        grammarMap.put(Keyword.intern("nt"), makeCfgNtRhs(cs));
-        grammarMap.put(Keyword.intern("hide-nt"), makeCfgHideNtRhs(cs));
-        grammarMap.put(Keyword.intern("alt-or-ord"), makeCfgAltOrOrdRhs(cs));
-        grammarMap.put(Keyword.intern("alt"), makeCfgAltRhs(cs));
-        grammarMap.put(Keyword.intern("ord"), makeCfgOrdRhs(cs)); // Technically ABNF, but should be included without it as a PAKRAT extension.
-        grammarMap.put(Keyword.intern("paren"), makeCfgParenRhs(cs));
-        grammarMap.put(Keyword.intern("hide"), makeCfgHideRhs(cs));
-        grammarMap.put(Keyword.intern("cat"), makeCfgCatRhs(cs));
-        grammarMap.put(Keyword.intern("rep"), makeCfgRepRhs(cs)); // ABNF
-        grammarMap.put(Keyword.intern("string"), makeCfgStringRhs(cs));
-        grammarMap.put(Keyword.intern("regexp"), makeCfgRegexRhs(cs));
-        grammarMap.put(Keyword.intern("opt"), makeCfgOptRhs(cs));
-        grammarMap.put(Keyword.intern("star"), makeCfgOneOrMoreRhs(cs));
-        grammarMap.put(Keyword.intern("plus"), makeCfgPlusRhs(cs));
-        grammarMap.put(Keyword.intern("look"), makeCfgLookRhs(cs));
-        grammarMap.put(Keyword.intern("neg"), makeCfgNegRhs(cs));
-        grammarMap.put(Keyword.intern("epsilon"), makeCfgEpsilonRhs(cs));
-        grammarMap.put(Keyword.intern("factor"), makeCfgFactorRhs(cs));
-        grammarMap.put(Keyword.intern("num-val"), makeABNFNumVal(cs)); // ABNF
-        grammarMap.put(Keyword.intern("rules-or-parser"), makeCfgRulesOrParserRhs(cs));
+        grammarMap.put(("rules"), makeCfgRulesRhs(cs));
+        grammarMap.put(("comment"), makeCfgCommentRhs(cs));
+        grammarMap.put(("inside-comment"), makeCfgInsideCommentRhs(cs));
+        grammarMap.put(("opt-whitespace"), makeCfgOptWhitespaceRhs(cs));
+        grammarMap.put(("rule-separator"), makeCfgRuleSeparatorRhs(cs));
+        grammarMap.put(("rule"), makeCfgRuleRhs(cs));
+        grammarMap.put(("nt"), makeCfgNtRhs(cs));
+        grammarMap.put(("hide-nt"), makeCfgHideNtRhs(cs));
+        grammarMap.put(("alt-or-ord"), makeCfgAltOrOrdRhs(cs));
+        grammarMap.put(("alt"), makeCfgAltRhs(cs));
+        grammarMap.put(("ord"), makeCfgOrdRhs(cs)); // Technically ABNF, but should be included without it as a PAKRAT extension.
+        grammarMap.put(("paren"), makeCfgParenRhs(cs));
+        grammarMap.put(("hide"), makeCfgHideRhs(cs));
+        grammarMap.put(("cat"), makeCfgCatRhs(cs));
+        grammarMap.put(("rep"), makeCfgRepRhs(cs)); // ABNF
+        grammarMap.put(("string"), makeCfgStringRhs(cs));
+        grammarMap.put(("regexp"), makeCfgRegexRhs(cs));
+        grammarMap.put(("opt"), makeCfgOptRhs(cs));
+        grammarMap.put(("star"), makeCfgOneOrMoreRhs(cs));
+        grammarMap.put(("plus"), makeCfgPlusRhs(cs));
+        grammarMap.put(("look"), makeCfgLookRhs(cs));
+        grammarMap.put(("neg"), makeCfgNegRhs(cs));
+        grammarMap.put(("epsilon"), makeCfgEpsilonRhs(cs));
+        grammarMap.put(("factor"), makeCfgFactorRhs(cs));
+        grammarMap.put(("num-val"), makeABNFNumVal(cs)); // ABNF
+        grammarMap.put(("rules-or-parser"), makeCfgRulesOrParserRhs(cs));
         return new Grammar(grammarMap).applyStandardReductions();
     }
 }

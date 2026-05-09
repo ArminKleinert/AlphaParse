@@ -49,7 +49,7 @@ public class Viztool {
         final @NotNull Node fpr = parseRes.getFirst();
         final @NotNull var label = switch (fpr) {
             case Node.NodeString nodeString -> nodeString.content();
-            case Node.NodeTreeTag nodeTreeTag -> nodeTreeTag.content().getName();
+            case Node.NodeTreeTag nodeTreeTag -> nodeTreeTag.content();
             case Node.NodeFail ignored1 ->
                     throw new IllegalStateException("Cannot create parse-tree visualization " + fpr.getClass() + " (TODO).");
             case Node.NodeParseTree ignored2 ->

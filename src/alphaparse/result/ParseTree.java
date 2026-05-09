@@ -1,6 +1,5 @@
 package alphaparse.result;
 
-import alphaparse.Keyword;
 import alphaparse.flat.FlatSeq;
 import alphaparse.list.UnmodList;
 import org.jetbrains.annotations.NotNull;
@@ -13,9 +12,9 @@ import java.util.*;
  */
 public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
-     * A technically invalid {@link Keyword}. It is used to mark trees "without" a tag.
+     * A technically invalid tag. It is used to mark trees "without" a tag.
      */
-    public static @NotNull Keyword NULL_TAG = Keyword.intern("\0\0\0\0");
+    public static @NotNull String NULL_TAG = "\0\0\0\0";
 
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
@@ -293,7 +292,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * @return A new parse tree.
      * @see #create(Node.NodeTreeTag, List)
      */
-    public static @NotNull ParseTree create(final @NotNull Keyword tag,
+    public static @NotNull ParseTree create(final @NotNull String tag,
                                             final @Nullable Object content) {
         final @NotNull var afs = switch (content) {
             case null -> List.<Node>of();
@@ -366,7 +365,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * @see #create(Node.NodeTreeTag, List)
      */
     public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
-        return create(new Node.NodeTreeTag(Keyword.intern(tag)), Arrays.stream(content).map(Node::of).toList());
+        return create(new Node.NodeTreeTag(tag), Arrays.stream(content).map(Node::of).toList());
     }
 
     /**

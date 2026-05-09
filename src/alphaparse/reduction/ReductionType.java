@@ -1,6 +1,5 @@
 package alphaparse.reduction;
 
-import alphaparse.Keyword;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,11 +66,11 @@ public final class ReductionType {
         TAGGED_PARSE_TREE
     }
 
-    private final @NotNull Keyword key;
+    private final @NotNull String key;
     private final @NotNull ReductionTypesAvailable type;
     private final boolean hiddenOrRaw;
 
-    private ReductionType(final @NotNull Keyword key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
+    private ReductionType(final @NotNull String key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
         this.key = key;
         this.type = type;
         this.hiddenOrRaw = hiddenOrRaw;
@@ -83,7 +82,7 @@ public final class ReductionType {
      * @param key The production's name.
      * @return A new output descriptor.
      */
-    public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Keyword key) {
+    public static @NotNull ReductionType defaultNonRawReduction(final @NotNull String key) {
         return new ReductionType(key, ReductionType.ReductionTypesAvailable.TAGGED_PARSE_TREE, false);
     }
 
@@ -93,7 +92,7 @@ public final class ReductionType {
      * @param key  The production's name.
      * @return A new output descriptor.
      */
-    public static @NotNull ReductionType nonTerminalReduction(final @NotNull Keyword key) {
+    public static @NotNull ReductionType nonTerminalReduction(final @NotNull String key) {
         return new ReductionType(key, ReductionTypesAvailable.TAGGED_PARSE_TREE, false);
     }
 
@@ -114,7 +113,7 @@ public final class ReductionType {
      *
      * @return The production key this output format is for.
      */
-    public @NotNull Keyword getKey() {
+    public @NotNull String getKey() {
         return key;
     }
 

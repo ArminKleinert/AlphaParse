@@ -1,7 +1,5 @@
 package alphaparse.result;
 
-
-import alphaparse.Keyword;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  *     <li>{@link NodeString} wraps String.</li>
  *     <li>{@link NodeParseTree} wraps {@link ParseTree}.</li>
  *     <li>{@link NodeFail} wraps {@link ParseFailureNode}. This happens only if failures are embedded in parse trees.</li>
- *     <li>{@link NodeTreeTag} wraps {@link Keyword} and must be the head of a parse tree.</li>
+ *     <li>{@link NodeTreeTag} wraps {@link String} (or anything else that represents text) and must be the head of a parse tree.</li>
  * </ul>
  */
 public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.NodeString, Node.NodeTreeTag {
@@ -40,14 +38,14 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
     @NotNull Object content();
 
     /**
-     * Wraps a {@link Keyword} and must always be the head of a parse tree. A tag can not exist without a tree and a tree can not exist without a tag.
+     * Represents the tag of a tree. This is the left hand side of a production. A tag can not exist without a tree and a tree can not exist without a tag.
      *
      * @param content The inner object.
      */
-    record NodeTreeTag(@NotNull Keyword content) implements Node {
+    record NodeTreeTag(@NotNull String content) implements Node {
         @Override
         public @NotNull String toString() {
-            return content().toString();
+            return ":"+content();
         }
     }
 

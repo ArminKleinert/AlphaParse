@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
-
 final class Cfg {
     private static @NotNull Combinator stringOrStringCaseInsensitiveCombinator(
             final @NotNull String s, final boolean caseInsensitiveByDefault,
@@ -53,7 +52,7 @@ final class Cfg {
         return combinatorFactory.repetitionCombinator(min, max, repeatedRule);
     }
 
-    private static @NotNull Map.Entry<@NotNull Keyword, @NotNull Combinator> buildRuleRule(
+    private static @NotNull Map.Entry<@NotNull String, @NotNull Combinator> buildRuleRule(
             final @NotNull ParseTree tree,
             final @NotNull CombinatorFactory combinatorFactory,
             final @NotNull Alpha.ParserCreationOptions options) {
@@ -62,15 +61,15 @@ final class Cfg {
         final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
         @NotNull var content = nt.getContent().getFirst();
 
-        final @NotNull Keyword key;
+        final @NotNull String key;
         final @NotNull Combinator rule;
 
-        if (Objects.equals(Keyword.intern("hide-nt"), nt.getTag().content())) {
+        if (Objects.equals("hide-nt", nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
-            key = Keyword.intern(content.toString());
+            key = content.toString();
             rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd, combinatorFactory, options));
         } else {
-            key = Keyword.intern((String) content.content());
+            key = (String) content.content();
             rule = (Combinator) buildRule(altOrOrd, combinatorFactory, options);
         }
 
@@ -86,14 +85,14 @@ final class Cfg {
                 continue;
             }
 
-            final @NotNull var tag = tree.getTag().content().getName();
+            final @NotNull var tag = tree.getTag().content();
             switch (tag) {
                 case "rule" -> {
                     return buildRuleRule(tree, combinatorFactory, options);
                 }
                 case "nt" -> {
                     return combinatorFactory.makeNonTerminal(
-                            Keyword.intern((String) tree.getContent().getFirst().content()));
+                            (String) tree.getContent().getFirst().content());
                 }
                 case "alt" -> {
                     return combinatorFactory.choiceCombinator(tree.getContent()
@@ -218,13 +217,13 @@ final class Cfg {
                                        final @NotNull Grammar ebnfGrammar) {
         final @NotNull var rules = Gll.parse(
                 ebnfGrammar,
-                Keyword.intern("rules"),
+                "rules",
                 spec, false);
         if (rules instanceof AlphaParseFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }
 
-        final @NotNull var productions = new ArrayList<Map.Entry<Keyword, Combinator>>();
+        final @NotNull var productions = new ArrayList<Map.Entry<String, Combinator>>();
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(
                 options.useParserBuffering());
 
