@@ -1,7 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonNegative;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -45,13 +45,13 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, combinator);
 
         if (resultExists_Q(runner, nodeKey)) {
-            runner.fail(new TrampolineListenerKey(index, this), index, new ParseFailureReasonNegative(null));
+            runner.fail(new TrampolineListenerKey(index, this), index, ParseFailureReason.ofNegated(this, false));
             return;
         }
 
         runner.pushListener(nodeKey, ignored -> runner.fail(
                 new TrampolineListenerKey(index, this), index,
-                new ParseFailureReasonNegative(combinator)));
+                ParseFailureReason.ofNegated(this, false)));
 
         final @NotNull Combinator p = this;
         runner.pushNegativeListener(nodeKey, () -> {

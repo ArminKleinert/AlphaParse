@@ -3,7 +3,7 @@ package alphaparse.parser;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonRegex;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +56,7 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
         if (match != null) {
             runner.success(nodeKey, match, index + match.length());
         } else {
-            runner.fail(nodeKey, index, new ParseFailureReasonRegex(regexp));
+            runner.fail(nodeKey, index, ParseFailureReason.ofRegexTerminal(this, false));
         }
     }
 
@@ -71,7 +71,7 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
         if (match != null && match.length() == desiredLength) {
             runner.success(nodeKey, match, text.length());
         } else {
-            runner.fail(nodeKey, index, new ParseFailureReasonRegex(regexp, true));
+            runner.fail(nodeKey, index, ParseFailureReason.ofRegexTerminal(this, true));
         }
     }
 

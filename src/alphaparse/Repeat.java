@@ -1,10 +1,11 @@
 package alphaparse;
 
+import alphaparse.parser.EpsilonCombinator;
 import alphaparse.parser.Parser;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.ParseTree;
 import alphaparse.result.AlphaParseFailure;
-import alphaparse.result.failure.failureReason.ParseFailureReasonEpsilon;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -22,6 +23,6 @@ final class Repeat {
             final @NotNull Parser parser,
             final @NotNull String text,
             final Sym startProduction) {
-        return new AlphaParseFailure(0, List.of(new ParseFailureReasonEpsilon()));
+        return new AlphaParseFailure(0, List.of(ParseFailureReason.ofEpsilon(EpsilonCombinator.getDefault(), false)));
     }
 }

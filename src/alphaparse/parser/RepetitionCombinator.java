@@ -5,7 +5,7 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import alphaparse.flat.FlatSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonExpectRepetitionParser;
+import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -133,14 +133,14 @@ public final class RepetitionCombinator extends CombinatorWithParser {
             if (continueIndex == runner.tramp().getText().length()) {
                 if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum)
                     runner.success(nodeKey, newResultsSoFar, continueIndex);
-                else runner.fail(nodeKey, continueIndex, new ParseFailureReasonExpectRepetitionParser(false, parser));
+                else runner.fail(nodeKey, continueIndex, ParseFailureReason.ofRepetition(this, false));
             } else {
                 if (newNResultsSoFar < maximum) {
                     final @NotNull var listener = repFullListener(
                             newResultsSoFar, newNResultsSoFar,
                             parser, minimum, maximum, continueIndex, nodeKey, runner);
                     runner.pushListener(new TrampolineListenerKey(continueIndex, parser), listener);
-                } else runner.fail(nodeKey, continueIndex, new ParseFailureReasonExpectRepetitionParser(false, parser));
+                } else runner.fail(nodeKey, continueIndex, ParseFailureReason.ofRepetition(this, false));
             }
         };
     }

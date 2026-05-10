@@ -1,7 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonString;
+import alphaparse.result.failure.ParseFailureReason;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -53,12 +53,12 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
             if (string.equalsIgnoreCase(head))
                 runner.success(nodeKey, string, end);
             else
-                runner.fail(nodeKey, index, new ParseFailureReasonString(string));
+                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
         } else {
             if (string.contentEquals(head))
                 runner.success(nodeKey, string, end);
             else
-                runner.fail(nodeKey, index, new ParseFailureReasonString(string));
+                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
         }
     }
 
@@ -73,12 +73,12 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
             if (end == text.length() && string.equalsIgnoreCase(head))
                 runner.success(nodeKey, string, end);
             else
-                runner.fail(nodeKey, index, new ParseFailureReasonString(string, true));
+                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
         } else {
             if (text.length() == end && Objects.equals(string, head))
                 runner.success(nodeKey, string, end);
             else
-                runner.fail(nodeKey, index, new ParseFailureReasonString(string, true));
+                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
         }
     }
 

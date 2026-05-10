@@ -9,7 +9,7 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.*;
 import alphaparse.result.failure.FailureUtil;
 import alphaparse.result.success.AlphaParseSuccess;
-import alphaparse.result.failure.failureReason.ParseFailureReason;
+import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineMsgCacheKey;
 import alphaparse.trampoline.TrampolineListenerNode;
 

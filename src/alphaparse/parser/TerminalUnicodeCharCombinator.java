@@ -3,7 +3,7 @@ package alphaparse.parser;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonChar;
+import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
-            runner.fail(nodeKey, index, new ParseFailureReasonChar(lo, hi));
+            runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
             return;
         }
 
@@ -56,7 +56,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
             if (lo >= code && code >= hi) {
                 runner.success(nodeKey, Objects.toString(code), index + 1);
             } else {
-                runner.fail(nodeKey, index, new ParseFailureReasonChar(lo, hi));
+                runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
             }
             return;
         }
@@ -66,7 +66,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
         if (lo >= codePoint && codePoint >= hi) {
             runner.success(nodeKey, charString, index + charString.length());
         } else {
-            runner.fail(nodeKey, index, new ParseFailureReasonChar(lo, hi));
+            runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
         }
     }
 
@@ -79,7 +79,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
-            runner.fail(nodeKeyForThis, index, new ParseFailureReasonChar(lo, hi));
+            runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, false));
             return;
         }
 
@@ -89,7 +89,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
             if (index + 1 == end && lo <= code && code <= hi) {
                 runner.success(nodeKeyForThis, Character.toString(c), end);
             } else {
-                runner.fail(nodeKeyForThis, index, new ParseFailureReasonChar(lo, hi));
+                runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, false));
             }
             return;
         }
@@ -100,7 +100,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
         if ((index + charString.length()) == end && lo <= codePoint && codePoint <= hi) {
             runner.success(nodeKeyForThis, charString, end);
         } else {
-            runner.fail(nodeKeyForThis, index, new ParseFailureReasonChar(lo, hi, true));
+            runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
         }
     }
 

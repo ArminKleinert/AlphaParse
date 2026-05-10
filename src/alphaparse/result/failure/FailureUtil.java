@@ -1,7 +1,6 @@
 package alphaparse.result.failure;
 
 import alphaparse.result.AlphaParseFailure;
-import alphaparse.result.failure.failureReason.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -126,7 +125,10 @@ public final class FailureUtil {
         else if (total > 1) sb.append("Expected one of:").append('\n');
 
         for (String fullReasonExpect : fullReasons) {
-            sb.append(fullReasonExpect).append(" (follow by end-of-string)\n");
+            sb.append(fullReasonExpect);
+            if (!fullReasonExpect.equals("end-of-string"))
+                sb.append(" (follow by end-of-string)");
+            sb.append('\n');
         }
 
         for (String partialReasonExpect : partialReasons) {

@@ -1,5 +1,6 @@
 package alphaparse;
 
+import alphaparse.parser.ConcatCombinator;
 import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 
@@ -16,8 +17,10 @@ import java.util.List;
 class AlphaTest {
     @Test
     void outputForTemps() {
-        {
-        }
+//        {
+//            var p = Alpha.parser("S : 'string1' | #'regex1' | %x0041-0042 | & 'look1' #'b|a' | 2*4 'rep1' | !'c' 'afterneg' | 'opt1'? | A | epsilon\nA : 'string2'");
+//            System.out.println(p.parse("c"));
+//        }
     }
 
 //    @Test

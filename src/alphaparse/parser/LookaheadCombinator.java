@@ -1,7 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonLookahead;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -40,7 +40,7 @@ public final class LookaheadCombinator extends CombinatorWithParser {
             runner.fail(
                     new TrampolineListenerKey(index, this),
                     index,
-                    new ParseFailureReasonLookahead("end-of-string"));
+                    ParseFailureReason.ofLookahead(this, false));
         }
     }
 

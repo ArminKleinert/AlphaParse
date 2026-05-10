@@ -1,7 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.result.failure.FailureUtil;
-import alphaparse.result.failure.failureReason.ParseFailureReason;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,7 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonEpsilon;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -46,7 +46,7 @@ public final class EpsilonCombinator extends CombinatorTerminal {
             runner.success(new TrampolineListenerKey(index, this), null, index);
         else
             runner.fail(new TrampolineListenerKey(index, this), index,
-                    new ParseFailureReasonEpsilon());
+                    ParseFailureReason.ofEpsilon(this, true));
     }
 
     @Override

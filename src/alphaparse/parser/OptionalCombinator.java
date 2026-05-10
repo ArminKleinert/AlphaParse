@@ -3,7 +3,7 @@ package alphaparse.parser;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.reduction.ReductionType;
-import alphaparse.result.failure.failureReason.ParseFailureReasonOptional;
+import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,7 @@ public final class OptionalCombinator extends CombinatorWithParser {
         } else {
             // Was this supposed to be a full-parse error?
             //  `runner.fail(thisNodeKey, index, new ParseFailureReasonOptional(Keyword.intern("end-of-string"), true));`
-            runner.fail(thisNodeKey, index, new ParseFailureReasonOptional("end-of-string"));
+            runner.fail(thisNodeKey, index, ParseFailureReason.ofOptional(this, true));
         }
     }
 
