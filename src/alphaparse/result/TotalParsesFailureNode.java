@@ -1,5 +1,6 @@
 package alphaparse.result;
 
+import alphaparse.Sym;
 import alphaparse.list.PretenderList;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @param end   End index of the failure.
  */
 public record TotalParsesFailureNode(
-        @NotNull String text, @NotNull String key,
+        @NotNull String text, @NotNull Sym key,
         int start, int end)
         implements AlphaParsesResult, PretenderList<ParseTree> {
     @Override

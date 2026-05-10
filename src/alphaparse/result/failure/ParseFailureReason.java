@@ -17,12 +17,7 @@ public class ParseFailureReason {
     private final boolean full;
     private final @NotNull String tag;
 
-    /**
-     * Create a new instance.
-     *
-     * @param full Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
-     */
-    public ParseFailureReason(final @NotNull Combinator combinator, final @Nullable String reasonString, final boolean full, final @NotNull String tag) {
+    private ParseFailureReason(final @NotNull Combinator combinator, final @Nullable String reasonString, final boolean full, final @NotNull String tag) {
         this.full = full;
         this.combinator = combinator;
         this.reasonString = reasonString; //getExpecting().toString();
@@ -84,34 +79,83 @@ public class ParseFailureReason {
         return full;
     }
 
+    /**
+     * Builds an instance based on a {@link TerminalUnicodeCharCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofUnicodeChar(final TerminalUnicodeCharCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, null, full, "char");
     }
-
+    /**
+     * Builds an instance based on a {@link EpsilonCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofEpsilon(final EpsilonCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, "end-of-string", full, "epsilon");
     }
-
+    /**
+     * Builds an instance based on a {@link RepetitionCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofRepetition(final RepetitionCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, null, full, "rep");
     }
-
+    /**
+     * Builds an instance based on a {@link LookaheadCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofLookahead(final LookaheadCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, full ? "end-of-string" : null, full, "look");
     }
-
+    /**
+     * Builds an instance based on a {@link NegativeLookaheadCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofNegated(final NegativeLookaheadCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, "NOT " + Print.combinatorToString(combinator.getParser()), full, "look");
     }
-
+    /**
+     * Builds an instance based on a {@link OptionalCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofOptional(final OptionalCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, "end-of-string", full, "optional");
     }
-
+    /**
+     * Builds an instance based on a {@link TerminalRegexpCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofRegexTerminal(final TerminalRegexpCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, null, full, "regex");
     }
-
+    /**
+     * Builds an instance based on a {@link TerminalStringCombinator}.
+     *
+     * @param combinator The combinator.
+     * @param full       Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
     public static @NotNull ParseFailureReason ofStringTerminal(final TerminalStringCombinator combinator, final boolean full) {
         return new ParseFailureReason(combinator, null, full, "string");
     }

@@ -44,7 +44,7 @@ public sealed abstract class AlphaParseSuccess permits
         return switch (result) {
             case null -> new AlphaParseSuccessNull(index);
             case String s -> new AlphaParseSuccessString(index, s);
-            case TotalParsesFailureNode parseTrees -> new AlphaParseSuccessWithTotalFailure(index, parseTrees);
+            case TotalParsesFailureNode totalParsesFailureNode -> new AlphaParseSuccessWithTotalFailure(index, totalParsesFailureNode);
             case FlatSeq<?> objects -> new AlphaParseSuccessList(index, (FlatSeq<Object>) objects);
             case ParseFailureNode parseFailureNode -> new AlphaParseSuccessWithFailure(index, parseFailureNode);
             case ParseTree nodes -> new AlphaParseSuccessParseResult(index, nodes);
