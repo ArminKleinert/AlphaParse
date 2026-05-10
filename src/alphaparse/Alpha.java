@@ -54,7 +54,7 @@ public final class Alpha {
     private static @NotNull Sym getStartProductionFromParserOrOptionsAndCheck(
             final @NotNull ParsingOptions options,
             final @NotNull Parser parser) {
-        final var startProduction = options.getStart();
+        final var startProduction = options.start();
         if (startProduction == null)
             return parser.startProduction();
         if (!parser.grammar().containsKey(startProduction))
@@ -67,9 +67,9 @@ public final class Alpha {
      * <p>
      * The options apply as follows:
      * <ul>
-     *     <li>{@link ParsingOptions#isOptimizeMemory()}: Try to use a different algorithm for parsing.</li>
+     *     <li>{@link ParsingOptions#optimizeMemory()}: Try to use a different algorithm for parsing.</li>
      *     <li>{@link ParsingOptions#isTotal()}: Return a {@link ParseTree} on failure, with the information included in the tree.</li>
-     *     <li>{@link ParsingOptions#getUnhide()}: Unhide some parts of the parser in the output.</li>
+     *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
      * </ul>
      *
@@ -84,14 +84,14 @@ public final class Alpha {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options, parser);
         //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
-        final @NotNull var doUnhide = options.getUnhide();
+        final @NotNull var doUnhide = options.unhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
 
         final @NotNull AlphaParseResult parsingResult;
         if (options.isTotal()) {
             parsingResult = AlphaParseResult.make(
                     Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false));
-        } else if (options.isOptimizeMemory()) {
+        } else if (options.optimizeMemory()) {
             @NotNull var result = Repeat.tryRepeatingParseStrategy(parser, text, startProduction);
             if (result instanceof AlphaParseFailure)
                 result = Gll.parse(parser.grammar(), startProduction, text, false);
@@ -125,7 +125,7 @@ public final class Alpha {
      * <ul>
      *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
      *     <li>{@link ParsingOptions#isTotal()}: Include failure information in parse trees.</li>
-     *     <li>{@link ParsingOptions#getUnhide()}: Unhide some parts of the parser in the output.</li>
+     *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
      * </ul>
      *
@@ -140,7 +140,7 @@ public final class Alpha {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options, parser);
         final var usePartial = options.usePartial();
-        final @NotNull var doUnhide = options.getUnhide();
+        final @NotNull var doUnhide = options.unhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
 
         final var useParseTotal = options.isTotal();
@@ -173,7 +173,7 @@ public final class Alpha {
      * <ul>
      *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
      *     <li>{@link ParsingOptions#isTotal()}: Include failure information in parse trees.</li>
-     *     <li>{@link ParsingOptions#getUnhide()}: Unhide some parts of the parser in the output.</li>
+     *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
      * </ul>
      *
@@ -188,7 +188,7 @@ public final class Alpha {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options, parser);
         final var usePartial = options.usePartial();
-        final @NotNull var doUnhide = options.getUnhide();
+        final @NotNull var doUnhide = options.unhide();
         final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
 
         final var useParseTotal = options.isTotal();
@@ -285,39 +285,56 @@ public final class Alpha {
     /**
      * Options for unhiding parts of the output from a parse. A thorough description can be found in the description of the {@link ParsingOptions} class.
      *
-     * @see ParsingOptions#getUnhide()
+     * @see ParsingOptions#unhide()
      */
     public enum UnhideOptions {
         /**
          * Do nothing.
          *
-         * @see ParsingOptions#getUnhide()
+         * @see ParsingOptions#unhide()
          */
         none,
         /**
          * Unhide tags, do not show hidden contents.
          *
-         * @see ParsingOptions#getUnhide()
+         * @see ParsingOptions#unhide()
          */
         tags,
         /**
          * Unhide contents, but keep tags hidden.
          *
-         * @see ParsingOptions#getUnhide()
+         * @see ParsingOptions#unhide()
          */
         content,
         /**
          * Show both contents and tags.
          *
-         * @see ParsingOptions#getUnhide()
+         * @see ParsingOptions#unhide()
          */
         all
     }
 
     /**
      * Options for parsing with an already created parser.
+     *
+     * @param start          Start production for the parse. Use {@code null} to use the Parser's start production.
+     * @param usePartial        Whether to return partial (incomplete) parses.
+     * @param unhide         What (if anything) to "unhide" in the results.
+     * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
+     * @param optimizeMemory Whether to attempt using more memory-efficient algorithms for parsing.
+     * @see ParsingOptions#DEFAULT_START
+     * @see ParsingOptions#DEFAULT_PARTIAL
+     * @see ParsingOptions#DEFAULT_UNHIDE
+     * @see ParsingOptions#DEFAULT_TOTAL
+     * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
      */
-    public static class ParsingOptions {
+    public record ParsingOptions(
+            @Nullable Sym start,
+            boolean usePartial,
+            @NotNull Alpha.UnhideOptions unhide,
+            boolean embedFailureInParseTree,
+            boolean optimizeMemory
+    ) {
         /**
          * Default for the start production name of a parse operation. ({@code null})
          */
@@ -339,12 +356,6 @@ public final class Alpha {
          */
         public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
 
-        private final @Nullable Sym start;
-        private final boolean partial;
-        private final @NotNull Alpha.UnhideOptions unhide;
-        private final boolean total;
-        private final boolean optimizeMemory;
-
         /**
          * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
          *
@@ -357,32 +368,6 @@ public final class Alpha {
          */
         public static @NotNull ParsingOptions getDefault() {
             return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
-        }
-
-        /**
-         * Creates a new instance.
-         *
-         * @param start          Start production for the parse. Use {@code null} to use the Parser's start production.
-         * @param partial        Whether to return partial (incomplete) parses.
-         * @param unhide         What (if anything) to "unhide" in the results.
-         * @param total          Whether to return parse trees containing failure nodes or just return the failure itself.
-         * @param optimizeMemory Whether to attempt using more memory-efficient algorithms for parsing.
-         * @see ParsingOptions#DEFAULT_START
-         * @see ParsingOptions#DEFAULT_PARTIAL
-         * @see ParsingOptions#DEFAULT_UNHIDE
-         * @see ParsingOptions#DEFAULT_TOTAL
-         * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
-         */
-        public ParsingOptions(final @Nullable Sym start,
-                              final boolean partial,
-                              final @NotNull Alpha.UnhideOptions unhide,
-                              final boolean total,
-                              final boolean optimizeMemory) {
-            this.start = start;
-            this.partial = partial;
-            this.unhide = unhide;
-            this.total = total;
-            this.optimizeMemory = optimizeMemory;
         }
 
         /**
@@ -442,7 +427,7 @@ public final class Alpha {
          * @see ParsingOptions#getDefault()
          */
         public boolean usePartial() {
-            return partial;
+            return usePartial;
         }
 
         /**
@@ -488,7 +473,7 @@ public final class Alpha {
          * @see ParsingOptions#DEFAULT_UNHIDE
          * @see ParsingOptions#getDefault()
          */
-        public @NotNull Alpha.UnhideOptions getUnhide() {
+        public @NotNull Alpha.UnhideOptions unhide() {
             return unhide;
         }
 
@@ -515,7 +500,7 @@ public final class Alpha {
          * @see ParsingOptions#getDefault()
          */
         public boolean isTotal() {
-            return total;
+            return embedFailureInParseTree;
         }
 
         /**
@@ -526,7 +511,7 @@ public final class Alpha {
          * @see ParsingOptions#getDefault()
          * @see ParsingOptions#optMemory()
          */
-        public boolean isOptimizeMemory() {
+        public boolean optimizeMemory() {
             return optimizeMemory;
         }
 
@@ -541,19 +526,19 @@ public final class Alpha {
          */
         public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
             if (Objects.equals(this.start, start)) return this;
-            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
+            return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
         }
 
         /**
-         * Makes a new instance with the "partial" parameter set to the argument.
+         * Makes a new instance with the "usePartial" parameter set to the argument.
          *
-         * @param partial The argument as a boolean.
+         * @param usePartial The argument as a boolean.
          * @return A new instance.
          * @see #usePartial()
          */
-        public @NotNull ParsingOptions withPartial(final boolean partial) {
-            if (Objects.equals(this.partial, partial)) return this;
-            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
+        public @NotNull ParsingOptions withPartial(final boolean usePartial) {
+            if (Objects.equals(this.usePartial, usePartial)) return this;
+            return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
         }
 
         /**
@@ -561,23 +546,23 @@ public final class Alpha {
          *
          * @param unhide The new option.
          * @return A new instance.
-         * @see #getUnhide()
+         * @see #unhide()
          */
         public @NotNull ParsingOptions withUnhide(final @NotNull Alpha.UnhideOptions unhide) {
             if (Objects.equals(this.unhide, unhide)) return this;
-            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
+            return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
         }
 
         /**
          * Creates a new instance with the total option set to the parameter.
          *
-         * @param total The new (or old) setting.
+         * @param embedFailureInParseTree The new (or old) setting.
          * @return A new instance.
-         * @see #isTotal()
+         * @see #embedFailureInParseTree()
          */
-        public @NotNull ParsingOptions withTotal(final boolean total) {
-            if (Objects.equals(this.total, total)) return this;
-            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
+        public @NotNull ParsingOptions withEmbedFailureInParseTree(final boolean embedFailureInParseTree) {
+            if (Objects.equals(this.embedFailureInParseTree, embedFailureInParseTree)) return this;
+            return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
         }
 
         /**
@@ -585,11 +570,11 @@ public final class Alpha {
          *
          * @param optimizeMemory The new (or old) setting.
          * @return A new instance.
-         * @see #isOptimizeMemory()
+         * @see #optimizeMemory()
          */
         public @NotNull ParsingOptions withOptimizeMemory(final boolean optimizeMemory) {
             if (Objects.equals(this.optimizeMemory, optimizeMemory)) return this;
-            return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
+            return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
         }
     }
 
@@ -607,9 +592,7 @@ public final class Alpha {
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         boolean useParserBuffering,
                                         @Nullable Grammar.RedefinitionOption redefinitionOption) {
-
         private static final boolean defaultUseParserBuffering = true;
-
         private static ParserCreationOptions DEFAULT;
 
         /**

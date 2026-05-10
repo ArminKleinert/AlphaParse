@@ -363,7 +363,7 @@ public final class CombinatorFactory {
      *
      * @param grammar The grammar.
      * @return The new grammar.
-     * @see Alpha.ParsingOptions#getUnhide()
+     * @see Alpha.ParsingOptions#unhide()
      */
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final @NotNull LinkedHashMap<Sym, Combinator> res = new LinkedHashMap<>();

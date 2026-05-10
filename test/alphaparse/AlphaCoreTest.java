@@ -921,7 +921,7 @@ class AlphaCoreTest {
         final @NotNull Parser p = eat_a;
         final @NotNull var text = "aaaaaaaabbbbbb";
 
-        Assertions.assertEquals(tree, p.parse(text, Alpha.ParsingOptions.getDefault().withTotal(true)));
+        Assertions.assertEquals(tree, p.parse(text, Alpha.ParsingOptions.getDefault().withEmbedFailureInParseTree(true)));
     }
 
     @Test
@@ -977,7 +977,7 @@ class AlphaCoreTest {
     @Test
     public void testStarRepetitionFailuresTotal() {
         var p = Alpha.parser("S = 'a'*");
-        var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
+        var opts = Alpha.ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
 
         Assertions.assertEquals(
                 ParseTree.create("S",
@@ -1002,7 +1002,7 @@ class AlphaCoreTest {
     @Test
     public void testPlusRepetitionFailuresTotal() {
         var p = Alpha.parser("S = 'a'+");
-        var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
+        var opts = Alpha.ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
 
         Assertions.assertEquals(
                 ParseTree.create("S",
