@@ -176,7 +176,7 @@ public final class Gll {
 
     /**
      * Pushes a result into the trampoline's node.
-     * Categorizes as either result or full-result.
+     * Categorizes as either result or full result.
      * Schedules notification to all existing listeners of result
      * (Full listeners only get notified about full results)
      */

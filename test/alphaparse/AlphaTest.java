@@ -17,10 +17,11 @@ import java.util.List;
 class AlphaTest {
     @Test
     void outputForTemps() {
-//        {
-//            var p = Alpha.parser("S : 'string1' | #'regex1' | %x0041-0042 | & 'look1' #'b|a' | 2*4 'rep1' | !'c' 'afterneg' | 'opt1'? | A | epsilon\nA : 'string2'");
-//            System.out.println(p.parse("c"));
-//        }
+        {
+//            var p = Alpha.parser("S = #'a'+");
+//               var text = "ab";var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
+//            System.out.println(p.parse(text, opts));
+        }
     }
 
 //    @Test

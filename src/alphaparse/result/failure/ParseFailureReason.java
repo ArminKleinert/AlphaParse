@@ -5,25 +5,19 @@ import alphaparse.parser.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.StringJoiner;
-
 /**
  * A failure lists reasons for the failure. This class represents the possible reasons.
+ *
+ * @param combinator      The combinator was parsed when the failure appeared.
+ * @param reasonString    A string describing the failure. Please prefer {@link ParseFailureReason#failureReasonString}.
+ * @param untilEndOfInput Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
+ * @param tag             A symbol or string indicating the type of reason. E.g. lookahead, string terminal, regex terminal, etc.
  */
-public class ParseFailureReason {
-    private final @NotNull Combinator combinator;
-    private final @Nullable String reasonString;
-    private final boolean full;
-    private final @NotNull String tag;
-
-    private ParseFailureReason(final @NotNull Combinator combinator, final @Nullable String reasonString, final boolean full, final @NotNull String tag) {
-        this.full = full;
-        this.combinator = combinator;
-        this.reasonString = reasonString; //getExpecting().toString();
-        this.tag = tag;
-    }
-
+public record ParseFailureReason(
+        @NotNull Combinator combinator,
+        @Nullable String reasonString,
+        boolean untilEndOfInput,
+        @NotNull String tag) {
     /**
      * Representation of the failure reasonList as a string.
      *
@@ -34,40 +28,13 @@ public class ParseFailureReason {
         return Print.combinatorToString(combinator);
     }
 
-
     /**
      * The tag of the production.
      *
      * @return The tag of the production.
      */
-    public @NotNull String getTag() {
+    public @NotNull String tag() {
         return tag;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof ParseFailureReason that)) return false;
-
-        return full == that.full
-                && Objects.equals(tag, that.tag)
-                && Objects.equals(combinator, that.combinator)
-                && Objects.equals(reasonString, that.reasonString);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(full, combinator, reasonString, tag);
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ParseFailureReason.class.getSimpleName() + "[", "]")
-                .add("full=" + full)
-                .add("combinator=" + combinator)
-                .add("reasonString='" + reasonString + "'")
-                .add("tag='" + tag + "'")
-                .toString();
     }
 
     /**
@@ -75,88 +42,95 @@ public class ParseFailureReason {
      *
      * @return Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
      */
-    public boolean isFull() {
-        return full;
+    public boolean untilEndOfInput() {
+        return untilEndOfInput;
     }
 
     /**
      * Builds an instance based on a {@link TerminalUnicodeCharCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofUnicodeChar(final TerminalUnicodeCharCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, null, full, "char");
+    public static @NotNull ParseFailureReason ofUnicodeChar(final TerminalUnicodeCharCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, null, untilEndOfInput, "char");
     }
+
     /**
      * Builds an instance based on a {@link EpsilonCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofEpsilon(final EpsilonCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, "end-of-string", full, "epsilon");
+    public static @NotNull ParseFailureReason ofEpsilon(final EpsilonCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, "end-of-string", untilEndOfInput, "epsilon");
     }
+
     /**
      * Builds an instance based on a {@link RepetitionCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofRepetition(final RepetitionCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, null, full, "rep");
+    public static @NotNull ParseFailureReason ofRepetition(final RepetitionCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, null, untilEndOfInput, "rep");
     }
+
     /**
      * Builds an instance based on a {@link LookaheadCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofLookahead(final LookaheadCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, full ? "end-of-string" : null, full, "look");
+    public static @NotNull ParseFailureReason ofLookahead(final LookaheadCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, untilEndOfInput ? "end-of-string" : null, untilEndOfInput, "look");
     }
+
     /**
      * Builds an instance based on a {@link NegativeLookaheadCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofNegated(final NegativeLookaheadCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, "NOT " + Print.combinatorToString(combinator.getParser()), full, "look");
+    public static @NotNull ParseFailureReason ofNegated(final NegativeLookaheadCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, "NOT " + Print.combinatorToString(combinator.getParser()), untilEndOfInput, "look");
     }
+
     /**
      * Builds an instance based on a {@link OptionalCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofOptional(final OptionalCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, "end-of-string", full, "optional");
+    public static @NotNull ParseFailureReason ofOptional(final OptionalCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, null, untilEndOfInput, "optional");
     }
+
     /**
      * Builds an instance based on a {@link TerminalRegexpCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofRegexTerminal(final TerminalRegexpCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, null, full, "regex");
+    public static @NotNull ParseFailureReason ofRegexTerminal(final TerminalRegexpCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, null, untilEndOfInput, "regex");
     }
+
     /**
      * Builds an instance based on a {@link TerminalStringCombinator}.
      *
-     * @param combinator The combinator.
-     * @param full       Whether the combinator is followed by end-of-string.
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofStringTerminal(final TerminalStringCombinator combinator, final boolean full) {
-        return new ParseFailureReason(combinator, null, full, "string");
+    public static @NotNull ParseFailureReason ofStringTerminal(final TerminalStringCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, null, untilEndOfInput, "string");
     }
 }

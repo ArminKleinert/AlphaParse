@@ -110,12 +110,12 @@ public final class FailureUtil {
         }
 
         final List<String> fullReasons = reason.stream()
-                .filter(ParseFailureReason::isFull)
+                .filter(ParseFailureReason::untilEndOfInput)
                 .map(ParseFailureReason::failureReasonString)
                 .distinct().toList();
         final List<String> partialReasons =
                 reason.stream()
-                        .filter(Predicate.not(ParseFailureReason::isFull))
+                        .filter(Predicate.not(ParseFailureReason::untilEndOfInput))
                         .map(ParseFailureReason::failureReasonString)
                         .distinct().toList();
 

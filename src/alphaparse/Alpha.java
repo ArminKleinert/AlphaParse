@@ -497,11 +497,11 @@ public final class Alpha {
          * <pre>
          * {@code
          *      var p = Alpha.parser("S = #'a'+");
-         *      var text = "ab":
+         *      var text = "ab";
          *
          *      // A normal parse results in a failure.
          *      println(p.parse("ab").castToParseFailure().contentsToString());
-         *      //   => [1, [{tag=:regex, expecting=a, full=false}], 1, 2, ab]
+         *      // => [1, [ParseFailureReason[combinator=#"a", reasonString=null, untilEndOfInput=false, tag=regex]], 1, 2, ab]
          *
          *      // With the total option, a parsetree is returned, potentially providing more information about the failure.
          *      var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
