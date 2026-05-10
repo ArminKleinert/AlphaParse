@@ -23,7 +23,7 @@ public final class Tramp {
     private final @NotNull List<@NotNull Procedure> stack;
     private final @NotNull List<@NotNull Procedure> nextStack;
     private int generation;
-    private final @NotNull SequencedMap<@NotNull Integer, @NotNull NegativeListener> negativeListeners;
+    private final @NotNull TreeMap<@NotNull Integer, @NotNull NegativeListener> negativeListeners;
     private final @NotNull SequencedMap<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
     private final @NotNull SequencedMap<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
     private @Nullable AlphaParseSuccess success;
@@ -53,7 +53,7 @@ public final class Tramp {
         this.stack = new ArrayList<>();
         this.nextStack = new ArrayList<>();
         this.generation = 0;
-        this.negativeListeners = new TreeMap<>(Comparator.comparingInt((Integer o) -> o).reversed());
+        this.negativeListeners = new TreeMap<>(Comparator.comparingInt((Integer o) -> o));
         //this.negativeListeners = new LinkedHashMap<>();
         this.msgCache = new LinkedHashMap<>();
         this.nodes = new LinkedHashMap<>();
@@ -111,8 +111,13 @@ public final class Tramp {
      *
      * @return Sequential map of negative lookaheads.
      */
-    public @NotNull SequencedMap<@NotNull Integer, @NotNull NegativeListener> getNegativeListeners() {
+    public @NotNull TreeMap<@NotNull Integer, @NotNull NegativeListener> getNegativeListeners() {
         return negativeListeners;
+    }
+
+    public @Nullable NegativeListener pollAndRemovePreviousNegativeListener() {
+        if (negativeListeners.isEmpty()) return null;
+        return negativeListeners.pollLastEntry().getValue();
     }
 
     /**

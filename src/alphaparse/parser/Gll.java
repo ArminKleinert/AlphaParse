@@ -126,12 +126,9 @@ public final class Gll {
                 step();
                 continue; // Take it to the top.
             }
-            if (!tramp.getNegativeListeners().isEmpty()) {
-                var a = tramp.getNegativeListeners().pollFirstEntry();
-                final @NotNull NegativeListener listener = a.getValue();
-
-                listener.execute();
-
+            var lastNegativeListener = tramp.pollAndRemovePreviousNegativeListener();
+            if (lastNegativeListener != null) {
+                lastNegativeListener.execute();
                 continue; // Take it to the top.
             }
             if (foundResult.get()) {
