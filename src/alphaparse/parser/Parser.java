@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @param startProduction The first production to try.
  */
 public record Parser(@NotNull Grammar grammar,
-                     @NotNull String startProduction)
+                     @NotNull Sym startProduction)
         implements Function<String, AlphaParseResult> {
 
     /**
@@ -98,7 +98,7 @@ public record Parser(@NotNull Grammar grammar,
      * @return A new Parser.
      * @throws IllegalArgumentException if the grammar does not include a production for the new start production.
      */
-    public @NotNull Parser withStartProduction(final @NotNull String startProduction) {
+    public @NotNull Parser withStartProduction(final @NotNull Sym startProduction) {
         return new Parser(grammar, startProduction);
     }
 
@@ -107,7 +107,7 @@ public record Parser(@NotNull Grammar grammar,
      *
      * @param whitespaceParser The parser for whitespace.
      * @return The new Parser.
-     * @see CombinatorFactory#autoWhitespace(Grammar, String, Grammar, String)
+     * @see CombinatorFactory#autoWhitespace(Grammar, Sym, Grammar, Sym)
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
         return withGrammar((new CombinatorFactory(true)).autoWhitespace(

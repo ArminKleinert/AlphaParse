@@ -1,5 +1,6 @@
 package alphaparse.result;
 
+import alphaparse.Sym;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record ParseFailureNode(
         @NotNull String text,
-        @NotNull String key,
+        @NotNull Sym key,
         int start,
         int end) implements AlphaParseResult {
     @Override

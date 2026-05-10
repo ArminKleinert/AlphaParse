@@ -67,7 +67,7 @@ final class Main {
         {
             final @NotNull var opts = new Alpha.ParserCreationOptions(
                     null,
-                    (String) null,
+                    null,
                     GlobalCaseInsensitivity.TRUE,
                     true,
                     null);

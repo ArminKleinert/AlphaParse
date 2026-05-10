@@ -54,27 +54,27 @@ class CharRangeTest {
 
     @Test
     void unicodeCodepointBinaryDecimalHexEquivalenceRange() {
-        var parserBin = Alpha.parser("S : %b1000001-1011010").grammar().getProduction("S");
-        var parserDec = Alpha.parser("S : %d65-90").grammar().getProduction("S");
-        var parserHex = Alpha.parser("S : %x41-5A").grammar().getProduction("S");
+        var parserBin = Alpha.parser("S : %b1000001-1011010").grammar().getProduction(Sym.sym("S"));
+        var parserDec = Alpha.parser("S : %d65-90").grammar().getProduction(Sym.sym("S"));
+        var parserHex = Alpha.parser("S : %x41-5A").grammar().getProduction(Sym.sym("S"));
         Assertions.assertEquals(parserBin, parserDec);
         Assertions.assertEquals(parserBin, parserHex);
     }
 
     @Test
     void unicodeCodepointBinaryDecimalHexEquivalenceSingle() {
-        var parserBin = Alpha.parser("S : %b1000001").grammar().getProduction("S");
-        var parserDec = Alpha.parser("S : %d65").grammar().getProduction("S");
-        var parserHex = Alpha.parser("S : %x41").grammar().getProduction("S");
+        var parserBin = Alpha.parser("S : %b1000001").grammar().getProduction(Sym.sym("S"));
+        var parserDec = Alpha.parser("S : %d65").grammar().getProduction(Sym.sym("S"));
+        var parserHex = Alpha.parser("S : %x41").grammar().getProduction(Sym.sym("S"));
         Assertions.assertEquals(parserBin, parserDec);
         Assertions.assertEquals(parserBin, parserHex);
     }
 
     @Test
     void unicodeCodepointBinaryDecimalHexEquivalenceRangeSingle() {
-        var parserBin = Alpha.parser("S : %b1000001-1000001").grammar().getProduction("S");
-        var parserDec = Alpha.parser("S : %d65-65").grammar().getProduction("S");
-        var parserHex = Alpha.parser("S : %x41-41").grammar().getProduction("S");
+        var parserBin = Alpha.parser("S : %b1000001-1000001").grammar().getProduction(Sym.sym("S"));
+        var parserDec = Alpha.parser("S : %d65-65").grammar().getProduction(Sym.sym("S"));
+        var parserHex = Alpha.parser("S : %x41-41").grammar().getProduction(Sym.sym("S"));
         Assertions.assertEquals(parserBin, parserDec);
         Assertions.assertEquals(parserBin, parserHex);
     }

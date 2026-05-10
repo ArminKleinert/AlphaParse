@@ -30,7 +30,7 @@ class AlphaTest {
     @Test
     void simplifiedParseTreeCreation() {
         var pt1 = ParseTree.create("S", "a", "a");
-        var pt2 = ParseTree.create(new Node.NodeTreeTag("S"), List.of(Node.of("a"), Node.of("a")));
+        var pt2 = ParseTree.create(new Node.NodeTreeTag(Sym.sym("S")), List.of(Node.of("a"), Node.of("a")));
         Assertions.assertEquals(pt2, pt1);
     }
 
@@ -167,7 +167,7 @@ class AlphaTest {
     @Test
     void parserCreationWithExplicitStartProduction() {
         {
-            final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction("B");
+            final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction(Sym.sym("B"));
             final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'", opts);
 
             Assertions.assertEquals(p.startProduction(), opts.startProduction());
@@ -177,7 +177,7 @@ class AlphaTest {
         }
         {
             // The production is not in the grammar => Fail
-            final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction("B");
+            final var opts = Alpha.ParserCreationOptions.getDefault().withStartProduction(Sym.sym("B"));
             Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("A : 'a'", opts));
         }
     }
@@ -187,14 +187,14 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'");
 
-            final var opts = Alpha.ParsingOptions.getDefault().withStart("B");
+            final var opts = Alpha.ParsingOptions.getDefault().withStart(Sym.sym("B"));
 
             Assertions.assertTrue(Alpha.parse(p, "b").isFailure());
             Assertions.assertEquals(ParseTree.create("B", "b"), Alpha.parse(p, "b", opts));
         }
         {
             // The production is not in the grammar => Fail
-            final var opts = Alpha.ParsingOptions.getDefault().withStart("B");
+            final var opts = Alpha.ParsingOptions.getDefault().withStart(Sym.sym("B"));
             final @NotNull var p = Alpha.parser("A : 'a'");
             Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parse(p, "a", opts));
         }
@@ -613,7 +613,7 @@ class AlphaTest {
         Assertions.assertEquals(ParseTree.create("S1", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());
 
-        var parserWithOtherStart = p.withStartProduction("S2");
+        var parserWithOtherStart = p.withStartProduction(Sym.sym("S2"));
         Assertions.assertTrue(parserWithOtherStart.parse("A").isFailure());
         Assertions.assertEquals(ParseTree.create("S2", "B"), parserWithOtherStart.parse("B"));
     }
@@ -624,7 +624,7 @@ class AlphaTest {
         Assertions.assertEquals(ParseTree.create("S1", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());
 
-        var opts = Alpha.ParsingOptions.getDefault().withStart("S2");
+        var opts = Alpha.ParsingOptions.getDefault().withStart(Sym.sym("S2"));
         Assertions.assertTrue(p.parse("A", opts).isFailure());
         Assertions.assertEquals(ParseTree.create("S2", "B"), p.parse("B", opts));
     }

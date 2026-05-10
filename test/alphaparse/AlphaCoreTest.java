@@ -207,7 +207,7 @@ class AlphaCoreTest {
                     <A> = '='*
                     B = 'b' '='
                     """,
-            Alpha.ParserCreationOptions.getDefault().withStartProduction("S")
+            Alpha.ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))
     );
 
     final @NotNull Parser whitespace = Alpha.parser(
@@ -280,7 +280,7 @@ class AlphaCoreTest {
                     <ConstExpr> = Int | Double;
                     Input = ConstExpr <ws> ConstExpr;
                     """,
-            Alpha.ParserCreationOptions.getDefault().withStartProduction("Input"));
+            Alpha.ParserCreationOptions.getDefault().withStartProduction(Sym.sym("Input")));
 
     final @NotNull Parser case_insensitive_regexp = Alpha.parser(
             """
@@ -347,11 +347,11 @@ class AlphaCoreTest {
                 ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a", "a"), ParseTree.create("B", "b", "b", "b")),
                 ParseTree.create("AB", ParseTree.create("A", "a", "a", "a", "a"), ParseTree.create("B", "b", "b"))
         );
-        var abTag = ("AB");
-        var aTag = ("A");
-        var bTag = ("B");
+        var abTag = Sym.sym("AB");
+        var aTag = Sym.sym("A");
+        var bTag = Sym.sym("B");
         final @NotNull List<Object> treeHiccup = List.of(
-                ("S"),
+                Sym.sym("S"),
                 List.of(abTag, List.of(aTag, "a", "a", "a", "a", "a"), List.of(bTag, "b", "b", "b")),
                 List.of(abTag, List.of(aTag, "a", "a", "a", "a"), List.of(bTag, "b", "b"))
         );
@@ -399,7 +399,7 @@ class AlphaCoreTest {
                 "S",
                 "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
         var resList = List.of(
-                "S",
+                Sym.sym("S"),
                 "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b");
 
         Assertions.assertEquals(
@@ -477,7 +477,7 @@ class AlphaCoreTest {
         // Sadly, AlphaParse can not output untagged trees.
         // The expected result for Instaparse is as follows:
         //    (paren-ab-hide-both-tags "(aba)") ;=> ("a" "b" "a")
-        var tree = ParseTree.create(ParseTree.NULL_TAG, "a", "b", "a");
+        var tree = ParseTree.create(ParseTree.NULL_TAG.name(), "a", "b", "a");
 
         // That raw output can be achieved by manual conversion:
         Assertions.assertEquals(List.of("a", "b", "a"), tree.hiccup());
@@ -915,7 +915,7 @@ class AlphaCoreTest {
         var tree = ParseTree.create(
                 "Aeater",
                 "a", "a", "a", "a", "a", "a", "a", "a",
-                new ParseFailureNode("bbbbbb", "failure", 8, 14)
+                new ParseFailureNode("bbbbbb", Sym.sym("failure"), 8, 14)
         );
 
         final @NotNull Parser p = eat_a;
@@ -983,7 +983,7 @@ class AlphaCoreTest {
                 ParseTree.create("S",
                         new ParseFailureNode(
                                 "AaaAaa",
-                                "failure",
+                                Sym.sym("failure"),
                                 0, 6)),
                 p.parse("AaaAaa", opts)
         );
@@ -1008,7 +1008,7 @@ class AlphaCoreTest {
                 ParseTree.create("S",
                         new ParseFailureNode(
                                 "AaaAaa",
-                                "failure",
+                                Sym.sym("failure"),
                                 0, 6)),
                 p.parse("AaaAaa", opts)
         );

@@ -1,5 +1,6 @@
 package alphaparse.result;
 
+import alphaparse.Sym;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,10 +43,10 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
      *
      * @param content The inner object.
      */
-    record NodeTreeTag(@NotNull String content) implements Node {
+    record NodeTreeTag(@NotNull Sym content) implements Node {
         @Override
         public @NotNull String toString() {
-            return ":"+content();
+            return content().toString();
         }
     }
 

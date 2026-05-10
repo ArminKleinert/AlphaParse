@@ -52,7 +52,7 @@ final class Cfg {
         return combinatorFactory.repetitionCombinator(min, max, repeatedRule);
     }
 
-    private static @NotNull Map.Entry<@NotNull String, @NotNull Combinator> buildRuleRule(
+    private static @NotNull Map.Entry<@NotNull Sym, @NotNull Combinator> buildRuleRule(
             final @NotNull ParseTree tree,
             final @NotNull CombinatorFactory combinatorFactory,
             final @NotNull Alpha.ParserCreationOptions options) {
@@ -61,15 +61,15 @@ final class Cfg {
         final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
         @NotNull var content = nt.getContent().getFirst();
 
-        final @NotNull String key;
+        final @NotNull Sym key;
         final @NotNull Combinator rule;
 
-        if (Objects.equals("hide-nt", nt.getTag().content())) {
+        if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
-            key = content.toString();
+            key = Sym.sym(content.toString());
             rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd, combinatorFactory, options));
         } else {
-            key = (String) content.content();
+            key = Sym.sym((String)content.content());
             rule = (Combinator) buildRule(altOrOrd, combinatorFactory, options);
         }
 
@@ -85,14 +85,14 @@ final class Cfg {
                 continue;
             }
 
-            final @NotNull var tag = tree.getTag().content();
+            final @NotNull var tag = tree.getTag().content().name();
             switch (tag) {
                 case "rule" -> {
                     return buildRuleRule(tree, combinatorFactory, options);
                 }
                 case "nt" -> {
                     return combinatorFactory.makeNonTerminal(
-                            (String) tree.getContent().getFirst().content());
+                            Sym.sym((String) tree.getContent().getFirst().content()));
                 }
                 case "alt" -> {
                     return combinatorFactory.choiceCombinator(tree.getContent()
@@ -217,13 +217,13 @@ final class Cfg {
                                        final @NotNull Grammar grammarGrammar) {
         final @NotNull var rules = Gll.parse(
                 grammarGrammar,
-                "rules",
+                Sym.sym("rules"),
                 spec, false);
         if (rules instanceof AlphaParseFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }
 
-        final @NotNull var productions = new ArrayList<Map.Entry<String, Combinator>>();
+        final @NotNull var productions = new ArrayList<Map.Entry<Sym, Combinator>>();
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(
                 options.useParserBuffering());
 

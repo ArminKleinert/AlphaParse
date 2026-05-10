@@ -1,6 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.Alpha;
+import alphaparse.Sym;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -297,7 +298,7 @@ public final class CombinatorFactory {
      * @param keyword The name of the non-terminal.
      * @return The new parser.
      */
-    public @NotNull NonTerminalCombinator makeNonTerminal(final @NotNull String keyword) {
+    public @NotNull NonTerminalCombinator makeNonTerminal(final @NotNull Sym keyword) {
         final @NotNull var result = new NonTerminalCombinator(keyword);
         if (!useBuffer) return result;
         assert buffer != null; // Only does something in debug-mode. But I know it's correct.
@@ -310,7 +311,7 @@ public final class CombinatorFactory {
      * @param keyword The name of the non-terminal.
      * @return The new parser.
      */
-    public static @NotNull NonTerminalCombinator staticMakeNonTerminal(final @NotNull String keyword) {
+    public static @NotNull NonTerminalCombinator staticMakeNonTerminal(final @NotNull Sym keyword) {
         return new NonTerminalCombinator(keyword);
     }
 
@@ -365,7 +366,7 @@ public final class CombinatorFactory {
      * @see Alpha.ParsingOptions#getUnhide()
      */
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
-        final @NotNull LinkedHashMap<String, Combinator> res = new LinkedHashMap<>();
+        final @NotNull LinkedHashMap<Sym, Combinator> res = new LinkedHashMap<>();
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
@@ -383,7 +384,7 @@ public final class CombinatorFactory {
      * @return The new grammar.
      */
     public @NotNull Grammar unhideTags(final @NotNull Grammar grammar) {
-        final @NotNull LinkedHashMap<String, Combinator> res = new LinkedHashMap<>();
+        final @NotNull LinkedHashMap<Sym, Combinator> res = new LinkedHashMap<>();
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
@@ -403,7 +404,7 @@ public final class CombinatorFactory {
      * @return The new grammar.
      */
     public @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
-        final @NotNull LinkedHashMap<String, Combinator> res = new LinkedHashMap<>();
+        final @NotNull LinkedHashMap<Sym, Combinator> res = new LinkedHashMap<>();
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
@@ -457,12 +458,12 @@ public final class CombinatorFactory {
      * @return The new grammar.
      */
     public @NotNull Grammar autoWhitespace(final @NotNull Grammar grammar,
-                                           final @NotNull String start,
+                                           final @NotNull Sym start,
                                            final @NotNull Grammar grammarWS,
-                                           final @NotNull String startWS) {
+                                           final @NotNull Sym startWS) {
         final @NotNull Combinator wsParser = optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
 
-        final @NotNull SequencedMap<@NotNull String, @NotNull Combinator> finalGrammar =
+        final @NotNull SequencedMap<@NotNull Sym, @NotNull Combinator> finalGrammar =
                 new LinkedHashMap<>(grammar);
         for (var keywordCombinatorEntry : finalGrammar.sequencedEntrySet()) {
             keywordCombinatorEntry.setValue(autoWhitespaceHelper(keywordCombinatorEntry.getValue(), wsParser));

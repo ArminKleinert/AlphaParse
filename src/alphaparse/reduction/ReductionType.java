@@ -1,5 +1,6 @@
 package alphaparse.reduction;
 
+import alphaparse.Sym;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,9 +8,9 @@ import java.util.Objects;
 
 /**
  * A class for output formats. This entire class might be removed in the future and replaced by an alternative {@link ParseTree} variant specifically for intermediate operations.
- * <p></p>
+ * <p>
  * Unlike Instaparse's output formats, this class has no relevance for the final output.
- * <p></p>
+ * <p>
  * None of this class's operations should be used by users of the library!
  */
 public final class ReductionType {
@@ -68,11 +69,11 @@ public final class ReductionType {
         TAGGED_PARSE_TREE
     }
 
-    private final @NotNull String key;
+    private final @NotNull Sym key;
     private final @NotNull ReductionTypesAvailable type;
     private final boolean hiddenOrRaw;
 
-    private ReductionType(final @NotNull String key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
+    private ReductionType(final @NotNull Sym key, final @NotNull ReductionTypesAvailable type, final boolean hiddenOrRaw) {
         this.key = key;
         this.type = type;
         this.hiddenOrRaw = hiddenOrRaw;
@@ -84,7 +85,7 @@ public final class ReductionType {
      * @param key The production's name.
      * @return A new output descriptor.
      */
-    public static @NotNull ReductionType defaultNonRawReduction(final @NotNull String key) {
+    public static @NotNull ReductionType defaultNonRawReduction(final @NotNull Sym key) {
         return new ReductionType(key, ReductionType.ReductionTypesAvailable.TAGGED_PARSE_TREE, false);
     }
 
@@ -94,7 +95,7 @@ public final class ReductionType {
      * @param key The production's name.
      * @return A new output descriptor.
      */
-    public static @NotNull ReductionType nonTerminalReduction(final @NotNull String key) {
+    public static @NotNull ReductionType nonTerminalReduction(final @NotNull Sym key) {
         return new ReductionType(key, ReductionTypesAvailable.TAGGED_PARSE_TREE, false);
     }
 
@@ -115,7 +116,7 @@ public final class ReductionType {
      *
      * @return The production key this output format is for.
      */
-    public @NotNull String getKey() {
+    public @NotNull Sym getKey() {
         return key;
     }
 

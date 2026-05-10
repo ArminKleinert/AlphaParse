@@ -2,6 +2,7 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+import alphaparse.Sym;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,9 +13,9 @@ import java.util.Objects;
  * This type represents non-terminals.
  */
 public final class NonTerminalCombinator extends Combinator {
-    private final @NotNull String keyword;
+    private final @NotNull Sym keyword;
 
-    private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull String keyword) {
+    private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Sym keyword) {
         super(hide, red);
         this.keyword = keyword;
     }
@@ -23,10 +24,10 @@ public final class NonTerminalCombinator extends Combinator {
      * Creates a new instance from a name. Instead of using this directly, use methods from {@link CombinatorFactory}.
      *
      * @param keyword The name.
-     * @see CombinatorFactory#makeNonTerminal(String)
-     * @see CombinatorFactory#staticMakeNonTerminal(String)
+     * @see CombinatorFactory#makeNonTerminal(Sym)
+     * @see CombinatorFactory#staticMakeNonTerminal(Sym)
      */
-    public NonTerminalCombinator(final @NotNull String keyword) {
+    public NonTerminalCombinator(final @NotNull Sym keyword) {
         super();
         this.keyword = keyword;
     }
@@ -36,7 +37,7 @@ public final class NonTerminalCombinator extends Combinator {
      *
      * @return The name.
      */
-    public @NotNull String getKeyword() {
+    public @NotNull Sym getKeyword() {
         return keyword;
     }
 

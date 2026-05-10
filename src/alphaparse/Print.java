@@ -109,7 +109,7 @@ public final class Print {
                 return "#\"" + terminalRegexpCombinator.getRegexp().pattern() + '"';
             }
             case NonTerminalCombinator nonTerminalCombinator -> {
-                return nonTerminalCombinator.getKeyword();
+                return nonTerminalCombinator.getKeyword().name();
             }
             case LookaheadCombinator lookaheadCombinator -> {
                 return "&" + parenForCompound(hidden, lookaheadCombinator.getParser());
@@ -120,7 +120,7 @@ public final class Print {
         }
     }
 
-    private static @NotNull String ruleToString(final @NotNull String startProd, final @NotNull Combinator parser) {
+    private static @NotNull String ruleToString(final @NotNull Sym startProd, final @NotNull Combinator parser) {
         final ReductionType red = parser.getReduction();
         if (red.isHiddenOrRaw())
             return "<" + startProd + '>' + " = " + combinatorToString(parser);
@@ -136,7 +136,7 @@ public final class Print {
      */
     public static @NotNull String parserToString(final @NotNull Parser p) {
         final @NotNull Grammar grammar = p.grammar();
-        final @NotNull String start = p.startProduction();
+        final @NotNull Sym start = p.startProduction();
 
         final @NotNull StringBuilder sb = new StringBuilder(
                 ruleToString(start, Objects.requireNonNull(grammar.getProduction(start))));

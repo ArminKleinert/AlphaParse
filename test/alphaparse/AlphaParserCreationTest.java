@@ -99,7 +99,7 @@ class AlphaParserCreationTest {
             // Error: Starting symbol not in grammar
             final @NotNull var grammar = "S : 'abc'";
             final @NotNull var options = new Alpha.ParserCreationOptions(
-                    null, "C",
+                    null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null);
             Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser(grammar, options));
@@ -107,8 +107,8 @@ class AlphaParserCreationTest {
         {
             // Error: No start symbol provided
             final @NotNull var grammar = new Grammar(Map.of(
-                    "S", EpsilonCombinator.getDefault(),
-                    "A", EpsilonCombinator.getDefault()
+                    Sym.sym("S"), EpsilonCombinator.getDefault(),
+                    Sym.sym("A"), EpsilonCombinator.getDefault()
             ));
             Assertions.assertThrows(IllegalArgumentException.class, () ->
                     Alpha.parser(grammar, Alpha.ParserCreationOptions.getDefault()));

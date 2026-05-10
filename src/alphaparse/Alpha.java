@@ -23,6 +23,11 @@ import java.util.Objects;
 public final class Alpha {
     private static Grammar bufferedEbnfGrammar = null;
 
+    /**
+     * Use this to keep the EBNF grammar in memory. Useful if many parsers are instantiated in a short time.
+     *
+     * @param setting Whether to keep the grammar in memory.
+     */
     public static void bufferEbnfGrammar(final boolean setting) {
         if (!setting) {
             bufferedEbnfGrammar = null;
@@ -46,7 +51,7 @@ public final class Alpha {
         };
     }
 
-    private static @NotNull String getStartProductionFromParserOrOptionsAndCheck(
+    private static @NotNull Sym getStartProductionFromParserOrOptionsAndCheck(
             final @NotNull ParsingOptions options,
             final @NotNull Parser parser) {
         final var startProduction = options.getStart();
@@ -316,7 +321,7 @@ public final class Alpha {
         /**
          * Default for the start production name of a parse operation. ({@code null})
          */
-        public static final @Nullable String DEFAULT_START = null;
+        public static final @Nullable Sym DEFAULT_START = null;
         /**
          * Default for the start production name of a parse operation. ({@code false})
          */
@@ -334,14 +339,14 @@ public final class Alpha {
          */
         public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
 
-        private final @Nullable String start;
+        private final @Nullable Sym start;
         private final boolean partial;
         private final @NotNull Alpha.UnhideOptions unhide;
         private final boolean total;
         private final boolean optimizeMemory;
 
         /**
-         * Calls {@link ParsingOptions#ParsingOptions(String, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
+         * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
          *
          * @return An instance of this class, using all the static DEFAULT_* values.
          * @see ParsingOptions#DEFAULT_START
@@ -368,7 +373,7 @@ public final class Alpha {
          * @see ParsingOptions#DEFAULT_TOTAL
          * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
          */
-        public ParsingOptions(final @Nullable String start,
+        public ParsingOptions(final @Nullable Sym start,
                               final boolean partial,
                               final @NotNull Alpha.UnhideOptions unhide,
                               final boolean total,
@@ -411,7 +416,7 @@ public final class Alpha {
          *
          * @return A keyword.
          */
-        public @Nullable String getStart() {
+        public @Nullable Sym getStart() {
             return start;
         }
 
@@ -534,7 +539,7 @@ public final class Alpha {
          * @see ParsingOptions#DEFAULT_START
          * @see ParsingOptions#getDefault()
          */
-        public @NotNull ParsingOptions withStart(final @Nullable String start) {
+        public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
             if (Objects.equals(this.start, start)) return this;
             return new ParsingOptions(start, partial, unhide, total, optimizeMemory);
         }
@@ -598,7 +603,7 @@ public final class Alpha {
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
-                                        @Nullable String startProduction,
+                                        @Nullable Sym startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         boolean useParserBuffering,
                                         @Nullable Grammar.RedefinitionOption redefinitionOption) {
@@ -631,7 +636,7 @@ public final class Alpha {
          * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
-                                     final @Nullable String startProduction,
+                                     final @Nullable Sym startProduction,
                                      final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
                                      final boolean useParserBuffering,
                                      final @Nullable Grammar.RedefinitionOption redefinitionOption) {
@@ -666,7 +671,7 @@ public final class Alpha {
          * @return A new instance.
          */
         public @NotNull ParserCreationOptions withStartProduction(
-                final @Nullable String startProduction) {
+                final @Nullable Sym startProduction) {
             if (Objects.equals(this.startProduction(), startProduction))
                 return this;
             return new ParserCreationOptions(
