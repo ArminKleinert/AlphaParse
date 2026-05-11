@@ -101,7 +101,8 @@ class AlphaParserCreationTest {
             final @NotNull var options = new Alpha.ParserCreationOptions(
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
-                    true, null);
+                    true, null,
+                    null);
             Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser(grammar, options));
         }
         {

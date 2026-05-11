@@ -122,11 +122,11 @@ final class Cfg {
                             StrParser.processString((String) tree.getContent().getFirst().content()),
                             false, combinatorFactory, options);
                 }
-                case "string-ci" -> {
-                    return stringOrStringCaseInsensitiveCombinator(
-                            StrParser.processString((String) tree.getContent().getFirst().content()),
-                            true, combinatorFactory, options);
-                }
+//                case "string-ci" -> {
+//                    return stringOrStringCaseInsensitiveCombinator(
+//                            StrParser.processString((String) tree.getContent().getFirst().content()),
+//                            true, combinatorFactory, options);
+//                }
                 case "regexp" -> {
                     return combinatorFactory.createRegexTerminal(
                             StrParser.processRegexp((String) tree.getContent().getFirst().content()));
@@ -144,7 +144,6 @@ final class Cfg {
                             (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
                 case "plus" -> {
-
                     return combinatorFactory.plusCombinator((Combinator) buildRule(
                             (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
                 }
@@ -164,13 +163,6 @@ final class Cfg {
                     continue; // Open up the grouping and take it to the top.
                 }
                 case "num-val" -> {
-                    /*
-                    The parse tree looks like this:
-                        [:num-val <"%"> "b"/"d"/"x" num1]
-                    or
-                        [:num-val <"%"> "b"/"d"/"x" num1 <"-"> num2]
-                    We can safely skip the "%" prefix and go to the inner parse tree.
-                     */
                     var content = tree.getContent();
                     var prefix = (String) content.get(0).content(); // "b"/"d"/"x"
                     final int radix = switch (prefix.charAt(0)) {

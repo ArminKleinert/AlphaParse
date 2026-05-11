@@ -1,9 +1,6 @@
 package alphaparse;
 
-import alphaparse.parser.CombinatorFactory;
-import alphaparse.parser.Grammar;
-import alphaparse.parser.Parser;
-import alphaparse.parser.Gll;
+import alphaparse.parser.*;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
@@ -16,6 +13,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Helpers for creating and using parsers.
@@ -32,7 +30,7 @@ public final class Alpha {
         if (!setting) {
             bufferedEbnfGrammar = null;
         } else if (bufferedEbnfGrammar == null) {
-            bufferedEbnfGrammar = EbnfG.makeCfg();
+            bufferedEbnfGrammar = EbnfG.makeCfg(ParserCreationOptions.getDefault());
         }
     }
 
@@ -243,7 +241,12 @@ public final class Alpha {
      */
     public static @NotNull Parser parser(final @NotNull String grammar,
                                          final @NotNull Alpha.ParserCreationOptions options) {
-        return Cfg.buildParser(grammar, options, bufferedEbnfGrammar == null ? EbnfG.makeCfg() : bufferedEbnfGrammar);
+        var grammarForParsingGrammar =
+                bufferedEbnfGrammar == null || options != ParserCreationOptions.getDefault()
+                        ? EbnfG.makeCfg(options)
+                        : bufferedEbnfGrammar;
+        return Cfg.buildParser(
+                grammar, options, grammarForParsingGrammar);
     }
 
     /**
@@ -323,7 +326,7 @@ public final class Alpha {
      * @param usePartial        Whether to return partial (incomplete) parses.
      * @param unhide         What (if anything) to "unhide" in the results.
      * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
-     * @param optimizeMemory Whether to attempt using more memory-efficient algorithms for parsing.
+     * @param optimizeMemory          Whether to attempt using more memory-efficient algorithms for parsing.
      * @see ParsingOptions#DEFAULT_START
      * @see ParsingOptions#DEFAULT_PARTIAL
      * @see ParsingOptions#DEFAULT_UNHIDE
@@ -593,7 +596,8 @@ public final class Alpha {
                                         @Nullable Sym startProduction,
                                         @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                         boolean useParserBuffering,
-                                        @Nullable Grammar.RedefinitionOption redefinitionOption) {
+                                        @Nullable Grammar.RedefinitionOption redefinitionOption,
+                                        @NotNull Set<RulesAvailable> usableRules) {
         private static final boolean defaultUseParserBuffering = true;
         private static ParserCreationOptions DEFAULT;
 
@@ -606,7 +610,7 @@ public final class Alpha {
             if (DEFAULT == null) {
                 DEFAULT = new ParserCreationOptions(
                         null, null, null,
-                        defaultUseParserBuffering, null);
+                        defaultUseParserBuffering, null, RulesAvailable.defaultRules());
             }
             return DEFAULT;
         }
@@ -624,7 +628,8 @@ public final class Alpha {
                                      final @Nullable Sym startProduction,
                                      final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
                                      final boolean useParserBuffering,
-                                     final @Nullable Grammar.RedefinitionOption redefinitionOption) {
+                                     final @Nullable Grammar.RedefinitionOption redefinitionOption,
+                                     final @Nullable Set<RulesAvailable> usableRules) {
             this.whitespaceParser = whitespaceParser;
             this.startProduction = startProduction;
             this.stringCaseInsensitive = stringCaseInsensitive == null
@@ -632,6 +637,9 @@ public final class Alpha {
                     : stringCaseInsensitive;
             this.useParserBuffering = useParserBuffering;
             this.redefinitionOption = redefinitionOption;
+            this.usableRules = usableRules == null
+                    ? RulesAvailable.defaultRules()
+                    : usableRules;
         }
 
         /**
@@ -646,7 +654,7 @@ public final class Alpha {
                 return this;
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive,
-                    defaultUseParserBuffering, redefinitionOption);
+                    defaultUseParserBuffering, redefinitionOption, usableRules);
         }
 
         /**
@@ -661,7 +669,7 @@ public final class Alpha {
                 return this;
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive,
-                    defaultUseParserBuffering, redefinitionOption);
+                    defaultUseParserBuffering, redefinitionOption, usableRules);
         }
 
         /**
@@ -676,7 +684,7 @@ public final class Alpha {
                 return this;
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive,
-                    defaultUseParserBuffering, redefinitionOption);
+                    defaultUseParserBuffering, redefinitionOption, usableRules);
         }
 
         /**
@@ -703,7 +711,7 @@ public final class Alpha {
                 final Grammar.RedefinitionOption redefinitionOption) {
             return new ParserCreationOptions(
                     whitespaceParser, startProduction, stringCaseInsensitive,
-                    defaultUseParserBuffering, redefinitionOption);
+                    defaultUseParserBuffering, redefinitionOption, usableRules);
         }
 
         /**
