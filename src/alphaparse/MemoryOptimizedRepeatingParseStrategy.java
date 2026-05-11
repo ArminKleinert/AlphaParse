@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-final class Repeat {
+final class MemoryOptimizedRepeatingParseStrategy {
     public static AlphaParseFailure failureSignal = new AlphaParseFailure(-1, new ArrayList<>());
 
     private static boolean isEmptyResult(final @NotNull Object result) {

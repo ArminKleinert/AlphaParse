@@ -92,7 +92,9 @@ public final class Alpha {
             parsingResult = AlphaParseResult.make(
                     Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false));
         } else if (options.optimizeMemory()) {
-            @NotNull var result = Repeat.tryRepeatingParseStrategy(parser, text, startProduction);
+            @NotNull var result =
+                    MemoryOptimizedRepeatingParseStrategy.tryRepeatingParseStrategy(
+                            parser, text, startProduction);
             if (result instanceof AlphaParseFailure)
                 result = Gll.parse(parser.grammar(), startProduction, text, false);
             parsingResult = AlphaParseResult.make(result);
