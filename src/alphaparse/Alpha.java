@@ -591,6 +591,7 @@ public final class Alpha {
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
      * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
+     * @param usableRules A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
      */
     public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                         @Nullable Sym startProduction,
@@ -623,6 +624,7 @@ public final class Alpha {
          * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
          * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
          * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
+         * @param usableRules A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
          */
         public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                      final @Nullable Sym startProduction,

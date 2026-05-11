@@ -191,7 +191,7 @@ final class EbnfG {
 
     private @NotNull Combinator makeCfgNtRhs() {
         final var pattern = "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]+";
-        final var regex = regexDoc("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]+", "Non-terminal");
+        final var regex = regexDoc(pattern, "Non-terminal");
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(cListOf(
                         cf.negateRule(
