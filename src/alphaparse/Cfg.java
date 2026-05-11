@@ -219,6 +219,12 @@ final class Cfg {
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(
                 options.useParserBuffering());
 
+        if (options.usableRules().contains(RulesAvailable.ABNF_CORE)){
+            var abnfCore = EbnfG.makeAbnfCoreRules();
+            productions.addAll(abnfCore);
+        }
+
+
         for (final Node rule : rules.castToParseSuccess().getContent()) {
             productions.add(buildRuleRule((ParseTree) rule.content(), combinatorFactory, options));
         }

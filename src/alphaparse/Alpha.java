@@ -611,7 +611,7 @@ public final class Alpha {
             if (DEFAULT == null) {
                 DEFAULT = new ParserCreationOptions(
                         null, null, null,
-                        defaultUseParserBuffering, null, RulesAvailable.defaultRules());
+                        defaultUseParserBuffering, null, null);
             }
             return DEFAULT;
         }

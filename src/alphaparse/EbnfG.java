@@ -33,9 +33,32 @@ final class EbnfG {
         return rulesAvailable.contains(ra) ? cf.makeNonTerminal(Sym.sym(symString)) : null;
     }
 
-    private @Nullable Combinator make(
-            final @NotNull RulesAvailable rule, final @NotNull Supplier<@NotNull Combinator> combinatorSupplier) {
-        return rulesAvailable.contains(rule) ? combinatorSupplier.get() : null;
+    /*These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
+     */
+    static @NotNull List<Map.Entry<Sym, Combinator>> makeAbnfCoreRules() {
+        final @NotNull CombinatorFactory cf = new CombinatorFactory(false);
+        var CRLF = cf.stringTerminal("\r\n");
+        var WSP = cf.createRegexTerminal(Pattern.compile("[\\u0020\\u0009]"));
+
+        final @NotNull List<Map.Entry<Sym, Combinator>> m = List.of(
+                Map.entry(Sym.sym("ALPHA"), cf.createRegexTerminal(Pattern.compile("[a-zA-Z]"))),
+                Map.entry(Sym.sym("BIT"), cf.createRegexTerminal(Pattern.compile("[01]"))),
+                Map.entry(Sym.sym("CHAR"), cf.createRegexTerminal(Pattern.compile("[\\u0001-\\u007F]"))),
+                Map.entry(Sym.sym("CR"), cf.stringTerminal("\r")),
+                Map.entry(Sym.sym("CRLF"), CRLF),
+                Map.entry(Sym.sym("CTL"), cf.createRegexTerminal(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
+                Map.entry(Sym.sym("DIGIT"), cf.createRegexTerminal(Pattern.compile("[0-9]"))),
+                Map.entry(Sym.sym("DQUOTE"), cf.stringTerminal("\"")),
+                Map.entry(Sym.sym("HEXDIG"), cf.createRegexTerminal(Pattern.compile("[0-9a-fA-F]"))),
+                Map.entry(Sym.sym("HTAB"), cf.createRegexTerminal(Pattern.compile("\t"))),
+                Map.entry(Sym.sym("LF"), cf.createRegexTerminal(Pattern.compile("\n"))),
+                Map.entry(Sym.sym("LWSP"), cf.starCombinator(cf.choiceCombinator(List.of(WSP, cf.catCombinator(List.of(CRLF, WSP)))))),
+                Map.entry(Sym.sym("OCTET"), cf.createRegexTerminal(Pattern.compile("[\\u0000-\\u00FF]"))),
+                Map.entry(Sym.sym("SP"), cf.stringTerminal(" ")),
+                Map.entry(Sym.sym("VCHAR"), cf.createRegexTerminal(Pattern.compile("[\\u0021-\\u007E]"))),
+                Map.entry(Sym.sym("WSP"), WSP)
+        );
+        return m;
     }
 
     private @NotNull Pattern regexDoc(final @NotNull String patternString, final @NotNull String comment) {
