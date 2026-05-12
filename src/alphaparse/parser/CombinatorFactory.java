@@ -1,6 +1,8 @@
 package alphaparse.parser;
 
-import alphaparse.Alpha;
+import alphaparse.grammar.Grammar;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.Sym;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -363,7 +365,7 @@ public final class CombinatorFactory {
      *
      * @param grammar The grammar.
      * @return The new grammar.
-     * @see Alpha.ParsingOptions#unhide()
+     * @see ParsingOptions#unhide()
      */
     public @NotNull Grammar unhideAllContent(final @NotNull Grammar grammar) {
         final @NotNull LinkedHashMap<Sym, Combinator> res = new LinkedHashMap<>();
@@ -449,7 +451,7 @@ public final class CombinatorFactory {
 
     /**
      * Merges another grammar into this grammar which eats whitespaces (at least that is the intended purpose).
-     * This method should not be used directly. Use {@link alphaparse.Alpha.ParserCreationOptions#withWhitespaceParser} or set the option in the {@link alphaparse.Alpha.ParserCreationOptions} instead when creating a parser.
+     * This method should not be used directly. Use {@link ParserCreationOptions#withWhitespaceParser} or set the option in the {@link ParserCreationOptions} instead when creating a parser.
      *
      * @param grammar   The main grammar.
      * @param start     The starting symbol of the main grammar.

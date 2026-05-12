@@ -1,7 +1,9 @@
 package alphaparse;
 
-import alphaparse.parser.Grammar;
+import alphaparse.grammar.Grammar;
 import alphaparse.parser.EpsilonCombinator;
+import alphaparse.parser_options.GlobalCaseInsensitivity;
+import alphaparse.parser_options.ParserCreationOptions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -58,10 +60,10 @@ class AlphaParserCreationTest {
             final @NotNull var grammarFile = new File("grammars/c99.g");
             final @NotNull var pFromString = Alpha.parser(
                     Files.readString(grammarFile.toPath()),
-                    Alpha.ParserCreationOptions.newWithStandardWhitespace());
+                    ParserCreationOptions.newWithStandardWhitespace());
             final @NotNull var pFromFile = Alpha.parser(
                     Files.readString(grammarFile.toPath()),
-                    Alpha.ParserCreationOptions.newWithStandardWhitespace());
+                    ParserCreationOptions.newWithStandardWhitespace());
             final @NotNull var text = "void a(){}";
             Assertions.assertEquals(pFromString.parses(text), pFromFile.parses(text));
             Assertions.assertEquals(pFromString, pFromFile);
@@ -98,7 +100,7 @@ class AlphaParserCreationTest {
         {
             // Error: Starting symbol not in grammar
             final @NotNull var grammar = "S : 'abc'";
-            final @NotNull var options = new Alpha.ParserCreationOptions(
+            final @NotNull var options = new ParserCreationOptions(
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null,
@@ -112,7 +114,7 @@ class AlphaParserCreationTest {
                     Sym.sym("A"), EpsilonCombinator.getDefault()
             ));
             Assertions.assertThrows(IllegalArgumentException.class, () ->
-                    Alpha.parser(grammar, Alpha.ParserCreationOptions.getDefault()));
+                    Alpha.parser(grammar, ParserCreationOptions.getDefault()));
         }
     }
 

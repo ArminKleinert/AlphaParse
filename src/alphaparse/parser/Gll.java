@@ -1,6 +1,8 @@
 package alphaparse.parser;
 
 import alphaparse.Alpha;
+import alphaparse.grammar.Grammar;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.Sym;
 import alphaparse.functions.Listener;
 import alphaparse.functions.NegativeListener;
@@ -177,7 +179,7 @@ public final class Gll {
     /**
      * Pushes a result into the trampoline's node.
      * Categorizes as either result or full result.
-     * Schedules notification to all existing listeners of result
+     * Schedules notification to all existing listeners of result.
      * (Full listeners only get notified about full results)
      */
     private void pushResult(
@@ -277,7 +279,7 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parses(Parser, String)} or {@link Alpha#parses(Parser, String, Alpha.ParsingOptions)} instead.
+     * This method should not be called directly. Use {@link Alpha#parses(Parser, String)} or {@link Alpha#parses(Parser, String, ParsingOptions)} instead.
      *
      * @param grammar The grammar.
      * @param start   The name of the start production.
@@ -285,7 +287,7 @@ public final class Gll {
      * @param partial Whether to include partial results.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String)
-     * @see Alpha#parse(Parser, String, Alpha.ParsingOptions)
+     * @see Alpha#parse(Parser, String, ParsingOptions)
      */
     public static @NotNull AlphaParsesResult parses(
             final @NotNull Grammar grammar,
@@ -301,14 +303,14 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parsesOrFailure(Parser, String, Alpha.ParsingOptions)} instead.
+     * This method should not be called directly. Use {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)} instead.
      *
      * @param grammar The grammar.
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
      * @return The parse forest or failure.
-     * @see Alpha#parsesOrFailure(Parser, String, Alpha.ParsingOptions)
+     * @see Alpha#parsesOrFailure(Parser, String, ParsingOptions)
      */
     public static @NotNull AlphaParsesResult parsesOrFailure(
             final @NotNull Grammar grammar,
@@ -330,7 +332,7 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parse(Parser, String)} or {@link Alpha#parse(Parser, String, Alpha.ParsingOptions)} instead.
+     * This method should not be called directly. Use {@link Alpha#parse(Parser, String)} or {@link Alpha#parse(Parser, String, ParsingOptions)} instead.
      *
      * @param grammar The grammar.
      * @param start   The name of the start production.
@@ -338,7 +340,7 @@ public final class Gll {
      * @param partial Whether to include partial results.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String)
-     * @see Alpha#parse(Parser, String, Alpha.ParsingOptions)
+     * @see Alpha#parse(Parser, String, ParsingOptions)
      */
     public static @NotNull AlphaParseResult parse(
             final @NotNull Grammar grammar,
@@ -359,15 +361,15 @@ public final class Gll {
     }
 
     /**
-     * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, Alpha.ParsingOptions)} with {@link Alpha.ParsingOptions#isTotal()} set to true instead.
+     * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, ParsingOptions)} with {@link ParsingOptions#isTotal()} set to true instead.
      *
      * @param grammar The grammar.
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
      * @return The parse forest.
-     * @see Alpha#parses(Parser, String, Alpha.ParsingOptions)
-     * @see Alpha.ParsingOptions#isTotal()
+     * @see Alpha#parses(Parser, String, ParsingOptions)
+     * @see ParsingOptions#isTotal()
      */
     public static @NotNull AlphaParsesResult parsesTotal(
             final @NotNull Grammar grammar,
@@ -396,15 +398,15 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parse(Parser, String, Alpha.ParsingOptions)} with {@link Alpha.ParsingOptions#isTotal()} set to true instead.
+     * This method should not be called directly. Use {@link Alpha#parse(Parser, String, ParsingOptions)} with {@link ParsingOptions#isTotal()} set to true instead.
      *
      * @param grammar The grammar.
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
      * @return The parse tree or failure.
-     * @see Alpha#parse(Parser, String, Alpha.ParsingOptions)
-     * @see Alpha.ParsingOptions#isTotal()
+     * @see Alpha#parse(Parser, String, ParsingOptions)
+     * @see ParsingOptions#isTotal()
      */
     public static @NotNull AlphaParseResult parseTotal(
             final @NotNull Grammar grammar,

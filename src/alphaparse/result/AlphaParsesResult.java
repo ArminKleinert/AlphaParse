@@ -1,6 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.Alpha;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.list.LazySupplierList;
 import alphaparse.list.PretenderList;
 import alphaparse.parser.Parser;
@@ -87,7 +88,7 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     * This class is used for {@link Alpha#parsesOrFailure(Parser, String, Alpha.ParsingOptions)} to represent the failure.
+     * This class is used for {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)} to represent the failure.
      */
     final class ParsesFailureResult implements AlphaParsesResult, PretenderList<ParseTree> {
         final @NotNull AlphaParseFailure alphaParseFailure;

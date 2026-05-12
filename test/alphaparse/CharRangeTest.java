@@ -1,19 +1,16 @@
 package alphaparse;
 
-import alphaparse.parser.RulesAvailable;
+import alphaparse.parser_options.RulesAvailable;
+import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
 import alphaparse.util.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 class CharRangeTest {
     
-    private final Alpha.ParserCreationOptions options =
-         new Alpha.ParserCreationOptions(
+    private final ParserCreationOptions options =
+         new ParserCreationOptions(
              null,null,null,false,null,
                 Utils.cons(RulesAvailable.defaultRules(), RulesAvailable.CHAR_RANGE));
     

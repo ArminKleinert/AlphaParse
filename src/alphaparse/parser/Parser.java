@@ -1,6 +1,8 @@
 package alphaparse.parser;
 
 import alphaparse.*;
+import alphaparse.grammar.Grammar;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +33,7 @@ public record Parser(@NotNull Grammar grammar,
     }
 
     /**
-     * Same as {@link Alpha#parse(Parser, String, Alpha.ParsingOptions)} using {@code this} as the parser.
+     * Same as {@link Alpha#parse(Parser, String, ParsingOptions)} using {@code this} as the parser.
      *
      * @param text    The text.
      * @param options The options for the parse operation.
@@ -39,7 +41,7 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parse(Parser, String)
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text,
-                                           final @NotNull Alpha.ParsingOptions options) {
+                                           final @NotNull ParsingOptions options) {
         return Alpha.parse(this, text, options);
     }
 
@@ -51,19 +53,19 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parse(Parser, String)
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text) {
-        return Alpha.parse(this, text, Alpha.ParsingOptions.getDefault());
+        return Alpha.parse(this, text, ParsingOptions.getDefault());
     }
 
     /**
-     * Same as {@link Alpha#parses(Parser, String, Alpha.ParsingOptions)} using {@code this} as the parser.
+     * Same as {@link Alpha#parses(Parser, String, ParsingOptions)} using {@code this} as the parser.
      *
      * @param text    The text.
      * @param options The options for the parse operation.
      * @return The parse forest or error, as needed.
-     * @see Alpha#parses(Parser, String, alphaparse.Alpha.ParsingOptions)
+     * @see Alpha#parses(Parser, String, ParsingOptions)
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text,
-                                             final @NotNull Alpha.ParsingOptions options) {
+                                             final @NotNull ParsingOptions options) {
         return Alpha.parses(this, text, options);
     }
 
@@ -75,7 +77,7 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parses(Parser, String)
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text) {
-        return Alpha.parses(this, text, Alpha.ParsingOptions.getDefault());
+        return Alpha.parses(this, text, ParsingOptions.getDefault());
     }
 
     /**

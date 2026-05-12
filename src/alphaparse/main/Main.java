@@ -1,8 +1,10 @@
 package alphaparse.main;
 
-import alphaparse.Alpha;
-import alphaparse.GlobalCaseInsensitivity;
-import alphaparse.IO2;
+import alphaparse.*;
+import alphaparse.parser_options.GlobalCaseInsensitivity;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
+import alphaparse.parser_options.UnhideOptions;
 import alphaparse.result.AlphaParseFailure;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,16 +58,16 @@ final class Main {
         /**/
         {
             final @NotNull var p = Alpha.parser("S : 'ABC'");
-            IO2.println(Alpha.parses(p, "ABD", new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.content, true, false)));
-            IO2.println(Alpha.parsesOrFailure(p, "ABD", Alpha.ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
-            IO2.println(Alpha.parse(p, "ABD", Alpha.ParsingOptions.getDefault()).castToParseFailure().contentsToString());
+            IO2.println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.content, true, false)));
+            IO2.println(Alpha.parsesOrFailure(p, "ABD", ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
+            IO2.println(Alpha.parse(p, "ABD", ParsingOptions.getDefault()).castToParseFailure().contentsToString());
             IO2.println(Alpha.parses(p, "ABD"));
             IO2.println();
         }
 
         /**/
         {
-            final @NotNull var opts = new Alpha.ParserCreationOptions(
+            final @NotNull var opts = new ParserCreationOptions(
                     null,
                     null,
                     GlobalCaseInsensitivity.TRUE,
@@ -96,18 +98,18 @@ final class Main {
         /**/
         {
             final @NotNull var p = Alpha.parser("S : #'\\d'+");
-            IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
-            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(Alpha.parse(p, "11", ParsingOptions.optMemory()));
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", ParsingOptions.optMemory())).contentsToString());
             IO2.println();
         }
 
         /**/
         {
             final @NotNull var p = Alpha.parser("S : #'\\d'*");
-            IO2.println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
-            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
-            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
+            IO2.println(Alpha.parse(p, "11", ParsingOptions.optMemory()));
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a1", ParsingOptions.optMemory())).contentsToString());
+            IO2.println(((AlphaParseFailure) Alpha.parse(p, "a", ParsingOptions.optMemory())).contentsToString());
             IO2.println();
         }
 
@@ -140,9 +142,9 @@ final class Main {
             final @NotNull var p = Alpha.parser(grammar);
 
             IO2.println(Alpha.parses(p, text));
-            IO2.println(Alpha.parses(p, text, new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.none, true, false)));
-            IO2.println(Alpha.parses(p, text, new Alpha.ParsingOptions(null, true, Alpha.UnhideOptions.none, false, false)));
-            final @NotNull var commonParseOpts = new Alpha.ParsingOptions(null, true, Alpha.UnhideOptions.none, true, false);
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false)));
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false)));
+            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.none, true, false);
             IO2.println(Alpha.parses(p, "c", commonParseOpts));
             IO2.println(Alpha.parses(p, "c", commonParseOpts).getFirst().getClass());
             IO2.println(Alpha.parse(p, "c", commonParseOpts));
@@ -152,19 +154,19 @@ final class Main {
         {
             IO2.println("\n----------------------------------\n---        Other tests         ---\n----------------------------------");
 
-            @NotNull var p = Alpha.parser("S : '1' | '11' | '111' | '1111'", Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            @NotNull var p = Alpha.parser("S : '1' | '11' | '111' | '1111'", ParserCreationOptions.newWithStandardWhitespace());
             IO2.println(
-                    Alpha.parses(p, "11", new Alpha.ParsingOptions(null, true, Alpha.UnhideOptions.none, false, false))
+                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.none, false, false))
                             + " // Expect: [[:S, 11], [:S, 1]]");
-            IO2.println(Alpha.parses(p, "11111", new Alpha.ParsingOptions(null, true, Alpha.UnhideOptions.none, false, false))
+            IO2.println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.none, false, false))
                     + " // Expect: [[:S, 1111], [:S, 111], [:S, 11], [:S, 1]]");
 
-            p = Alpha.parser("S : #'\\d\\d[\\d]?'", Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            p = Alpha.parser("S : #'\\d\\d[\\d]?'", ParserCreationOptions.newWithStandardWhitespace());
             IO2.println(Alpha.parse(p, "11") + " // Expect: [:S, 11]");
             IO2.println(Alpha.parse(p, "111") + " // Expect: [:S, 111]");
             IO2.println(Alpha.parse(p, "1111").castToParseFailure().contentsToString());
 
-            p = Alpha.parser("S : !'2' A*\n<A> : '1' | '2'", Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            p = Alpha.parser("S : !'2' A*\n<A> : '1' | '2'", ParserCreationOptions.newWithStandardWhitespace());
             IO2.println(Alpha.parse(p, "21").castToParseFailure().contentsToString());
             IO2.println(Alpha.parse(p, "11") + " // Expect: [:S, 1, 1]");
             IO2.println(Alpha.parse(p, "111") + " // Expect: [:S, 1, 1, 1]");
@@ -175,7 +177,7 @@ final class Main {
         {
             IO2.println("\n----------------------------------\n---  Failure attribute tests   ---\n----------------------------------");
 
-            final @NotNull var p = Alpha.parser("S : &'1' S S | '1'+", Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            final @NotNull var p = Alpha.parser("S : &'1' S S | '1'+", ParserCreationOptions.newWithStandardWhitespace());
             final @NotNull var parse = Alpha.parse(p, "112").castToParseFailure();
             final var failIndex = parse.index();
             final var failColumn = parse.column();
@@ -200,7 +202,7 @@ final class Main {
             {
                 final @NotNull var text = "int a(int r){return r;}int a(int r, int a){return r;}";
                 final var startTime = System.nanoTime();
-                final @NotNull var p = Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace());
+                final @NotNull var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
                 final @NotNull var parses = Alpha.parses(p, text).castToParsesSuccess().hiccup();
                 final var endTime = System.nanoTime();
 //                List<Object> old = (List<Object>) cljNestedVecChangeKeywordType(EdnReader.readString(
@@ -220,7 +222,7 @@ final class Main {
             {
                 final @NotNull var text = "struct test ttt;\nint a(int r){return \"\\\"\"|r(77)+1+0.9f+.8;}";
                 final var startTime = System.nanoTime();
-                final @NotNull var p = Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace());
+                final @NotNull var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
                 final @NotNull var parses = Alpha.parses(p, text).castToParsesSuccess().hiccup();
                 final var endTime = System.nanoTime();
 //                List<Object> old = (List<Object>) cljNestedVecChangeKeywordType(EdnReader.readString(
@@ -259,9 +261,9 @@ final class Main {
                     parses.castToParsesSuccess().hiccup(),
                     expected));
             IO2.println(parses + " // Expected: " + expected);
-            IO2.println(Alpha.parses(p, text, new Alpha.ParsingOptions(null, false, Alpha.UnhideOptions.none, true, false)) + " // Expected: " + expected);
-            IO2.println(Alpha.parses(p, text, new Alpha.ParsingOptions(null, true, Alpha.UnhideOptions.none, false, false)));
-            IO2.println(Alpha.parses(p, text, Alpha.ParsingOptions.optMemory()) + " // Expected: " + expected);
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false)) + " // Expected: " + expected);
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false)));
+            IO2.println(Alpha.parses(p, text, ParsingOptions.optMemory()) + " // Expected: " + expected);
         }
 
         /**/
@@ -270,7 +272,7 @@ final class Main {
             IO2.println("\n----------------------------------\n---      Big input test 1      ---\n----------------------------------");
 
             @NotNull String text = readFile("ctest1.c");
-            final @NotNull var p = Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            final @NotNull var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
             final var startTime = System.nanoTime();
             final @NotNull var c = Alpha.parse(p, text).castToParseSuccess();
             final var endTime = System.nanoTime();
@@ -288,7 +290,7 @@ final class Main {
             IO2.println("\n----------------------------------\n---      Big input test 2     ---\n----------------------------------");
 
             @NotNull String text = readFile("ctest.c");
-            final @NotNull var p = Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace());
+            final @NotNull var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
             final var startTime = System.nanoTime();
             final @NotNull var c = Alpha.parses(p, text);
             c.getFirst();

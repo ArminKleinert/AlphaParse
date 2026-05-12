@@ -1,19 +1,22 @@
 package alphaparse;
 
+import alphaparse.grammar.Grammar;
+import alphaparse.grammar.ProductionRedefinitionOption;
 import alphaparse.parser.*;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.RulesAvailable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 final class EbnfG {
     final @NotNull CombinatorFactory cf;
     final @NotNull Set<RulesAvailable> rulesAvailable;
-    final @NotNull Alpha.ParserCreationOptions options;
+    final @NotNull ParserCreationOptions options;
 
-    private EbnfG(final @NotNull Alpha.ParserCreationOptions options) {
+    private EbnfG(final @NotNull ParserCreationOptions options) {
         this.options = options;
         this.rulesAvailable = options.usableRules();
         this.cf = options.useParserBuffering()
@@ -155,8 +158,9 @@ final class EbnfG {
         l.add(cf.stringTerminal("="));
 
         // If redefinition via multiple production re-assignment is active, allow "=/" as an assignment operator.
-        if (Objects.equals(options.redefinitionOption(), Grammar.RedefinitionOption.CHOICE))
+        if (Objects.equals(options.productionRedefinitionOption(), ProductionRedefinitionOption.CHOICE)) {
             l.add(cf.stringTerminal("=/"));
+        }
 
         final @NotNull Combinator rulesRule = cf.choiceCombinator(l);
         return rulesRule;
@@ -185,15 +189,19 @@ final class EbnfG {
     }
 
     private @NotNull Combinator makeCfgStringRhs() {
-        final @NotNull Pattern singleQuotedString =
-                regexDoc("'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted string");
+        final @NotNull List<Combinator> stringRules = new ArrayList<>();
+
         final @NotNull Pattern doubleQuotedString =
                 regexDoc("\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted string");
-        final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
-                        cListOf(cf.createRegexTerminal(singleQuotedString),
-                                cf.createRegexTerminal(doubleQuotedString)));
-        return rulesRule;
+        stringRules.add(cf.createRegexTerminal(doubleQuotedString));
+
+        if (options.usableRules().contains(RulesAvailable.SINGLY_QUOTED)) {
+            final @NotNull Pattern singleQuotedString =
+                    regexDoc("'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted string");
+            stringRules.add(cf.createRegexTerminal(singleQuotedString));
+        }
+
+        return cf.choiceCombinator(stringRules);
     }
 
     private @NotNull Combinator makeCfgRegexRhs() {
@@ -295,15 +303,18 @@ final class EbnfG {
     }
 
     private @Nullable Combinator makeCfgAltOrOrdRhs() {
-        final var alt = makeNT("alt", RulesAvailable.CHOICE);
-        final var ord = makeNT("ord", RulesAvailable.ORDERED_CHOICE);
-        final var rules = cListOf(alt, ord);
+        List<Combinator> l = new ArrayList<>();
 
-        if (rules.isEmpty())
-            return null;
+        if (options.usableRules().contains(RulesAvailable.CHOICE))
+            l.add(cf.makeNonTerminal(Sym.sym("alt")));
+        if (options.usableRules().contains(RulesAvailable.ORDERED_CHOICE))
+            l.add(cf.makeNonTerminal(Sym.sym("ord")));
+
+        if (l.isEmpty())
+            l.add(cf.plusCombinator(cf.makeNonTerminal(Sym.sym("cat"))));
 
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(rules).hideTag();
+                cf.choiceCombinator(l).hideTag();
         return rulesRule;
     }
 
@@ -342,15 +353,16 @@ final class EbnfG {
     }
 
     private @NotNull Combinator makeCfgOrdRhs() {
+        final @NotNull Combinator catNt = cf.makeNonTerminal(Sym.sym("cat"));
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(
-                        cListOf(cf.makeNonTerminal(Sym.sym("cat")),
-                                cf.plusCombinator(
+                        cListOf(catNt,
+                                cf.starCombinator(
                                         cf.catCombinator(
                                                 cListOf(optWhitespace,
                                                         cf.stringTerminal("/").enableHideTag(),
                                                         optWhitespace,
-                                                        cf.makeNonTerminal(Sym.sym("cat")))))));
+                                                        catNt)))));
         return rulesRule;
     }
 
@@ -360,8 +372,7 @@ final class EbnfG {
                 cf.catCombinator(
                         cListOf(catNt,
                                 cf.starCombinator(cf.catCombinator(
-                                        cListOf(
-                                                optWhitespace,
+                                        cListOf(optWhitespace,
                                                 cf.stringTerminal("|").enableHideTag(),
                                                 optWhitespace,
                                                 catNt)))));
@@ -433,8 +444,12 @@ final class EbnfG {
         grammarMap.put(Sym.sym("factor"), makeCfgFactorRhs());
         grammarMap.put(Sym.sym("rules-or-parser"), makeCfgRulesOrParserRhs());
 
-        if (rulesAvailable.contains(RulesAvailable.CHOICE) || rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
-            grammarMap.put(Sym.sym("alt-or-ord"), makeCfgAltOrOrdRhs());
+        var temp = makeCfgAltOrOrdRhs();
+        if (temp != null)
+            grammarMap.put(Sym.sym("alt-or-ord"), temp);
+
+//        if (rulesAvailable.contains(RulesAvailable.CHOICE) || rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
+//            grammarMap.put(Sym.sym("alt-or-ord"), makeCfgAltOrOrdRhs());
 
         if (rulesAvailable.contains(RulesAvailable.CHOICE))
             grammarMap.put(Sym.sym("alt"), makeCfgAltRhs());
@@ -470,7 +485,7 @@ final class EbnfG {
     }
 
     @NotNull
-    static Grammar makeCfg(final @NotNull Alpha.ParserCreationOptions options) {
+    static Grammar makeCfg(final @NotNull ParserCreationOptions options) {
         final @NotNull EbnfG g = new EbnfG(options);
         return g.makeCfg();
     }

@@ -1,6 +1,9 @@
 package alphaparse;
 
+import alphaparse.grammar.Grammar;
 import alphaparse.parser.*;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 import alphaparse.result.AlphaParseFailure;
@@ -15,7 +18,7 @@ final class Cfg {
     private static @NotNull Combinator stringOrStringCaseInsensitiveCombinator(
             final @NotNull String s, final boolean caseInsensitiveByDefault,
             final @NotNull CombinatorFactory combinatorFactory,
-            final @NotNull Alpha.ParserCreationOptions options) {
+            final @NotNull ParserCreationOptions options) {
         return switch (options.stringCaseInsensitive()) {
             case TRUE -> combinatorFactory.stringOrStringCiTerminal(s, true);
             case FALSE -> combinatorFactory.stringOrStringCiTerminal(s, false);
@@ -25,7 +28,7 @@ final class Cfg {
 
     private static @NotNull Combinator buildRepRule(final @NotNull ParseTree tree,
                                                     final @NotNull CombinatorFactory combinatorFactory,
-                                                    final @NotNull Alpha.ParserCreationOptions options) {
+                                                    final @NotNull ParserCreationOptions options) {
         final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
         @NotNull var parts = partsUncut.split("\\*");
         if (parts.length == 0 || parts.length > 2) {
@@ -55,7 +58,7 @@ final class Cfg {
     private static @NotNull Map.Entry<@NotNull Sym, @NotNull Combinator> buildRuleRule(
             final @NotNull ParseTree tree,
             final @NotNull CombinatorFactory combinatorFactory,
-            final @NotNull Alpha.ParserCreationOptions options) {
+            final @NotNull ParserCreationOptions options) {
         final @NotNull var allContents = tree.getContent();
         final @NotNull var nt = (ParseTree) allContents.getFirst().content();
         final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
@@ -78,7 +81,7 @@ final class Cfg {
 
     private static @NotNull Object buildRule(@NotNull ParseTree tree,
                                              final @NotNull CombinatorFactory combinatorFactory,
-                                             final @NotNull Alpha.ParserCreationOptions options) {
+                                             final @NotNull ParserCreationOptions options) {
         for (; ; ) {
             if (tree.getTag().content().equals(ParseTree.NULL_TAG)) {
                 tree = (ParseTree) tree.getContent().getFirst().content();
@@ -122,11 +125,11 @@ final class Cfg {
                             StrParser.processString((String) tree.getContent().getFirst().content()),
                             false, combinatorFactory, options);
                 }
-//                case "string-ci" -> {
-//                    return stringOrStringCaseInsensitiveCombinator(
-//                            StrParser.processString((String) tree.getContent().getFirst().content()),
-//                            true, combinatorFactory, options);
-//                }
+                case "string-ci" -> {
+                    return stringOrStringCaseInsensitiveCombinator(
+                            StrParser.processString((String) tree.getContent().getFirst().content()),
+                            true, combinatorFactory, options);
+                }
                 case "regexp" -> {
                     return combinatorFactory.createRegexTerminal(
                             StrParser.processRegexp((String) tree.getContent().getFirst().content()));
@@ -196,7 +199,7 @@ final class Cfg {
     }
 
     static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammar,
-                                                      final @NotNull Alpha.ParserCreationOptions options) {
+                                                      final @NotNull ParserCreationOptions options) {
         if (options.startProduction() == null)
             throw new IllegalArgumentException("No start production provided.");
         return new Parser(
@@ -205,7 +208,7 @@ final class Cfg {
     }
 
     static @NotNull Parser buildParser(final @NotNull String spec,
-                                       final @NotNull Alpha.ParserCreationOptions options,
+                                       final @NotNull ParserCreationOptions options,
                                        final @NotNull Grammar grammarGrammar) {
         final @NotNull var rules = Gll.parse(
                 grammarGrammar,
@@ -219,12 +222,6 @@ final class Cfg {
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(
                 options.useParserBuffering());
 
-        if (options.usableRules().contains(RulesAvailable.ABNF_CORE)){
-            var abnfCore = EbnfG.makeAbnfCoreRules();
-            productions.addAll(abnfCore);
-        }
-
-
         for (final Node rule : rules.castToParseSuccess().getContent()) {
             productions.add(buildRuleRule((ParseTree) rule.content(), combinatorFactory, options));
         }
@@ -233,8 +230,13 @@ final class Cfg {
                 ? options.startProduction()
                 : productions.getFirst().getKey();
 
+        if (options.usableRules().contains(RulesAvailable.ABNF_CORE)){
+            var abnfCore = EbnfG.makeAbnfCoreRules();
+            productions.addAll(0, abnfCore);
+        }
+
         @NotNull var grammar = checkGrammarValidity(
-                Grammar.fromProductions(productions, options.redefinitionOption())
+                Grammar.fromProductions(productions, options.productionRedefinitionOption())
                         .applyStandardReductions(combinatorFactory));
 
         if (options.whitespaceParser() != null) {

@@ -1,6 +1,7 @@
 package alphaparse;
 
-import alphaparse.parser.Grammar;
+import alphaparse.grammar.ProductionRedefinitionOption;
+import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,9 @@ public class CombinatorExamplesTests {
             Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
             Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));
         }{
-            var opts = Alpha.ParserCreationOptions
+            var opts = ParserCreationOptions
                     .getDefault()
-                    .withRedefinitionOption(Grammar.RedefinitionOption.CHOICE);
+                    .withRedefinitionOption(ProductionRedefinitionOption.CHOICE);
             var p = Alpha.parser("""
                     S := 'a'
                     S =/ 'b'

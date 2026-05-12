@@ -1,5 +1,6 @@
 package alphaparse.parser;
 
+import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.reduction.ReductionType;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -24,7 +25,7 @@ import java.util.List;
  *}
  * </pre>
  *
- * Alternatively, the {@link alphaparse.Alpha.ParserCreationOptions} class allows an alternative notation for defining alternations:
+ * Alternatively, the {@link ParserCreationOptions} class allows an alternative notation for defining alternations:
  * <pre>
  *{@code
  *         var opts = Alpha.ParserCreationOptions

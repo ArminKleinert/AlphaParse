@@ -2,6 +2,8 @@ package alphaparse.main;
 
 import alphaparse.Alpha;
 import alphaparse.IO2;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.list.UnmodList;
 import alphaparse.result.ParseTree;
 import alphaparse.util.TimeUtil;
@@ -113,17 +115,17 @@ Count of parses: 4096
              */
 
         var text = "int a(int r){return r;}\n            int a(int r, int a){return r;}";
-        var p = Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace());
+        var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
 
         IO2.println("Preparing performance tests...");
         TimeUtil.measureTimeMillis(20,
-                () -> Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace()));
+                () -> Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace()));
         TimeUtil.measureTimeMillis(2000,
-                () -> Alpha.parse(p, text, Alpha.ParsingOptions.optMemory()));
+                () -> Alpha.parse(p, text, ParsingOptions.optMemory()));
 
         IO2.println("\n----------------------------------\n--- Standard performance tests ---\n----------------------------------");
         IO2.println("Make parser: " + TimeUtil.measureTimeMillis(2 * testNumMultiplierForSlowTests,
-                () -> Alpha.parser(c99GrammarText, Alpha.ParserCreationOptions.newWithStandardWhitespace())));
+                () -> Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace())));
         IO2.println("Previous:    {:lowest 57.658, :highest 103.016, :diff 45.358, :average 63.324, :mid 59.619, :median 61.341, :total 12664.708}");
         IO2.println("Previous 2:  {:lowest 49.696, :highest 72.810, :diff 23.114, :average 51.662, :mid 50.159, :median 50.327, :total 103323.969}");
         IO2.println("Original:    {:lowest 105.916, :highest 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000");
@@ -178,21 +180,21 @@ Count of parses: 4096
 
         IO2.println("\n----------------------------------\n---   Memory optimized tests   ---\n----------------------------------");
         IO2.println("First parse: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> Alpha.parse(p, text, Alpha.ParsingOptions.optMemory())));
+                () -> Alpha.parse(p, text, ParsingOptions.optMemory())));
         IO2.println("Std prev:    {:lowest 1.382, :highest 6.293, :diff 4.911, :average 1.520, :mid 1.443, :median 1.459, :total 30397.866}");
         IO2.println("Previous:    -");
         IO2.println("Original:    {:lowest 3.243, :highest 6.779, :diff 3.537, :average 3.300, :mid 3.284, :median 3.284, :sum 65992.776} // n=20000");
 
         IO2.println("---");
         IO2.println("All parses:  " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> Alpha.parses(p, text, Alpha.ParsingOptions.optMemory())));
+                () -> Alpha.parses(p, text, ParsingOptions.optMemory())));
         IO2.println("Std prev:    {:lowest 0.000, :highest 0.045, :diff 0.045, :average 0.001, :mid 0.001, :median 0.001, :total 15.080}");
         IO2.println("Previous:    -");
         IO2.println("Original:    {:lowest 3.238, :highest 6.909, :diff 3.671, :average 3.308, :mid 3.291, :median 3.291, :sum 66157.123} // n=20000");
 
         IO2.println("---");
         IO2.println("List parses: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> new UnmodList<>(Alpha.parses(p, text, Alpha.ParsingOptions.optMemory()))));
+                () -> new UnmodList<>(Alpha.parses(p, text, ParsingOptions.optMemory()))));
         IO2.println("Std prev:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}");
         IO2.println("Previous:    -");
         IO2.println("Original:    {:lowest 37.350, :highest 50.681, :diff 13.331, :average 38.118, :mid 37.937, :median 37.938, :sum 762350.525} // n=20000");
@@ -200,7 +202,7 @@ Count of parses: 4096
         IO2.println("---");
         IO2.println("Iteration:   " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
                 () -> {
-                    for (var ignored : Alpha.parses(p, text, Alpha.ParsingOptions.optMemory())) ;
+                    for (var ignored : Alpha.parses(p, text, ParsingOptions.optMemory())) ;
                 }));
         IO2.println("Std prev:    {:lowest 12.501, :highest 22.928, :diff 10.427, :average 13.509, :mid 12.809, :median 12.909, :total 27017.503}");
         IO2.println("Previous:    -");
@@ -210,7 +212,7 @@ Count of parses: 4096
         IO2.println("ArrayList:   " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
                 () -> {
                     var l = new ArrayList<ParseTree>(8192);
-                    l.addAll(Alpha.parses(p, text, Alpha.ParsingOptions.optMemory()));
+                    l.addAll(Alpha.parses(p, text, ParsingOptions.optMemory()));
                 }));
         IO2.println("Std prev:    {:lowest 12.480, :highest 26.343, :diff 13.862, :average 13.395, :mid 12.804, :median 12.850, :total 26790.117}");
         IO2.println("Previous:    -");
@@ -218,12 +220,12 @@ Count of parses: 4096
 
         IO2.println("---");
         IO2.println("Cnt parses:  " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                () -> Alpha.parses(p, text, Alpha.ParsingOptions.optMemory()).size()));
+                () -> Alpha.parses(p, text, ParsingOptions.optMemory()).size()));
         IO2.println("Std prev:    {:lowest 12.539, :highest 23.903, :diff 11.364, :average 13.446, :mid 12.850, :median 12.895, :total 26892.826}");
         IO2.println("Previous:    -");
         IO2.println("Original:    {:lowest 37.236, :highest 47.796, :diff 10.560, :average 38.009, :mid 37.836, :median 37.835, :sum 760184.764} // n=20000");
 
-        IO2.println("Count of parses: " + Alpha.parses(p, text, Alpha.ParsingOptions.optMemory()).size());
+        IO2.println("Count of parses: " + Alpha.parses(p, text, ParsingOptions.optMemory()).size());
     }
 
 

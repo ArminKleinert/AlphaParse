@@ -1,7 +1,7 @@
 package alphaparse.trampoline;
 
 import alphaparse.list.IntMap;
-import alphaparse.parser.Grammar;
+import alphaparse.grammar.Grammar;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
 import alphaparse.parser.TerminalStringCombinator;

@@ -1,5 +1,6 @@
-package alphaparse.parser;
+package alphaparse.parser_options;
 
+import alphaparse.parser.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -146,7 +147,7 @@ public enum RulesAvailable {
      * Rules that appear in EBNF.
      *
      * @return A set of rule types to allow when constructing a parser.
-     * @see alphaparse.Alpha.ParserCreationOptions
+     * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> ebnf() {
         return Set.of(
@@ -157,18 +158,20 @@ public enum RulesAvailable {
      * Rules that appear in ABNF.
      *
      * @return A set of rule types to allow when constructing a parser.
-     * @see alphaparse.Alpha.ParserCreationOptions
+     * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> abnf() {
         return Set.of(
-                REGEX, PLUS, CHAR_RANGE, ORDERED_CHOICE, ABNF_CORE, COUNTED_REPEAT, OPTIONAL);
+                REGEX, PLUS, CHAR_RANGE, ORDERED_CHOICE,
+                ABNF_CORE,
+                COUNTED_REPEAT, OPTIONAL);
     }
 
     /**
      * The standard set of rules that Alphaparse allows.
      *
      * @return A set of rule types to allow when constructing a parser.
-     * @see alphaparse.Alpha.ParserCreationOptions
+     * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> defaultRules() {
         return Set.of(

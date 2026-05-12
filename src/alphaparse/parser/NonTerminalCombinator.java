@@ -45,7 +45,7 @@ public final class NonTerminalCombinator extends Combinator {
     public void parse(final int index, final @NotNull Gll runner) {
         final @Nullable Combinator combinator = runner.tramp().getGrammar().getProduction(this.getKeyword());
         if (combinator == null)
-            throw new IllegalStateException("Cannot use non terminal. Should be checked when initializing parser.");
+            throw new IllegalStateException("Cannot use non terminal "+this.getKeyword()+ " Availability should be checked when initializing parser.");
         runner.pushListener(
                 new TrampolineListenerKey(index, combinator),
                 runner.nodeListener(new TrampolineListenerKey(index, this))
@@ -56,7 +56,7 @@ public final class NonTerminalCombinator extends Combinator {
     public void fullParse(final int index, final @NotNull Gll runner) {
         final @Nullable Combinator combinator = runner.tramp().getGrammar().getProduction(this.getKeyword());
         if (combinator == null)
-            throw new IllegalStateException("Cannot use non terminal. Should be checked when initializing parser.");
+            throw new IllegalStateException("Cannot use non terminal "+this.getKeyword()+ " Availability should be checked when initializing parser.");
         runner.pushFullListener(
                 new TrampolineListenerKey(index, combinator),
                 runner.nodeListener(new TrampolineListenerKey(index, this)));

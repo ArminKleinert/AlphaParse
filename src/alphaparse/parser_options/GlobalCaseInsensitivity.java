@@ -1,4 +1,4 @@
-package alphaparse;
+package alphaparse.parser_options;
 
 /**
  * Used for determining whether all string terminals should be made case-insensitive when parsing.
