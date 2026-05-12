@@ -16,6 +16,7 @@ public enum RulesAvailable {
      * @see TerminalRegexpCombinator
      */
     REGEX,
+
     /**
      * "Once or more" repetition.
      * <p>
@@ -24,6 +25,7 @@ public enum RulesAvailable {
      * @see PlusCombinator
      */
     PLUS,
+
     /**
      * "Alternation" or "choice" rule.
      * <p>
@@ -32,6 +34,7 @@ public enum RulesAvailable {
      * @see ChoiceCombinator
      */
     CHOICE,
+
     /**
      * "Zero or more" repetition.
      * <p>
@@ -40,12 +43,14 @@ public enum RulesAvailable {
      * @see CombinatorStar
      */
     STAR,
+
     /**
      * Empty or "end of input" rule. This rule can be inferred by Alphaparse and is thus optional.
      *
      * @see EpsilonCombinator
      */
     EPSILON,
+
     /**
      * "Lookahead" or "expect" rule.
      * <p>
@@ -56,6 +61,7 @@ public enum RulesAvailable {
      * @see LookaheadCombinator
      */
     LOOKAHEAD,
+
     /**
      * Negative lookahead.
      * <p>
@@ -66,12 +72,14 @@ public enum RulesAvailable {
      * @see NegativeLookaheadCombinator
      */
     NEGATIVE_LOOKAHEAD,
+
     /**
      * Singly quoted strings are technically not allowed by EBNF.
      *
      * @see TerminalStringCombinator
      */
     SINGLY_QUOTED,
+
     /**
      * ABNF char range.
      * <p>
@@ -80,6 +88,7 @@ public enum RulesAvailable {
      * @see TerminalUnicodeCharCombinator
      */
     CHAR_RANGE,
+
     /**
      * ABNF-style choice combinator '/' with the extension that the output should be ordered and deterministic.
      * <p>
@@ -88,6 +97,7 @@ public enum RulesAvailable {
      * @see OrderedChoiceCombinator
      */
     ORDERED_CHOICE,
+
     /**
      * "Zero or once" or "Optional" rule.
      * <p>
@@ -96,6 +106,7 @@ public enum RulesAvailable {
      * @see OptionalCombinator
      */
     OPTIONAL,
+
     /**
      * ABNF "Counted repetition" rule, notated by a star-prefix.
      * <p>
@@ -104,6 +115,7 @@ public enum RulesAvailable {
      * @see RepetitionCombinator
      */
     COUNTED_REPEAT,
+
     /**
      * Various ABNF rules.
      *

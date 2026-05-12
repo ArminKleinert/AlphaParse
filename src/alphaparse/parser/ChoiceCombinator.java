@@ -10,6 +10,36 @@ import java.util.List;
 
 /**
  * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Combinator}).
+ * <p>
+ * Notation: {@code rule1 | rule2}
+ *
+ * Example
+ * <pre>
+ *{@code
+ *         // Accepts the language {"a", "b", "ab"}
+ *         var p = Alpha.parser("S : 'a' | 'b' | 'ab'");
+ *         IO2.println(p.parse("a"));  // [:S, a]
+ *         IO2.println(p.parse("b"));  // [:S, b]
+ *         IO2.println(p.parse("ab")); // [:S, ab]
+ *}
+ * </pre>
+ *
+ * Alternatively, the {@link alphaparse.Alpha.ParserCreationOptions} class allows an alternative notation for defining alternations:
+ * <pre>
+ *{@code
+ *         var opts = Alpha.ParserCreationOptions
+ *                 .getDefault()
+ *                 .withRedefinitionOption(Grammar.RedefinitionOption.CHOICE);
+ *         var p = Alpha.parser("""
+ *                 S : 'a'
+ *                 S : 'b'
+ *                 S : 'ab'
+ *                 """, opts);
+ *         IO2.println(p.parse("a"));  // [:S, a]
+ *         IO2.println(p.parse("b"));  // [:S, b]
+ *         IO2.println(p.parse("ab")); // [:S, ab]
+ * }
+ * </pre>
  */
 public final class ChoiceCombinator extends CombinatorWithManyParsers {
     private ChoiceCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {

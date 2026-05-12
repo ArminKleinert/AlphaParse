@@ -148,12 +148,17 @@ final class EbnfG {
     }
 
     private @NotNull Combinator makeCfgRuleSeparatorRhs() {
-        final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
-                        cListOf(cf.stringTerminal(":"),
-                                cf.stringTerminal(":="),
-                                cf.stringTerminal("::="),
-                                cf.stringTerminal("=")));
+        final List<@NotNull Combinator> l = new ArrayList<>();
+        l.add(cf.stringTerminal(":"));
+        l.add(cf.stringTerminal(":="));
+        l.add(cf.stringTerminal("::="));
+        l.add(cf.stringTerminal("="));
+
+        // If redefinition via multiple production re-assignment is active, allow "=/" as an assignment operator.
+        if (Objects.equals(options.redefinitionOption(), Grammar.RedefinitionOption.CHOICE))
+            l.add(cf.stringTerminal("=/"));
+
+        final @NotNull Combinator rulesRule = cf.choiceCombinator(l);
         return rulesRule;
     }
 

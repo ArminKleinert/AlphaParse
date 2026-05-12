@@ -8,7 +8,9 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a production which repeatedly ties to match an input. E.g. {@code P*} matches zero or more.
+ * "Zero or more" repetition. Represents a production which repeatedly ties to match an input. E.g. {@code P*} matches zero or more.
+ * <p>
+ * Notation: {@code {rule}} or {@code rule*}
  */
 public final class CombinatorStar extends CombinatorWithParser {
     private CombinatorStar(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
