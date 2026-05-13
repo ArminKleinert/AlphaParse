@@ -232,35 +232,32 @@ public final class Gll {
 
     void success(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final Object result,
+            final @NotNull Object result,
             final int end) {
         pushResult(nodeKey, AlphaParseSuccess.create(end, result));
     }
 
     void success(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final @Nullable String result,
+            final @NotNull String result,
             final int end) {
         final @NotNull AlphaParseSuccess aps;
-        if (result == null) aps = AlphaParseSuccess.create(end, (Object)null);
-        else aps = AlphaParseSuccess.create(end, result);
+        aps = AlphaParseSuccess.create(end, result);
         pushResult(nodeKey, aps);
     }
 
-    void successNull(
+    void successWithoutValue(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final Object NULL,
             final int end) {
         pushResult(nodeKey, AlphaParseSuccess.create(end));
     }
 
     <T> void success(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final @Nullable FlatSeq<T> result,
+            final @NotNull FlatSeq<T> result,
             final int end) {
         final @NotNull AlphaParseSuccess aps;
-        if (result == null) aps = AlphaParseSuccess.create(end, (Object)null);
-        else aps = AlphaParseSuccess.create(end, result);
+        aps = AlphaParseSuccess.create(end, result);
         pushResult(nodeKey, aps);
     }
 

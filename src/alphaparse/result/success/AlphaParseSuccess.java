@@ -15,7 +15,7 @@ import java.util.*;
  */
 public sealed abstract class AlphaParseSuccess permits
         AlphaParseSuccessList,
-        AlphaParseSuccessNull,
+        AlphaParseSuccessWithoutValue,
         AlphaParseSuccessParseResult,
         AlphaParseSuccessString,
         AlphaParseSuccessWithFailure,
@@ -42,7 +42,7 @@ public sealed abstract class AlphaParseSuccess permits
      */
     public static @NotNull AlphaParseSuccess create(final int index, final @Nullable Object result) {
         return switch (result) {
-            case null -> new AlphaParseSuccessNull(index);
+            case null -> new AlphaParseSuccessWithoutValue(index);
             case String s -> new AlphaParseSuccessString(index, s);
             case TotalParsesFailureNode totalParsesFailureNode -> new AlphaParseSuccessWithTotalFailure(index, totalParsesFailureNode);
             case FlatSeq<?> objects -> new AlphaParseSuccessList(index, (FlatSeq<Object>) objects);
@@ -75,7 +75,7 @@ public sealed abstract class AlphaParseSuccess permits
         return new AlphaParseSuccessString(index, result);
     }
     public static @NotNull AlphaParseSuccess create(final int index) {
-        return new AlphaParseSuccessNull(index);
+        return new AlphaParseSuccessWithoutValue(index);
     }
 
     /**
@@ -109,12 +109,12 @@ public sealed abstract class AlphaParseSuccess permits
     }
 
     /**
-     * Creates a new instance of {@link AlphaParseSuccessNull} with the current index.
+     * Creates a new instance of {@link AlphaParseSuccessWithoutValue} with the current index.
      *
-     * @return A new instance of {@link AlphaParseSuccessNull} with the current index.
+     * @return A new instance of {@link AlphaParseSuccessWithoutValue} with the current index.
      */
     public @NotNull AlphaParseSuccess reset() {
-        return new AlphaParseSuccessNull(index);
+        return new AlphaParseSuccessWithoutValue(index);
     }
 
     /**

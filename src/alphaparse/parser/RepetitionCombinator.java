@@ -56,7 +56,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey parserNodeKey = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerNode.TrampolineListenerKey combinatorNodeKey = new TrampolineListenerKey(index, combinator);
         if (getMin() == 0) {
-            runner.successNull(combinatorNodeKey, null, index);
+            runner.successWithoutValue(combinatorNodeKey, index);
             if (getMax() >= 1) {
                 runner.pushListener(combinatorNodeKey,
                         repListener(FlatSeq.make(), 0, this, parserNodeKey, runner));
@@ -77,7 +77,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull var emptyResults = FlatSeq.make();
         if (minimum == 0) {
-            runner.successNull(new TrampolineListenerKey(index, this), null, index);
+            runner.successWithoutValue(new TrampolineListenerKey(index, this), index);
             if (maximum >= 1) {
                 runner.pushListener(
                         nodeKeyForParser,

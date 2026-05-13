@@ -111,7 +111,6 @@ class AlphaTest {
                 ParserCreationOptions.newWithStandardWhitespace()
         );
         var tree = ParseTree.create("S", "a", "b", "a", "b", "a");
-        IO2.println(p.parse("a b      a\tb\na"));
         Assertions.assertEquals(tree, p.parse("a b      a\tb\na"));
     }
 
@@ -383,7 +382,13 @@ class AlphaTest {
         {
             final @NotNull var p = Alpha.parser("S : epsilon | S");
             var forest = p.parses("").castToParsesSuccess();
-            IO2.println(forest.stream().limit(5).toList());
+            Assertions.assertEquals(
+                    List.of(
+                            ParseTree.create("S"), ParseTree.create("S", ParseTree.create("S")),
+                            ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"))),
+                            ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"))))
+                    ),
+                    forest.stream().limit(4).toList());
         }
     }
 

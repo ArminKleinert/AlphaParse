@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 /**
  * A list-like type of generic elements. It is used to differentiate from other List types.
+ * Elements can be added and iterated upon.
  *
  * @param <T> The generic type.
  */

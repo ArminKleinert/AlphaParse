@@ -11,9 +11,6 @@ public class CombinatorExamplesTests {
     void testChoiceExample1() {
         {
             var p = Alpha.parser("S = 'a' | 'b' | 'ab'");
-            IO2.println(p.parse("a"));
-            IO2.println(p.parse("b"));
-            IO2.println(p.parse("ab"));
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
             Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));
@@ -26,9 +23,6 @@ public class CombinatorExamplesTests {
                     S =/ 'b'
                     S =/ 'ab'
                     """, opts);
-            IO2.println(p.parse("a"));
-            IO2.println(p.parse("b"));
-            IO2.println(p.parse("ab"));
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
             Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));

@@ -2,8 +2,8 @@ package alphaparse.result.success;
 
 import org.jetbrains.annotations.Nullable;
 
-final class AlphaParseSuccessNull extends AlphaParseSuccess {
-    AlphaParseSuccessNull(final int index) {
+final class AlphaParseSuccessWithoutValue extends AlphaParseSuccess {
+    AlphaParseSuccessWithoutValue(final int index) {
         super(index);
     }
 

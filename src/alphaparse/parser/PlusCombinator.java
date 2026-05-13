@@ -56,7 +56,7 @@ public final class PlusCombinator extends CombinatorWithParser {
             final int continueIndex = result.index();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty()) {
-                    runner.successNull(nodeKey, null, continueIndex);
+                    runner.successWithoutValue(nodeKey, continueIndex);
                 }
                 return;
             }
@@ -80,7 +80,7 @@ public final class PlusCombinator extends CombinatorWithParser {
             final var continueIndex = result.index();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty())
-                    runner.successNull(nodeKey, null, continueIndex);
+                    runner.successWithoutValue(nodeKey, continueIndex);
             } else {
                 final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
                         ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
