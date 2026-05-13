@@ -111,24 +111,24 @@ class ABNFTest {
             );
         }
         {
-            var p = Alpha.parser("S : A+\n<A> : %d66", ParserCreationOptions.getDefault());
+            var p = Alpha.parser("S : A+\n<A> : %d66", ParserCreationOptions.ABNF());
             Assertions.assertEquals(
                     ParseTree.create("S", "B"),
                     p.parse("B")
             );
         }
         {
-            var p = Alpha.parser("S : 'B'+", ParserCreationOptions.getDefault());
+            var p = Alpha.parser("S : (%d65-67)+", ParserCreationOptions.ABNF());
             Assertions.assertEquals(
-                    ParseTree.create("S", "B"),
-                    p.parse("B")
+                    ParseTree.create("S", "B", "B", "B"),
+                    p.parse("BBB")
             );
         }
     }
 
     @Test void codepointFailureTest() {
         {
-            var p = Alpha.parser("S : 'B'+", ParserCreationOptions.getDefault());
+            var p = Alpha.parser("S : (%d65-67)+", ParserCreationOptions.ABNF());
             Assertions.assertEquals(
                     ParseTree.create("S", "B"),
                     p.parse("B")

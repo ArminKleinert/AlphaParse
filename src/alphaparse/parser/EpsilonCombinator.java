@@ -37,13 +37,13 @@ public final class EpsilonCombinator extends CombinatorTerminal {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        runner.success(new TrampolineListenerKey(index, this), null, index);
+        runner.successNull(new TrampolineListenerKey(index, this), null, index);
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         if (index == runner.tramp().getText().length())
-            runner.success(new TrampolineListenerKey(index, this), null, index);
+            runner.successNull(new TrampolineListenerKey(index, this), null, index);
         else
             runner.fail(new TrampolineListenerKey(index, this), index,
                     ParseFailureReason.ofEpsilon(this, true));

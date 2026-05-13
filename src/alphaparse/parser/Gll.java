@@ -1,6 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.Alpha;
+import alphaparse.flat.FlatSeq;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.Sym;
@@ -234,6 +235,33 @@ public final class Gll {
             final Object result,
             final int end) {
         pushResult(nodeKey, AlphaParseSuccess.create(end, result));
+    }
+
+    void success(
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+            final @Nullable String result,
+            final int end) {
+        final @NotNull AlphaParseSuccess aps;
+        if (result == null) aps = AlphaParseSuccess.create(end, (Object)null);
+        else aps = AlphaParseSuccess.create(end, result);
+        pushResult(nodeKey, aps);
+    }
+
+    void successNull(
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+            final Object NULL,
+            final int end) {
+        pushResult(nodeKey, AlphaParseSuccess.create(end));
+    }
+
+    <T> void success(
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+            final @Nullable FlatSeq<T> result,
+            final int end) {
+        final @NotNull AlphaParseSuccess aps;
+        if (result == null) aps = AlphaParseSuccess.create(end, (Object)null);
+        else aps = AlphaParseSuccess.create(end, result);
+        pushResult(nodeKey, aps);
     }
 
     void fail(

@@ -29,7 +29,7 @@ public final class LookaheadCombinator extends CombinatorWithParser {
         final @NotNull Combinator combinator = getParser();
         final @NotNull var nodeKey = new TrampolineListenerKey(index, this);
         runner.pushListener(new TrampolineListenerKey(index, combinator),
-                ignored -> runner.success(nodeKey, null, index));
+                ignored -> runner.successNull(nodeKey, null, index));
     }
 
     @Override

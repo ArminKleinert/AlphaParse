@@ -1,0 +1,21 @@
+Converting Instaparse
+
+What is Instaparse?
+Instaparse is a library for Clojure. It allows the user to generate and use parsers during runtime. Other tools, like ANTLR and LeX require separate compilation the grammar.
+Instaparse uses an underexplored algorithm for parsing, known as Parsing With Derivatives, combined with many optimizations.
+Instaparse is scannerless. Most parsers that take a string as input work in two phases: Splitting the text into tokens (scanning) and then constructing a parse tree or parse forest (parsing). Instaparse constructs the parse forest from the input string.
+
+Why convert?
+Clojure is a great language and easy to use for Clojure programmers. However, including it in any project not written in Clojure requires importing the entire standard library.
+Using Clojure from Java requires taking a reference to the Clojure function and calling it through the `clojure.lang.IFn` interface. If this step is skipped, a win in performance could be achieved.
+Clojure is a functional programming language making use of persistent data structures. Instaparse uses some inner state. Converting the code to Java, an object-oriented language, would make it easier to convert it to other OOP languages in the future.
+A personal reason: I work much with Java, Kotlin, Clojure and Ruby. I never got Clojure to work from Java. However, calling Java from Kotlin, Clojure or Ruby (via JRuby) is trivial.
+
+Possible problems.
+PWD, independent of Instaparse, is practically made for functional languages, especially Lisps like Scheme.
+Clojure is dynamically typed and hides everything behind plain Object. Java is statically and strongly typed. This not only makes conversion harder, but also would introduce a code smell if conversion is done 1-to-1.
+
+Optimization techniques.
+There are two separate things to talk about here: Instaparse's own optimizations and Alphaparse's optimizations over Instaparse.
+PWD is slow, very slow. Instaparse wins performance by using the GLL parsing algorithm for individual steps. GLL is another underexplored algorithm. Instaparse also uses Clojure's built-in Keyword type, which provides O(1) equality checking by reference.
+Alphaparse gains performance by using mutable structures where mutability makes sense.

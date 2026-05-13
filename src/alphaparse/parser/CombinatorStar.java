@@ -35,7 +35,7 @@ public final class CombinatorStar extends CombinatorWithParser {
                 new TrampolineListenerKey(index, combinator),
                 PlusCombinator.plusListener(FlatSeq.make(), combinator, index, nodeKeyForStar, runner)
         );
-        runner.success(nodeKeyForStar, null, index);
+        runner.successNull(nodeKeyForStar, null, index);
     }
 
     @Override
@@ -43,7 +43,7 @@ public final class CombinatorStar extends CombinatorWithParser {
         final @NotNull Combinator combinator = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         if (index == runner.tramp().getText().length()) {
-            runner.success(nodeKeyForStar, null, index);
+            runner.successNull(nodeKeyForStar, null, index);
         } else {
             runner.pushListener(
                     new TrampolineListenerKey(index, combinator),

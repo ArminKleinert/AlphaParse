@@ -34,7 +34,7 @@ public final class OptionalCombinator extends CombinatorWithParser {
                 new TrampolineListenerKey(index, combinator),
                 runner.nodeListener(nodeKeyForOpt)
         );
-        runner.success(nodeKeyForOpt, null, index);
+        runner.successNull(nodeKeyForOpt, null, index);
     }
 
     @Override
@@ -43,7 +43,7 @@ public final class OptionalCombinator extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey thisNodeKey = new TrampolineListenerKey(index, this);
         runner.pushFullListener(new TrampolineListenerKey(index, parser), runner.nodeListener(thisNodeKey));
         if (index == runner.tramp().getText().length()) {
-            runner.success(thisNodeKey, null, index);
+            runner.successNull(thisNodeKey, null, index);
         } else {
             runner.fail(thisNodeKey, index, ParseFailureReason.ofOptional(this, true));
         }

@@ -64,6 +64,31 @@ public sealed abstract class AlphaParseSuccess permits
         return new AlphaParseSuccessParseResult(index, result);
     }
 
+    /**
+     * Creates a {@link AlphaParseSuccess} wrapping a String.
+     *
+     * @param index  The last index of the previous parse, exclusive.
+     * @param result The {@link String}.
+     * @return The {@link String} wrapped into an instance of this class.
+     */
+    public static @NotNull AlphaParseSuccess create(final int index, final @NotNull String result) {
+        return new AlphaParseSuccessString(index, result);
+    }
+    public static @NotNull AlphaParseSuccess create(final int index) {
+        return new AlphaParseSuccessNull(index);
+    }
+
+    /**
+     * Creates a {@link AlphaParseSuccess} wrapping a String.
+     *
+     * @param index  The last index of the previous parse, exclusive.
+     * @param result The {@link String}.
+     * @return The {@link String} wrapped into an instance of this class.
+     */
+    public static @NotNull AlphaParseSuccess create(final int index, final @NotNull FlatSeq<?> result) {
+        return new AlphaParseSuccessList(index, (FlatSeq<Object>) result);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (!(o instanceof @NotNull AlphaParseSuccess that)) return false;
