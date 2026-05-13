@@ -6,7 +6,7 @@ import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
 import alphaparse.parser.TerminalStringCombinator;
 import alphaparse.result.AlphaParseFailure;
-import alphaparse.result.success.AlphaParseSuccess;
+import alphaparse.result.success.AlphaParseMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public final class Tramp {
     private final @NotNull IntMap<@NotNull NegativeListener> negativeListeners;
     private final @NotNull SequencedMap<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
     private final @NotNull SequencedMap<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
-    private @Nullable AlphaParseSuccess success;
+    private @Nullable AlphaParseMessage success;
     private @Nullable AlphaParseFailure failure;
 
     /**
@@ -131,7 +131,7 @@ public final class Tramp {
      *
      * @return Last registered success.
      */
-    public @Nullable AlphaParseSuccess getSuccess() {
+    public @Nullable AlphaParseMessage getSuccess() {
         return success;
     }
 
@@ -214,7 +214,7 @@ public final class Tramp {
      *
      * @param success The new success or null.
      */
-    public void setSuccess(final @Nullable AlphaParseSuccess success) {
+    public void setSuccess(final @Nullable AlphaParseMessage success) {
         this.success = success;
     }
 

@@ -1,6 +1,5 @@
 package alphaparse.parser;
 
-import alphaparse.IO2;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 
@@ -51,7 +50,7 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
 
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
             if (caseInsensitive ?string.equalsIgnoreCase(head) :string.equals(head)) {
-                runner.success(nodeKey, string, end);
+                runner.pushSuccessMessage(nodeKey, string, end);
             } else {
                 runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
             }
@@ -65,7 +64,7 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
         final @NotNull var head = text.substring(index, end);
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
             if (text.length() == end && (caseInsensitive ? string.equalsIgnoreCase(head) : string.equals(head))) {
-                runner.success(nodeKey, string, end);
+                runner.pushSuccessMessage(nodeKey, string, end);
             } else {
                 runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
             }

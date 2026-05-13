@@ -2,16 +2,18 @@ package alphaparse.flat;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 /**
  * A list-like type of generic elements. It is used to differentiate from other List types.
- * Elements can be added and iterated upon.
+ * Elements can be added and iterated upon. Each addition creates a new instance.
  *
  * @param <T> The generic type.
  */
+@Unmodifiable
 public class FlatSeq<T> implements Iterable<T> {
     private static FlatSeq<Object> EMPTY = null;
 
@@ -26,6 +28,7 @@ public class FlatSeq<T> implements Iterable<T> {
      */
     public static @NotNull <T> FlatSeq<@NotNull T> make() {
         if (EMPTY == null) EMPTY = new FlatSeq<>(new Object[0]);
+        //noinspection unchecked
         return (FlatSeq<T>) EMPTY;
     }
 
@@ -43,6 +46,7 @@ public class FlatSeq<T> implements Iterable<T> {
             }
 
             public T next() {
+                //noinspection unchecked
                 return (T) v[pos++];
             }
         };
@@ -112,7 +116,9 @@ public class FlatSeq<T> implements Iterable<T> {
      * @return A new instance with the objects from {@code this} and the parameter.
      */
     public @NotNull FlatSeq<@NotNull T> concat(final @NotNull FlatSeq<?> obj) {
-        if (size() == 0) return (FlatSeq<T>) obj;
+        if (size() == 0) //noinspection unchecked
+            return (FlatSeq<T>) obj;
+        if (obj.isEmpty()) return this;
         final @NotNull Object[] newV = Arrays.copyOf(v, v.length + obj.v.length);
         System.arraycopy(obj.v, 0, newV, v.length, obj.v.length);
 

@@ -56,7 +56,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey parserNodeKey = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerNode.TrampolineListenerKey combinatorNodeKey = new TrampolineListenerKey(index, combinator);
         if (getMin() == 0) {
-            runner.successWithoutValue(combinatorNodeKey, index);
+            runner.pushSuccessMessageWithoutValue(combinatorNodeKey, index);
             if (getMax() >= 1) {
                 runner.pushListener(combinatorNodeKey,
                         repListener(FlatSeq.make(), 0, this, parserNodeKey, runner));
@@ -77,23 +77,24 @@ public final class RepetitionCombinator extends CombinatorWithParser {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull var emptyResults = FlatSeq.make();
         if (minimum == 0) {
-            runner.successWithoutValue(new TrampolineListenerKey(index, this), index);
+            runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, this), index);
             if (maximum >= 1) {
                 runner.pushListener(
                         nodeKeyForParser,
-                        repFullListener(emptyResults, 0, parser, 1, maximum, index, nodeKeyForThis, runner));
+                        repFullListener(emptyResults, 0, parser, 1, maximum, nodeKeyForThis, runner));
             }
         } else {
             runner.pushListener(
                     nodeKeyForParser,
-                    repFullListener(emptyResults, 0, parser, minimum, maximum, index, nodeKeyForThis, runner));
+                    repFullListener(emptyResults, 0, parser, minimum, maximum, nodeKeyForThis, runner));
         }
     }
 
     private @NotNull Listener repListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                           final int nResultsSoFar,
                                           final @NotNull RepetitionCombinator parser,
-                                          final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey, final @NotNull Gll runner) {
+                                          final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+                                          final @NotNull Gll runner) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.index();
@@ -105,7 +106,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
             final int newNResultsSoFar = nResultsSoFar + 1;
 
             if (Integer.max(parser.getMin(), 0) <= newNResultsSoFar && newNResultsSoFar <= parser.getMax())
-                runner.success(nodeKey, newResultsSoFar, continueIndex);
+                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
 
             if (newNResultsSoFar < parser.getMax())
                 runner.pushListener(
@@ -120,7 +121,6 @@ public final class RepetitionCombinator extends CombinatorWithParser {
                                               final @NotNull Combinator parser,
                                               final int minimum,
                                               final int maximum,
-                                              final int prevIndex,
                                               final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                               final @NotNull Gll runner) {
         return result -> {
@@ -131,16 +131,22 @@ public final class RepetitionCombinator extends CombinatorWithParser {
                     : resultsSoFar.append(parsedResult);
             final int newNResultsSoFar = nResultsSoFar + 1;
             if (continueIndex == runner.tramp().getText().length()) {
-                if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum)
-                    runner.success(nodeKey, newResultsSoFar, continueIndex);
-                else runner.fail(nodeKey, continueIndex, ParseFailureReason.ofRepetition(this, false));
+                if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum) {
+                    runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
+                } else {
+                    runner.fail(nodeKey, continueIndex,
+                            ParseFailureReason.ofRepetition(this, false));
+                }
             } else {
                 if (newNResultsSoFar < maximum) {
                     final @NotNull var listener = repFullListener(
                             newResultsSoFar, newNResultsSoFar,
-                            parser, minimum, maximum, continueIndex, nodeKey, runner);
+                            parser, minimum, maximum, nodeKey, runner);
                     runner.pushListener(new TrampolineListenerKey(continueIndex, parser), listener);
-                } else runner.fail(nodeKey, continueIndex, ParseFailureReason.ofRepetition(this, false));
+                } else {
+                    runner.fail(nodeKey, continueIndex,
+                            ParseFailureReason.ofRepetition(this, false));
+                }
             }
         };
     }

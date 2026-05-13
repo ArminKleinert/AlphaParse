@@ -11,7 +11,7 @@ import alphaparse.functions.Procedure;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.*;
 import alphaparse.result.failure.FailureUtil;
-import alphaparse.result.success.AlphaParseSuccess;
+import alphaparse.result.success.AlphaParseMessage;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineMsgCacheKey;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -66,11 +66,6 @@ public final class Gll {
         return !node.listeners().isEmpty() || !node.fullListeners().isEmpty();
     }
 
-    private boolean totalSuccess_Q(
-            final @NotNull AlphaParseSuccess success) {
-        return tramp.getText().length() == success.index();
-    }
-
     void pushNegativeListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey creator,
             final @NotNull NegativeListener negativeListener) {
@@ -79,7 +74,7 @@ public final class Gll {
 
     private void pushMessage(
             final @NotNull Listener listener,
-            final @NotNull AlphaParseSuccess result) {
+            final @NotNull AlphaParseMessage result) {
         final int i = result.index();
         final TrampolineMsgCacheKey k = new TrampolineMsgCacheKey(i, listener);
         final int c = tramp.getFromMsgCache(k, 0);
@@ -150,10 +145,10 @@ public final class Gll {
         final @NotNull TrampolineListenerNode node = getOrCreateListenerNode(nodeKey);
         final @NotNull List<Listener> listeners = node.listeners();
         listeners.add(listener);
-        for (final @NotNull AlphaParseSuccess result : node.results()) {
+        for (final @NotNull AlphaParseMessage result : node.results()) {
             pushMessage(listener, result);
         }
-        for (final @NotNull AlphaParseSuccess fullResult : node.fullResults()) {
+        for (final @NotNull AlphaParseMessage fullResult : node.fullResults()) {
             pushMessage(listener, fullResult);
         }
         if (!listenerAlreadyExists) {
@@ -169,7 +164,7 @@ public final class Gll {
         final @NotNull var node = getOrCreateListenerNode(nodeKey);
         final @NotNull var listeners = node.fullListeners();
         listeners.add(listener);
-        for (final @NotNull AlphaParseSuccess fullResult : node.fullResults()) {
+        for (final @NotNull AlphaParseMessage fullResult : node.fullResults()) {
             pushMessage(listener, fullResult);
         }
         if (!fullListenerAlreadyExists) {
@@ -183,23 +178,24 @@ public final class Gll {
      * Schedules notification to all existing listeners of result.
      * (Full listeners only get notified about full results)
      */
-    private void pushResult(
+    private void pushResultHelper(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            @NotNull AlphaParseSuccess result) {
+            @NotNull AlphaParseMessage result) {
         final @NotNull TrampolineListenerNode node = getOrCreateListenerNode(nodeKey);
         final @NotNull Combinator parser = nodeKey.parser();
         result = parser.isHidden()
                 ? result.reset()
                 : result;
         if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.INITIAL) {
-            final ParseTree resultR = ParseTree.create(
+            final ParseTree tree = ParseTree.create(
                     parser.getReduction().getKey(),
                     result.getResult());
-            result = AlphaParseSuccess.create(result.index(), resultR);
+            result = AlphaParseMessage.create(result.index(), tree);
         }
-        final boolean isTotal = totalSuccess_Q(result);
-        final @NotNull SequencedSet<@NotNull AlphaParseSuccess> results =
-                isTotal ? node.fullResults() : node.results();
+
+        final boolean reachedEndOfInput = tramp.getText().length() == result.index();
+        final @NotNull SequencedSet<@NotNull AlphaParseMessage> results =
+                reachedEndOfInput ? node.fullResults() : node.results();
 
         final var resultExisted = !results.add(result);
         if (resultExisted) {
@@ -210,7 +206,7 @@ public final class Gll {
             pushMessage(listener, result);
         }
 
-        if (!isTotal) {
+        if (!reachedEndOfInput) {
             return;
         }
 
@@ -230,35 +226,35 @@ public final class Gll {
         }
     }
 
-    void success(
+    void pushErrorMessage(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final @NotNull Object result,
+            final @NotNull ParseFailureNode result,
             final int end) {
-        pushResult(nodeKey, AlphaParseSuccess.create(end, result));
+        pushResultHelper(nodeKey, AlphaParseMessage.create(end, result));
     }
 
-    void success(
+    void pushSuccessMessage(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull String result,
             final int end) {
-        final @NotNull AlphaParseSuccess aps;
-        aps = AlphaParseSuccess.create(end, result);
-        pushResult(nodeKey, aps);
+        final @NotNull AlphaParseMessage aps;
+        aps = AlphaParseMessage.create(end, result);
+        pushResultHelper(nodeKey, aps);
     }
 
-    void successWithoutValue(
+    void pushSuccessMessageWithoutValue(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final int end) {
-        pushResult(nodeKey, AlphaParseSuccess.create(end));
+        pushResultHelper(nodeKey, AlphaParseMessage.create(end));
     }
 
-    <T> void success(
+    <T> void pushSuccessMessage(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull FlatSeq<T> result,
             final int end) {
-        final @NotNull AlphaParseSuccess aps;
-        aps = AlphaParseSuccess.create(end, result);
-        pushResult(nodeKey, aps);
+        final @NotNull AlphaParseMessage aps;
+        aps = AlphaParseMessage.create(end, result);
+        pushResultHelper(nodeKey, aps);
     }
 
     void fail(
@@ -270,7 +266,7 @@ public final class Gll {
         if (index == tramp.getFailIndex()) {
             final @NotNull String subSeq = tramp.getText().substring(index);
             final int textLen = tramp.getText().length();
-            success(
+            pushErrorMessage(
                     nodeKey,
                     buildFailureNode(Sym.sym("failure"), subSeq, index, tramp.getText().length()),
                     textLen);
@@ -300,7 +296,7 @@ public final class Gll {
 
     @NotNull Listener nodeListener(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey) {
-        return result -> pushResult(nodeKey, result);
+        return result -> pushResultHelper(nodeKey, result);
     }
 
     /**

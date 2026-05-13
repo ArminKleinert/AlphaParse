@@ -1,6 +1,7 @@
 package alphaparse.list;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 
@@ -9,6 +10,7 @@ import java.util.*;
  *
  * @param <T> Generic type.
  */
+@Unmodifiable
 public final class UnmodList<T> implements List<T>, RandomAccess {
     private final Object[] inner;
     private int hashCode = 0;
@@ -96,8 +98,10 @@ public final class UnmodList<T> implements List<T>, RandomAccess {
     @Override
     public <T1> T1 @NotNull [] toArray(T1 @NotNull [] a) {
         if (a.length < size()) {
+            //noinspection unchecked
             return (T1[]) Arrays.copyOf(inner, size(), a.getClass());
         } else {
+            //noinspection SuspiciousSystemArraycopy
             System.arraycopy(inner, 0, a, 0, size());
             if (a.length > size()) {
                 a[size()] = null;
@@ -119,6 +123,7 @@ public final class UnmodList<T> implements List<T>, RandomAccess {
     @Override
     public T get(final int i) {
         Objects.checkIndex(i, size());
+        //noinspection unchecked
         return (T) inner[i];
     }
 

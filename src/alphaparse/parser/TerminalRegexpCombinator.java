@@ -54,7 +54,7 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         final @Nullable String match = reMatchAtFront(regexp, subString);
         if (match != null) {
-            runner.success(nodeKey, match, index + match.length());
+            runner.pushSuccessMessage(nodeKey, match, index + match.length());
         } else {
             runner.fail(nodeKey, index, ParseFailureReason.ofRegexTerminal(this, false));
         }
@@ -69,7 +69,7 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
         final int desiredLength = text.length() - index;
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
         if (match != null && match.length() == desiredLength) {
-            runner.success(nodeKey, match, text.length());
+            runner.pushSuccessMessage(nodeKey, match, text.length());
         } else {
             runner.fail(nodeKey, index, ParseFailureReason.ofRegexTerminal(this, true));
         }

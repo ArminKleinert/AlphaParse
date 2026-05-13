@@ -58,7 +58,7 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
                     : resultsSoFar.append(parsedResult);
 
             if (parserSequence.isEmpty()) {
-                runner.success(nodeKey, newResultsSoFar, continueIndex);
+                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
             } else {
                 runner.pushListener(
                         new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
@@ -90,7 +90,7 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
                 runner.pushListener(new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
                         catFullListener(newResultsSoFar, parserSequence.subList(1, parserSequence.size()), nodeKey, runner));
             } else {
-                runner.success(nodeKey, newResultsSoFar, continueIndex);
+                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
             }
         };
     }

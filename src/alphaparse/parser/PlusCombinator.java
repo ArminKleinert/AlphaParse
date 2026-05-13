@@ -56,7 +56,7 @@ public final class PlusCombinator extends CombinatorWithParser {
             final int continueIndex = result.index();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty()) {
-                    runner.successWithoutValue(nodeKey, continueIndex);
+                    runner.pushSuccessMessageWithoutValue(nodeKey, continueIndex);
                 }
                 return;
             }
@@ -64,7 +64,7 @@ public final class PlusCombinator extends CombinatorWithParser {
                     ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             runner.pushListener(new TrampolineListenerKey(continueIndex, parser), plusListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
-            runner.success(nodeKey, newResultsSoFar, continueIndex);
+            runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
         };
     }
 
@@ -80,13 +80,13 @@ public final class PlusCombinator extends CombinatorWithParser {
             final var continueIndex = result.index();
             if (continueIndex == prevIndex) {
                 if (resultsSoFar.isEmpty())
-                    runner.successWithoutValue(nodeKey, continueIndex);
+                    runner.pushSuccessMessageWithoutValue(nodeKey, continueIndex);
             } else {
                 final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
                         ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                         : resultsSoFar.append(parsedResult);
                 if (continueIndex == runner.tramp().getText().length()) {
-                    runner.success(nodeKey, newResultsSoFar, continueIndex);
+                    runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
                 } else {
                     runner.pushListener(new TrampolineListenerKey(continueIndex, parser),
                             plusFullListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));

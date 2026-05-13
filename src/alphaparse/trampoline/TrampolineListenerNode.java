@@ -2,7 +2,7 @@ package alphaparse.trampoline;
 
 import alphaparse.functions.Listener;
 import alphaparse.parser.Combinator;
-import alphaparse.result.success.AlphaParseSuccess;
+import alphaparse.result.success.AlphaParseMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -17,8 +17,8 @@ import java.util.*;
  */
 public record TrampolineListenerNode(@NotNull List<Listener> listeners,
                                      @NotNull List<Listener> fullListeners,
-                                     @NotNull SequencedSet<AlphaParseSuccess> results,
-                                     @NotNull SequencedSet<AlphaParseSuccess> fullResults) {
+                                     @NotNull SequencedSet<AlphaParseMessage> results,
+                                     @NotNull SequencedSet<AlphaParseMessage> fullResults) {
     /**
      * Creates a new instance.
      */

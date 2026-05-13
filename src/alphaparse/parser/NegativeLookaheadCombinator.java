@@ -56,7 +56,7 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
         final @NotNull Combinator p = this;
         runner.pushNegativeListener(nodeKey, () -> {
             if (!resultExists_Q(runner, nodeKey)) {
-                runner.successWithoutValue(new TrampolineListenerKey(index, p), index);
+                runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, p), index);
             }
         });
     }
