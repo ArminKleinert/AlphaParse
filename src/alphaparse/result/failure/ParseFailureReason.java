@@ -5,6 +5,9 @@ import alphaparse.parser.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 /**
  * A failure lists reasons for the failure. This class represents the possible reasons.
  *
@@ -54,7 +57,11 @@ public record ParseFailureReason(
      * @return A failure-reason based on the parameters.
      */
     public static @NotNull ParseFailureReason ofUnicodeChar(final TerminalUnicodeCharCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, null, untilEndOfInput, "char");
+
+        return new ParseFailureReason(
+                combinator,
+                Arrays.toString(IntStream.range(combinator.getLo(), combinator.getHi() + 1).mapToObj(it -> (char) it).toArray()),
+                untilEndOfInput, "char");
     }
 
     /**

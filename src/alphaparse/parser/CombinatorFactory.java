@@ -1,5 +1,6 @@
 package alphaparse.parser;
 
+import alphaparse.IO2;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;

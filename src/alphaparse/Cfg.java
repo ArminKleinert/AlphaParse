@@ -69,7 +69,7 @@ final class Cfg {
 
         if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
-            key = Sym.sym(content.toString());
+            key = Sym.sym(content.content().toString());
             rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd, combinatorFactory, options));
         } else {
             key = Sym.sym((String)content.content());

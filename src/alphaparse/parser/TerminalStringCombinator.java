@@ -1,5 +1,6 @@
 package alphaparse.parser;
 
+import alphaparse.IO2;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 
@@ -49,17 +50,11 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
         final @NotNull String head = text.substring(index, end);
 
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-        if (caseInsensitive) {
-            if (string.equalsIgnoreCase(head))
+            if (caseInsensitive ?string.equalsIgnoreCase(head) :string.equals(head)) {
                 runner.success(nodeKey, string, end);
-            else
+            } else {
                 runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
-        } else {
-            if (string.contentEquals(head))
-                runner.success(nodeKey, string, end);
-            else
-                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
-        }
+            }
     }
 
     @Override
@@ -69,17 +64,11 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
         final var end = Integer.min(text.length(), string.length() + index);
         final @NotNull var head = text.substring(index, end);
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-        if (caseInsensitive) {
-            if (end == text.length() && string.equalsIgnoreCase(head))
+            if (text.length() == end && (caseInsensitive ? string.equalsIgnoreCase(head) : string.equals(head))) {
                 runner.success(nodeKey, string, end);
-            else
+            } else {
                 runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
-        } else {
-            if (text.length() == end && Objects.equals(string, head))
-                runner.success(nodeKey, string, end);
-            else
-                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
-        }
+            }
     }
 
     /**

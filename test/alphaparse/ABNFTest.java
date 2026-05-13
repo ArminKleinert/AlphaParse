@@ -18,11 +18,11 @@ class ABNFTest {
         {
             var p = Alpha.parser("S : \"abc\"", ParserCreationOptions.ABNF());
             Assertions.assertEquals(ParseTree.create("S", "abc"), p.parse("abc"));
-            Assertions.assertEquals(ParseTree.create("S", "ABC"), p.parse("AbC"));
-            Assertions.assertEquals(ParseTree.create("S", "ABC"), p.parse("ABC"));
+            Assertions.assertEquals(ParseTree.create("S", "abc"), p.parse("AbC"));
+            Assertions.assertEquals(ParseTree.create("S", "abc"), p.parse("ABC"));
         }
         {
-            var p = Alpha.parser("S : \"a\" \"b\"", ParserCreationOptions.ABNF());
+            var p = Alpha.parser("S : \"A\" \"B\"", ParserCreationOptions.ABNF());
             Assertions.assertEquals(ParseTree.create("S", "A", "B"), p.parse("ab"));
             Assertions.assertEquals(ParseTree.create("S", "A", "B"), p.parse("Ab"));
             Assertions.assertEquals(ParseTree.create("S", "A", "B"), p.parse("AB"));
@@ -65,6 +65,74 @@ class ABNFTest {
             Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
             Assertions.assertTrue(p.parse("aaa").isFailure());
+        }
+    }
+
+    @Test
+    void incrementalExtensionTest() {
+        var p = Alpha.parser("""
+                    S := "a" S
+                    S =/ "b" S
+                    S =/ epsilon
+                    """, ParserCreationOptions.ABNF());
+        var epsTree = ParseTree.create("S");
+        Assertions.assertEquals(
+                ParseTree.create("S", "a", epsTree),
+                p.parse("a")
+        );
+        Assertions.assertEquals(
+                ParseTree.create("S", "a", ParseTree.create("S", "b", epsTree)),
+                p.parse("ab")
+        );
+        Assertions.assertEquals(
+                ParseTree.create("S", "a", ParseTree.create("S", "a", epsTree)),
+                p.parse("aa")
+        );
+    }
+
+    @Test
+    void codepointsTest() {
+        {
+            var p = Alpha.parser("""
+                    S := %x41-43
+                    """, ParserCreationOptions.ABNF());
+            Assertions.assertEquals(
+                    ParseTree.create("S", "A"),
+                    p.parse("A")
+            );
+        }
+        {
+            var p = Alpha.parser("""
+                    S := %d65-67
+                    """, ParserCreationOptions.ABNF());
+            Assertions.assertEquals(
+                    ParseTree.create("S", "A"),
+                    p.parse("A")
+            );
+        }
+        {
+            var p = Alpha.parser("S : A+\n<A> : %d66", ParserCreationOptions.getDefault());
+            Assertions.assertEquals(
+                    ParseTree.create("S", "B"),
+                    p.parse("B")
+            );
+        }
+        {
+            var p = Alpha.parser("S : 'B'+", ParserCreationOptions.getDefault());
+            Assertions.assertEquals(
+                    ParseTree.create("S", "B"),
+                    p.parse("B")
+            );
+        }
+    }
+
+    @Test void codepointFailureTest() {
+        {
+            var p = Alpha.parser("S : 'B'+", ParserCreationOptions.getDefault());
+            Assertions.assertEquals(
+                    ParseTree.create("S", "B"),
+                    p.parse("B")
+            );
         }
     }
 }

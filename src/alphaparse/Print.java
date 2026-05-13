@@ -106,7 +106,8 @@ public final class Print {
             case TerminalUnicodeCharCombinator terminalUnicodeCharCombinator -> {
                 final int lo = terminalUnicodeCharCombinator.getLo();
                 final int hi = terminalUnicodeCharCombinator.getHi();
-                return lo == hi ? String.format("%%x%04x", lo) : String.format("%%x%04x-%04x", lo, hi);
+                //return lo == hi ? String.format("%%x%04x", lo) : String.format("%%x%04x-%04x", lo, hi);
+                return new StringBuilder().appendCodePoint(lo).append('-').appendCodePoint(hi).toString();
             }
             case TerminalRegexpCombinator terminalRegexpCombinator -> {
                 return "#\"" + terminalRegexpCombinator.getRegexp().pattern() + '"';

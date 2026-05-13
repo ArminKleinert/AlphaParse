@@ -175,6 +175,6 @@ public enum RulesAvailable {
      */
     public static @NotNull Set<RulesAvailable> defaultRules() {
         return Set.of(
-                REGEX, PLUS, CHOICE, STAR, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, SINGLY_QUOTED, ORDERED_CHOICE, COUNTED_REPEAT, OPTIONAL);
+                REGEX, PLUS, CHOICE, STAR, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, SINGLY_QUOTED, ORDERED_CHOICE, COUNTED_REPEAT, OPTIONAL, CHAR_RANGE);
     }
 }

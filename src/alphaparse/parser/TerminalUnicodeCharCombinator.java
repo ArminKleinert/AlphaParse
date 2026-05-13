@@ -2,6 +2,7 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+import alphaparse.IO2;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -53,8 +54,8 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
 
         if (hi <= 0xFFFF) {
             final int code = text.charAt(index); // (int (.charAt text index))
-            if (lo >= code && code >= hi) {
-                runner.success(nodeKey, Objects.toString(code), index + 1);
+            if (lo <= code && code <= hi) {
+                runner.success(nodeKey, String.valueOf((char)code), index + 1);
             } else {
                 runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
             }
@@ -63,7 +64,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
 
         final int codePoint = Character.codePointAt(text, index);
         final @NotNull String charString = new String(Character.toChars(codePoint));
-        if (lo >= codePoint && codePoint >= hi) {
+        if (lo <= codePoint && codePoint <= hi) {
             runner.success(nodeKey, charString, index + charString.length());
         } else {
             runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
@@ -79,7 +80,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
-            runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, false));
+            runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
             return;
         }
 
@@ -89,7 +90,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
             if (index + 1 == end && lo <= code && code <= hi) {
                 runner.success(nodeKeyForThis, Character.toString(c), end);
             } else {
-                runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, false));
+                runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
             }
             return;
         }
