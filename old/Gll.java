@@ -188,8 +188,9 @@ public final class Gll {
         }
         if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.INITIAL) {
             final ParseTree tree = ParseTree.create(
-                    parser.getReduction().getKey(),
-                    result.getResult());
+                    new Node.NodeTreeTag(parser.getReduction().getKey()),
+                    result.nodeList(),
+                    false);
             result = AlphaParseMessage.create(result.index(), tree);
         }
 
