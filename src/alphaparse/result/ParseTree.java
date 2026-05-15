@@ -20,7 +20,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
     private int hashCode = 0;
-    private final boolean hasNullTag;
     private final boolean isFlat;
     private final boolean usedMemoryOptimization;
 
@@ -28,7 +27,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                       final @NotNull List<@NotNull Node> content,
                       final boolean isFlat,
                       final boolean usedMemoryOptimization) {
-        this.hasNullTag = tag.content().equals(NULL_TAG);
         this.tag = tag;
         // this.content = flattenRawProductions(content);
         this.content = content;
@@ -325,7 +323,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         if (!tag.content().equals(NULL_TAG) && content.stream()
                 .filter(c -> c instanceof Node.NodeParseTree)
                 .map(c -> ((Node.NodeParseTree) c).content())
-                .noneMatch(pt -> pt.hasNullTag))
+                .noneMatch(pt -> pt.tag.content().equals(NULL_TAG)))
             return new ParseTree(tag, content, false, usedMemoryOptimization);
 
         final @NotNull var entries = new ArrayList<@NotNull Node>();
@@ -340,7 +338,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                     ? eContent
                     : create(eContent.getTag(), eContent.getContent());
 
-            if (eContent.hasNullTag) {
+            if (eContent.tag.content().equals(NULL_TAG)) {
                 entries.addAll(e1.getContent());
             } else {
                 entries.add(Node.of(e1));
