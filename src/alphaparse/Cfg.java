@@ -31,10 +31,10 @@ final class Cfg {
                                                     final @NotNull ParserCreationOptions options) {
         final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
         @NotNull var parts = partsUncut.split("\\*");
-        if (parts.length == 0 || parts.length > 2) {
-            throw new IllegalArgumentException("Invalid format for repetition rule: " + partsUncut);
-        }
         if (parts.length == 1) {
+            /*
+            Format at this point is [0-9]+\\* or \\*[0-9]+ or [0-9]+
+             */
             final @NotNull var temp = new String[]{"", ""};
             if (partsUncut.charAt(0) == '*') { // Only maximum provided (e.g. `*n p`)
                 temp[1] = parts[0];
@@ -45,7 +45,12 @@ final class Cfg {
                 temp[1] = temp[0];
             }
             parts = temp;
+        } else if (parts.length == 0) { // The input was only "*"
+            parts = new String[]{"", ""};
+        } else if (parts.length > 2) { // The input included more than one "*"
+            throw new IllegalArgumentException("Invalid format for repetition rule: " + partsUncut);
         }
+        // If none of the cases were true, the input had the usual format [0-9]+\\*[0-9]+
         final int min = parts[0].isBlank() ? 0 : Integer.parseInt(parts[0]);
         final int max = parts[1].isBlank() ? Integer.MAX_VALUE : Integer.parseInt(parts[1]);
         final @NotNull var repeatedRule = (Combinator) buildRule((ParseTree)
@@ -72,18 +77,19 @@ final class Cfg {
             key = Sym.sym(content.content().toString());
             rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd, combinatorFactory, options));
         } else {
-            key = Sym.sym((String)content.content());
+            key = Sym.sym((String) content.content());
             rule = (Combinator) buildRule(altOrOrd, combinatorFactory, options);
         }
 
         return Map.entry(key, rule);
     }
 
-    private static @NotNull Object buildRule(@NotNull ParseTree tree,
+    private static @NotNull Object buildRule(final @NotNull ParseTree tree1,
                                              final @NotNull CombinatorFactory combinatorFactory,
                                              final @NotNull ParserCreationOptions options) {
+         @NotNull ParseTree tree = tree1;
         for (; ; ) {
-            if (tree.getTag().content().equals(ParseTree.NULL_TAG)) {
+            if (tree.getTag().equals(ParseTree.NULL_TAG)) {
                 tree = (ParseTree) tree.getContent().getFirst().content();
                 continue;
             }
@@ -230,7 +236,7 @@ final class Cfg {
                 ? options.startProduction()
                 : productions.getFirst().getKey();
 
-        if (options.usableRules().contains(RulesAvailable.ABNF_CORE)){
+        if (options.usableRules().contains(RulesAvailable.ABNF_CORE)) {
             var abnfCore = EbnfG.makeAbnfCoreRules();
             productions.addAll(0, abnfCore);
         }

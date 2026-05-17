@@ -15,7 +15,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
      * A technically invalid tag. It is used to mark trees "without" a tag.
      */
-    public static @NotNull Sym NULL_TAG = Sym.sym("\0\0\0\0");
+    public static @NotNull Node.NodeTreeTag NULL_TAG = new Node.NodeTreeTag(Sym.sym("\0\0\0\0"));
 
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
@@ -86,7 +86,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      */
     public @NotNull List<@NotNull Node> toList() {
         final @NotNull List<@NotNull Node> alist = new ArrayList<>();
-        if (!tag.content().equals(NULL_TAG)) alist.add(tag);
+        if (!tag.equals(NULL_TAG)) alist.add(tag);
         alist.addAll(content);
         return new UnmodList<>(alist);
     }
@@ -320,10 +320,10 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content,
                                             final boolean usedMemoryOptimization) {
-        if (!tag.content().equals(NULL_TAG) && content.stream()
+        if (!tag.equals(NULL_TAG) && content.stream()
                 .filter(c -> c instanceof Node.NodeParseTree)
                 .map(c -> ((Node.NodeParseTree) c).content())
-                .noneMatch(pt -> pt.tag.content().equals(NULL_TAG)))
+                .noneMatch(pt -> pt.tag.equals(NULL_TAG)))
             return new ParseTree(tag, content, false, usedMemoryOptimization);
 
         final @NotNull var entries = new ArrayList<@NotNull Node>();
@@ -338,7 +338,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                     ? eContent
                     : create(eContent.getTag(), eContent.getContent());
 
-            if (eContent.tag.content().equals(NULL_TAG)) {
+            if (eContent.tag.equals(NULL_TAG)) {
                 entries.addAll(e1.getContent());
             } else {
                 entries.add(Node.of(e1));
@@ -376,7 +376,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         int i = 0;
 
         final @NotNull Object[] l;
-        if (tag.content().equals(NULL_TAG)) {
+        if (tag.equals(NULL_TAG)) {
             l = new Object[content.size()];
         } else {
             l = new Object[content.size() + 1];

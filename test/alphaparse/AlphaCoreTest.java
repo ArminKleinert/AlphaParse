@@ -481,7 +481,7 @@ class AlphaCoreTest {
         // Sadly, AlphaParse can not output untagged trees.
         // The expected result for Instaparse is as follows:
         //    (paren-ab-hide-both-tags "(aba)") ;=> ("a" "b" "a")
-        var tree = ParseTree.create(ParseTree.NULL_TAG.name(), "a", "b", "a");
+        var tree = ParseTree.create(ParseTree.NULL_TAG.content().name(), "a", "b", "a");
 
         // That raw output can be achieved by manual conversion:
         Assertions.assertEquals(List.of("a", "b", "a"), tree.hiccup());

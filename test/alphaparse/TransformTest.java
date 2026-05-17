@@ -1,6 +1,5 @@
 package alphaparse;
 
-import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
 import alphaparse.util.Transform;
 import org.junit.jupiter.api.Assertions;
@@ -14,15 +13,11 @@ class TransformTest {
     @Test
     void testAdd1() {
         var tree = ParseTree.create("S", "1", "2", "3");
-        var transformFn = new Function<List<Object>, Object>() {
-            @Override
-            public Object apply(List<Object> o) {
-                return o.stream().mapToInt(it->Integer.parseInt((String) it)).sum();
-            }
-        };
+        Function<List<Object>, Object> transformFn =
+                o -> o.stream().mapToInt(it->Integer.parseInt((String) it)).sum();
         Assertions.assertEquals(
-                6,
-                Transform.transform(tree, Map.of(Sym.sym("S"), transformFn)));
+                Integer.valueOf(6),
+                Transform.transform(tree, Map.of(Sym.sym("S"), transformFn), (o)->(Integer)o));
     }
     @Test
     void testAdd2() {
@@ -31,15 +26,11 @@ class TransformTest {
                 <NUM> : #'\\d+'
                 """);
         var tree = p.parse("1+2+3").castToParseSuccess();
-        var transformFn = new Function<List<Object>, Object>() {
-            @Override
-            public Object apply(List<Object> o) {
-                return o.stream().mapToInt(it->Integer.parseInt((String) it)).sum();
-            }
-        };
+        Function<List<Object>, Object> transformFn =
+                o -> o.stream().mapToInt(it->Integer.parseInt((String) it)).sum();
         Assertions.assertEquals(
-                6,
-                Transform.transform(tree, Map.of(Sym.sym("S"), transformFn)));
+                Integer.valueOf(6),
+                Transform.transform(tree, Map.of(Sym.sym("S"), transformFn), (o)->(Integer)o));
     }
     @Test
     void testAdd3() {
@@ -57,7 +48,7 @@ class TransformTest {
                 Sym.sym("NUM"), List::getFirst
         );
         Assertions.assertEquals(
-                6,
-                Transform.transform(tree, transformMap));
+                Integer.valueOf(6),
+                Transform.transform(tree, transformMap, (o)->(Integer)o));
     }
 }

@@ -30,7 +30,7 @@ public final class ReductionType {
     public static @NotNull ReductionType standardIntermediateReduction() {
         if (standardIntermediateReduction == null)
             standardIntermediateReduction =
-                    new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INTERMEDIATE, true);
+                    new ReductionType(ParseTree.NULL_TAG.content(), ReductionTypesAvailable.INTERMEDIATE, true);
         return standardIntermediateReduction;
     }
 
@@ -47,7 +47,7 @@ public final class ReductionType {
     public static @NotNull ReductionType standardInitialReduction() {
         if (standardInitialReduction == null)
             standardInitialReduction =
-                    new ReductionType(ParseTree.NULL_TAG, ReductionTypesAvailable.INITIAL, true);
+                    new ReductionType(ParseTree.NULL_TAG.content(), ReductionTypesAvailable.INITIAL, true);
         return standardInitialReduction;
     }
 

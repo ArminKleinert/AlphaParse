@@ -237,12 +237,32 @@ final class EbnfG {
     }
 
     private @NotNull Combinator makeCfgRepRhs() {
+        final @NotNull Combinator repRegexChoice;
+        if (!rulesAvailable.contains(RulesAvailable.STAR)) {
+            repRegexChoice=cf.choiceCombinator(List.of(
+                    cf.createRegexTerminal(regexDoc("\\*", "NUM")),
+                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
+                    cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
+                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM"))
+            ));
+        } else
+        {
+            repRegexChoice=cf.choiceCombinator(List.of(
+                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
+                    cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
+                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM"))
+            ));
+        }
+        /*
+            cf.choiceCombinator(
+                cListOf(cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
+                        cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
+                        cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM")))),
+
+         */
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(cListOf(
-                        cf.choiceCombinator(
-                                cListOf(cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
-                                        cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
-                                        cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM")))),
+                        repRegexChoice,
                         optWhitespace,
                         cf.makeNonTerminal(Sym.sym("factor"))));
         return rulesRule;
