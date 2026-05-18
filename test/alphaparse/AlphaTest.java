@@ -581,7 +581,7 @@ class AlphaTest {
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
-            final @NotNull var ps = Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false));
+            final @NotNull var ps = Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false, false));
             final @NotNull var possibleParses = partialParsesOrderedR123();
             Assertions.assertEquals(possibleParses, ps);
         }
@@ -594,7 +594,7 @@ class AlphaTest {
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
-            final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false)));
+            final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false, false)));
             final @NotNull var possibleParses = new HashSet<>(partialParsesOrderedR123());
             Assertions.assertEquals(possibleParses, ps);
         }

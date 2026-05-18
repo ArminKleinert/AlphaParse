@@ -212,7 +212,7 @@ final class Cfg {
         final @NotNull var rules = Gll.parse(
                 grammarGrammar,
                 Sym.sym("rules"),
-                spec, false);
+                spec, false, false);
         if (rules instanceof AlphaParseFailure) {
             throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
         }

@@ -29,7 +29,8 @@ public record ParsingOptions(
         boolean usePartial,
         @NotNull UnhideOptions unhide,
         boolean embedFailureInParseTree,
-        boolean optimizeMemory
+        boolean optimizeMemory,
+        boolean iterativeDeepening
 ) {
     /**
      * Default for the start production name of a parse operation. ({@code null})
@@ -51,9 +52,13 @@ public record ParsingOptions(
      * By default, use the normal parse algorithm, not the more memory-efficient one. ({@code false})
      */
     public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
+    /**
+
+     */
+    public static final boolean DEFAULT_ITERATIVE_DEEPENING = false;
 
     /**
-     * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
+     * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean, boolean)} with the static defaults.
      *
      * @return An instance of this class, using all the static DEFAULT_* values.
      * @see ParsingOptions#DEFAULT_START
@@ -61,9 +66,10 @@ public record ParsingOptions(
      * @see ParsingOptions#DEFAULT_UNHIDE
      * @see ParsingOptions#DEFAULT_TOTAL
      * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
+     * @see ParsingOptions#DEFAULT_ITERATIVE_DEEPENING
      */
     public static @NotNull ParsingOptions getDefault() {
-        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY);
+        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY, DEFAULT_ITERATIVE_DEEPENING);
     }
 
     /**
@@ -72,7 +78,7 @@ public record ParsingOptions(
      * @return An instance of this class with the {@link ParsingOptions#optimizeMemory} set to true.
      */
     public static @NotNull ParsingOptions optMemory() {
-        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, true);
+        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, true, DEFAULT_ITERATIVE_DEEPENING);
     }
 
     /**
@@ -222,7 +228,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
         if (Objects.equals(this.start, start)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
     }
 
     /**
@@ -234,7 +240,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withPartial(final boolean usePartial) {
         if (Objects.equals(this.usePartial, usePartial)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
     }
 
     /**
@@ -246,7 +252,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withUnhide(final @NotNull UnhideOptions unhide) {
         if (Objects.equals(this.unhide, unhide)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
     }
 
     /**
@@ -258,7 +264,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withEmbedFailureInParseTree(final boolean embedFailureInParseTree) {
         if (Objects.equals(this.embedFailureInParseTree, embedFailureInParseTree)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
     }
 
     /**
@@ -270,6 +276,10 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withOptimizeMemory(final boolean optimizeMemory) {
         if (Objects.equals(this.optimizeMemory, optimizeMemory)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
+    }
+    public @NotNull ParsingOptions withIterativeDeepening(final boolean iterativeDeepening) {
+        if (Objects.equals(this.iterativeDeepening, iterativeDeepening)) return this;
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
     }
 }

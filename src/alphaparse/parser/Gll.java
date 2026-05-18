@@ -31,13 +31,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class Gll {
     private final @NotNull Tramp tramp;
+    private final boolean iterativeDeepening;
 
     Tramp tramp() {
         return tramp;
     }
+    boolean iterativeDeepening() {
+        return iterativeDeepening;
+    }
 
-    private Gll(final @NotNull Tramp tramp) {
+    private Gll(final @NotNull Tramp tramp, final boolean iterativeDeepening) {
         this.tramp = tramp;
+        this.iterativeDeepening = iterativeDeepening;
     }
 
     private @NotNull TrampolineListenerNode getOrCreateListenerNode(
@@ -285,10 +290,11 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
-            final boolean partial) {
+            final boolean partial,
+            final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, 0);
         final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
-        var gll = new Gll(tramp);
+        var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
         return AlphaParsesResult.make(allParses);
@@ -314,10 +320,11 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
-            final boolean partial) {
+            final boolean partial,
+            final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
         final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
-        var gll = new Gll(tramp);
+        var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
         return AlphaParsesResult.make(allParses);
@@ -337,10 +344,11 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
-            final boolean partial) {
+            final boolean partial,
+            final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
         final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
-        var gll = new Gll(tramp);
+        var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
         if (allParses.isEmpty()) {
@@ -367,9 +375,10 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
-            final boolean partial) {
+            final boolean partial,
+            final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        var gll = new Gll(tramp);
+        var gll = new Gll(tramp, iterativeDeepening);
         final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
@@ -396,10 +405,11 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
-            final boolean partial) {
-        final @NotNull var allParses = parses(grammar, start, text, partial);
+            final boolean partial,
+            final boolean iterativeDeepening) {
+        final @NotNull var allParses = parses(grammar, start, text, partial, iterativeDeepening);
         if (!allParses.castToParsesSuccess().isEmpty()) return AlphaParsesResult.make(allParses);
-        return parsesTotalAfterFail(grammar, start, text, partial);
+        return parsesTotalAfterFail(grammar, start, text, partial, iterativeDeepening);
     }
 
     private static @NotNull AlphaParseResult parseTotalAfterFail(
@@ -407,10 +417,11 @@ public final class Gll {
             final @NotNull Sym start,
             final @NotNull String text,
             final int failIndex,
-            final boolean partial) {
+            final boolean partial,
+            final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, failIndex);
         final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
-        var gll = new Gll(tramp);
+        var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
         if (!allParses.isEmpty())
@@ -433,9 +444,10 @@ public final class Gll {
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
-            final boolean partial) {
-        final @NotNull var result = parse(grammar, start, text, partial);
+            final boolean partial,
+            final boolean iterativeDeepening) {
+        final @NotNull var result = parse(grammar, start, text, partial, iterativeDeepening);
         if (!(result instanceof AlphaParseFailure)) return result;
-        return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial);
+        return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial, iterativeDeepening);
     }
 }

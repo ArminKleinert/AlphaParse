@@ -58,7 +58,7 @@ final class Main {
         /**/
         {
             final @NotNull var p = Alpha.parser("S : 'ABC'");
-            IO2.println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.content, true, false)));
+            IO2.println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.content, true, false, false)));
             IO2.println(Alpha.parsesOrFailure(p, "ABD", ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
             IO2.println(Alpha.parse(p, "ABD", ParsingOptions.getDefault()).castToParseFailure().contentsToString());
             IO2.println(Alpha.parses(p, "ABD"));
@@ -142,9 +142,9 @@ final class Main {
             final @NotNull var p = Alpha.parser(grammar);
 
             IO2.println(Alpha.parses(p, text));
-            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false)));
-            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false)));
-            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.none, true, false);
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false, false)));
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false, false)));
+            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.none, true, false, false);
             IO2.println(Alpha.parses(p, "c", commonParseOpts));
             IO2.println(Alpha.parses(p, "c", commonParseOpts).getFirst().getClass());
             IO2.println(Alpha.parse(p, "c", commonParseOpts));
@@ -156,9 +156,9 @@ final class Main {
 
             @NotNull var p = Alpha.parser("S : '1' | '11' | '111' | '1111'", ParserCreationOptions.newWithStandardWhitespace());
             IO2.println(
-                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.none, false, false))
+                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.none, false, false, false))
                             + " // Expect: [[:S, 11], [:S, 1]]");
-            IO2.println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.none, false, false))
+            IO2.println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.none, false, false, false))
                     + " // Expect: [[:S, 1111], [:S, 111], [:S, 11], [:S, 1]]");
 
             p = Alpha.parser("S : #'\\d\\d[\\d]?'", ParserCreationOptions.newWithStandardWhitespace());
@@ -261,8 +261,8 @@ final class Main {
                     parses.castToParsesSuccess().hiccup(),
                     expected));
             IO2.println(parses + " // Expected: " + expected);
-            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false)) + " // Expected: " + expected);
-            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false)));
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false, false)) + " // Expected: " + expected);
+            IO2.println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false, false)));
             IO2.println(Alpha.parses(p, text, ParsingOptions.optMemory()) + " // Expected: " + expected);
         }
 

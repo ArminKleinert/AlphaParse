@@ -89,17 +89,17 @@ public final class Alpha {
         final @NotNull AlphaParseResult parsingResult;
         if (options.isTotal()) {
             parsingResult = AlphaParseResult.make(
-                    Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false));
+                    Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
         } else if (options.optimizeMemory()) {
             @NotNull var result =
                     MemoryOptimizedRepeatingParseStrategy.tryRepeatingParseStrategy(
                             parser, text, startProduction);
             if (result instanceof AlphaParseFailure)
-                result = Gll.parse(parser.grammar(), startProduction, text, false);
+                result = Gll.parse(parser.grammar(), startProduction, text, false, options.iterativeDeepening());
             parsingResult = AlphaParseResult.make(result);
         } else {
             parsingResult = AlphaParseResult.make(
-                    Gll.parse(unhiddenParser.grammar(), startProduction, text, false));
+                    Gll.parse(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
         }
 
         return parsingResult;
@@ -146,9 +146,9 @@ public final class Alpha {
 
         final var useParseTotal = options.isTotal();
         if (useParseTotal) {
-            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial);
+            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         } else {
-            return Gll.parses(unhiddenParser.grammar(), startProduction, text, usePartial);
+            return Gll.parses(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         }
     }
 
@@ -194,9 +194,9 @@ public final class Alpha {
 
         final var useParseTotal = options.isTotal();
         if (useParseTotal) {
-            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial);
+            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         } else {
-            return Gll.parsesOrFailure(unhiddenParser.grammar(), startProduction, text, usePartial);
+            return Gll.parsesOrFailure(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         }
     }
 
