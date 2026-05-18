@@ -1,5 +1,6 @@
 package alphaparse.parser;
 
+import alphaparse.flat.FlatSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -30,7 +31,7 @@ public abstract sealed class Combinator
     /**
      * Runs the parser from the provided index. The text is in the arguments.
      * <p>
-     * Results (successes and failures) are saved using {@link Gll#success(TrampolineListenerNode.TrampolineListenerKey, Object, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
+     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerNode.TrampolineListenerKey, FlatSeq, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
      * @param index  The start index.
      * @param runner Helper structure.
@@ -40,7 +41,7 @@ public abstract sealed class Combinator
     /**
      * Runs the parser from the provided index. The text is in the arguments. Unlike {@link Combinator#parse(int, Gll)}, this method tries to parse the text from the index until the end. If the string can't be matched to the end, results in a failure.
      * <p>
-     * Results (successes and failures) are saved using {@link Gll#success(TrampolineListenerNode.TrampolineListenerKey, Object, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
+     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerNode.TrampolineListenerKey, String, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
      * @param index  The start index.
      * @param runner Helper structure.

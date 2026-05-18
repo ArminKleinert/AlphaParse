@@ -27,8 +27,18 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
             case ParseTree nodes -> new NodeParseTree(nodes);
             case String s -> new NodeString(s);
             case ParseFailureNode parseFailureNode -> new NodeFail(parseFailureNode);
+            case Sym ignored -> throw new IllegalArgumentException("Node.of should not be used on Symbols. Use NodeTreeTag explicitly.");
             default -> throw new IllegalArgumentException("Cannot handle input type " + o.getClass());
         };
+    }
+    static @NotNull Node of(final @NotNull ParseTree o) {
+        return new NodeParseTree(o);
+    }
+    static @NotNull Node of(final @NotNull String o) {
+        return new NodeString(o);
+    }
+    static @NotNull Node of(final @NotNull ParseFailureNode o) {
+        return new NodeFail(o);
     }
 
     /**

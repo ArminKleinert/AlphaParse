@@ -13,24 +13,21 @@ import java.util.*;
  */
 public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
-     * A technically invalid tag. It is used to mark trees "without" a tag.
+     * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See {@link #create(Node.NodeTreeTag, List, boolean)}
      */
     public static @NotNull Node.NodeTreeTag NULL_TAG = new Node.NodeTreeTag(Sym.sym("\0\0\0\0"));
 
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
     private int hashCode = 0;
-    private final boolean isFlat;
     private final boolean usedMemoryOptimization;
 
     private ParseTree(final @NotNull Node.NodeTreeTag tag,
                       final @NotNull List<@NotNull Node> content,
-                      final boolean isFlat,
                       final boolean usedMemoryOptimization) {
         this.tag = tag;
         // this.content = flattenRawProductions(content);
         this.content = content;
-        this.isFlat = isFlat;
         this.usedMemoryOptimization = usedMemoryOptimization;
     }
 
@@ -304,6 +301,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
             case TotalParsesFailureNode ignored -> List.of(Node.of(content));
             case ParseFailureNode ignored -> List.of(Node.of(content));
             case ParseTree ignored -> List.of(Node.of(content));
+            case List<?> objects -> objects.stream().map(Node::of).toList();
             default -> throw new IllegalArgumentException(content.getClass().toString());
         };
         return create(new Node.NodeTreeTag(tag), afs);
@@ -311,7 +309,11 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
 
     /**
      * Creates a parse tree from a tag and content.
-     *
+     * <p>
+     * This method also "flattens" nested trees if necessary. Trees need to be flattened if the content includes any subtrees that have the {@link ParseTree#NULL_TAG}.
+     * <p>
+     * E.g. {@code [:S, "A", [:S, "A"]]} is flat, but {@code [:S, [NULL_TAG, "A"], [:S, "A"]]} is not.
+     * This happens when hide-tags are used, for example in the grammar {@code "S : A S | EPS \n <A> : 'A'"}.
      * @param tag                    The tag as a node.
      * @param content                The content as a node.
      * @param usedMemoryOptimization Whether memory optimization was used when parsing.
@@ -320,11 +322,22 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content,
                                             final boolean usedMemoryOptimization) {
-        if (!tag.equals(NULL_TAG) && content.stream()
-                .filter(c -> c instanceof Node.NodeParseTree)
-                .map(c -> ((Node.NodeParseTree) c).content())
-                .noneMatch(pt -> pt.tag.equals(NULL_TAG)))
-            return new ParseTree(tag, content, false, usedMemoryOptimization);
+
+        // If the content contains a ParseTree which has the NULL_TAG, it has to be "flattened".
+        boolean isFlat = true;
+        for (Node node : content) {
+            if (node instanceof Node.NodeParseTree(ParseTree parseTree)
+                    && parseTree.tag.equals(NULL_TAG)) {
+                // Subtree with NULL_TAG found. Must merge.
+                isFlat = false;
+                break;
+            }
+        }
+        if (isFlat) {
+            return new ParseTree(tag, content, usedMemoryOptimization);
+        }
+
+        // The rest of this method handles the case that there is an unflattened subtree.
 
         final @NotNull var entries = new ArrayList<@NotNull Node>();
         for (@NotNull var e : content) {
@@ -333,19 +346,16 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                 continue;
             }
 
-            final @NotNull var eContent = ((Node.NodeParseTree) e).content();
-            final @NotNull var e1 = eContent.isFlat
-                    ? eContent
-                    : create(eContent.getTag(), eContent.getContent());
+            final @NotNull var subTree = ((Node.NodeParseTree) e).content();
 
-            if (eContent.tag.equals(NULL_TAG)) {
-                entries.addAll(e1.getContent());
+            if (subTree.tag.equals(NULL_TAG)) {
+                entries.addAll(subTree.getContent());
             } else {
-                entries.add(Node.of(e1));
+                entries.add(Node.of(subTree));
             }
         }
 
-        return new ParseTree(tag, entries, true, usedMemoryOptimization);
+        return new ParseTree(tag, entries, usedMemoryOptimization);
     }
 
     /**
