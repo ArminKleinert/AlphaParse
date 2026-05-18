@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * A parsed "result" consists of an index and an object carrying more information.
  * Usually, the wrapped object is a {@link ParseTree} or a string. But this class is also used to transport other types of objects.
+ * For specifics, see {@link AlphaParseMessage#getResult()}.
  */
 public class AlphaParseMessage {
     private final int index;
@@ -21,7 +22,7 @@ public class AlphaParseMessage {
      *
      * @param index The index.
      */
-    protected AlphaParseMessage(final int index, final @Nullable Object result) {
+    private AlphaParseMessage(final int index, final @Nullable Object result) {
         this.index = index;
         this.result = result;
     }
@@ -52,7 +53,7 @@ public class AlphaParseMessage {
      * Creates an instance wrapping a nothing. This is done when a rule finished successfully, but does not need to carry information.
      *
      * @param index The last index of the previous parse, exclusive.
-     * @return An instance wrapping null
+     * @return An instance wrapping null.
      */
     public static @NotNull AlphaParseMessage create(final int index) {
         return new AlphaParseMessage(index, null);
@@ -111,6 +112,9 @@ public class AlphaParseMessage {
 
     /**
      * The wrapped object.
+     * <p>
+     * This is always {@code null} or an instance of {@link String}, {@link ParseTree}, {@link ParseFailureNode} or {@link FlatSeq}.
+     * If the object is a {@link FlatSeq}, the contents are any of the classes mentioned above.
      *
      * @return The wrapped object.
      */
@@ -120,6 +124,9 @@ public class AlphaParseMessage {
 
     @Override
     public String toString() {
-        return "AlphaParseMessage{" + getResult() + "}";
+        return new StringJoiner(", ", AlphaParseMessage.class.getSimpleName() + "[", "]")
+                .add("index=" + index)
+                .add("result=" + result)
+                .toString();
     }
 }

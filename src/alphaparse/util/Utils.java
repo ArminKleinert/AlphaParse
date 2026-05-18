@@ -15,13 +15,13 @@ public class Utils {
     /**
      * Append a variadic list of {@link Collection} instances to a {@link Set}.
      * @param first The first set.
-     * @param sets The other collections.
+     * @param more The other collections.
      * @return A new unmodifiable Set.
      * @param <T> Generic type.
      */
     @SafeVarargs
-    public static <T> @NotNull Set<T> concat(@NotNull Set<T> first, Collection<T>... sets) {
-        return Stream.concat(first.stream(), Arrays.stream(sets).flatMap(Collection::stream)).collect(Collectors.toSet());
+    public static <T> @NotNull Set<T> concat(@NotNull Set<T> first, Collection<T>... more) {
+        return Stream.concat(first.stream(), Arrays.stream(more).flatMap(Collection::stream)).collect(Collectors.toSet());
     }
 
     /**
@@ -39,12 +39,12 @@ public class Utils {
     /**
      * Append a variadic list of {@link Collection} instances to a {@link List}.
      * @param first The first List.
-     * @param sets The other collections.
+     * @param more The other collections.
      * @return A new unmodifiable List.
      * @param <T> Generic type.
      */
     @SafeVarargs
-    public static <T> @NotNull List<T> concat(@NotNull List<T> first, Collection<T>... sets) {
-        return Stream.concat(first.stream(), Arrays.stream(sets).flatMap(Collection::stream)).toList();
+    public static <T> @NotNull List<T> concat(@NotNull List<T> first, Collection<T>... more) {
+        return Stream.concat(first.stream(), Arrays.stream(more).flatMap(Collection::stream)).toList();
     }
 }
