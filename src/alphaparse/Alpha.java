@@ -246,8 +246,7 @@ public final class Alpha {
                 bufferedEbnfGrammar == null || options != ParserCreationOptions.getDefault()
                         ? EbnfG.makeCfg(options)
                         : bufferedEbnfGrammar;
-        return Cfg.buildParser(
-                grammar, options, grammarForParsingGrammar);
+        return Cfg.make(options).buildParser(grammar, grammarForParsingGrammar);
     }
 
     /**
@@ -281,7 +280,7 @@ public final class Alpha {
         if (!grammar.containsKey(options.startProduction()))
             throw new IllegalArgumentException("The start production " + options.startProduction() + " is not in the grammar.");
 
-        @NotNull var parser = Cfg.buildParserFromCombinators(grammar, options);
+        @NotNull var parser = Cfg.make(options).buildParserFromCombinators(grammar);
         if (options.whitespaceParser() != null) {
             parser = parser.withWhitespaceParser(options.whitespaceParser());
         }

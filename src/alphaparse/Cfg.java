@@ -15,20 +15,28 @@ import java.util.Map;
 import java.util.Objects;
 
 final class Cfg {
-    private static @NotNull Combinator stringOrStringCaseInsensitiveCombinator(
-            final @NotNull String s, final boolean caseInsensitiveByDefault,
-            final @NotNull CombinatorFactory combinatorFactory,
-            final @NotNull ParserCreationOptions options) {
+    private final @NotNull CombinatorFactory combinatorFactory;
+    private final @NotNull ParserCreationOptions options;
+
+    private Cfg(final @NotNull ParserCreationOptions options) {
+        this.combinatorFactory = new CombinatorFactory(
+                options.useParserBuffering());
+        this.options = options;
+    }
+
+    static @NotNull Cfg make(final @NotNull ParserCreationOptions options) {
+        return new Cfg(options);
+    }
+
+    private @NotNull Combinator stringOrStringCaseInsensitiveCombinator(
+            final @NotNull String s) {
         return switch (options.stringCaseInsensitive()) {
-            case TRUE -> combinatorFactory.stringOrStringCiTerminal(s, true);
-            case FALSE -> combinatorFactory.stringOrStringCiTerminal(s, false);
-            default -> combinatorFactory.stringOrStringCiTerminal(s, caseInsensitiveByDefault);
+            case TRUE -> combinatorFactory.stringTerminal(s, true);
+            case FALSE, DEFAULT -> combinatorFactory.stringTerminal(s, false);
         };
     }
 
-    private static @NotNull Combinator buildRepRule(final @NotNull ParseTree tree,
-                                                    final @NotNull CombinatorFactory combinatorFactory,
-                                                    final @NotNull ParserCreationOptions options) {
+    private @NotNull Combinator buildRepRule(final @NotNull ParseTree tree) {
         final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
         @NotNull var parts = partsUncut.split("\\*");
         if (parts.length == 1) {
@@ -54,16 +62,12 @@ final class Cfg {
         final int min = parts[0].isBlank() ? 0 : Integer.parseInt(parts[0]);
         final int max = parts[1].isBlank() ? Integer.MAX_VALUE : Integer.parseInt(parts[1]);
         final @NotNull var repeatedRule = (Combinator) buildRule((ParseTree)
-                        tree.getContent().get(1).content(),
-                combinatorFactory,
-                options);
+                tree.getContent().get(1).content());
         return combinatorFactory.repetitionCombinator(min, max, repeatedRule);
     }
 
-    private static @NotNull Map.Entry<@NotNull Sym, @NotNull Combinator> buildRuleRule(
-            final @NotNull ParseTree tree,
-            final @NotNull CombinatorFactory combinatorFactory,
-            final @NotNull ParserCreationOptions options) {
+    private @NotNull Map.Entry<@NotNull Sym, @NotNull Combinator> buildRuleRule(
+            final @NotNull ParseTree tree) {
         final @NotNull var allContents = tree.getContent();
         final @NotNull var nt = (ParseTree) allContents.getFirst().content();
         final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
@@ -75,19 +79,17 @@ final class Cfg {
         if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
             content = ((ParseTree) content.content()).getContent().getFirst();
             key = Sym.sym(content.content().toString());
-            rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd, combinatorFactory, options));
+            rule = combinatorFactory.hideTag((Combinator) buildRule(altOrOrd));
         } else {
             key = Sym.sym((String) content.content());
-            rule = (Combinator) buildRule(altOrOrd, combinatorFactory, options);
+            rule = (Combinator) buildRule(altOrOrd);
         }
 
         return Map.entry(key, rule);
     }
 
-    private static @NotNull Object buildRule(final @NotNull ParseTree tree1,
-                                             final @NotNull CombinatorFactory combinatorFactory,
-                                             final @NotNull ParserCreationOptions options) {
-         @NotNull ParseTree tree = tree1;
+    private @NotNull Object buildRule(final @NotNull ParseTree tree1) {
+        @NotNull ParseTree tree = tree1;
         for (; ; ) {
             if (tree.getTag().equals(ParseTree.NULL_TAG)) {
                 tree = (ParseTree) tree.getContent().getFirst().content();
@@ -97,7 +99,7 @@ final class Cfg {
             final @NotNull var tag = tree.getTag().content().name();
             switch (tag) {
                 case "rule" -> {
-                    return buildRuleRule(tree, combinatorFactory, options);
+                    return buildRuleRule(tree);
                 }
                 case "nt" -> {
                     return combinatorFactory.makeNonTerminal(
@@ -106,35 +108,28 @@ final class Cfg {
                 case "alt" -> {
                     return combinatorFactory.choiceCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content(), combinatorFactory, options))
+                                    (ParseTree) c.content()))
                             .toList());
                 }
                 case "ord" -> {
                     return combinatorFactory.orderedChoiceCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content(), combinatorFactory, options))
+                                    (ParseTree) c.content()))
                             .toList());
                 }
                 case "hide" -> {
                     return ((Combinator) buildRule(
-                            ((Node.NodeParseTree) tree.getContent().getFirst()).content(),
-                            combinatorFactory, options)).enableHideTag();
+                            ((Node.NodeParseTree) tree.getContent().getFirst()).content())).enableHideTag();
                 }
                 case "cat" -> {
                     return combinatorFactory.catCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content(), combinatorFactory, options))
+                                    (ParseTree) c.content()))
                             .toList());
                 }
                 case "string" -> {
                     return stringOrStringCaseInsensitiveCombinator(
-                            StrParser.processString((String) tree.getContent().getFirst().content()),
-                            false, combinatorFactory, options);
-                }
-                case "string-ci" -> {
-                    return stringOrStringCaseInsensitiveCombinator(
-                            StrParser.processString((String) tree.getContent().getFirst().content()),
-                            true, combinatorFactory, options);
+                            StrParser.processString((String) tree.getContent().getFirst().content()));
                 }
                 case "regexp" -> {
                     return combinatorFactory.createRegexTerminal(
@@ -142,26 +137,26 @@ final class Cfg {
                 }
                 case "neg" -> {
                     return combinatorFactory.negateRule((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
+                            (ParseTree) tree.getContent().getFirst().content()));
                 }
                 case "opt" -> {
                     return combinatorFactory.optionalCombinator((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
+                            (ParseTree) tree.getContent().getFirst().content()));
                 }
                 case "star" -> {
                     return combinatorFactory.starCombinator((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
+                            (ParseTree) tree.getContent().getFirst().content()));
                 }
                 case "plus" -> {
                     return combinatorFactory.plusCombinator((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
+                            (ParseTree) tree.getContent().getFirst().content()));
                 }
                 case "look" -> {
                     return combinatorFactory.makeLookahead((Combinator) buildRule(
-                            (ParseTree) tree.getContent().getFirst().content(), combinatorFactory, options));
+                            (ParseTree) tree.getContent().getFirst().content()));
                 }
                 case "rep" -> {
-                    return buildRepRule(tree, combinatorFactory, options);
+                    return buildRepRule(tree);
                 }
                 case "epsilon" -> {
                     return EpsilonCombinator.getDefault();
@@ -193,7 +188,7 @@ final class Cfg {
         }
     }
 
-    private static @NotNull Grammar checkGrammarValidity(final @NotNull Grammar g) {
+    private @NotNull Grammar checkGrammarValidity(final @NotNull Grammar g) {
         final @NotNull var analysisResult = g.analyze();
         if (!analysisResult.isValid())
             throw new IllegalStateException(
@@ -204,18 +199,16 @@ final class Cfg {
         return g;
     }
 
-    static @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammar,
-                                                      final @NotNull ParserCreationOptions options) {
+    @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammar) {
         if (options.startProduction() == null)
             throw new IllegalArgumentException("No start production provided.");
         return new Parser(
-                Cfg.checkGrammarValidity(grammar.applyStandardReductions(new CombinatorFactory(true))),
+                checkGrammarValidity(grammar.applyStandardReductions(combinatorFactory)),
                 options.startProduction());
     }
 
-    static @NotNull Parser buildParser(final @NotNull String spec,
-                                       final @NotNull ParserCreationOptions options,
-                                       final @NotNull Grammar grammarGrammar) {
+    @NotNull Parser buildParser(final @NotNull String spec,
+                                final @NotNull Grammar grammarGrammar) {
         final @NotNull var rules = Gll.parse(
                 grammarGrammar,
                 Sym.sym("rules"),
@@ -225,11 +218,9 @@ final class Cfg {
         }
 
         final @NotNull var productions = new ArrayList<Map.Entry<Sym, Combinator>>();
-        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(
-                options.useParserBuffering());
 
         for (final Node rule : rules.castToParseSuccess().getContent()) {
-            productions.add(buildRuleRule((ParseTree) rule.content(), combinatorFactory, options));
+            productions.add(buildRuleRule((ParseTree) rule.content()));
         }
 
         final @NotNull var startProduction = options.startProduction() != null

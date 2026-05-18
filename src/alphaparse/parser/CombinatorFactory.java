@@ -1,6 +1,5 @@
 package alphaparse.parser;
 
-import alphaparse.IO2;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
@@ -217,8 +216,8 @@ public final class CombinatorFactory {
      * @param caseInsensitive Whether the Terminal will match without caring about casing.
      * @return The new parser.
      */
-    public @NotNull Combinator stringOrStringCiTerminal(final @NotNull String string,
-                                                        final boolean caseInsensitive) {
+    public @NotNull Combinator stringTerminal(final @NotNull String string,
+                                              final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
         final @NotNull var result = new TerminalStringCombinator(string, caseInsensitive);
         if (!useBuffer) return result;
@@ -231,10 +230,10 @@ public final class CombinatorFactory {
      *
      * @param string The string to match.
      * @return The new parser.
-     * @see CombinatorFactory#stringOrStringCiTerminal(String, boolean)
+     * @see CombinatorFactory#stringTerminal(String, boolean)
      */
     public @NotNull Combinator stringTerminal(final @NotNull String string) {
-        return stringOrStringCiTerminal(string, false);
+        return stringTerminal(string, false);
     }
 
     /**

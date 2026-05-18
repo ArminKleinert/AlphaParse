@@ -33,7 +33,7 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
      * @param string          The string to match.
      * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
      * @see CombinatorFactory#stringTerminal(String)
-     * @see CombinatorFactory#stringOrStringCiTerminal(String, boolean)
+     * @see CombinatorFactory#stringTerminal(String, boolean)
      */
     public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
         super();
