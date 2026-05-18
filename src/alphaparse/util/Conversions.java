@@ -9,7 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Methods for converting lists and maps to {@link ParseTree}.
+ */
 public class Conversions {
+    private Conversions() {
+    }
 
     private static @NotNull List<Object> toParseTreeHelper(final @NotNull List<?> o) {
         return o.stream().map(it -> switch (it) {
@@ -41,11 +46,17 @@ public class Conversions {
         return ParseTree.create((Sym) l.getFirst(), toParseTreeHelper(l.subList(1, l.size())));
     }
 
-    public static ParseTree toParseTree(final @NotNull Map<?, ?> l) {
-        if (l.size() != 2
-                || !(l.get(Sym.sym("tag")) instanceof Sym tag)
-                || !(l.get(Sym.sym("content")) instanceof List<?> content))
-            throw new IllegalArgumentException("Cannot handle Map " + l);
+    /**
+     * Converts a Map to a ParseTree. The format is as follows: {@code {:tag Sym, :content List<Object>}}
+     *
+     * @param m The map.
+     * @return A parse tree.
+     */
+    public static ParseTree toParseTree(final @NotNull Map<?, ?> m) {
+        if (m.size() != 2
+                || !(m.get(Sym.sym("tag")) instanceof Sym tag)
+                || !(m.get(Sym.sym("content")) instanceof List<?> content))
+            throw new IllegalArgumentException("Cannot handle Map " + m);
         return ParseTree.create(tag, toParseTreeHelper(content));
     }
 }

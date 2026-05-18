@@ -18,6 +18,7 @@ import java.util.Objects;
  * @param unhide                  What (if anything) to "unhide" in the results.
  * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
  * @param optimizeMemory          Whether to attempt using more memory-efficient algorithms for parsing.
+ * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link alphaparse.parser.TerminalRegexpCombinator#parse}.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE
@@ -53,7 +54,8 @@ public record ParsingOptions(
      */
     public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
     /**
-
+* By default, do not iteratively deepen search when parsing with a regex. ({@code false})<br/>
+     * The reason is that it is much slower to do.
      */
     public static final boolean DEFAULT_ITERATIVE_DEEPENING = false;
 
@@ -232,7 +234,7 @@ public record ParsingOptions(
     }
 
     /**
-     * Makes a new instance with the "usePartial" parameter set to the argument.
+     * Makes a new instance with the {@link #usePartial()} option set to the argument.
      *
      * @param usePartial The argument as a boolean.
      * @return A new instance.
@@ -244,7 +246,7 @@ public record ParsingOptions(
     }
 
     /**
-     * Creates a new instance with the unhide option set to the parameter.
+     * Creates a new instance with the {@link #unhide()} option set to the parameter.
      *
      * @param unhide The new option.
      * @return A new instance.
@@ -256,7 +258,7 @@ public record ParsingOptions(
     }
 
     /**
-     * Creates a new instance with the total option set to the parameter.
+     * Creates a new instance with the {@link #embedFailureInParseTree()} option set to the parameter.
      *
      * @param embedFailureInParseTree The new (or old) setting.
      * @return A new instance.
@@ -268,7 +270,7 @@ public record ParsingOptions(
     }
 
     /**
-     * Creates a new instance with the optimizeMemory option set to the parameter.
+     * Creates a new instance with the {@link #optimizeMemory()} option set to the parameter.
      *
      * @param optimizeMemory The new (or old) setting.
      * @return A new instance.
@@ -278,6 +280,14 @@ public record ParsingOptions(
         if (Objects.equals(this.optimizeMemory, optimizeMemory)) return this;
         return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
     }
+
+    /**
+     * Creates a new instance with the {@link #iterativeDeepening()} option set to the parameter.
+     *
+     * @param iterativeDeepening The new (or old) setting.
+     * @return A new instance.
+     * @see #iterativeDeepening()
+     */
     public @NotNull ParsingOptions withIterativeDeepening(final boolean iterativeDeepening) {
         if (Objects.equals(this.iterativeDeepening, iterativeDeepening)) return this;
         return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);

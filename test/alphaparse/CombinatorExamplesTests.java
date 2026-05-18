@@ -6,7 +6,7 @@ import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CombinatorExamplesTests {
+class CombinatorExamplesTests {
     @Test
     void testChoiceExample1() {
         {
@@ -14,7 +14,8 @@ public class CombinatorExamplesTests {
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
             Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));
-        }{
+        }
+        {
             var opts = ParserCreationOptions
                     .getDefault()
                     .withRedefinitionOption(ProductionRedefinitionOption.CHOICE);

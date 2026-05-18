@@ -63,4 +63,10 @@ class IterativeRegexTest {
                         ParseTree.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
+    @Test
+    void defaultTest() {
+        var p = Alpha.parser("S : #'A+' 'A'");
+        var opts = ParsingOptions.getDefault().withIterativeDeepening(true);
+        Assertions.assertEquals(ParseTree.create("S", "AA", "A"), p.parse("AAA", opts));
+    }
 }

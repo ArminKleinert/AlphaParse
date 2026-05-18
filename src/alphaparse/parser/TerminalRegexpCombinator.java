@@ -2,6 +2,7 @@ package alphaparse.parser;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +47,27 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
         return null;
     }
 
+    /**
+     * Parse the string using the regex. Normally, the longest match is eagerly taken.
+     * So by default, the following is true:
+     * <pre>
+     * {@code
+     *         var p = Alpha.parser("S : #'A+' 'A'");
+     *         Assertions.assertTrue(p.parse("AAA").isFailure()); // Parsing failed because #'A+' eagerly matched the entire input.
+     * }
+     * </pre>
+     * If the {@link ParsingOptions#iterativeDeepening()} option is true, the parse would succeed.
+     * <pre>
+     * {@code
+     *         var p = Alpha.parser("S : #'A+' 'A'");
+     *         var opts = ParsingOptions.getDefault().withIterativeDeepening(true);
+     *         Assertions.assertEquals(ParseTree.create("S", "AA", "A"), p.parse("AAA", opts));
+     * }
+     * </pre>
+     *
+     * @param index  The start index.
+     * @param runner Helper structure.
+     */
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Pattern regexp = getRegexp();

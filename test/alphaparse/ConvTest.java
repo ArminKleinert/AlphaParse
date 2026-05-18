@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-public class ConvTest {
+ class ConvTest {
     @Test
-    public void listToTreeTest() {
+    void listToTreeTest() {
         var l = List.of(Sym.sym("S"), "A", List.of(Sym.sym("S"), "A"));
         var pt = Conversions.toParseTree(l);
         Assertions.assertEquals(
@@ -20,7 +20,7 @@ public class ConvTest {
     }
 
     @Test
-    public void mapToTreeTest() {
+    void mapToTreeTest() {
         var l = Map.of(
                 Sym.sym("tag"), Sym.sym("S"),
                 Sym.sym("content"), List.of("A", Map.of(Sym.sym("tag"), Sym.sym("S"), Sym.sym("content"), List.of("A"))));
@@ -32,7 +32,7 @@ public class ConvTest {
     }
 
     @Test
-    public void mixedToTreeTest() {
+    void mixedToTreeTest() {
         {
             var l = Map.of(
                     Sym.sym("tag"), Sym.sym("S"),

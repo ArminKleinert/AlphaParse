@@ -14,11 +14,20 @@ class TransformTest {
     void testAdd1() {
         var tree = ParseTree.create("S", "1", "2", "3");
         Function<List<Object>, Object> transformFn =
-                o -> o.stream().mapToInt(it->Integer.parseInt((String) it)).sum();
+                o -> o.stream().mapToInt(it -> Integer.parseInt((String) it)).sum();
+        Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(Sym.sym("S"), transformFn);
+
+        Assertions.assertEquals(
+                6,
+                Transform.transform(tree, transformMap));
         Assertions.assertEquals(
                 Integer.valueOf(6),
-                Transform.transform(tree, Map.of(Sym.sym("S"), transformFn), (o)->(Integer)o));
+                Transform.transform(tree, transformMap, (o) -> (Integer) o));
+        Assertions.assertEquals(
+                6,
+                Transform.transform(tree, transformMap, (o) -> (Integer) o).intValue());
     }
+
     @Test
     void testAdd2() {
         var p = Alpha.parser("""
@@ -27,11 +36,20 @@ class TransformTest {
                 """);
         var tree = p.parse("1+2+3").castToParseSuccess();
         Function<List<Object>, Object> transformFn =
-                o -> o.stream().mapToInt(it->Integer.parseInt((String) it)).sum();
+                o -> o.stream().mapToInt(it -> Integer.parseInt((String) it)).sum();
+        Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(Sym.sym("S"), transformFn);
+
+        Assertions.assertEquals(
+                6,
+                Transform.transform(tree, transformMap));
         Assertions.assertEquals(
                 Integer.valueOf(6),
-                Transform.transform(tree, Map.of(Sym.sym("S"), transformFn), (o)->(Integer)o));
+                Transform.transform(tree, transformMap, (o) -> (Integer) o));
+        Assertions.assertEquals(
+                6,
+                Transform.transform(tree, transformMap, (o) -> (Integer) o).intValue());
     }
+
     @Test
     void testAdd3() {
         var p = Alpha.parser("""
@@ -39,7 +57,7 @@ class TransformTest {
                 NUM : #'\\d+'
                 """);
         var tree = p.parse("1+2+3").castToParseSuccess();
-        Map<Sym,Function<List<Object>, Object>> transformMap = Map.of(
+        Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(
                 Sym.sym("S"), o -> o.stream()
                         .filter(it -> !it.equals("+"))
                         .map(it -> (String) it)
@@ -47,8 +65,41 @@ class TransformTest {
                         .sum(),
                 Sym.sym("NUM"), List::getFirst
         );
+
+        Assertions.assertEquals(
+                6,
+                Transform.transform(tree, transformMap));
         Assertions.assertEquals(
                 Integer.valueOf(6),
-                Transform.transform(tree, transformMap, (o)->(Integer)o));
+                Transform.transform(tree, transformMap, (o) -> (Integer) o));
+        Assertions.assertEquals(
+                6,
+                Transform.transform(tree, transformMap, (o) -> (Integer) o).intValue());
+    }
+
+    @Test
+    void testAdd4() {
+        var p = Alpha.parser("""
+                S : A
+                A : NUM ('+' NUM)*
+                NUM : #'\\d+'
+                """);
+        var tree = p.parse("1+2+3").castToParseSuccess();
+        Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(
+                Sym.sym("A"), o -> String.valueOf(o
+                        .stream()
+                        .filter(it -> !it.equals("+"))
+                        .map(it -> (String) it)
+                        .mapToInt(Integer::parseInt)
+                        .sum()),
+                Sym.sym("NUM"), List::getFirst
+        );
+
+        Assertions.assertEquals(
+                ParseTree.create("S", "6"),
+                Transform.transform(tree, transformMap));
+        Assertions.assertEquals(
+                ParseTree.create("S", "6"),
+                Transform.transform(tree, transformMap, (o) -> (ParseTree) o));
     }
 }

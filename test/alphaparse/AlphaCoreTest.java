@@ -292,7 +292,7 @@ class AlphaCoreTest {
                     """);
 
     @Test
-    public void testAsAndBs() {
+    void testAsAndBs() {
         final @NotNull String text = "aaaaabbbaaaabb";
         final @NotNull ParseTree tree = ParseTree.create(
                 "S",
@@ -318,7 +318,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAsAndBsRegex() {
+    void testAsAndBsRegex() {
         final @NotNull String text = "aaaaabbbaaaabb";
         final @NotNull ParseTree tree = ParseTree.create(
                 "S",
@@ -344,7 +344,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAsAndBsHiccup() {
+    void testAsAndBsHiccup() {
         final @NotNull String text = "aaaaabbbaaaabb";
         final @NotNull ParseTree tree = ParseTree.create(
                 "S",
@@ -378,7 +378,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAsAndBsVariation1() {
+    void testAsAndBsVariation1() {
         final @NotNull String text = "aaaaabbbaaaabb";
 
         var res = ParseTree.create("S",
@@ -396,7 +396,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAsAndBsVariation2() {
+    void testAsAndBsVariation2() {
         final @NotNull String text = "aaaaabbbaaaabb";
 
         var res = ParseTree.create(
@@ -423,7 +423,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParenAb() {
+    void testParenAb() {
         var text = "(aba)";
         var tree = ParseTree.create("paren-wrapped",
                 "(",
@@ -438,7 +438,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParenAbHideParens() {
+    void testParenAbHideParens() {
         var text = "(aba)";
         var tree = ParseTree.create("paren-wrapped",
                 ParseTree.create("seq-of-A-or-B", "a", "b", "a"));
@@ -451,7 +451,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParenAbManuallyFlattened() {
+    void testParenAbManuallyFlattened() {
         var text = "(aba)";
         var tree = ParseTree.create("paren-wrapped", "a", "b", "a");
 
@@ -463,7 +463,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParenAbHideTag() {
+    void testParenAbHideTag() {
         var text = "(aba)";
         var tree = ParseTree.create("paren-wrapped", "a", "b", "a");
 
@@ -475,7 +475,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParenAbHideBothTags() {
+    void testParenAbHideBothTags() {
         var text = "(aba)";
 
         // Sadly, AlphaParse can not output untagged trees.
@@ -492,7 +492,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParserAsFunction() {
+    void testParserAsFunction() {
         var text = "aaaa";
         var grammar = "S = 'a' S / '' ";
         var tree =
@@ -502,7 +502,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testParserAsFunction2() {
+    void testParserAsFunction2() {
         var text = "aaaa";
         var grammar = "S = S 'a' / Epsilon";
         var tree =
@@ -512,7 +512,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAmbiguousParses() {
+    void testAmbiguousParses() {
         var text = "aaaaaa";
 
         var treesAmbiguous = List.of(
@@ -535,7 +535,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testUnambiguousParses() {
+    void testUnambiguousParses() {
         var text = "aaaaaa";
 
 
@@ -553,7 +553,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testLookaheadExample() {
+    void testLookaheadExample() {
         var text = "abaaaab";
         var tree = ParseTree.create("S", "a", "b", "a", "a", "a", "a", "b");
         Assertions.assertEquals(tree, lookahead_example.parse(text));
@@ -562,7 +562,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testLookaheadExampleFailure() {
+    void testLookaheadExampleFailure() {
         var text = "bbaaaab";
 
         Assertions.assertFalse(lookahead_example.parse(text).isSuccess());
@@ -574,7 +574,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testNegativeLookaheadExample() {
+    void testNegativeLookaheadExample() {
         var text = "bbaaaab";
         var tree = ParseTree.create("S", "b", "b", "a", "a", "a", "a", "b");
 
@@ -586,7 +586,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testNegativeLookaheadExampleFailure() {
+    void testNegativeLookaheadExampleFailure() {
         var text = "abaaaab";
 
         Assertions.assertFalse(negative_lookahead_example.parse(text).isSuccess());
@@ -598,13 +598,13 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testCharRangeExampleFailure() {
+    void testCharRangeExampleFailure() {
         var p = Alpha.parser("""
-                Regex = (CharNonRange | Range) +
-                Range = Char <'-'> Char
-                CharNonRange = Char ! ('-' Char)
-        Char = #'[-x]' | 'c' (! 'd') 'x'
-        """);
+                        Regex = (CharNonRange | Range) +
+                        Range = Char <'-'> Char
+                        CharNonRange = Char ! ('-' Char)
+                Char = #'[-x]' | 'c' (! 'd') 'x'
+                """);
 
         var tree = ParseTree.create("Regex",
                 ParseTree.create("Range",
@@ -622,7 +622,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAmbiguousTokenizer() {
+    void testAmbiguousTokenizer() {
         var text = "defn my cond";
         var trees = Set.of(
                 ParseTree.create("sentence", ParseTree.create("identifier", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("identifier", "cond")),
@@ -635,7 +635,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testUnambiguousTokenizer() {
+    void testUnambiguousTokenizer() {
         var text = "defn my cond";
         var trees = List.of(
                 ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond"))
@@ -645,7 +645,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testPreferentialTokenizer() {
+    void testPreferentialTokenizer() {
         var text = "defn my cond";
         var trees = Set.of(
                 ParseTree.create("sentence", ParseTree.create("keyword", "defn"), ParseTree.create("identifier", "my"), ParseTree.create("keyword", "cond")),
@@ -661,7 +661,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testRepeatedA() {
+    void testRepeatedA() {
         var text = "aaaaaa";
         var trees = List.of(
                 ParseTree.create("S", "a", "a", "a", "a", "a", "a")
@@ -683,7 +683,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testWordsAndNumbersOneCharacterAtATime() {
+    void testWordsAndNumbersOneCharacterAtATime() {
         var text = "abc 123 def";
         var tree = ParseTree.create("sentence",
                 ParseTree.create("word", "a", "b", "c"),
@@ -695,7 +695,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testArithmeticGrammar() {
+    void testArithmeticGrammar() {
         var text = "1-2/(3-4)+5*6";
         var tree = ParseTree.create("expr",
                 ParseTree.create("add",
@@ -724,7 +724,7 @@ class AlphaCoreTest {
      */
 
     @Test
-    public void testTrickyEbnfBuild() {
+    void testTrickyEbnfBuild() {
         var text1 = "===";
         var text2 = "b=";
         var tree1 = ParseTree.create("S", "=", "=", "=");
@@ -735,7 +735,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testFail() {
+    void testFail() {
         Assertions.assertEquals(
                 ParseTree.create("S", "a")
                 , Alpha.parser("S = A\n<A> = 'a'").parse("a"));
@@ -751,7 +751,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testOptionalRepeat() {
+    void testOptionalRepeat() {
         var parser = Alpha.parser("S = ('a'?)+");
         var tree = ParseTree.create("S");
 
@@ -760,7 +760,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testDot() {
+    void testDot() {
         var parser = Alpha.parser("""
                 a = b c .
                 b = 'b' .
@@ -775,7 +775,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testUnhide1() {
+    void testUnhide1() {
         var text = "(ababa)";
         var treeNormal = ParseTree.create("paren-wrapped",
                 ParseTree.create("seq-of-A-or-B",
@@ -797,7 +797,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testUnhide2() {
+    void testUnhide2() {
         var text = "(ababa)";
         var treeWTag = ParseTree.create("paren-wrapped",
                 ParseTree.create("seq-of-A-or-B",
@@ -817,7 +817,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testEps() {
+    void testEps() {
         Assertions.assertEquals(
                 ParseTree.create("S"),
                 Alpha.parser("S = eps").parse(""));
@@ -836,7 +836,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testEpsFail() {
+    void testEpsFail() {
         Assertions.assertTrue(
                 Alpha.parser("S = eps")
                         .parse("a")
@@ -860,7 +860,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testWordsAndNumbers() {
+    void testWordsAndNumbers() {
         var text = "ab 123 cd";
         var treeWithoutTokenTag = ParseTree.create(
                 "sentence",
@@ -882,7 +882,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testWordsAndNumbersAutoWhitespace() {
+    void testWordsAndNumbersAutoWhitespace() {
         var tree = ParseTree.create(
                 "sentence",
                 ParseTree.create("word", "ab"),
@@ -900,7 +900,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testWordsAndNumbersAutoWhitespaceAndComments() {
+    void testWordsAndNumbersAutoWhitespaceAndComments() {
         var tree = ParseTree.create(
                 "sentence",
                 ParseTree.create("word", "abc"),
@@ -915,7 +915,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testEatA() {
+    void testEatA() {
         var tree = ParseTree.create(
                 "Aeater",
                 "a", "a", "a", "a", "a", "a", "a", "a",
@@ -929,7 +929,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testIntOrDouble() {
+    void testIntOrDouble() {
         var tree = ParseTree.create(
                 "Input",
                 ParseTree.create("Int", "31"),
@@ -943,7 +943,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testGreedyRegex() {
+    void testGreedyRegex() {
         {
             final @NotNull Parser p = Alpha.parser("S = #'\\s*'");
             final @NotNull var text = "     ";
@@ -963,7 +963,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testSimpleOrderedChoice() {
+    void testSimpleOrderedChoice() {
         final @NotNull Parser p = Alpha.parser("S = 'a' / eps");
 
         Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
@@ -971,7 +971,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testStarRepetitionFailures() {
+    void testStarRepetitionFailures() {
         var p = Alpha.parser("S = 'a'*");
 
         Assertions.assertTrue(p.parse("AaaAaa").isFailure());
@@ -979,7 +979,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testStarRepetitionFailuresTotal() {
+    void testStarRepetitionFailuresTotal() {
         var p = Alpha.parser("S = 'a'*");
         var opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
 
@@ -996,7 +996,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testPlusRepetitionFailures() {
+    void testPlusRepetitionFailures() {
         var p = Alpha.parser("S = 'a'+");
 
         Assertions.assertTrue(p.parse("AaaAaa").isFailure());
@@ -1004,7 +1004,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testPlusRepetitionFailuresTotal() {
+    void testPlusRepetitionFailuresTotal() {
         var p = Alpha.parser("S = 'a'+");
         var opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
 
@@ -1021,7 +1021,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testStringVsStringCi() {
+    void testStringVsStringCi() {
         var grammar = "S = 'a'+";
         var text = "AaaAaa";
 
@@ -1038,7 +1038,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testStringExplicitCiFalse() {
+    void testStringExplicitCiFalse() {
         var grammar = "S = 'a'+";
         var text = "AaaAaa";
 
@@ -1059,7 +1059,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testStringExplicitCiTrue() {
+    void testStringExplicitCiTrue() {
         var grammar = "S = 'a'+";
         var text = "AaaAaa";
 
@@ -1079,7 +1079,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testAutoWhitespaceExamples() {
+    void testAutoWhitespaceExamples() {
         var tree = ParseTree.create("S", "foo", "123");
         var text = "foo 123";
 
@@ -1088,7 +1088,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testRegexFail() {
+    void testRegexFail() {
         Assertions.assertTrue(
                 Alpha.parser("f = #'asdf'").parse("asdf").isSuccess());
         Assertions.assertTrue(
@@ -1098,7 +1098,7 @@ class AlphaCoreTest {
     }
 
     @Test
-    public void testCaseInsensitiveRegex() {
+    void testCaseInsensitiveRegex() {
         Assertions.assertEquals(
                 ParseTree.create("S", "aaa"),
                 case_insensitive_regexp.parse("aaa"));

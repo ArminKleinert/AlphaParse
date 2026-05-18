@@ -312,6 +312,7 @@ public final class Gll {
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String)
      * @see Alpha#parse(Parser, String, ParsingOptions)
@@ -337,6 +338,7 @@ public final class Gll {
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse forest or failure.
      * @see Alpha#parsesOrFailure(Parser, String, ParsingOptions)
      */
@@ -367,6 +369,7 @@ public final class Gll {
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String)
      * @see Alpha#parse(Parser, String, ParsingOptions)
@@ -397,6 +400,7 @@ public final class Gll {
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String, ParsingOptions)
      * @see ParsingOptions#isTotal()
@@ -436,6 +440,7 @@ public final class Gll {
      * @param start   The name of the start production.
      * @param text    The text.
      * @param partial Whether to include partial results.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String, ParsingOptions)
      * @see ParsingOptions#isTotal()
