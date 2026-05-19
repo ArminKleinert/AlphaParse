@@ -1,4 +1,4 @@
-package alphaparse.tests;
+package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;

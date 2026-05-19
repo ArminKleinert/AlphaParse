@@ -1,4 +1,4 @@
-package alphaparse.tests;
+package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
@@ -13,7 +13,7 @@ class CharRangeTest {
     private final ParserCreationOptions options =
          new ParserCreationOptions(
              null,null,null,false,null,
-                RulesAvailable.DEFAULT_RULES()).addAvailableRule(RulesAvailable.CHAR_RANGE);
+                RulesAvailable.defaultRules()).addAvailableRule(RulesAvailable.CHAR_RANGE);
     
     @Test
     void unicodeCodepointSingleParse() {

@@ -7,6 +7,7 @@ import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -16,8 +17,7 @@ import java.util.function.Function;
  * @param startProduction The first production to try.
  */
 public record Parser(@NotNull Grammar grammar,
-                     @NotNull Sym startProduction)
-        implements Function<String, AlphaParseResult> {
+                     @NotNull Sym startProduction) {
 
     /**
      * Creates a new Parser.
@@ -118,17 +118,6 @@ public record Parser(@NotNull Grammar grammar,
                 whitespaceParser.grammar(),
                 whitespaceParser.startProduction()
         ));
-    }
-
-    /**
-     * Same as {@link #parse(String)}.
-     *
-     * @param s The string to parse.
-     * @return The result of the parse.
-     */
-    @Override
-    public @NotNull AlphaParseResult apply(final @NotNull String s) {
-        return parse(s);
     }
 
     /**

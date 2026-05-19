@@ -44,10 +44,10 @@ public final class Alpha {
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(true);
 
         return switch (unhide) {
-            case none -> parser;
-            case content -> parser.withGrammar(combinatorFactory.unhideAllContent(parser.grammar()));
-            case tags -> parser.withGrammar(combinatorFactory.unhideTags(parser.grammar()));
-            case all -> parser.withGrammar(combinatorFactory.unhideAll(parser.grammar()));
+            case NONE -> parser;
+            case CONTENT -> parser.withGrammar(combinatorFactory.unhideAllContent(parser.grammar()));
+            case TAGS -> parser.withGrammar(combinatorFactory.unhideTags(parser.grammar()));
+            case ALL -> parser.withGrammar(combinatorFactory.unhideAll(parser.grammar()));
         };
     }
 

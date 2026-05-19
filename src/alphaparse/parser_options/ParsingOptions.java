@@ -42,9 +42,9 @@ public record ParsingOptions(
      */
     public static final boolean DEFAULT_PARTIAL = false;
     /**
-     * By default, leave the parse trees as intended (hidden parts stay hidden). The value is {@link UnhideOptions#none}
+     * By default, leave the parse trees as intended (hidden parts stay hidden). The value is {@link UnhideOptions#NONE}
      */
-    public static final @NotNull UnhideOptions DEFAULT_UNHIDE = UnhideOptions.none;
+    public static final @NotNull UnhideOptions DEFAULT_UNHIDE = UnhideOptions.NONE;
     /**
      * By default, do not include failure nodes in parse trees. ({@code false})
      */

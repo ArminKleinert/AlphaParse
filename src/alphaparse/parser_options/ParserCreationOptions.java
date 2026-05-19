@@ -33,20 +33,6 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     private static ParserCreationOptions DEFAULT;
 
     /**
-     * The default settings.
-     *
-     * @return default settings.
-     */
-    public static @NotNull ParserCreationOptions getDefault() {
-        if (DEFAULT == null) {
-            DEFAULT = new ParserCreationOptions(
-                    null, null, null,
-                    defaultUseParserBuffering, null, null);
-        }
-        return DEFAULT;
-    }
-
-    /**
      * Constructor.
      *
      * @param whitespaceParser             A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
@@ -70,7 +56,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         this.useParserBuffering = useParserBuffering;
         this.productionRedefinitionOption = productionRedefinitionOption;
         this.usableRules = usableRules == null
-                ? RulesAvailable.DEFAULT_RULES()
+                ? RulesAvailable.defaultRules()
                 : usableRules;
     }
 
@@ -159,6 +145,13 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 defaultUseParserBuffering, productionRedefinitionOption, usableRules);
     }
 
+    /**
+     * Creates a new instance with the parameter added to {@link ParserCreationOptions#usableRules()}.
+     *
+     * @param usableRule The new rule type.
+     * @return A new instance.
+     * @see #withRulesAvailable(Set)
+     */
     public @NotNull ParserCreationOptions addAvailableRule(
             final @NotNull RulesAvailable usableRule) {
         return withRulesAvailable(
@@ -167,11 +160,18 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                         .collect(Collectors.toUnmodifiableSet()));
     }
 
+    /**
+     * Creates a new instance with the parameter removed from {@link ParserCreationOptions#usableRules()}.
+     *
+     * @param usableRule The rule type.
+     * @return A new instance.
+     * @see #withRulesAvailable(Set)
+     */
     public @NotNull ParserCreationOptions removeAvailableRule(
             final @NotNull RulesAvailable usableRule) {
         return withRulesAvailable(
                 usableRules.stream()
-                        .filter(it -> it.equals(usableRule))
+                        .filter(it -> !it.equals(usableRule))
                         .collect(Collectors.toUnmodifiableSet()));
     }
 
@@ -199,25 +199,49 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
-     * ABNF settings: Strings are case-insensitive, redefinition of productions with {@code =/} creates a choice rule. For available rules, see {@link RulesAvailable#ABNF_RULES()}.
+     * The default settings.
+     *
+     * @return default settings.
+     */
+    public static @NotNull ParserCreationOptions getDefault() {
+        if (DEFAULT == null) {
+            DEFAULT = new ParserCreationOptions(
+                    null, null, null,
+                    defaultUseParserBuffering, null, null);
+        }
+        return DEFAULT;
+    }
+
+    /**
+     * ABNF settings: Strings are case-insensitive, redefinition of productions with {@code =/} creates a choice rule. For available rules, see {@link RulesAvailable#abnfRules()}.
      *
      * @return Options for ABNF parsers.
      */
-    public static @NotNull ParserCreationOptions ABNF() {
+    public static @NotNull ParserCreationOptions abnf() {
         return new ParserCreationOptions(
-                null, null, GlobalCaseInsensitivity.TRUE, defaultUseParserBuffering, ProductionRedefinitionOption.CHOICE, RulesAvailable.ABNF_RULES()
+                null, null, GlobalCaseInsensitivity.TRUE, defaultUseParserBuffering, ProductionRedefinitionOption.CHOICE, RulesAvailable.abnfRules()
         );
     }
 
-
     /**
-     * EBNF settings: Strings are case-sensitive. For available rules, see {@link RulesAvailable#EBNF_RULES()}.
+     * EBNF settings: Strings are case-sensitive. For available rules, see {@link RulesAvailable#ebnfRules()}.
      *
      * @return Options for EBNF parsers.
      */
-    public static @NotNull ParserCreationOptions EBNF() {
+    public static @NotNull ParserCreationOptions ebnf() {
         return new ParserCreationOptions(
-                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, ProductionRedefinitionOption.defaultOption, RulesAvailable.EBNF_RULES()
+                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, ProductionRedefinitionOption.defaultOption, RulesAvailable.ebnfRules()
+        );
+    }
+
+    /**
+     * EBNF settings without addons: Strings are case-sensitive. For available rules, see {@link RulesAvailable#pureEbnfRules()}.
+     *
+     * @return Options for EBNF parsers.
+     */
+    public static @NotNull ParserCreationOptions pureEbnf() {
+        return new ParserCreationOptions(
+                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, ProductionRedefinitionOption.defaultOption, RulesAvailable.pureEbnfRules()
         );
     }
 }

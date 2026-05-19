@@ -1,4 +1,4 @@
-package alphaparse.tests.rules_available;
+package alphaparse.tests.typical.rules_available;
 
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class RulesAvailableDefaultTest {
+class RulesAvailableAbnfTest {
     private @NotNull ParserCreationOptions opts() {
-        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.DEFAULT_RULES());
+        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.abnfRules());
     }
 
     @Test
     void alternation() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\" | \"b\"", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\" | \"b\"", opts()));
     }
 
     @Test
@@ -32,17 +32,17 @@ class RulesAvailableDefaultTest {
     @Test
     void extendedIdentifiers() {
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"", opts()));
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));
     }
 
     @Test
     void lookahead() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = &\"a\" \"a\"", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = &\"a\" \"a\"", opts()));
     }
 
     @Test
     void negativeLookahead() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = !\"b\" \"a\"", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = !\"b\" \"a\"", opts()));
     }
 
     @Test
@@ -52,17 +52,17 @@ class RulesAvailableDefaultTest {
 
     @Test
     void optionalQuery() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"?", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\"?", opts()));
     }
 
     @Test
     void optionalRepetition() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = {\"a\"}", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = {\"a\"}", opts()));
     }
 
     @Test
     void optionalRepetitionStar() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"?", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\"?", opts()));
     }
 
     @Test
@@ -72,7 +72,7 @@ class RulesAvailableDefaultTest {
 
     @Test
     void plus() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"+", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\"+", opts()));
     }
 
     @Test
@@ -83,7 +83,7 @@ class RulesAvailableDefaultTest {
 
     @Test
     void singleQuotesForStringTerminals() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S : 'abc'", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : 'abc'", opts()));
     }
 
     @Test
@@ -98,6 +98,6 @@ class RulesAvailableDefaultTest {
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = 1*5 \"a\"", opts()));
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = 1* \"a\"", opts()));
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = *5 \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = * \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = * \"a\"", opts()));
     }
 }

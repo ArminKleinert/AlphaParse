@@ -1,4 +1,4 @@
-package alphaparse.tests;
+package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
@@ -500,7 +500,7 @@ class AlphaCoreTest {
         var tree =
                 ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S")))));
 
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).parse(text));
     }
 
     @Test
@@ -510,7 +510,7 @@ class AlphaCoreTest {
         var tree =
                 ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"), "a"), "a"), "a"), "a");
 
-        Assertions.assertEquals(tree, Alpha.parser(grammar).apply(text));
+        Assertions.assertEquals(tree, Alpha.parser(grammar).parse(text));
     }
 
     @Test
@@ -791,11 +791,11 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(treeNormal, p.parse(text));
         Assertions.assertEquals(treeWParen,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.content)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT)));
         Assertions.assertEquals(treeWParen,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.all)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
         Assertions.assertEquals(treeNormal,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.tags)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS)));
     }
 
     @Test
@@ -812,10 +812,10 @@ class AlphaCoreTest {
         var p = paren_ab_hide_tag;
 
         Assertions.assertEquals(treeWTag,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.tags)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS)));
 
         Assertions.assertEquals(treeWAll,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.all)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
     }
 
     @Test
@@ -880,7 +880,7 @@ class AlphaCoreTest {
         );
         Assertions.assertEquals(treeWithoutTokenTag, words_and_numbers.parse(text));
 
-        Assertions.assertEquals(treeFull, words_and_numbers.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.all)));
+        Assertions.assertEquals(treeFull, words_and_numbers.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
     }
 
     @Test

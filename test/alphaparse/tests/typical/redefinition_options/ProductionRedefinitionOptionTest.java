@@ -1,4 +1,4 @@
-package alphaparse.tests.redefinition_options;
+package alphaparse.tests.typical.redefinition_options;
 
 import alphaparse.Alpha;
 import alphaparse.grammar.ProductionRedefinitionOption;

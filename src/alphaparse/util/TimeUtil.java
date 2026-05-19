@@ -4,7 +4,6 @@ import alphaparse.functions.Procedure;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.DoubleStream;
 
 /**
@@ -44,6 +43,13 @@ public final class TimeUtil {
                 min, max, diff, avg, mid, median, sum);
     }
 
+    /**
+     * Another test method.
+     *
+     * @param milliseconds Time limit.
+     * @param f            Code to execute.
+     * @return Number of executions within the time limit.
+     */
     public static @NotNull String measureExecutionsPer(final long milliseconds, final @NotNull Procedure f) {
         final long startTime = System.nanoTime();
         final long endTime = startTime + milliseconds * 1000000;

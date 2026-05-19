@@ -1,9 +1,9 @@
 package alphaparse.result;
 
 import alphaparse.Alpha;
+import alphaparse.list.PretenderList;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.list.LazySupplierList;
-import alphaparse.list.PretenderList;
 import alphaparse.parser.Parser;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,7 +66,7 @@ public sealed interface AlphaParsesResult
      *
      * @return The parse forest as a list of lists.
      */
-    default List<List<Object>> hiccup() {
+    default List<List<Object>> toRawList() {
         if (!this.isSuccess())
             throw new ClassCastException("Cannot cast failure to success.");
         return stream().map(ParseTree::toRawList).toList();

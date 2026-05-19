@@ -4,6 +4,22 @@ import java.util.List;
 
 /**
  * Options for deciding what to do when a production is added that already exists. This enum is specifically used in {@link Grammar#fromProductions(List, ProductionRedefinitionOption)}.
+ * <p>
+ * Consider the following grammar:
+ * <pre>
+ * {@code
+ *      S = A
+ *      S = B
+ *      S = C
+ * }
+ * </pre>
+ * The question this class tries to answer is "what to do?". The parser knows thanks to these options.
+ * <ul>
+ *     <li>{@link ProductionRedefinitionOption#OVERRIDE}: {@code S = C}</li>
+ *     <li>{@link ProductionRedefinitionOption#ERROR}: Fails.</li>
+ *     <li>{@link ProductionRedefinitionOption#CHOICE}: {@code S = A | B | C}</li>
+ *     <li>{@link ProductionRedefinitionOption#KEEP}: {@code S = A}</li>
+ * </ul>
  */
 public enum ProductionRedefinitionOption {
     /**

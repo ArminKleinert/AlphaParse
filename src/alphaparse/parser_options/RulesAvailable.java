@@ -95,8 +95,10 @@ public enum RulesAvailable {
 
     /**
      * ABNF string prefixes {@code %i"..."} for case insensitivity and {@code %s"..."} for forced case sensitivity.
+     *
      * @see CombinatorFactory#stringTerminal(String, boolean)
-     */STRING_CASE_SENSITIVITY_PREFIX,
+     */
+    STRING_CASE_SENSITIVITY_PREFIX,
 
     /**
      * ABNF char range.
@@ -194,9 +196,10 @@ public enum RulesAvailable {
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull Set<RulesAvailable> PURE_EBNF_RULES() {
+    public static @NotNull Set<RulesAvailable> pureEbnfRules() {
         return Set.of(
-                ALTERNATION, EPSILON, OPTIONAL, REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION);
+                ALTERNATION, EPSILON, OPTIONAL, REGEX, SINGLY_QUOTED,
+                OPTIONAL_REPETITION);
     }
 
     /**
@@ -216,10 +219,11 @@ public enum RulesAvailable {
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull Set<RulesAvailable> EBNF_RULES() {
+    public static @NotNull Set<RulesAvailable> ebnfRules() {
         return Set.of(
-                ALTERNATION, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, OPTIONAL_QUERY, PLUS,
-                REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION, OPTIONAL_REPETITION_STAR);
+                ALTERNATION, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL,
+                OPTIONAL_QUERY, PLUS, REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION,
+                OPTIONAL_REPETITION_STAR);
     }
 
     /**
@@ -236,9 +240,10 @@ public enum RulesAvailable {
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull @Unmodifiable Set<RulesAvailable> ABNF_RULES() {
+    public static @NotNull @Unmodifiable Set<RulesAvailable> abnfRules() {
         return Set.of(
-                ABNF_CORE, CHAR_RANGE, VARIABLE_REPEAT, OPTIONAL, ORDERED_CHOICE, REGEX, STRING_CASE_SENSITIVITY_PREFIX);
+                ABNF_CORE, CHAR_RANGE, VARIABLE_REPEAT, OPTIONAL, ORDERED_CHOICE,
+                REGEX, STRING_CASE_SENSITIVITY_PREFIX);
     }
 
     /**
@@ -261,11 +266,12 @@ public enum RulesAvailable {
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull Set<RulesAvailable> DEFAULT_RULES() {
+    public static @NotNull Set<RulesAvailable> defaultRules() {
         return Set.of(
-                CHAR_RANGE, ALTERNATION, VARIABLE_REPEAT, EPSILON, EXTENDED_IDENTIFIERS,
-                LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, OPTIONAL_QUERY, OPTIONAL_REPETITION_STAR,
-                ORDERED_CHOICE, OPTIONAL_REPETITION, PLUS, REGEX,
-                SINGLY_QUOTED, STRING_CASE_SENSITIVITY_PREFIX);
+                CHAR_RANGE, ALTERNATION, VARIABLE_REPEAT, EPSILON,
+                EXTENDED_IDENTIFIERS, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL,
+                OPTIONAL_QUERY, OPTIONAL_REPETITION_STAR, ORDERED_CHOICE,
+                OPTIONAL_REPETITION, PLUS, REGEX, SINGLY_QUOTED,
+                STRING_CASE_SENSITIVITY_PREFIX);
     }
 }

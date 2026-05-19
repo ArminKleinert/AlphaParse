@@ -1,4 +1,4 @@
-package alphaparse.tests;
+package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParserCreationOptions;
@@ -7,8 +7,7 @@ import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class StringTest {
-
+class StringTest {
     @Test
     void explicitStringCaseInsensitivity() {
         var opts = ParserCreationOptions.getDefault()

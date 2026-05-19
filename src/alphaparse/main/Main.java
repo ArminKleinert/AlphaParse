@@ -73,7 +73,7 @@ final class Main {
         /**/
         {
             final @NotNull var p = Alpha.parser("S : 'ABC'");
-            println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.content, true, false, false)));
+            println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.CONTENT, true, false, false)));
             println(Alpha.parsesOrFailure(p, "ABD", ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
             println(Alpha.parse(p, "ABD", ParsingOptions.getDefault()).castToParseFailure().contentsToString());
             println(Alpha.parses(p, "ABD"));
@@ -157,9 +157,9 @@ final class Main {
             final @NotNull var p = Alpha.parser(grammar);
 
             println(Alpha.parses(p, text));
-            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false, false)));
-            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false, false)));
-            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.none, true, false, false);
+            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.NONE, true, false, false)));
+            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false)));
+            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.NONE, true, false, false);
             println(Alpha.parses(p, "c", commonParseOpts));
             println(Alpha.parses(p, "c", commonParseOpts).getFirst().getClass());
             println(Alpha.parse(p, "c", commonParseOpts));
@@ -171,9 +171,9 @@ final class Main {
 
             @NotNull var p = Alpha.parser("S : '1' | '11' | '111' | '1111'", ParserCreationOptions.newWithStandardWhitespace());
             println(
-                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.none, false, false, false))
+                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false))
                             + " // Expect: [[:S, 11], [:S, 1]]");
-            println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.none, false, false, false))
+            println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false))
                     + " // Expect: [[:S, 1111], [:S, 111], [:S, 11], [:S, 1]]");
 
             p = Alpha.parser("S : #'\\d\\d[\\d]?'", ParserCreationOptions.newWithStandardWhitespace());
@@ -218,7 +218,7 @@ final class Main {
                 final @NotNull var text = "int a(int r){return r;}int a(int r, int a){return r;}";
                 final var startTime = System.nanoTime();
                 final @NotNull var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
-                final @NotNull var parses = Alpha.parses(p, text).castToParsesSuccess().hiccup();
+                final @NotNull var parses = Alpha.parses(p, text).castToParsesSuccess().toRawList();
                 final var endTime = System.nanoTime();
 //                List<Object> old = (List<Object>) cljNestedVecChangeKeywordType(EdnReader.readString(
 //                        readFile("testout.edn"),
@@ -238,7 +238,7 @@ final class Main {
                 final @NotNull var text = "struct test ttt;\nint a(int r){return \"\\\"\"|r(77)+1+0.9f+.8;}";
                 final var startTime = System.nanoTime();
                 final @NotNull var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());
-                final @NotNull var parses = Alpha.parses(p, text).castToParsesSuccess().hiccup();
+                final @NotNull var parses = Alpha.parses(p, text).castToParsesSuccess().toRawList();
                 final var endTime = System.nanoTime();
 //                List<Object> old = (List<Object>) cljNestedVecChangeKeywordType(EdnReader.readString(
 //                        readFile("testout2.edn"),
@@ -273,11 +273,11 @@ final class Main {
                             List.of("T", List.of("r2", "b"))));
 
             println(Objects.equals(
-                    parses.castToParsesSuccess().hiccup(),
+                    parses.castToParsesSuccess().toRawList(),
                     expected));
             println(parses + " // Expected: " + expected);
-            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.none, true, false, false)) + " // Expected: " + expected);
-            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.none, false, false, false)));
+            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.NONE, true, false, false)) + " // Expected: " + expected);
+            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false)));
             println(Alpha.parses(p, text, ParsingOptions.optMemory()) + " // Expected: " + expected);
         }
 

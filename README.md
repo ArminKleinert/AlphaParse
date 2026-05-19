@@ -62,6 +62,62 @@ TODO
 - Grammars like `S : epsilon | S` produce an infinite number of results if the input is empty. This is technically
   correct behavior, but very confusing to users.
 
+## Differences from Instaparse
+
+The biggest difference to Instaparse is that Alphaparse does not require Clojure. Jokes aside, there are a few important
+internal differences.
+
+### Production redefinitions
+
+When you write a grammar like
+
+```
+S = A
+S = B
+S = C
+```
+
+the question arises: What is the right-hand side of the production `S`?
+
+Instaparse chooses to override the previous definitions silently. Alphaparse allows the user to choose between options:
+
+```java
+import alphaparse.Alpha;
+import alphaparse.grammar.ProductionRedefinitionOption;
+import alphaparse.parser.Parser;
+import alphaparse.parser_options.ParserCreationOptions;
+
+class RedefTest {
+    static void main(String[] args) {
+        ParserCreationOptions opts = ParserCreationOptions
+                .getDefault()
+                .withRedefinitionOption(ProductionRedefinitionOption.OVERRIDE);
+        String gr = "S : 'A'\nS : 'B'\nS : 'C'";
+        Parser p;
+
+        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.OVERRIDE));
+        IO.println(p.parse("A").isSuccess()); // false
+        IO.println(p.parse("B").isSuccess()); // false
+        IO.println(p.parse("C").isSuccess()); // true
+
+        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.ERROR)); // Fails
+        IO.println(p.parse("A").isSuccess()); // n.a.
+        IO.println(p.parse("B").isSuccess()); // n.a.
+        IO.println(p.parse("C").isSuccess()); // n.a.
+
+        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.CHOICE));
+        IO.println(p.parse("A").isSuccess()); // true
+        IO.println(p.parse("B").isSuccess()); // true
+        IO.println(p.parse("C").isSuccess()); // true
+
+        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.KEEP));
+        IO.println(p.parse("A").isSuccess()); // true
+        IO.println(p.parse("B").isSuccess()); // false
+        IO.println(p.parse("C").isSuccess()); // false
+    }
+}
+```
+
 ## Style considerations
 
 When starting this project, I made a few decisions that are all over the code.

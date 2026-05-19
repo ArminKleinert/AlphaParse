@@ -1,4 +1,4 @@
-package alphaparse.tests.rules_available;
+package alphaparse.tests.typical.rules_available;
 
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 class RulesAvailableEbnfTest {
     private @NotNull ParserCreationOptions opts() {
-        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.EBNF_RULES());
+        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.ebnfRules());
     }
 
     @Test
