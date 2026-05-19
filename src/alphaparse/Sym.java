@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Keyword k2 = Keyword.intern(str);
  * k1 == k2 // Guarantied to be true.}
  */
-public class Sym implements CharSequence{
+public class Sym {
     private static final ConcurrentHashMap<String, Reference<Sym>> table =
             new ConcurrentHashMap<>();
     private static final ReferenceQueue<Sym> rq =
@@ -80,18 +80,18 @@ public class Sym implements CharSequence{
         return this == o;
     }
 
-    @Override
-    public int length() {
-        return name.length();
-    }
-
-    @Override
-    public char charAt(int i) {
-        return name.charAt(i);
-    }
-
-    @Override
-    public @NotNull CharSequence subSequence(int i, int i1) {
-        return name.subSequence(i, i1);
-    }
+//    @Override
+//    public int length() {
+//        return name.length();
+//    }
+//
+//    @Override
+//    public char charAt(int i) {
+//        return name.charAt(i);
+//    }
+//
+//    @Override
+//    public @NotNull CharSequence subSequence(int i, int i1) {
+//        return name.subSequence(i, i1);
+//    }
 }

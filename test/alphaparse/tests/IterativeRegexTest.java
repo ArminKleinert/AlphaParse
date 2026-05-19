@@ -14,7 +14,10 @@ class IterativeRegexTest {
     @Test
     void testCheckByPartials() {
         var p = Alpha.parser("S : #'A+'");
-        var parses = Alpha.parses(p, "AAAA", ParsingOptions.getDefault().withIterativeDeepening(true).withPartial(true));
+        var parses = Alpha.parses(p, "AAAA",
+                ParsingOptions.getDefault()
+                        .withIterativeDeepening(true)
+                        .withPartial(true));
         Assertions.assertEquals(
                 List.of(ParseTree.create("S", "A"),
                         ParseTree.create("S", "AA"),
@@ -30,7 +33,8 @@ class IterativeRegexTest {
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
 
-        var parses = Alpha.parses(p, "AAAA", ParsingOptions.getDefault().withIterativeDeepening(true));
+        var parses = Alpha.parses(p, "AAAA",
+                ParsingOptions.getDefault().withIterativeDeepening(true));
         Assertions.assertEquals(
                 Set.of(ParseTree.create("S", "A", "AAA"),
                         ParseTree.create("S", "AA", "AA"),
@@ -45,7 +49,8 @@ class IterativeRegexTest {
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
 
-        var parses = Alpha.parses(p, "AAAA", ParsingOptions.getDefault().withIterativeDeepening(true));
+        var parses = Alpha.parses(p, "AAAA",
+                ParsingOptions.getDefault().withIterativeDeepening(true));
         Assertions.assertEquals(
                 Set.of(ParseTree.create("S", "A", "AAA"),
                         ParseTree.create("S", "AA", "AA"),
@@ -60,7 +65,8 @@ class IterativeRegexTest {
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
 
-        var parses = Alpha.parses(p, "AAAA", ParsingOptions.getDefault().withIterativeDeepening(true));
+        var parses = Alpha.parses(p, "AAAA",
+                ParsingOptions.getDefault().withIterativeDeepening(true));
         Assertions.assertEquals(
                 Set.of(ParseTree.create("S", "A", "AAA"),
                         ParseTree.create("S", "AA", "AA"),
@@ -72,6 +78,8 @@ class IterativeRegexTest {
     void defaultTest() {
         var p = Alpha.parser("S : #'A+' 'A'");
         var opts = ParsingOptions.getDefault().withIterativeDeepening(true);
-        Assertions.assertEquals(ParseTree.create("S", "AA", "A"), p.parse("AAA", opts));
+        Assertions.assertEquals(
+                ParseTree.create("S", "AA", "A"),
+                p.parse("AAA", opts));
     }
 }
