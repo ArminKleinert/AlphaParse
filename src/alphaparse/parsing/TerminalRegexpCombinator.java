@@ -1,8 +1,9 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.parser_options.ParsingOptions;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;

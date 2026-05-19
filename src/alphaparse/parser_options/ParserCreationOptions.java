@@ -2,8 +2,8 @@ package alphaparse.parser_options;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
+import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser.Parser;
-import alphaparse.grammar.ProductionRedefinitionOption;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,14 +20,14 @@ import java.util.stream.Stream;
  * @param startProduction              The starting production name of the parser.
  * @param stringCaseInsensitive        Set to make all string terminals case-insensitive or case-sensitive.
  * @param useParserBuffering           Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
- * @param productionRedefinitionOption Sets what to do when a production appears twice in the definition.
+ * @param redefinitionOption Sets what to do when a production appears twice in the definition.
  * @param usableRules                  A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
  */
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable Sym startProduction,
                                     @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                     boolean useParserBuffering,
-                                    @Nullable ProductionRedefinitionOption productionRedefinitionOption,
+                                    @Nullable RedefinitionOption redefinitionOption,
                                     @NotNull Set<RulesAvailable> usableRules) {
     private static final boolean defaultUseParserBuffering = true;
     private static ParserCreationOptions DEFAULT;
@@ -39,14 +39,14 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * @param startProduction              The starting production name of the parser.
      * @param stringCaseInsensitive        Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
      * @param useParserBuffering           Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
-     * @param productionRedefinitionOption Sets what to do when a production appears twice in the definition.
+     * @param redefinitionOption Sets what to do when a production appears twice in the definition.
      * @param usableRules                  A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
      */
     public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                  final @Nullable Sym startProduction,
                                  final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
                                  final boolean useParserBuffering,
-                                 final @Nullable ProductionRedefinitionOption productionRedefinitionOption,
+                                 final @Nullable RedefinitionOption redefinitionOption,
                                  final @Nullable Set<RulesAvailable> usableRules) {
         this.whitespaceParser = whitespaceParser;
         this.startProduction = startProduction;
@@ -54,7 +54,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 ? GlobalCaseInsensitivity.DEFAULT
                 : stringCaseInsensitive;
         this.useParserBuffering = useParserBuffering;
-        this.productionRedefinitionOption = productionRedefinitionOption;
+        this.redefinitionOption = redefinitionOption;
         this.usableRules = usableRules == null
                 ? RulesAvailable.defaultRules()
                 : usableRules;
@@ -72,7 +72,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             return this;
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                defaultUseParserBuffering, productionRedefinitionOption, usableRules);
+                defaultUseParserBuffering, redefinitionOption, usableRules);
     }
 
     /**
@@ -87,7 +87,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             return this;
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                defaultUseParserBuffering, productionRedefinitionOption, usableRules);
+                defaultUseParserBuffering, redefinitionOption, usableRules);
     }
 
     /**
@@ -102,7 +102,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             return this;
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                defaultUseParserBuffering, productionRedefinitionOption, usableRules);
+                defaultUseParserBuffering, redefinitionOption, usableRules);
     }
 
     /**
@@ -122,14 +122,14 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     /**
      * Sets what to do when a production appears twice in the definition.
      *
-     * @param productionRedefinitionOption Sets what to do when a production appears twice in the definition.
+     * @param redefinitionOption Sets what to do when a production appears twice in the definition.
      * @return A new instance.
      */
     public @NotNull ParserCreationOptions withRedefinitionOption(
-            final ProductionRedefinitionOption productionRedefinitionOption) {
+            final RedefinitionOption redefinitionOption) {
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                defaultUseParserBuffering, productionRedefinitionOption, usableRules);
+                defaultUseParserBuffering, redefinitionOption, usableRules);
     }
 
     /**
@@ -142,7 +142,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final @Nullable Set<RulesAvailable> usableRules) {
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                defaultUseParserBuffering, productionRedefinitionOption, usableRules);
+                defaultUseParserBuffering, redefinitionOption, usableRules);
     }
 
     /**
@@ -219,7 +219,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      */
     public static @NotNull ParserCreationOptions abnf() {
         return new ParserCreationOptions(
-                null, null, GlobalCaseInsensitivity.TRUE, defaultUseParserBuffering, ProductionRedefinitionOption.CHOICE, RulesAvailable.abnfRules()
+                null, null, GlobalCaseInsensitivity.TRUE, defaultUseParserBuffering, RedefinitionOption.CHOICE, RulesAvailable.abnfRules()
         );
     }
 
@@ -230,7 +230,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      */
     public static @NotNull ParserCreationOptions ebnf() {
         return new ParserCreationOptions(
-                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, ProductionRedefinitionOption.defaultOption, RulesAvailable.ebnfRules()
+                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, RedefinitionOption.defaultOption, RulesAvailable.ebnfRules()
         );
     }
 
@@ -241,7 +241,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      */
     public static @NotNull ParserCreationOptions pureEbnf() {
         return new ParserCreationOptions(
-                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, ProductionRedefinitionOption.defaultOption, RulesAvailable.pureEbnfRules()
+                null, null, GlobalCaseInsensitivity.FALSE, defaultUseParserBuffering, RedefinitionOption.defaultOption, RulesAvailable.pureEbnfRules()
         );
     }
 }

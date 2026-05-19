@@ -1,6 +1,7 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;

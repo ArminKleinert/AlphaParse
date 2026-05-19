@@ -6,6 +6,10 @@ import alphaparse.grammar.Grammar;
 import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
+import alphaparse.parsing.Combinator;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
+import alphaparse.parsing.EpsilonCombinator;
+import alphaparse.parsing.Gll;
 import alphaparse.result.*;
 import alphaparse.util.StrParser;
 import org.jetbrains.annotations.NotNull;
@@ -259,14 +263,14 @@ final class Cfg {
                 : productions.getFirst().getKey();
 
         if (options.usableRules().contains(RulesAvailable.ABNF_CORE)) {
-            var abnfCore = EbnfG.makeAbnfCoreRules();
+            var abnfCore = CfgGrammar.makeAbnfCoreRules();
             productions.addAll(0, abnfCore);
         }
 
         @NotNull Grammar grammar;
         try {
             grammar = checkGrammarValidity(
-                    Grammar.fromProductions(productions, options.productionRedefinitionOption())
+                    Grammar.fromProductions(productions, options.redefinitionOption())
                             .applyStandardReductions(combinatorFactory));
         } catch (IllegalGrammarException exception) {
             throw new ParserCreationFailure(exception);

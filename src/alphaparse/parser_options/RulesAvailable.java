@@ -1,6 +1,7 @@
 package alphaparse.parser_options;
 
-import alphaparse.parser.*;
+import alphaparse.parsing.*;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 

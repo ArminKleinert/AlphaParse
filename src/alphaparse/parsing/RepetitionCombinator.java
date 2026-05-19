@@ -1,9 +1,10 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.flat.FlatSeq;
+import alphaparse.collections.FlatSeq;
 import alphaparse.functions.Listener;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;

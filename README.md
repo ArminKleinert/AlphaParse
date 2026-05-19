@@ -83,38 +83,38 @@ Instaparse chooses to override the previous definitions silently. Alphaparse all
 
 ```java
 import alphaparse.Alpha;
-import alphaparse.grammar.ProductionRedefinitionOption;
+import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 
 class RedefTest {
-    static void main(String[] args) {
-        ParserCreationOptions opts = ParserCreationOptions
-                .getDefault()
-                .withRedefinitionOption(ProductionRedefinitionOption.OVERRIDE);
-        String gr = "S : 'A'\nS : 'B'\nS : 'C'";
-        Parser p;
+  static void main(String[] args) {
+    ParserCreationOptions opts = ParserCreationOptions
+            .getDefault()
+            .withRedefinitionOption(RedefinitionOption.OVERRIDE);
+    String gr = "S : 'A'\nS : 'B'\nS : 'C'";
+    Parser p;
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.OVERRIDE));
-        IO.println(p.parse("A").isSuccess()); // false
-        IO.println(p.parse("B").isSuccess()); // false
-        IO.println(p.parse("C").isSuccess()); // true
+    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
+    IO.println(p.parse("A").isSuccess()); // false
+    IO.println(p.parse("B").isSuccess()); // false
+    IO.println(p.parse("C").isSuccess()); // true
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.ERROR)); // Fails
-        IO.println(p.parse("A").isSuccess()); // n.a.
-        IO.println(p.parse("B").isSuccess()); // n.a.
-        IO.println(p.parse("C").isSuccess()); // n.a.
+    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.ERROR)); // Fails
+    IO.println(p.parse("A").isSuccess()); // n.a.
+    IO.println(p.parse("B").isSuccess()); // n.a.
+    IO.println(p.parse("C").isSuccess()); // n.a.
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.CHOICE));
-        IO.println(p.parse("A").isSuccess()); // true
-        IO.println(p.parse("B").isSuccess()); // true
-        IO.println(p.parse("C").isSuccess()); // true
+    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.CHOICE));
+    IO.println(p.parse("A").isSuccess()); // true
+    IO.println(p.parse("B").isSuccess()); // true
+    IO.println(p.parse("C").isSuccess()); // true
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(ProductionRedefinitionOption.KEEP));
-        IO.println(p.parse("A").isSuccess()); // true
-        IO.println(p.parse("B").isSuccess()); // false
-        IO.println(p.parse("C").isSuccess()); // false
-    }
+    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.KEEP));
+    IO.println(p.parse("A").isSuccess()); // true
+    IO.println(p.parse("B").isSuccess()); // false
+    IO.println(p.parse("C").isSuccess()); // false
+  }
 }
 ```
 
@@ -163,14 +163,11 @@ types. But only *sometimes*. I prefer deterministic behavior.
 
 ```java
 // Could be java.util.function.Consumer<AlphaParseMessage>. New type for clarity.
-alphaparse.functions.Listener listener = (AlphaParseMessage o) -> {
-        };
+alphaparse.functions.Listener listener = (AlphaParseMessage o) -> { System.out.println("Listener"); };
 
-// Could be java.lang.Runnable. New type because runnable is associated with Threads.
-alphaparse.functions.NegativeListener negativeListener = () -> {
-};
-alphaparse.functions.Procedure procedure = () -> {
-};
+// Could be java.lang.Runnable. New type because Runnable is associated with Threads.
+alphaparse.functions.NegativeListener negativeListener = () -> { System.out.println("NegativeListener"); };
+alphaparse.functions.Procedure procedure = () -> { System.out.println("Procedure"); };
 ```
 
 ### New collection types
@@ -185,7 +182,7 @@ A part of the code used a TreeMap indexed by `Integer`. I replaced that with a s
 // - Java's collection types introduce a lot of wrapping and unwrapping of the primitive type.
 // - the new type probably has a smaller memory-footprint.
 // Can be removed if project valhalla ever gets finished.
-alphaparse.list.IntMap<T> m; 
+alphaparse.collections.IntMap<T> m; 
 ```
 
 When constructing parse trees, the program needs to differentiate between List types sometimes. This type makes it clear
@@ -193,7 +190,7 @@ which behavior is needed when. It is also immutable with easy readability for ad
 either of these, but never both.
 
 ```java
-alphaparse.flat.FlatSeq<T> flatSeq;
+alphaparse.collections.FlatSeq<T> flatSeq;
 ```
 
 When returning a parse forest, a lazy list is used. Java (to my knowledge) does not have these. The only alternative I
@@ -201,7 +198,7 @@ can think of are `Stream`s, but those can only be iterated once. Implementing a 
 same purpose while being simpler, but after testing each approach, I found this new type to be substantially faster.
 
 ```java
-alphaparse.list.LazySupplierList<T> lazySupplierList;
+alphaparse.collections.LazySupplierList<T> lazySupplierList;
 ```
 
 

@@ -1,4 +1,4 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;

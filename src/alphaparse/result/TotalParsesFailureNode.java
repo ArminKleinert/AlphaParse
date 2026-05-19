@@ -1,7 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.Sym;
-import alphaparse.list.PretenderList;
+import alphaparse.collections.PretenderList;
 import org.jetbrains.annotations.NotNull;
 
 /**

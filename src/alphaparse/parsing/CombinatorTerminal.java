@@ -1,9 +1,7 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.StringJoiner;
 
 /**
  * A general type of {@link Combinator} for terminals (epsilon, regex, string, char)

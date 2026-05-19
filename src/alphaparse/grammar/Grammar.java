@@ -1,7 +1,8 @@
 package alphaparse.grammar;
 
 import alphaparse.Sym;
-import alphaparse.parser.*;
+import alphaparse.parsing.*;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -86,40 +87,40 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides.
      *
      * @param kvs                The productions.
-     * @param productionRedefinitionOption Option for what to do if a production appears more than once.
+     * @param redefinitionOption Option for what to do if a production appears more than once.
      * @return A new Grammar.
-     * @see ProductionRedefinitionOption
+     * @see RedefinitionOption
      */
     public static @NotNull Grammar fromProductions(
             final @NotNull List<Map.Entry<Sym, Combinator>> kvs,
-            @Nullable ProductionRedefinitionOption productionRedefinitionOption) {
+            @Nullable RedefinitionOption redefinitionOption) {
         final @NotNull SequencedMap<Sym, Combinator> m = new LinkedHashMap<>();
 
-        if (productionRedefinitionOption == null)
-            productionRedefinitionOption = ProductionRedefinitionOption.defaultOption;
+        if (redefinitionOption == null)
+            redefinitionOption = RedefinitionOption.defaultOption;
 
         // Using an assignment here is not strictly necessary. I use it to force the switch to be exhaustive by default.
         @SuppressWarnings("unused")
-        var usedOpt = switch (productionRedefinitionOption) {
-            case ProductionRedefinitionOption.OVERRIDE -> { // Ignore existing
+        var usedOpt = switch (redefinitionOption) {
+            case RedefinitionOption.OVERRIDE -> { // Ignore existing
                 for (Map.Entry<Sym, Combinator> kv : kvs)
                     m.put(kv.getKey(), kv.getValue());
-                yield ProductionRedefinitionOption.OVERRIDE;
+                yield RedefinitionOption.OVERRIDE;
             }
-            case ProductionRedefinitionOption.ERROR -> { // Throw if any production exists with this name
+            case RedefinitionOption.ERROR -> { // Throw if any production exists with this name
                 for (Map.Entry<Sym, Combinator> kv : kvs)
                     if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
                         throw new IllegalArgumentException("Duplicate production: " + kv.getKey());
-                yield ProductionRedefinitionOption.ERROR;
+                yield RedefinitionOption.ERROR;
             }
-            case ProductionRedefinitionOption.CHOICE -> { // Make a choice combinator if exists
+            case RedefinitionOption.CHOICE -> { // Make a choice combinator if exists
                 addProductionWithRedefinitionOptionChoice(m, kvs);
-                yield ProductionRedefinitionOption.CHOICE;
+                yield RedefinitionOption.CHOICE;
             }
-            case ProductionRedefinitionOption.KEEP -> {
+            case RedefinitionOption.KEEP -> {
                 for (Map.Entry<Sym, Combinator> kv : kvs)
                     m.putIfAbsent(kv.getKey(), kv.getValue());
-                yield ProductionRedefinitionOption.KEEP;
+                yield RedefinitionOption.KEEP;
             }
         };
 

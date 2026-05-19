@@ -1,9 +1,9 @@
 package alphaparse.result;
 
 import alphaparse.Alpha;
-import alphaparse.list.PretenderList;
+import alphaparse.collections.PretenderList;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.list.LazySupplierList;
+import alphaparse.collections.LazySupplierList;
 import alphaparse.parser.Parser;
 import org.jetbrains.annotations.NotNull;
 

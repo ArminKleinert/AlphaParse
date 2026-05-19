@@ -1,9 +1,10 @@
-package alphaparse.parser;
+package alphaparse.parsing.combinator_factory;
 
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.Sym;
+import alphaparse.parsing.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,11 +67,12 @@ public final class CombinatorFactory {
 
     /**
      * Alias for {@link CombinatorFactory#choiceCombinator(List)}.
+     *
      * @param parsers The parsers for the output.
-     * @return  A combinator.
+     * @return A combinator.
      */
     public @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
-    return choiceCombinator(parsers);
+        return choiceCombinator(parsers);
     }
 
     /**
@@ -130,7 +132,8 @@ public final class CombinatorFactory {
      * @return A combinator, as described.
      */
     public @NotNull Combinator repetitionCombinator(final int m, final int n, final @NotNull Combinator parser) {
-        if (m < 0 || m > n) throw new IllegalArgumentException("Minimum number of repetitions must be below maximum number of repetitions.");
+        if (m < 0 || m > n)
+            throw new IllegalArgumentException("Minimum number of repetitions must be below maximum number of repetitions.");
         if ((m == 0 && n == 0) || parser.equals(epsilon)) return epsilon;
         if (m == 1 && n == 1) return parser;
         if (m == n) {

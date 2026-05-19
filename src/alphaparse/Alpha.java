@@ -2,7 +2,9 @@ package alphaparse;
 
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
-import alphaparse.parser.*;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
+import alphaparse.parsing.Gll;
+import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.UnhideOptions;
@@ -32,7 +34,7 @@ public final class Alpha {
         if (!setting) {
             bufferedEbnfGrammar = null;
         } else if (bufferedEbnfGrammar == null) {
-            bufferedEbnfGrammar = EbnfG.makeCfg(ParserCreationOptions.getDefault());
+            bufferedEbnfGrammar = CfgGrammar.makeCfg(ParserCreationOptions.getDefault());
         }
     }
 
@@ -245,7 +247,7 @@ public final class Alpha {
                                          final @NotNull ParserCreationOptions options) {
         var grammarForParsingGrammar =
                 bufferedEbnfGrammar == null || options != ParserCreationOptions.getDefault()
-                        ? EbnfG.makeCfg(options)
+                        ? CfgGrammar.makeCfg(options)
                         : bufferedEbnfGrammar;
         return Cfg.make(options).buildParser(grammar, grammarForParsingGrammar);
     }

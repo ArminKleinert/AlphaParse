@@ -1,5 +1,6 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 

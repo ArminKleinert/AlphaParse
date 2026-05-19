@@ -1,4 +1,4 @@
-package alphaparse.flat;
+package alphaparse.collections;
 
 
 import org.jetbrains.annotations.NotNull;

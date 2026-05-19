@@ -2,6 +2,7 @@ package alphaparse;
 
 import alphaparse.grammar.Grammar;
 import alphaparse.parser.*;
+import alphaparse.parsing.*;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 

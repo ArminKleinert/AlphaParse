@@ -1,8 +1,10 @@
 package alphaparse;
 
 import alphaparse.grammar.Grammar;
-import alphaparse.grammar.ProductionRedefinitionOption;
-import alphaparse.parser.*;
+import alphaparse.grammar.RedefinitionOption;
+import alphaparse.parsing.Combinator;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
+import alphaparse.parsing.NonTerminalCombinator;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import org.jetbrains.annotations.NotNull;
@@ -11,12 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 
-final class EbnfG {
+final class CfgGrammar {
     final @NotNull CombinatorFactory cf;
     final @NotNull Set<RulesAvailable> rulesAvailable;
     final @NotNull ParserCreationOptions options;
 
-    private EbnfG(final @NotNull ParserCreationOptions options) {
+    private CfgGrammar(final @NotNull ParserCreationOptions options) {
         this.options = options;
         this.rulesAvailable = options.usableRules();
         this.cf = options.useParserBuffering()
@@ -154,7 +156,7 @@ final class EbnfG {
 
     private @NotNull Combinator makeCfgRuleSeparatorRhs() {
         // If redefinition via multiple production re-assignment is active, allow "=/" as an assignment operator.
-        if (Objects.equals(options.productionRedefinitionOption(), ProductionRedefinitionOption.CHOICE)) {
+        if (Objects.equals(options.redefinitionOption(), RedefinitionOption.CHOICE)) {
             return cf.createRegexTerminal(Pattern.compile("=/|:=|::=|=|:"));
         }
         return cf.createRegexTerminal(Pattern.compile(":=|::=|=|:"));
@@ -505,7 +507,7 @@ final class EbnfG {
 
     @NotNull
     static Grammar makeCfg(final @NotNull ParserCreationOptions options) {
-        final @NotNull EbnfG g = new EbnfG(options);
+        final @NotNull CfgGrammar g = new CfgGrammar(options);
         return g.makeCfg();
     }
 }

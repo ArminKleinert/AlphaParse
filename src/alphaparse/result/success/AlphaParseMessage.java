@@ -1,6 +1,6 @@
 package alphaparse.result.success;
 
-import alphaparse.flat.FlatSeq;
+import alphaparse.collections.FlatSeq;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import org.jetbrains.annotations.NotNull;

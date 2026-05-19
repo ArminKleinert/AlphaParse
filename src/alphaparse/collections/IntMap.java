@@ -1,4 +1,4 @@
-package alphaparse.list;
+package alphaparse.collections;
 
 import alphaparse.trampoline.Tramp;
 import org.jetbrains.annotations.Nullable;

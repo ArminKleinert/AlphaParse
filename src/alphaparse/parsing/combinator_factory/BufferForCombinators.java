@@ -1,5 +1,6 @@
-package alphaparse.parser;
+package alphaparse.parsing.combinator_factory;
 
+import alphaparse.parsing.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

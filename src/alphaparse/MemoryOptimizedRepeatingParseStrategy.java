@@ -1,6 +1,6 @@
 package alphaparse;
 
-import alphaparse.parser.EpsilonCombinator;
+import alphaparse.parsing.EpsilonCombinator;
 import alphaparse.parser.Parser;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.ParseTree;

@@ -1,6 +1,7 @@
 package alphaparse.reduction;
 
 import alphaparse.Sym;
+import alphaparse.parsing.Combinator;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,14 +36,14 @@ public final class ReductionType {
     }
 
     /**
-     * Default output format for new instances of {@link alphaparse.parser.Combinator}. It has the following properties:
+     * Default output format for new instances of {@link Combinator}. It has the following properties:
      * <ul>
      *     <li>The illegal NULL_TAG (see {@link ParseTree#NULL_TAG}) as its tag to mark it as an illegal final output.</li>
      *     <li>The type is {@link ReductionTypesAvailable#INITIAL}.</li>
      *     <li>{@link ReductionType#isHiddenOrRaw} returns true.</li>
      * </ul>
      *
-     * @return Default output format for new instances of {@link alphaparse.parser.Combinator}.
+     * @return Default output format for new instances of {@link Combinator}.
      */
     public static @NotNull ReductionType standardInitialReduction() {
         if (standardInitialReduction == null)

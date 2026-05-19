@@ -1,7 +1,8 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
-import alphaparse.flat.FlatSeq;
+import alphaparse.collections.FlatSeq;
 import alphaparse.functions.Listener;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;

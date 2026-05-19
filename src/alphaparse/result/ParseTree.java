@@ -1,7 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.Sym;
-import alphaparse.flat.FlatSeq;
+import alphaparse.collections.FlatSeq;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

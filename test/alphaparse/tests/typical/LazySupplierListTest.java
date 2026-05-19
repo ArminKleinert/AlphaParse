@@ -1,6 +1,6 @@
 package alphaparse.tests.typical;
 
-import alphaparse.list.LazySupplierList;
+import alphaparse.collections.LazySupplierList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

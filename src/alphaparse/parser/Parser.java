@@ -3,12 +3,10 @@ package alphaparse.parser;
 import alphaparse.*;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParsingOptions;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * A parser contains a grammar and the name of the first production to try.

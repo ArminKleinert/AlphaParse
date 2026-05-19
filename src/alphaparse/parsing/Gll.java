@@ -1,13 +1,15 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
 import alphaparse.Alpha;
-import alphaparse.flat.FlatSeq;
+import alphaparse.collections.FlatSeq;
 import alphaparse.grammar.Grammar;
+import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.Sym;
 import alphaparse.functions.Listener;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.*;
 import alphaparse.result.failure.FailureUtil;

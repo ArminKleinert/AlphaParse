@@ -1,18 +1,18 @@
 package alphaparse.tests.typical.redefinition_options;
 
 import alphaparse.Alpha;
-import alphaparse.grammar.ProductionRedefinitionOption;
+import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ProductionRedefinitionOptionTest {
+class RedefinitionOptionTest {
     @Test
     void optionOverrideTest() {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
-                .withRedefinitionOption(ProductionRedefinitionOption.OVERRIDE);
+                .withRedefinitionOption(RedefinitionOption.OVERRIDE);
         var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
         Assertions.assertTrue(p.parse("A").isFailure());
         Assertions.assertTrue(p.parse("B").isFailure());
@@ -22,7 +22,7 @@ class ProductionRedefinitionOptionTest {
     void optionErrorTest() {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
-                .withRedefinitionOption(ProductionRedefinitionOption.ERROR);
+                .withRedefinitionOption(RedefinitionOption.ERROR);
 
         // Only one production -> No duplicates, no problem
         Assertions.assertEquals(
@@ -43,7 +43,7 @@ class ProductionRedefinitionOptionTest {
     void optionChoiceTest() {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
-                .withRedefinitionOption(ProductionRedefinitionOption.CHOICE);
+                .withRedefinitionOption(RedefinitionOption.CHOICE);
         var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
         Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("A"));
         Assertions.assertEquals(ParseTree.create("S", "B"), p.parse("B"));
@@ -53,7 +53,7 @@ class ProductionRedefinitionOptionTest {
     void optionKeepTest() {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
-                .withRedefinitionOption(ProductionRedefinitionOption.KEEP);
+                .withRedefinitionOption(RedefinitionOption.KEEP);
         var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
         Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());

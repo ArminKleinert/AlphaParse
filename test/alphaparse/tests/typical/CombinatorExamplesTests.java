@@ -1,7 +1,7 @@
 package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
-import alphaparse.grammar.ProductionRedefinitionOption;
+import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +19,7 @@ class CombinatorExamplesTests {
         {
             var opts = ParserCreationOptions
                     .getDefault()
-                    .withRedefinitionOption(ProductionRedefinitionOption.CHOICE);
+                    .withRedefinitionOption(RedefinitionOption.CHOICE);
             var p = Alpha.parser("""
                     S := 'a'
                     S =/ 'b'

@@ -1,10 +1,10 @@
 package alphaparse.trampoline;
 
-import alphaparse.list.IntMap;
+import alphaparse.collections.IntMap;
 import alphaparse.grammar.Grammar;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
-import alphaparse.parser.TerminalStringCombinator;
+import alphaparse.parsing.TerminalStringCombinator;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.success.AlphaParseMessage;
 import org.jetbrains.annotations.NotNull;

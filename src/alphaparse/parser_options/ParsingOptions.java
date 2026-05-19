@@ -3,6 +3,7 @@ package alphaparse.parser_options;
 import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser.Parser;
+import alphaparse.parsing.TerminalRegexpCombinator;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,7 @@ import java.util.Objects;
  * @param unhide                  What (if anything) to "unhide" in the results.
  * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
  * @param optimizeMemory          Whether to attempt using more memory-efficient algorithms for parsing.
- * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link alphaparse.parser.TerminalRegexpCombinator#parse}.
+ * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link TerminalRegexpCombinator#parse}.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE

@@ -1,6 +1,6 @@
-package alphaparse.parser;
+package alphaparse.parsing;
 
-import alphaparse.flat.FlatSeq;
+import alphaparse.collections.FlatSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;

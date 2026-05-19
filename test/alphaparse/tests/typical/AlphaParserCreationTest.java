@@ -4,7 +4,7 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
-import alphaparse.parser.EpsilonCombinator;
+import alphaparse.parsing.EpsilonCombinator;
 import alphaparse.parser_options.GlobalCaseInsensitivity;
 import alphaparse.parser_options.ParserCreationOptions;
 import org.jetbrains.annotations.NotNull;
