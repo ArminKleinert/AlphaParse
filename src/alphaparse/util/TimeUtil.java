@@ -4,6 +4,7 @@ import alphaparse.functions.Procedure;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.DoubleStream;
 
 /**
@@ -41,5 +42,21 @@ public final class TimeUtil {
 
         return String.format("{:lowest %.3f, :highest %.3f, :diff %.3f, :average %.3f, :mid %.3f, :median %.3f, :total %.3f}",
                 min, max, diff, avg, mid, median, sum);
+    }
+
+    public static @NotNull String measureExecutionsPer(final long milliseconds, final @NotNull Procedure f) {
+        final long startTime = System.nanoTime();
+        final long endTime = startTime + milliseconds * 1000000;
+        long last;
+        long executions = 0;
+
+        while ((last = System.nanoTime()) < endTime) {
+            f.execute();
+            executions++;
+        }
+
+        final long actualDuration = last - startTime;
+
+        return "Executions: " + executions + "; Actual duration (ms): " + (actualDuration / 1000000.0);
     }
 }

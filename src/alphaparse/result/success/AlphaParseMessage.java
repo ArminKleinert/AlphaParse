@@ -13,7 +13,7 @@ import java.util.*;
  * Usually, the wrapped object is a {@link ParseTree} or a string. But this class is also used to transport other types of objects.
  * For specifics, see {@link AlphaParseMessage#getResult()}.
  */
-public class AlphaParseMessage {
+public final class AlphaParseMessage {
     private final int index;
     private final Object result;
 

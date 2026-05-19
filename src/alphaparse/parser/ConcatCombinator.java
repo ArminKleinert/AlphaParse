@@ -84,10 +84,12 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
                     : resultsSoFar.append(parsedResult);
 
             if (parserSequence.size() == 1) {
-                runner.pushFullListener(new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
+                runner.pushFullListener(
+                        new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
                         catFullListener(newResultsSoFar, List.of(), nodeKey, runner));
             } else if (!parserSequence.isEmpty()) {
-                runner.pushListener(new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
+                runner.pushListener(
+                        new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
                         catFullListener(newResultsSoFar, parserSequence.subList(1, parserSequence.size()), nodeKey, runner));
             } else {
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);

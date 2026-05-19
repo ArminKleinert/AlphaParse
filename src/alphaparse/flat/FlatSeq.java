@@ -14,7 +14,7 @@ import java.util.Iterator;
  * @param <T> The generic type.
  */
 @Unmodifiable
-public class FlatSeq<T> implements Iterable<T> {
+public final class FlatSeq<T> implements Iterable<T> {
     private static FlatSeq<Object> EMPTY = null;
 
     private final Object[] v;

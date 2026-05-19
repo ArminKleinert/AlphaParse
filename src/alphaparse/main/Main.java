@@ -38,6 +38,13 @@ final class Main {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
         int i = 0;
 
+//        System.out.println(TimeUtil.measureExecutionsPer(
+//                10000,
+//                () -> Alpha.parser(c99GrammarText)
+//        ));
+//
+//        System.exit(0);
+
 //        /**/
 //        //while (i != 0)
 //        {

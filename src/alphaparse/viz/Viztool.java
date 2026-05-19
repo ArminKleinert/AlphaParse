@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * </pre>
  * The tool <b>dot</b> must be installed.
  */
-public class Viztool {
+public final class Viztool {
     private Viztool() {
     }
 

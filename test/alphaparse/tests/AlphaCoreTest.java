@@ -364,18 +364,18 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(
                 treeHiccup,
-                tree.hiccup()
+                tree.toRawList()
         );
 
         Assertions.assertEquals(
                 treeHiccup,
-                Alpha.parse(as_and_bs, text).castToParseSuccess().hiccup()
+                Alpha.parse(as_and_bs, text).castToParseSuccess().toRawList()
         );
 
         var options = ParsingOptions.optMemory();
         Assertions.assertEquals(
                 treeHiccup,
-                as_and_bs.parse(text, options).castToParseSuccess().hiccup()
+                as_and_bs.parse(text, options).castToParseSuccess().toRawList()
         );
     }
 
@@ -413,7 +413,7 @@ class AlphaCoreTest {
                 as_and_bs_variation2.parse(text));
         Assertions.assertEquals(
                 resList,
-                as_and_bs_variation2.parse(text).castToParseSuccess().hiccup());
+                as_and_bs_variation2.parse(text).castToParseSuccess().toRawList());
 
         var memOpt = ParsingOptions.optMemory();
         Assertions.assertEquals(
@@ -421,7 +421,7 @@ class AlphaCoreTest {
                 as_and_bs_variation2.parse(text, memOpt));
         Assertions.assertEquals(
                 resList,
-                as_and_bs_variation2.parse(text, memOpt).castToParseSuccess().hiccup());
+                as_and_bs_variation2.parse(text, memOpt).castToParseSuccess().toRawList());
     }
 
     @Test
@@ -486,7 +486,7 @@ class AlphaCoreTest {
         var tree = ParseTree.create(ParseTree.NULL_TAG.content().name(), "a", "b", "a");
 
         // That raw output can be achieved by manual conversion:
-        Assertions.assertEquals(List.of("a", "b", "a"), tree.hiccup());
+        Assertions.assertEquals(List.of("a", "b", "a"), tree.toRawList());
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text));
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text, ParsingOptions.optMemory()));

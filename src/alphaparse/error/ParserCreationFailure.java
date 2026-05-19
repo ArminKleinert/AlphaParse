@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see Alpha#parser(String, ParserCreationOptions)
  */
-public class ParserCreationFailure extends RuntimeException {
+public final class ParserCreationFailure extends RuntimeException {
     /**
      * {@link RuntimeException} which occurs if the parser could not be created.
      *

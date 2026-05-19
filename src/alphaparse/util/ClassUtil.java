@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Utilities for tests.
  */
-public class ClassUtil {
+public final class ClassUtil {
     private ClassUtil() {
     }
 

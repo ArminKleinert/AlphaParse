@@ -7,18 +7,21 @@ import alphaparse.grammar.ProductionRedefinitionOption;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class provides options for creating {@link Parser} instances.
  *
- * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
- * @param startProduction       The starting production name of the parser.
- * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
- * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
- * @param productionRedefinitionOption    Sets what to do when a production appears twice in the definition.
- * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
+ * @param whitespaceParser             A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
+ * @param startProduction              The starting production name of the parser.
+ * @param stringCaseInsensitive        Set to make all string terminals case-insensitive or case-sensitive.
+ * @param useParserBuffering           Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+ * @param productionRedefinitionOption Sets what to do when a production appears twice in the definition.
+ * @param usableRules                  A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
  */
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable Sym startProduction,
@@ -46,12 +49,12 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     /**
      * Constructor.
      *
-     * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
-     * @param startProduction       The starting production name of the parser.
-     * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
-     * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
-     * @param productionRedefinitionOption    Sets what to do when a production appears twice in the definition.
-     * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
+     * @param whitespaceParser             A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
+     * @param startProduction              The starting production name of the parser.
+     * @param stringCaseInsensitive        Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
+     * @param useParserBuffering           Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+     * @param productionRedefinitionOption Sets what to do when a production appears twice in the definition.
+     * @param usableRules                  A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
      */
     public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                  final @Nullable Sym startProduction,
@@ -155,6 +158,23 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 defaultUseParserBuffering, productionRedefinitionOption, usableRules);
     }
+
+    public @NotNull ParserCreationOptions addAvailableRule(
+            final @NotNull RulesAvailable usableRule) {
+        return withRulesAvailable(
+                Stream.of(Set.of(usableRule), usableRules)
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toUnmodifiableSet()));
+    }
+
+    public @NotNull ParserCreationOptions removeAvailableRule(
+            final @NotNull RulesAvailable usableRule) {
+        return withRulesAvailable(
+                usableRules.stream()
+                        .filter(it -> it.equals(usableRule))
+                        .collect(Collectors.toUnmodifiableSet()));
+    }
+
     /**
      * Creates a new instance using the most common whitespace parser.
      * <pre>
@@ -180,6 +200,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
 
     /**
      * ABNF settings: Strings are case-insensitive, redefinition of productions with {@code =/} creates a choice rule. For available rules, see {@link RulesAvailable#ABNF_RULES()}.
+     *
      * @return Options for ABNF parsers.
      */
     public static @NotNull ParserCreationOptions ABNF() {
@@ -191,6 +212,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
 
     /**
      * EBNF settings: Strings are case-sensitive. For available rules, see {@link RulesAvailable#EBNF_RULES()}.
+     *
      * @return Options for EBNF parsers.
      */
     public static @NotNull ParserCreationOptions EBNF() {

@@ -15,7 +15,7 @@ import java.util.function.IntFunction;
  * @param <T> The result type for the function.
  */
 public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optional<T>> {
-    private @NotNull List<@NotNull T> evaluatedPart;
+    private final @NotNull List<@NotNull T> evaluatedPart;
     private final int maxResults;
     private @Nullable IntFunction<@Nullable T> nextFn;
     private boolean fullyEvaluated = false;
@@ -56,7 +56,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
         if (next == null) {
             fullyEvaluated = true;
             nextFn = null; // Discard the function.
-            evaluatedPart = new UnmodList<>(evaluatedPart); // Everything evaluated. Compress the list.
+            //evaluatedPart = new UnmodList<>(evaluatedPart); // Everything evaluated. Compress the list.
             return null;
         }
 

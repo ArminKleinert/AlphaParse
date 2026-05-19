@@ -63,7 +63,9 @@ public final class PlusCombinator extends CombinatorWithParser {
             final FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
                     ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
-            runner.pushListener(new TrampolineListenerKey(continueIndex, parser), plusListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
+            runner.pushListener(
+                    new TrampolineListenerKey(continueIndex, parser),
+                    plusListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
             runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
         };
     }
@@ -88,7 +90,8 @@ public final class PlusCombinator extends CombinatorWithParser {
                 if (continueIndex == runner.tramp().getText().length()) {
                     runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
                 } else {
-                    runner.pushListener(new TrampolineListenerKey(continueIndex, parser),
+                    runner.pushListener(
+                            new TrampolineListenerKey(continueIndex, parser),
                             plusFullListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
                 }
             }

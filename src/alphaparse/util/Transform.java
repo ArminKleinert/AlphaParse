@@ -13,7 +13,7 @@ import java.util.function.Function;
 /**
  * This class provides methods for transforming parse trees via tag-to-function tables.
  */
-public class Transform {
+public final class Transform {
     private Transform() {}
 
     private static Object transform(

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Methods for converting lists and maps to {@link ParseTree}.
  */
-public class Conversions {
+public final class Conversions {
     private Conversions() {
     }
 
@@ -38,7 +38,7 @@ public class Conversions {
      * @param l The list.
      * @return A parse tree.
      */
-    public static ParseTree toParseTree(final @NotNull List<?> l) {
+    public static @NotNull ParseTree toParseTree(final @NotNull List<?> l) {
         if (l.isEmpty())
             return ParseTree.create(ParseTree.NULL_TAG, List.of());
         if (!(l.getFirst() instanceof Sym))
@@ -52,7 +52,7 @@ public class Conversions {
      * @param m The map.
      * @return A parse tree.
      */
-    public static ParseTree toParseTree(final @NotNull Map<?, ?> m) {
+    public static @NotNull ParseTree toParseTree(final @NotNull Map<?, ?> m) {
         if (m.size() != 2
                 || !(m.get(Sym.sym("tag")) instanceof Sym tag)
                 || !(m.get(Sym.sym("content")) instanceof List<?> content))

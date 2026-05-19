@@ -1,4 +1,4 @@
-package alphaparse.tests;
+package alphaparse.tests.obnoxious_tests;
 
 import alphaparse.Alpha;
 import alphaparse.result.ParseTree;
@@ -58,7 +58,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: Single parse.
-     *     Grammar: {@code S : A\nA : S}
+     *     Grammar: {@code S : S}
      *     Text: {@code "a"}
      *     Expect: Failure
      * </pre>
@@ -90,7 +90,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: All parses.
-     *     Grammar: {@code S : SS}
+     *     Grammar: {@code S : S}
      *     Text: {@code ""}
      *     Expect: Empty
      * </pre>
@@ -104,7 +104,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: All parses.
-     *     Grammar: {@code S : SS}
+     *     Grammar: {@code S : S | epsilon}
      *     Text: {@code ""}
      *     Expect: Does something other than timing out.
      * </pre>

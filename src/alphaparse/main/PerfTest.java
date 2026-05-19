@@ -3,14 +3,13 @@ package alphaparse.main;
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.list.UnmodList;
 import alphaparse.result.ParseTree;
 import alphaparse.util.TimeUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-class PerfTest {
+final class PerfTest {
 
     private static void println(Object o) {
         System.out.println(o);
@@ -63,7 +62,7 @@ class PerfTest {
 
         println("---");
         println("To array:    " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                () -> new UnmodList<>(Alpha.parses(p, text))));
+                () -> Alpha.parses(p, text).toArray()));
         println("Previous:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}");
         println("Previous 2:  {:lowest 13.913, :highest 19.723, :diff 5.810, ::average 14.222, :mid 14.141, :median 14.144, :total 284433.845}");
         println("Original:    {:lowest 37.369, :highest 60.060, :diff 22.691, :average 38.122, :mid 37.937, :median 37.943, :sum 762444.823} // n=20000");
@@ -111,10 +110,17 @@ class PerfTest {
 
         println("---");
         println("List parses: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> new UnmodList<>(Alpha.parses(p, text, ParsingOptions.optMemory()))));
+                () -> new ArrayList<>(Alpha.parses(p, text, ParsingOptions.optMemory()))));
         println("Std prev:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}");
         println("Previous:    -");
         println("Original:    {:lowest 37.350, :highest 50.681, :diff 13.331, :average 38.118, :mid 37.937, :median 37.938, :sum 762350.525} // n=20000");
+
+//        println("---");
+//        println("List parses: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
+//                () -> new UnmodList<>(Alpha.parses(p, text, ParsingOptions.optMemory()))));
+//        println("Std prev:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}");
+//        println("Previous:    -");
+//        println("Original:    {:lowest 37.350, :highest 50.681, :diff 13.331, :average 38.118, :mid 37.937, :median 37.938, :sum 762350.525} // n=20000");
 
         println("---");
         println("Iteration:   " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,

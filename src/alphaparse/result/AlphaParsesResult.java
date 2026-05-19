@@ -62,14 +62,14 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     * Converts the parse forest input into a list, each parse tree is converted using {@link ParseTree#hiccup()}.
+     * Converts the parse forest input into a list, each parse tree is converted using {@link ParseTree#toRawList()}.
      *
      * @return The parse forest as a list of lists.
      */
     default List<List<Object>> hiccup() {
         if (!this.isSuccess())
             throw new ClassCastException("Cannot cast failure to success.");
-        return stream().map(ParseTree::hiccup).toList();
+        return stream().map(ParseTree::toRawList).toList();
     }
 
     /**

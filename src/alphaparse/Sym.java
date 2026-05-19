@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Keyword k2 = Keyword.intern(str);
  * k1 == k2 // Guarantied to be true.}
  */
-public class Sym {
+public final class Sym {
     private static final ConcurrentHashMap<String, Reference<Sym>> table =
             new ConcurrentHashMap<>();
     private static final ReferenceQueue<Sym> rq =
@@ -56,7 +56,7 @@ public class Sym {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return this.name.hashCode() - 1640531527;
     }
 

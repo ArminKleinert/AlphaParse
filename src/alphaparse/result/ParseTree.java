@@ -2,7 +2,6 @@ package alphaparse.result;
 
 import alphaparse.Sym;
 import alphaparse.flat.FlatSeq;
-import alphaparse.list.UnmodList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,6 +77,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
 
     /**
      * Returns the tag ({@link #getTag()} and content ({@link #getContent()}) into a single list.
+     * This method is not recursive, ie does not apply to subtrees.
      *
      * @return The tree as a list of nodes.
      */
@@ -85,7 +85,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         final @NotNull List<@NotNull Node> alist = new ArrayList<>();
         if (!tag.equals(NULL_TAG)) alist.add(tag);
         alist.addAll(content);
-        return new UnmodList<>(alist);
+        return Collections.unmodifiableList(alist);
     }
 
 
@@ -382,7 +382,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      *
      * @return A nested list of Objects.
      */
-    public @NotNull List<@NotNull Object> hiccup() {
+    public @NotNull List<@NotNull Object> toRawList() {
         int i = 0;
 
         final @NotNull Object[] l;
@@ -395,13 +395,13 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
 
         for (@NotNull Node node : content) {
             switch (node) {
-                case Node.NodeParseTree npt -> l[i++] = npt.content().hiccup();
+                case Node.NodeParseTree npt -> l[i++] = npt.content().toRawList();
                 case Node.NodeTreeTag ntt -> l[i++] = ntt.content();
                 case Node.NodeString ns -> l[i++] = ns.content();
                 case Node.NodeFail nf -> l[i++] = nf.content();
             }
         }
 
-        return new UnmodList<>(l);
+        return Arrays.asList(l);
     }
 }
