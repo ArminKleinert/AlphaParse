@@ -1,12 +1,13 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CountedRepetitionTest {
+class CountedRepetitionTest {
     @Test
     void parseRepetitionMinimumOnly() {
         {

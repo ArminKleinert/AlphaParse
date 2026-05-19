@@ -187,7 +187,7 @@ final class Cfg {
                         case 'b' -> 2;
                         case 'd' -> 10;
                         case 'x' -> 16;
-                        default -> throw new ParserCreationFailure();
+                        default -> throw new ParserCreationFailure("Invalid format for value range.");
                     };
                     var rangeFirst = Integer.parseInt(
                             (String) content.get(1).content(),

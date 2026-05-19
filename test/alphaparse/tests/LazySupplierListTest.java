@@ -1,4 +1,4 @@
-package alphaparse;
+package alphaparse.tests;
 
 import alphaparse.list.LazySupplierList;
 import org.junit.jupiter.api.Assertions;

@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests.rules_available;
 
+import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
@@ -7,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class RulesAvailablePureEbnfTest {
+class RulesAvailableEbnfTest {
     private @NotNull ParserCreationOptions opts() {
-        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.PURE_EBNF_RULES());
+        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.EBNF_RULES());
     }
 
     @Test
@@ -30,12 +31,12 @@ public class RulesAvailablePureEbnfTest {
 
     @Test
     void lookahead() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = &\"a\" \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = &\"a\" \"a\"", opts()));
     }
 
     @Test
     void negativeLookahead() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = !\"b\" \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = !\"b\" \"a\"", opts()));
     }
 
     @Test
@@ -45,7 +46,7 @@ public class RulesAvailablePureEbnfTest {
 
     @Test
     void optionalQuery() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\"?", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"?", opts()));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class RulesAvailablePureEbnfTest {
 
     @Test
     void optionalRepetitionStar() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\"?", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"?", opts()));
     }
 
     @Test
@@ -65,7 +66,7 @@ public class RulesAvailablePureEbnfTest {
 
     @Test
     void plus() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\"+", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"+", opts()));
     }
 
     @Test

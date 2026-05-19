@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
 import alphaparse.grammar.ProductionRedefinitionOption;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;

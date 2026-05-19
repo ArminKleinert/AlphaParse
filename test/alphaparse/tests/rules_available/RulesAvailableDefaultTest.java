@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests.rules_available;
 
+import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
@@ -7,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class RulesAvailableEbnfTest {
+class RulesAvailableDefaultTest {
     private @NotNull ParserCreationOptions opts() {
-        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.EBNF_RULES());
+        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.DEFAULT_RULES());
     }
 
     @Test
@@ -25,7 +26,7 @@ class RulesAvailableEbnfTest {
     @Test
     void extendedIdentifiers() {
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));
     }
 
     @Test
@@ -60,7 +61,7 @@ class RulesAvailableEbnfTest {
 
     @Test
     void orderedChoice() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = \"a\" / \"b\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\" / \"b\"", opts()));
     }
 
     @Test
@@ -81,16 +82,16 @@ class RulesAvailableEbnfTest {
 
     @Test
     void valueRange() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = %x41-5a", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = %d65-90", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = %b1000001-1011010", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = %x41-5a", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = %d65-90", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = %b1000001-1011010", opts()));
     }
 
     @Test
     void variableRepetition() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = 1*5 \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = 1* \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = *5 \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = 1*5 \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = 1* \"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = *5 \"a\"", opts()));
         Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = * \"a\"", opts()));
     }
 }

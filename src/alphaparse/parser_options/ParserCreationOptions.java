@@ -143,6 +143,12 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 defaultUseParserBuffering, productionRedefinitionOption, usableRules);
     }
 
+    /**
+     * Creates a new instance with {@link ParserCreationOptions#usableRules()} set to the parameter.
+     *
+     * @param usableRules The new setting for {@link ParserCreationOptions#usableRules()}.
+     * @return A new instance.
+     */
     public @NotNull ParserCreationOptions withRulesAvailable(
             final @Nullable Set<RulesAvailable> usableRules) {
         return new ParserCreationOptions(

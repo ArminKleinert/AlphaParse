@@ -1,5 +1,7 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
+import alphaparse.Sym;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;

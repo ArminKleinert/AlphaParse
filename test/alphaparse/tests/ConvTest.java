@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Sym;
 import alphaparse.result.ParseTree;
 import alphaparse.util.Conversions;
 import org.junit.jupiter.api.Assertions;

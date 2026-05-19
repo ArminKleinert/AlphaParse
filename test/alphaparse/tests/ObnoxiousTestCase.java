@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
 import alphaparse.result.ParseTree;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,6 +11,12 @@ import org.junit.rules.Timeout;
  * Test cases for especially obnoxious test cases.
  */
 public class ObnoxiousTestCase {
+    /**
+     * Do I really need to document default constructors for test cases?
+     */
+    public ObnoxiousTestCase() {
+    }
+
     /**
      * Timeout for all test cases in this class.
      */
@@ -99,7 +106,7 @@ public class ObnoxiousTestCase {
      *     Mode: All parses.
      *     Grammar: {@code S : SS}
      *     Text: {@code ""}
-     *     Expect: Does not throw.
+     *     Expect: Does something other than timing out.
      * </pre>
      */
     @Test

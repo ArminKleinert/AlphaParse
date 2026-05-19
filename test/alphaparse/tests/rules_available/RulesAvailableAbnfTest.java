@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests.rules_available;
 
+import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;

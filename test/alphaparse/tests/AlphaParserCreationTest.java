@@ -1,5 +1,7 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
+import alphaparse.Sym;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser.EpsilonCombinator;

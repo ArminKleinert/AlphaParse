@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;

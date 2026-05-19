@@ -1,5 +1,6 @@
-package alphaparse;
+package alphaparse.tests;
 
+import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
@@ -11,7 +12,7 @@ class ABNFTest {
     void singleQuotesForStringTerminalsNotAllowed() {
         Assertions.assertThrows(
                 ParserCreationFailure.class,
-                ()->Alpha.parser("S : 'abc'", ParserCreationOptions.ABNF()));
+                ()-> Alpha.parser("S : 'abc'", ParserCreationOptions.ABNF()));
     }
 
     @Test
