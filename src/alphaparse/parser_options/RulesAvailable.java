@@ -35,16 +35,27 @@ public enum RulesAvailable {
      *
      * @see ChoiceCombinator
      */
-    CHOICE,
+    ALTERNATION,
 
     /**
      * "Zero or more" repetition.
      * <p>
-     * Notation: {@code {rule}} or {@code rule*}
+     * Notation: {@code {rule}}
      *
+     * @see RulesAvailable#OPTIONAL_REPETITION_STAR
      * @see CombinatorStar
      */
-    STAR,
+    OPTIONAL_REPETITION,
+
+    /**
+     * "Zero or more" repetition.
+     * <p>
+     * Notation: {@code rule*}
+     *
+     * @see RulesAvailable#OPTIONAL_REPETITION
+     * @see CombinatorStar
+     */
+    OPTIONAL_REPETITION_STAR,
 
     /**
      * Empty or "end of input" rule. This rule can be inferred by Alphaparse and is thus optional.
@@ -103,20 +114,31 @@ public enum RulesAvailable {
     /**
      * "Zero or once" or "Optional" rule.
      * <p>
-     * Notation: {@code [rule]} or {@code rule?}
+     * Notation: {@code [rule]}
      *
+     * @see RulesAvailable#OPTIONAL_QUERY
      * @see OptionalCombinator
      */
     OPTIONAL,
 
     /**
-     * ABNF "Counted repetition" rule, notated by a star-prefix.
+     * Similar to {@link #OPTIONAL}, but different notation.
      * <p>
-     * Notation: {@code n*m rule} or {@code n* rule} or {@code *m rule}
+     * Notation: {@code rule?}
+     *
+     * @see RulesAvailable#OPTIONAL
+     * @see OptionalCombinator
+     */
+    OPTIONAL_QUERY,
+
+    /**
+     * ABNF "counted repetition" or "variable repetition" rule, notated by a star-prefix.
+     * <p>
+     * Notation: {@code n*m rule} or {@code n* rule} or {@code *m rule} or {@code * rule} (this is only available if {@link RulesAvailable#OPTIONAL_REPETITION_STAR} is not allowed.
      *
      * @see RepetitionCombinator
      */
-    COUNTED_REPEAT,
+    VARIABLE_REPEAT,
 
     /**
      * Various ABNF rules.
@@ -157,7 +179,25 @@ public enum RulesAvailable {
     /**
      * Rules that appear in EBNF.
      * <p>
-     * {@link RulesAvailable#CHOICE},
+     * {@link RulesAvailable#ALTERNATION},
+     * {@link RulesAvailable#EPSILON},
+     * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#REGEX},
+     * {@link RulesAvailable#SINGLY_QUOTED},
+     * {@link RulesAvailable#OPTIONAL_REPETITION}
+     *
+     * @return A set of rule types to allow when constructing a parser.
+     * @see ParserCreationOptions
+     */
+    public static @NotNull Set<RulesAvailable> PURE_EBNF_RULES() {
+        return Set.of(
+                ALTERNATION, EPSILON, OPTIONAL, REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION);
+    }
+
+    /**
+     * Rules that appear in EBNF.
+     * <p>
+     * {@link RulesAvailable#ALTERNATION},
      * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#LOOKAHEAD},
      * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
@@ -165,15 +205,16 @@ public enum RulesAvailable {
      * {@link RulesAvailable#PLUS},
      * {@link RulesAvailable#REGEX},
      * {@link RulesAvailable#SINGLY_QUOTED},
-     * {@link RulesAvailable#STAR}
+     * {@link RulesAvailable#OPTIONAL_REPETITION}
+     * {@link RulesAvailable#OPTIONAL_REPETITION_STAR}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> EBNF_RULES() {
         return Set.of(
-                CHOICE, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, PLUS,
-                REGEX, SINGLY_QUOTED, STAR);
+                ALTERNATION, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, OPTIONAL_QUERY, PLUS,
+                REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION, OPTIONAL_REPETITION_STAR);
     }
 
     /**
@@ -181,7 +222,7 @@ public enum RulesAvailable {
      * <p>
      * {@link RulesAvailable#ABNF_CORE},
      * {@link RulesAvailable#CHAR_RANGE},
-     * {@link RulesAvailable#COUNTED_REPEAT},
+     * {@link RulesAvailable#VARIABLE_REPEAT},
      * {@link RulesAvailable#OPTIONAL},
      * {@link RulesAvailable#ORDERED_CHOICE},
      * {@link RulesAvailable#PLUS},
@@ -192,16 +233,15 @@ public enum RulesAvailable {
      */
     public static @NotNull @Unmodifiable Set<RulesAvailable> ABNF_RULES() {
         return Set.of(
-                ABNF_CORE, CHAR_RANGE, COUNTED_REPEAT, OPTIONAL, ORDERED_CHOICE,
-                PLUS, REGEX);
+                ABNF_CORE, CHAR_RANGE, VARIABLE_REPEAT, OPTIONAL, ORDERED_CHOICE, REGEX);
     }
 
     /**
      * The standard set of rules that Alphaparse allows.
      * <p>
      * {@link RulesAvailable#CHAR_RANGE},
-     * {@link RulesAvailable#CHOICE},
-     * {@link RulesAvailable#COUNTED_REPEAT},
+     * {@link RulesAvailable#ALTERNATION},
+     * {@link RulesAvailable#VARIABLE_REPEAT},
      * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#EXTENDED_IDENTIFIERS},
      * {@link RulesAvailable#LOOKAHEAD},
@@ -211,15 +251,15 @@ public enum RulesAvailable {
      * {@link RulesAvailable#PLUS},
      * {@link RulesAvailable#REGEX},
      * {@link RulesAvailable#SINGLY_QUOTED},
-     * {@link RulesAvailable#STAR}
+     * {@link RulesAvailable#OPTIONAL_REPETITION_STAR}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> DEFAULT_RULES() {
         return Set.of(
-                CHAR_RANGE, CHOICE, COUNTED_REPEAT, EPSILON, EXTENDED_IDENTIFIERS,
-                LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, ORDERED_CHOICE, PLUS,
-                REGEX, SINGLY_QUOTED, STAR);
+                CHAR_RANGE, ALTERNATION, VARIABLE_REPEAT, EPSILON, EXTENDED_IDENTIFIERS,
+                LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, OPTIONAL_QUERY, ORDERED_CHOICE,
+                OPTIONAL_REPETITION, PLUS, REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION_STAR);
     }
 }

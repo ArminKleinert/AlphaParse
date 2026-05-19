@@ -129,12 +129,14 @@ final class EbnfG {
                                         cf.makeNonTerminal(Sym.sym("string")),
                                         makeNT("regexp", RulesAvailable.REGEX),
                                         makeNT("opt", RulesAvailable.OPTIONAL),
-                                        makeNT("star", RulesAvailable.STAR),
+                                        makeNT("opt_query", RulesAvailable.OPTIONAL_QUERY),
+                                        makeNT("star", RulesAvailable.OPTIONAL_REPETITION_STAR),
+                                        makeNT("opt_rep", RulesAvailable.OPTIONAL_REPETITION),
                                         makeNT("plus", RulesAvailable.PLUS),
                                         cf.makeNonTerminal(Sym.sym("paren")),
                                         cf.makeNonTerminal(Sym.sym("hide")),
                                         cf.makeNonTerminal(Sym.sym("epsilon")),
-                                        makeNT("rep", RulesAvailable.COUNTED_REPEAT), // ABNF feature
+                                        makeNT("rep", RulesAvailable.VARIABLE_REPEAT), // ABNF feature
                                         makeNT("num-val", RulesAvailable.CHAR_RANGE) // ABNF feature
                                 ))
                         .hideTag();
@@ -240,18 +242,18 @@ final class EbnfG {
 
     private @NotNull Combinator makeCfgRepRhs() {
         final @NotNull Combinator repRegexChoice;
-        if (!rulesAvailable.contains(RulesAvailable.STAR)) {
+        if (!rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR)) {
             repRegexChoice = cf.choiceCombinator(List.of(
-                    cf.createRegexTerminal(regexDoc("\\*", "NUM")),
-                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
-                    cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
-                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM"))
+                    cf.createRegexTerminal(Pattern.compile("\\*")),
+                    cf.createRegexTerminal(Pattern.compile("[0-9]+")),
+                    cf.createRegexTerminal(Pattern.compile("[0-9]*\\*[0-9]+")),
+                    cf.createRegexTerminal(Pattern.compile("[0-9]+\\*[0-9]*"))
             ));
         } else {
             repRegexChoice = cf.choiceCombinator(List.of(
-                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
-                    cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
-                    cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM"))
+                    cf.createRegexTerminal(Pattern.compile("[0-9]+")),
+                    cf.createRegexTerminal(Pattern.compile("[0-9]*\\*[0-9]+")),
+                    cf.createRegexTerminal(Pattern.compile("[0-9]+\\*[0-9]*"))
             ));
         }
         /*
@@ -287,7 +289,25 @@ final class EbnfG {
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgOneOrMoreRhs() {
+    private @NotNull Combinator makeCfgZeroOrMoreStdRhs() {
+        final @NotNull Combinator rulesRuleCurlies =
+                cf.catCombinator(
+                        cListOf(cf.stringTerminal("{").enableHideTag(),
+                                optWhitespace,
+                                cf.makeNonTerminal(Sym.sym("alt-or-ord")),
+                                optWhitespace,
+                                cf.stringTerminal("}").enableHideTag()));
+        final @NotNull Combinator rulesRuleStar =
+                cf.catCombinator(
+                        cListOf(cf.makeNonTerminal(Sym.sym("factor")),
+                                optWhitespace,
+                                cf.stringTerminal("*").enableHideTag()));
+        final @NotNull Combinator rule = cf.choiceCombinator(
+                cListOf(rulesRuleCurlies, rulesRuleStar));
+        return rule;
+    }
+
+    private @NotNull Combinator makeCfgZeroOrMoreStarRhs() {
         final @NotNull Combinator rulesRuleCurlies =
                 cf.catCombinator(
                         cListOf(cf.stringTerminal("{").enableHideTag(),
@@ -306,27 +326,29 @@ final class EbnfG {
     }
 
     private @NotNull Combinator makeCfgOptRhs() {
-        final @NotNull Combinator rulesBrackets =
+        final @NotNull Combinator rule =
                 cf.catCombinator(
                         cListOf(cf.stringTerminal("[").enableHideTag(),
                                 optWhitespace,
                                 cf.makeNonTerminal(Sym.sym("alt-or-ord")),
                                 optWhitespace,
                                 cf.stringTerminal("]").enableHideTag()));
-        final @NotNull Combinator rulesQuestionMark =
+        return rule;
+    }
+
+    private @NotNull Combinator makeCfgOptQueryRhs() {
+        final @NotNull Combinator rule =
                 cf.catCombinator(
                         cListOf(cf.makeNonTerminal(Sym.sym("factor")),
                                 optWhitespace,
                                 cf.stringTerminal("?").enableHideTag()));
-        final @NotNull Combinator rule =
-                cf.choiceCombinator(cListOf(rulesBrackets, rulesQuestionMark));
         return rule;
     }
 
-    private @Nullable Combinator makeCfgAltOrOrdRhs() {
+    private @NotNull Combinator makeCfgAltOrOrdRhs() {
         List<Combinator> l = new ArrayList<>();
 
-        if (options.usableRules().contains(RulesAvailable.CHOICE))
+        if (options.usableRules().contains(RulesAvailable.ALTERNATION))
             l.add(cf.makeNonTerminal(Sym.sym("alt")));
         if (options.usableRules().contains(RulesAvailable.ORDERED_CHOICE))
             l.add(cf.makeNonTerminal(Sym.sym("ord")));
@@ -334,8 +356,7 @@ final class EbnfG {
         if (l.isEmpty())
             l.add(cf.plusCombinator(cf.makeNonTerminal(Sym.sym("cat"))));
 
-        final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(l).hideTag();
+        final @NotNull Combinator rulesRule = cf.choiceCombinator(l).hideTag();
         return rulesRule;
     }
 
@@ -466,19 +487,18 @@ final class EbnfG {
         grammarMap.put(Sym.sym("rules-or-parser"), makeCfgRulesOrParserRhs());
 
         var temp = makeCfgAltOrOrdRhs();
-        if (temp != null)
-            grammarMap.put(Sym.sym("alt-or-ord"), temp);
+        grammarMap.put(Sym.sym("alt-or-ord"), temp);
 
 //        if (rulesAvailable.contains(RulesAvailable.CHOICE) || rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
 //            grammarMap.put(Sym.sym("alt-or-ord"), makeCfgAltOrOrdRhs());
 
-        if (rulesAvailable.contains(RulesAvailable.CHOICE))
+        if (rulesAvailable.contains(RulesAvailable.ALTERNATION))
             grammarMap.put(Sym.sym("alt"), makeCfgAltRhs());
 
         if (rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
             grammarMap.put(Sym.sym("ord"), makeCfgOrdRhs()); // Technically ABNF, but should be included without it as a PAKRAT extension.
 
-        if (rulesAvailable.contains(RulesAvailable.COUNTED_REPEAT))
+        if (rulesAvailable.contains(RulesAvailable.VARIABLE_REPEAT))
             grammarMap.put(Sym.sym("rep"), makeCfgRepRhs()); // ABNF
 
         if (rulesAvailable.contains(RulesAvailable.REGEX))
@@ -487,8 +507,14 @@ final class EbnfG {
         if (rulesAvailable.contains(RulesAvailable.OPTIONAL))
             grammarMap.put(Sym.sym("opt"), makeCfgOptRhs());
 
-        if (rulesAvailable.contains(RulesAvailable.STAR))
-            grammarMap.put(Sym.sym("star"), makeCfgOneOrMoreRhs());
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_QUERY))
+            grammarMap.put(Sym.sym("opt_query"), makeCfgOptQueryRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR))
+            grammarMap.put(Sym.sym("star"), makeCfgZeroOrMoreStarRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION))
+            grammarMap.put(Sym.sym("opt_rep"), makeCfgZeroOrMoreStdRhs());
 
         if (rulesAvailable.contains(RulesAvailable.PLUS))
             grammarMap.put(Sym.sym("plus"), makeCfgPlusRhs());

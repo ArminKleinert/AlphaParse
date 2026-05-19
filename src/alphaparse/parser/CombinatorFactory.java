@@ -65,6 +65,15 @@ public final class CombinatorFactory {
     }
 
     /**
+     * Alias for {@link CombinatorFactory#choiceCombinator(List)}.
+     * @param parsers The parsers for the output.
+     * @return  A combinator.
+     */
+    public @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    return choiceCombinator(parsers);
+    }
+
+    /**
      * Creates a {@link OptionalCombinator} or an {@link EpsilonCombinator} if the input is epsilon.
      *
      * @param parser The combinator to maybe match.
@@ -121,7 +130,7 @@ public final class CombinatorFactory {
      * @return A combinator, as described.
      */
     public @NotNull Combinator repetitionCombinator(final int m, final int n, final @NotNull Combinator parser) {
-        if (m < 0 || m > n) throw new IllegalArgumentException();
+        if (m < 0 || m > n) throw new IllegalArgumentException("Minimum number of repetitions must be below maximum number of repetitions.");
         if ((m == 0 && n == 0) || parser.equals(epsilon)) return epsilon;
         if (m == 1 && n == 1) return parser;
         if (m == n) {

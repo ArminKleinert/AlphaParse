@@ -1,12 +1,12 @@
 package alphaparse;
 
+import alphaparse.error.IllegalGrammarException;
+import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
-import alphaparse.result.Node;
-import alphaparse.result.ParseTree;
-import alphaparse.result.AlphaParseFailure;
+import alphaparse.result.*;
 import alphaparse.util.StrParser;
 import org.jetbrains.annotations.NotNull;
 
@@ -131,6 +131,16 @@ final class Cfg {
                     return stringOrStringCaseInsensitiveCombinator(
                             StrParser.processString((String) tree.getContent().getFirst().content()));
                 }
+                case "string-cs" -> {
+                    return combinatorFactory.stringTerminal(
+                            StrParser.processString((String) tree.getContent().getFirst().content()),
+                            false);
+                }
+                case "string-ci" -> {
+                    return combinatorFactory.stringTerminal(
+                            StrParser.processString((String) tree.getContent().getFirst().content()),
+                            true);
+                }
                 case "regexp" -> {
                     return combinatorFactory.createRegexTerminal(
                             StrParser.processRegexp((String) tree.getContent().getFirst().content()));
@@ -139,11 +149,11 @@ final class Cfg {
                     return combinatorFactory.negateRule((Combinator) buildRule(
                             (ParseTree) tree.getContent().getFirst().content()));
                 }
-                case "opt" -> {
+                case "opt", "opt_query" -> {
                     return combinatorFactory.optionalCombinator((Combinator) buildRule(
                             (ParseTree) tree.getContent().getFirst().content()));
                 }
-                case "star" -> {
+                case "star", "opt_rep" -> {
                     return combinatorFactory.starCombinator((Combinator) buildRule(
                             (ParseTree) tree.getContent().getFirst().content()));
                 }
@@ -156,7 +166,11 @@ final class Cfg {
                             (ParseTree) tree.getContent().getFirst().content()));
                 }
                 case "rep" -> {
-                    return buildRepRule(tree);
+                    try {
+                        return buildRepRule(tree);
+                    } catch (IllegalArgumentException exception) {
+                        throw new ParserCreationFailure(exception);
+                    }
                 }
                 case "epsilon" -> {
                     return EpsilonCombinator.getDefault();
@@ -173,7 +187,7 @@ final class Cfg {
                         case 'b' -> 2;
                         case 'd' -> 10;
                         case 'x' -> 16;
-                        default -> throw new IllegalStateException();
+                        default -> throw new ParserCreationFailure();
                     };
                     var rangeFirst = Integer.parseInt(
                             (String) content.get(1).content(),
@@ -191,7 +205,7 @@ final class Cfg {
     private @NotNull Grammar checkGrammarValidity(final @NotNull Grammar g) {
         final @NotNull var analysisResult = g.analyze();
         if (!analysisResult.isValid())
-            throw new IllegalStateException(
+            throw new IllegalGrammarException(
                     "The keys "
                             + analysisResult.getUndefinedUsedNTs()
                             + " appear on the right-hand side of the grammar, but not on the left.");
@@ -201,20 +215,27 @@ final class Cfg {
 
     @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammar) {
         if (options.startProduction() == null)
-            throw new IllegalArgumentException("No start production provided.");
-        return new Parser(
-                checkGrammarValidity(grammar.applyStandardReductions(combinatorFactory)),
-                options.startProduction());
+            throw new ParserCreationFailure("No start production provided.");
+        try {
+            return new Parser(
+                    checkGrammarValidity(grammar.applyStandardReductions(combinatorFactory)),
+                    options.startProduction());
+        } catch (IllegalGrammarException exception) {
+            throw new ParserCreationFailure(exception);
+        }
     }
 
     @NotNull Parser buildParser(final @NotNull String spec,
                                 final @NotNull Grammar grammarGrammar) {
-        final @NotNull var rules = Gll.parse(
-                grammarGrammar,
-                Sym.sym("rules"),
-                spec, false, false);
+        final @NotNull AlphaParseResult rules;
+
+            rules = Gll.parse(
+                    grammarGrammar,
+                    Sym.sym("rules"),
+                    spec, false, false);
+
         if (rules instanceof AlphaParseFailure) {
-            throw new IllegalStateException("Error parsing grammar specification:\n" + rules + "\n");
+            throw new ParserCreationFailure("Error parsing grammar specification:\n" + rules + "\n");
         }
 
         final @NotNull var productions = new ArrayList<Map.Entry<Sym, Combinator>>();
@@ -232,9 +253,14 @@ final class Cfg {
             productions.addAll(0, abnfCore);
         }
 
-        @NotNull var grammar = checkGrammarValidity(
-                Grammar.fromProductions(productions, options.productionRedefinitionOption())
-                        .applyStandardReductions(combinatorFactory));
+        @NotNull Grammar grammar;
+        try {
+            grammar = checkGrammarValidity(
+                    Grammar.fromProductions(productions, options.productionRedefinitionOption())
+                            .applyStandardReductions(combinatorFactory));
+        } catch (IllegalGrammarException exception) {
+            throw new ParserCreationFailure(exception);
+        }
 
         if (options.whitespaceParser() != null) {
             grammar = combinatorFactory.autoWhitespace(

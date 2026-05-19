@@ -1,5 +1,6 @@
 package alphaparse;
 
+import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
@@ -57,7 +58,7 @@ public final class Alpha {
         if (startProduction == null)
             return parser.startProduction();
         if (!parser.grammar().containsKey(startProduction))
-            throw new IllegalArgumentException("Start production not in grammar: " + startProduction);
+            throw new ParserCreationFailure("Start production not in grammar: " + startProduction);
         return startProduction;
     }
 
@@ -270,15 +271,15 @@ public final class Alpha {
      * @param grammar The grammar.
      * @param options The options, most importantly the start production.
      * @return The parser.
-     * @throws IllegalArgumentException If the start production is invalid.
+     * @throws ParserCreationFailure If the start production is invalid.
      */
     public static @NotNull Parser parser(final @NotNull Grammar grammar,
                                          final @NotNull ParserCreationOptions options) {
         if (options.startProduction() == null)
-            throw new IllegalArgumentException("Start production must be specified when creating a parser from a Grammar object.");
+            throw new ParserCreationFailure("Start production must be specified when creating a parser from a Grammar object.");
 
         if (!grammar.containsKey(options.startProduction()))
-            throw new IllegalArgumentException("The start production " + options.startProduction() + " is not in the grammar.");
+            throw new ParserCreationFailure("The start production " + options.startProduction() + " is not in the grammar.");
 
         @NotNull var parser = Cfg.make(options).buildParserFromCombinators(grammar);
         if (options.whitespaceParser() != null) {

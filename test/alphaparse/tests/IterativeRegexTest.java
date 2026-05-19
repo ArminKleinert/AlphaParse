@@ -12,7 +12,7 @@ import java.util.Set;
 class IterativeRegexTest {
     @Test
     void testCheckByPartials() {
-        var p = Alpha.parser(                "S : #'A+'");
+        var p = Alpha.parser("S : #'A+'");
         var parses = Alpha.parses(p, "AAAA", ParsingOptions.getDefault().withIterativeDeepening(true).withPartial(true));
         Assertions.assertEquals(
                 List.of(ParseTree.create("S", "A"),
@@ -21,9 +21,10 @@ class IterativeRegexTest {
                         ParseTree.create("S", "AAAA")),
                 parses);
     }
+
     @Test
     void testRegexString() {
-        var p = Alpha.parser(                "S : #'A+' 'A' | #'A+' 'AA' | #'A+' 'AAA' | #'A+' 'AAAA'");
+        var p = Alpha.parser("S : #'A+' 'A' | #'A+' 'AA' | #'A+' 'AAA' | #'A+' 'AAAA'");
 
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
@@ -35,9 +36,10 @@ class IterativeRegexTest {
                         ParseTree.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
+
     @Test
     void testStringRegex() {
-        var p = Alpha.parser(                "S : 'A' #'A+' | 'AA' #'A+' | 'AAA' #'A+' | 'AAAA' #'A+'");
+        var p = Alpha.parser("S : 'A' #'A+' | 'AA' #'A+' | 'AAA' #'A+' | 'AAAA' #'A+'");
 
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
@@ -49,9 +51,10 @@ class IterativeRegexTest {
                         ParseTree.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
+
     @Test
     void testRegexRegex() {
-        var p = Alpha.parser(                "S : #'A+' #'A+'");
+        var p = Alpha.parser("S : #'A+' #'A+'");
 
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
@@ -63,6 +66,7 @@ class IterativeRegexTest {
                         ParseTree.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
+
     @Test
     void defaultTest() {
         var p = Alpha.parser("S : #'A+' 'A'");

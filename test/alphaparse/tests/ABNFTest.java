@@ -1,5 +1,6 @@
 package alphaparse;
 
+import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
@@ -9,7 +10,7 @@ class ABNFTest {
     @Test
     void singleQuotesForStringTerminalsNotAllowed() {
         Assertions.assertThrows(
-                IllegalStateException.class,
+                ParserCreationFailure.class,
                 ()->Alpha.parser("S : 'abc'", ParserCreationOptions.ABNF()));
     }
 
@@ -115,14 +116,14 @@ class ABNFTest {
             );
         }
         {
-            var p = Alpha.parser("S : A+\n<A> : %d66", ParserCreationOptions.ABNF());
+            var p = Alpha.parser("S : 1* A\n<A> : %d66", ParserCreationOptions.ABNF());
             Assertions.assertEquals(
                     ParseTree.create("S", "B"),
                     p.parse("B")
             );
         }
         {
-            var p = Alpha.parser("S : (%d65-67)+", ParserCreationOptions.ABNF());
+            var p = Alpha.parser("S : 1* (%d65-67)", ParserCreationOptions.ABNF());
             Assertions.assertEquals(
                     ParseTree.create("S", "B", "B", "B"),
                     p.parse("BBB")
@@ -132,7 +133,7 @@ class ABNFTest {
 
     @Test void codepointFailureTest() {
         {
-            var p = Alpha.parser("S : (%d65-67)+", ParserCreationOptions.ABNF());
+            var p = Alpha.parser("S : 1* (%d65-67)", ParserCreationOptions.ABNF());
             Assertions.assertEquals(
                     ParseTree.create("S", "B"),
                     p.parse("B")

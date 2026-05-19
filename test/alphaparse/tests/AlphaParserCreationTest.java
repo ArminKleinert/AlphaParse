@@ -1,5 +1,6 @@
 package alphaparse;
 
+import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser.EpsilonCombinator;
 import alphaparse.parser_options.GlobalCaseInsensitivity;
@@ -95,7 +96,9 @@ class AlphaParserCreationTest {
         {
             // Error: Illegal grammar
             final @NotNull var grammar = "S : A";
-            Assertions.assertThrows(IllegalStateException.class, () -> Alpha.parser(grammar));
+            Assertions.assertThrows(
+                    ParserCreationFailure.class,
+                    () -> Alpha.parser(grammar));
         }
         {
             // Error: Starting symbol not in grammar
@@ -105,7 +108,9 @@ class AlphaParserCreationTest {
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null,
                     null);
-            Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser(grammar, options));
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Alpha.parser(grammar, options));
         }
         {
             // Error: No start symbol provided
@@ -113,8 +118,9 @@ class AlphaParserCreationTest {
                     Sym.sym("S"), EpsilonCombinator.getDefault(),
                     Sym.sym("A"), EpsilonCombinator.getDefault()
             ));
-            Assertions.assertThrows(IllegalArgumentException.class, () ->
-                    Alpha.parser(grammar, ParserCreationOptions.getDefault()));
+            Assertions.assertThrows(
+                    ParserCreationFailure.class,
+                    () -> Alpha.parser(grammar, ParserCreationOptions.getDefault()));
         }
     }
 
