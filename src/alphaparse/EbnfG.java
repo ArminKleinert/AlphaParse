@@ -193,14 +193,33 @@ final class EbnfG {
     private @NotNull Combinator makeCfgStringRhs() {
         final @NotNull List<Combinator> stringRules = new ArrayList<>();
 
+        final @NotNull var doubleQuotedPatternString =
+                "\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"";
+
         final @NotNull Pattern doubleQuotedString =
-                regexDoc("\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted string");
+                regexDoc(doubleQuotedPatternString, "Double-quoted string");
         stringRules.add(cf.createRegexTerminal(doubleQuotedString));
 
+        if (options.usableRules().contains(RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX)) {
+            var pattern = regexDoc(
+                    "(%[is])?"+doubleQuotedPatternString,
+                    "Prefixed double-quoted string");
+            stringRules.add(cf.createRegexTerminal(pattern));
+        }
+
         if (options.usableRules().contains(RulesAvailable.SINGLY_QUOTED)) {
+            final @NotNull var singleQuotedPatternString =
+                    "'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'";
             final @NotNull Pattern singleQuotedString =
-                    regexDoc("'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted string");
+                    regexDoc(singleQuotedPatternString, "Single-quoted string");
             stringRules.add(cf.createRegexTerminal(singleQuotedString));
+
+            if (options.usableRules().contains(RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX)) {
+                var pattern = regexDoc(
+                        "(%[is])?"+singleQuotedPatternString,
+                        "Prefixed single-quoted string");
+                stringRules.add(cf.createRegexTerminal(pattern));
+            }
         }
 
         return cf.choiceCombinator(stringRules);

@@ -24,6 +24,12 @@ class RulesAvailableDefaultTest {
     }
 
     @Test
+    void explicitStringCaseSensitivity() {
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = %i\"a\"", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = %s\"a\"", opts()));
+    }
+
+    @Test
     void extendedIdentifiers() {
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"", opts()));
         Assertions.assertDoesNotThrow(() -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));

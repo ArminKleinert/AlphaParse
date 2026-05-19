@@ -128,8 +128,18 @@ final class Cfg {
                             .toList());
                 }
                 case "string" -> {
+                    String s = (String) tree.getContent().getFirst().content();
+                    if (s.startsWith("%")) {
+                        boolean caseInsensitive = switch (s.charAt(1)) {
+                            case 'i' -> true;
+                            case 's' -> false;
+                            default -> throw new IllegalStateException();
+                        };
+                        return combinatorFactory.stringTerminal(
+                                StrParser.processString(s.substring(2)), caseInsensitive);
+                    }
                     return stringOrStringCaseInsensitiveCombinator(
-                            StrParser.processString((String) tree.getContent().getFirst().content()));
+                            StrParser.processString(s));
                 }
                 case "string-cs" -> {
                     return combinatorFactory.stringTerminal(

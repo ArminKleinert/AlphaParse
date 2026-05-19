@@ -94,6 +94,11 @@ public enum RulesAvailable {
     SINGLY_QUOTED,
 
     /**
+     * ABNF string prefixes {@code %i"..."} for case insensitivity and {@code %s"..."} for forced case sensitivity.
+     * @see CombinatorFactory#stringTerminal(String, boolean)
+     */STRING_CASE_SENSITIVITY_PREFIX,
+
+    /**
      * ABNF char range.
      * <p>
      * Notation: {@code %xXXXX} or {@code %xXXXX-XXXX}, {@code %bBBBB} or {@code %bBBBB-BBBB}, {@code %dDDDD} or {@code %dDDDD-DDDD}. "X" denotes a hexadecimal digit, "B" denotes a binary digit, "O" (uppercase o) denotes an octal digit.
@@ -233,7 +238,7 @@ public enum RulesAvailable {
      */
     public static @NotNull @Unmodifiable Set<RulesAvailable> ABNF_RULES() {
         return Set.of(
-                ABNF_CORE, CHAR_RANGE, VARIABLE_REPEAT, OPTIONAL, ORDERED_CHOICE, REGEX);
+                ABNF_CORE, CHAR_RANGE, VARIABLE_REPEAT, OPTIONAL, ORDERED_CHOICE, REGEX, STRING_CASE_SENSITIVITY_PREFIX);
     }
 
     /**
@@ -259,7 +264,8 @@ public enum RulesAvailable {
     public static @NotNull Set<RulesAvailable> DEFAULT_RULES() {
         return Set.of(
                 CHAR_RANGE, ALTERNATION, VARIABLE_REPEAT, EPSILON, EXTENDED_IDENTIFIERS,
-                LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, OPTIONAL_QUERY, ORDERED_CHOICE,
-                OPTIONAL_REPETITION, PLUS, REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION_STAR);
+                LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, OPTIONAL_QUERY, OPTIONAL_REPETITION_STAR,
+                ORDERED_CHOICE, OPTIONAL_REPETITION, PLUS, REGEX,
+                SINGLY_QUOTED, STRING_CASE_SENSITIVITY_PREFIX);
     }
 }

@@ -24,6 +24,12 @@ class RulesAvailableEbnfTest {
     }
 
     @Test
+    void explicitStringCaseSensitivity() {
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = %i\"a\"", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S = %s\"a\"", opts()));
+    }
+
+    @Test
     void extendedIdentifiers() {
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"", opts()));
         Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));
