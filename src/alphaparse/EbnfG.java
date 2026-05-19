@@ -226,7 +226,9 @@ final class EbnfG {
     }
 
     private @NotNull Combinator makeCfgNtRhs() {
-        final var pattern = "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]+";
+        final var pattern = rulesAvailable.contains(RulesAvailable.EXTENDED_IDENTIFIERS)
+                ? "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]*"
+                : "[a-zA-Z][a-zA-Z0-9_]*";
         final var regex = regexDoc(pattern, "Non-terminal");
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(cListOf(
@@ -239,15 +241,14 @@ final class EbnfG {
     private @NotNull Combinator makeCfgRepRhs() {
         final @NotNull Combinator repRegexChoice;
         if (!rulesAvailable.contains(RulesAvailable.STAR)) {
-            repRegexChoice=cf.choiceCombinator(List.of(
+            repRegexChoice = cf.choiceCombinator(List.of(
                     cf.createRegexTerminal(regexDoc("\\*", "NUM")),
                     cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
                     cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
                     cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM"))
             ));
-        } else
-        {
-            repRegexChoice=cf.choiceCombinator(List.of(
+        } else {
+            repRegexChoice = cf.choiceCombinator(List.of(
                     cf.createRegexTerminal(regexDoc("\\-?[0-9]+", "NUM")),
                     cf.createRegexTerminal(regexDoc("\\-?[0-9]*\\*\\-?[0-9]+", "NUM")),
                     cf.createRegexTerminal(regexDoc("\\-?[0-9]+\\*\\-?[0-9]*", "NUM"))

@@ -2,6 +2,7 @@ package alphaparse.parser_options;
 
 import alphaparse.parser.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
@@ -84,7 +85,7 @@ public enum RulesAvailable {
     /**
      * ABNF char range.
      * <p>
-     * Notation: {@code %xXXXX} or {@code %xXXXX-XXXX}, {@code %bBBBB} or {@code %bBBBB-BBBB}, {@code %oOOOO} or {@code %oOOOO-OOOO}. "X" denotes a hexadecimal digit, "B" denotes a binary digit, "O" (uppercase o) denotes an octal digit.
+     * Notation: {@code %xXXXX} or {@code %xXXXX-XXXX}, {@code %bBBBB} or {@code %bBBBB-BBBB}, {@code %dDDDD} or {@code %dDDDD-DDDD}. "X" denotes a hexadecimal digit, "B" denotes a binary digit, "O" (uppercase o) denotes an octal digit.
      *
      * @see TerminalUnicodeCharCombinator
      */
@@ -141,40 +142,84 @@ public enum RulesAvailable {
      * }
      * </pre>
      */
-    ABNF_CORE;
+    ABNF_CORE,
+
+    /**
+     * EBNF and ABNF identifiers normally must have the following form: {@code letter (letter|digit|_)+}.
+     * <p>
+     * With this option, any character can be used except those which are used for other purposes:
+     * {@code " ' ! ? + * [ ] ( ) { } < > : = / | # & }
+     * <p>
+     * This means that the production {@code 🎁 = "a"} becomes legal with this option.
+     */
+    EXTENDED_IDENTIFIERS;
 
     /**
      * Rules that appear in EBNF.
+     * <p>
+     * {@link RulesAvailable#CHOICE},
+     * {@link RulesAvailable#EPSILON},
+     * {@link RulesAvailable#LOOKAHEAD},
+     * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
+     * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#PLUS},
+     * {@link RulesAvailable#REGEX},
+     * {@link RulesAvailable#SINGLY_QUOTED},
+     * {@link RulesAvailable#STAR}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull Set<RulesAvailable> ebnf() {
+    public static @NotNull Set<RulesAvailable> EBNF_RULES() {
         return Set.of(
-                REGEX, PLUS, CHOICE, STAR, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, SINGLY_QUOTED, OPTIONAL);
+                CHOICE, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, PLUS,
+                REGEX, SINGLY_QUOTED, STAR);
     }
 
     /**
      * Rules that appear in ABNF.
+     * <p>
+     * {@link RulesAvailable#ABNF_CORE},
+     * {@link RulesAvailable#CHAR_RANGE},
+     * {@link RulesAvailable#COUNTED_REPEAT},
+     * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#ORDERED_CHOICE},
+     * {@link RulesAvailable#PLUS},
+     * {@link RulesAvailable#REGEX}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull Set<RulesAvailable> abnf() {
+    public static @NotNull @Unmodifiable Set<RulesAvailable> ABNF_RULES() {
         return Set.of(
-                REGEX, PLUS, CHAR_RANGE, ORDERED_CHOICE,
-                ABNF_CORE,
-                COUNTED_REPEAT, OPTIONAL);
+                ABNF_CORE, CHAR_RANGE, COUNTED_REPEAT, OPTIONAL, ORDERED_CHOICE,
+                PLUS, REGEX);
     }
 
     /**
      * The standard set of rules that Alphaparse allows.
+     * <p>
+     * {@link RulesAvailable#CHAR_RANGE},
+     * {@link RulesAvailable#CHOICE},
+     * {@link RulesAvailable#COUNTED_REPEAT},
+     * {@link RulesAvailable#EPSILON},
+     * {@link RulesAvailable#EXTENDED_IDENTIFIERS},
+     * {@link RulesAvailable#LOOKAHEAD},
+     * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
+     * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#ORDERED_CHOICE},
+     * {@link RulesAvailable#PLUS},
+     * {@link RulesAvailable#REGEX},
+     * {@link RulesAvailable#SINGLY_QUOTED},
+     * {@link RulesAvailable#STAR}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
-    public static @NotNull Set<RulesAvailable> defaultRules() {
+    public static @NotNull Set<RulesAvailable> DEFAULT_RULES() {
         return Set.of(
-                REGEX, PLUS, CHOICE, STAR, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, SINGLY_QUOTED, ORDERED_CHOICE, COUNTED_REPEAT, OPTIONAL, CHAR_RANGE);
+                CHAR_RANGE, CHOICE, COUNTED_REPEAT, EPSILON, EXTENDED_IDENTIFIERS,
+                LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL, ORDERED_CHOICE, PLUS,
+                REGEX, SINGLY_QUOTED, STAR);
     }
 }

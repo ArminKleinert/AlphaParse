@@ -20,9 +20,9 @@ class AlphaTest {
     @Test
     void outputForTemps() {
         {
-//            var p = Alpha.parser("S = #'a'+");
-//               var text = "ab";var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
-//            System.out.println(p.parse(text, opts));
+            IO2.println(Alpha.parser("a = 'a'"));
+            IO2.println(Alpha.parser("a123 = 'a'"));
+            IO2.println(Alpha.parser("🎁 = 'a'"));
         }
     }
 
@@ -418,18 +418,6 @@ class AlphaTest {
             final @NotNull var res = Alpha.parse(p, "AB");
             Assertions.assertEquals(ParseTree.create("S", "AB"), res);
         }
-    }
-
-    @Test
-    void parseFailure() {
-    }
-
-    @Test
-    void parseWithOptions() {
-    }
-
-    @Test
-    void parseTotal() {
     }
 
     @Test
