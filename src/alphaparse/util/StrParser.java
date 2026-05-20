@@ -8,12 +8,14 @@ import java.util.regex.Pattern;
  * Helper functions for creating parsers from strings.
  */
 public final class StrParser {
-    private StrParser() {
+    final @NotNull StringBuilder sb = new StringBuilder();
+
+    public StrParser() {
     }
 
     // Converts a single-quoted string to a double-quoted one.
-    private static @NotNull StringBuilder escape(final @NotNull CharSequence s) {
-        final @NotNull StringBuilder sb = new StringBuilder(s.length());
+    private @NotNull StringBuilder escape(final @NotNull CharSequence s) {
+        sb.setLength(0);
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
             if (c == '\\') {
@@ -82,7 +84,7 @@ public final class StrParser {
                                 throw new IllegalArgumentException("Invalid unicode escape: \\u" + (char) ch);
                             }
 
-                            lenAndCh = readUnicodeChar(inputCharSequence, i, inputLength, ch, 16, 4, true);
+                            lenAndCh = readUnicodeChar(inputCharSequence, i, ch, 16, 4, true);
                             ch = (int) lenAndCh;
                             i += (int) (lenAndCh >> 32) - 1;
                             break;
@@ -91,7 +93,7 @@ public final class StrParser {
                                 throw new IllegalArgumentException("Unsupported escape character: \\" + (char) ch);
                             }
 
-                            lenAndCh = readUnicodeChar(inputCharSequence, i, inputLength, ch, 8, 3, false);
+                            lenAndCh = readUnicodeChar(inputCharSequence, i, ch, 8, 3, false);
                             ch = (int) lenAndCh;
                             i += (int) (lenAndCh >> 32) - 1;
                             if (ch > 255) {
@@ -112,7 +114,6 @@ public final class StrParser {
 
     private static long readUnicodeChar(final @NotNull CharSequence sb,
                                         int indexInCharSequence,
-                                        final int inputLength,
                                         final int initChar,
                                         final int numericBase,
                                         final int expectedLength,
@@ -153,7 +154,7 @@ public final class StrParser {
      * @param s The input string.
      * @return A string.
      */
-    public static @NotNull String processString(final @NotNull CharSequence s) {
+    public @NotNull String processString(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(1, s.length() - 1);
         final @NotNull StringBuilder removeEscapedSingleQuotes = escape(stripped);
         return parse(removeEscapedSingleQuotes.append('"'));
@@ -166,7 +167,7 @@ public final class StrParser {
      * @param s The input string.
      * @return A regex.
      */
-    public static @NotNull Pattern processRegexp(final @NotNull CharSequence s) {
+    public @NotNull Pattern processRegexp(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(2, s.length() - 1);
         final @NotNull StringBuilder removeEscapedSingleQuotes = escape(stripped);
         return Pattern.compile(removeEscapedSingleQuotes.toString());

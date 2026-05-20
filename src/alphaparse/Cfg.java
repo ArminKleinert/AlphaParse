@@ -92,6 +92,8 @@ final class Cfg {
         return Map.entry(key, rule);
     }
 
+    private final @NotNull StrParser strParser = new StrParser();
+
     private @NotNull Object buildRule(final @NotNull ParseTree tree1) {
         @NotNull ParseTree tree = tree1;
         for (; ; ) {
@@ -140,24 +142,24 @@ final class Cfg {
                             default -> throw new IllegalStateException();
                         };
                         return combinatorFactory.stringTerminal(
-                                StrParser.processString(s.substring(2)), caseInsensitive);
+                                strParser.processString(s.substring(2)), caseInsensitive);
                     }
                     return stringOrStringCaseInsensitiveCombinator(
-                            StrParser.processString(s));
+                            strParser.processString(s));
                 }
                 case "string-cs" -> {
                     return combinatorFactory.stringTerminal(
-                            StrParser.processString((String) tree.getContent().getFirst().content()),
+                            strParser.processString((String) tree.getContent().getFirst().content()),
                             false);
                 }
                 case "string-ci" -> {
                     return combinatorFactory.stringTerminal(
-                            StrParser.processString((String) tree.getContent().getFirst().content()),
+                            strParser.processString((String) tree.getContent().getFirst().content()),
                             true);
                 }
                 case "regexp" -> {
                     return combinatorFactory.createRegexTerminal(
-                            StrParser.processRegexp((String) tree.getContent().getFirst().content()));
+                            strParser.processRegexp((String) tree.getContent().getFirst().content()));
                 }
                 case "neg" -> {
                     return combinatorFactory.negateRule((Combinator) buildRule(

@@ -37,10 +37,6 @@ final class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         final @NotNull String c99GrammarText = readFile("grammars/c99.g");
 
-        System.out.println(Alpha.parses(Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace()), "int a(int r){return r;}\n            int a(int r, int a){return r;}", ParsingOptions.optMemory()).stream().toList());
-
-        System.exit(0);
-
         int i = 0;
 
 //        System.out.println(TimeUtil.measureExecutionsPer(
@@ -143,7 +139,7 @@ final class Main {
 //        }
 
         /**/
-        PerfTest.fullTest(true, c99GrammarText, 1000, 10000);
+        PerfTest.fullTest(true, c99GrammarText, 100, 1000);
 
         /**/
         PerfTest.testNumberOfParses(true, 23);
