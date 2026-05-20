@@ -20,7 +20,7 @@ Missing:
 - [ ] ABNF variable repetition `n*m rule` currently requires a space before the rule name.
 - [ ] Does not support the `%i` (case-insensitive) and `%s` (case-sensitive) prefixes for ABNF strings yet.
 - [ ] ABNF line comments are not implemented yet.
-- [ ] Instaparse's `:optimize :memory` is not implemented yet. The need for it needs to be investigated as Alphaparse
+- [ ] Instaparse's `:optimize :memory` is not implemented yet. The need for it needs to be investigated as AlphaParse
   does require less memory already.
 - [ ] PEG-like ordered alternative `rule1 / rule2` needs to be investigated. I am not entirely sure whether it does or
   does not work.
@@ -67,7 +67,7 @@ TODO
 
 ## Differences from Instaparse
 
-The biggest difference to Instaparse is that Alphaparse does not require Clojure. Jokes aside, there are a few important
+The biggest difference to Instaparse is that AlphaParse does not require Clojure. Jokes aside, there are a few important
 internal differences.
 
 ### Production redefinitions
@@ -82,7 +82,7 @@ S = C
 
 the question arises: What is the right-hand side of the production `S`?
 
-Instaparse chooses to override the previous definitions silently. Alphaparse allows the user to choose between options:
+Instaparse chooses to override the previous definitions silently. AlphaParse allows the user to choose between options:
 
 ```java
 import alphaparse.Alpha;
@@ -141,8 +141,8 @@ using records is sometimes 60% slower than equivalent classes, let me know. :)
 
 ### `Sym` vs `String`
 
-Strings in Java are very optimized. Still, Alphaparse uses its own type `Sym` for production names. Like Clojure's
-Keyword, `Sym` instances are interned. Clojure embeds the Keywords into the code directly, while Alphaparse always
+Strings in Java are very optimized. Still, AlphaParse uses its own type `Sym` for production names. Like Clojure's
+Keyword, `Sym` instances are interned. Clojure embeds the Keywords into the code directly, while AlphaParse always
 instantiates them when needed. The advantage that interning provides is the possibility of a constant `O(1)` equality
 check.
 

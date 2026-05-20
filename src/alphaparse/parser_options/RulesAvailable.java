@@ -75,7 +75,7 @@ public enum RulesAvailable {
     OPTIONAL_REPETITION_STAR,
 
     /**
-     * Empty or "end of input" rule. This rule can be inferred by Alphaparse and is thus optional.
+     * Empty or "end of input" rule. This rule can be inferred by AlphaParse and is thus optional.
      * For formats, see {@link EpsilonCombinator}.
      * <p>
      * Possible replacements through other rule types:
@@ -322,7 +322,7 @@ public enum RulesAvailable {
     }
 
     /**
-     * The standard set of rules that Alphaparse allows.
+     * The standard set of rules that AlphaParse allows.
      * <p>
      * {@link RulesAvailable#ALTERNATION},
      * {@link RulesAvailable#VALUE_RANGE},
