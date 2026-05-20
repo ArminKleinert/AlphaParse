@@ -2,12 +2,7 @@ package alphaparse.util;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.StringReader;
 import java.util.regex.Pattern;
-
-import static java.lang.Character.isWhitespace;
 
 /**
  * Helper functions for creating parsers from strings.
@@ -17,7 +12,7 @@ public final class StrParser {
     }
 
     // Converts a single-quoted string to a double-quoted one.
-    private static @NotNull String escape(final @NotNull CharSequence s) {
+    private static @NotNull StringBuilder escape(final @NotNull CharSequence s) {
         final @NotNull StringBuilder sb = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
@@ -35,30 +30,31 @@ public final class StrParser {
             }
         }
         //sb.append('"');
-        return sb.toString();
+        return sb;
     }
 
     /**
      * Unescapes a string.
      *
-     * @param s The input string.
+     * @param inputCharSequence The input string.
      * @return An unescaped string.
      */
-    public static @NotNull String parse(final @NotNull CharSequence s) {
-        final @NotNull StringBuilder sb = new StringBuilder();
-        final @NotNull PushbackReader r = new PushbackReader(new StringReader(s.toString()));
+    public static @NotNull String parse(final @NotNull StringBuilder inputCharSequence) {
+        final int inputLength = inputCharSequence.length();
+        long lenAndCh;
 
         try {
-            for (int ch = r.read(); ch != '"'; ch = r.read()) {
-                if (ch == -1) {
-                    throw new IllegalArgumentException("EOF while reading string");
-                }
+            for (int i = 0; i < inputLength; i++) {
+                int ch = inputCharSequence.charAt(i);
+
+                if (ch == '"')
+                    break;
 
                 if (ch == '\\') {
-                    ch = r.read();
-                    if (ch == -1) {
-                        throw new IllegalArgumentException("EOF while reading string");
-                    }
+                    i++;
+                    if (i >= inputLength)
+                        throw new ArrayIndexOutOfBoundsException();
+                    ch = inputCharSequence.charAt(i);
 
                     switch (ch) {
                         case '"':
@@ -80,19 +76,24 @@ public final class StrParser {
                             ch = '\t';
                             break;
                         case 'u':
-                            ch = r.read();
+                            i++;
+                            ch = inputCharSequence.charAt(i);
                             if (Character.digit(ch, 16) == -1) {
                                 throw new IllegalArgumentException("Invalid unicode escape: \\u" + (char) ch);
                             }
 
-                            ch = readUnicodeChar(r, ch, 16, 4, true);
+                            lenAndCh = readUnicodeChar(inputCharSequence, i, inputLength, ch, 16, 4, true);
+                            ch = (int) lenAndCh;
+                            i += (int) (lenAndCh >> 32) - 1;
                             break;
                         default:
                             if (!Character.isDigit(ch)) {
                                 throw new IllegalArgumentException("Unsupported escape character: \\" + (char) ch);
                             }
 
-                            ch = readUnicodeChar(r, ch, 8, 3, false);
+                            lenAndCh = readUnicodeChar(inputCharSequence, i, inputLength, ch, 8, 3, false);
+                            ch = (int) lenAndCh;
+                            i += (int) (lenAndCh >> 32) - 1;
                             if (ch > 255) {
                                 throw new IllegalArgumentException("Octal escape sequence must be in range [0, 377].");
                             }
@@ -100,44 +101,47 @@ public final class StrParser {
                     }
                 }
 
-                sb.appendCodePoint(ch);
+                inputCharSequence.appendCodePoint(ch);
             }
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            throw new IllegalArgumentException("EOF while reading string",exception);
         }
 
-        return sb.toString();
+        return inputCharSequence.substring(inputLength);
     }
 
-    private static int readUnicodeChar(final @NotNull PushbackReader r,
-                                       final int initChar,
-                                       final int base,
-                                       final int length,
-                                       final boolean exact) throws IOException {
-        int uc = Character.digit(initChar, base);
-        if (uc == -1) {
+    private static long readUnicodeChar(final @NotNull CharSequence sb,
+                                        int indexInCharSequence,
+                                        final int inputLength,
+                                        final int initChar,
+                                        final int numericBase,
+                                        final int expectedLength,
+                                        final boolean requireExactLength) {
+        int outputNumber = Character.digit(initChar, numericBase);
+        int parsedLength = 1;
+        if (outputNumber == -1) {
             throw new IllegalArgumentException("Invalid digit: " + (char) initChar);
         } else {
-            int i;
-            for (i = 1; i < length; ++i) {
-                final int ch = r.read();
-                if (ch == -1 || isWhitespace(ch)) {
-                    r.unread(ch);
+            indexInCharSequence++;
+            for (; parsedLength < expectedLength; parsedLength++, indexInCharSequence++) {
+                final char ch = sb.charAt(indexInCharSequence);
+                if (Character.isWhitespace(ch)) {
+                    parsedLength--;
                     break;
                 }
 
-                final int d = Character.digit(ch, base);
+                final int d = Character.digit(ch, numericBase);
                 if (d == -1) {
-                    throw new IllegalArgumentException("Invalid digit: " + (char) ch);
+                    throw new IllegalArgumentException("Invalid digit: " + ch);
                 }
 
-                uc = uc * base + d;
+                outputNumber = outputNumber * numericBase + d;
             }
 
-            if (i != length && exact) {
-                throw new IllegalArgumentException("Invalid character length: " + i + ", should be: " + length);
+            if (parsedLength != expectedLength && requireExactLength) {
+                throw new IllegalArgumentException("Invalid character length: " + parsedLength + ", should be: " + expectedLength);
             } else {
-                return uc;
+                return ((long) parsedLength <<32) + outputNumber;
             }
         }
     }
@@ -151,8 +155,8 @@ public final class StrParser {
      */
     public static @NotNull String processString(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(1, s.length() - 1);
-        final @NotNull String removeEscapedSingleQuotes = escape(stripped);
-        return parse(removeEscapedSingleQuotes + '"');
+        final @NotNull StringBuilder removeEscapedSingleQuotes = escape(stripped);
+        return parse(removeEscapedSingleQuotes.append('"'));
     }
 
     /**
@@ -164,7 +168,7 @@ public final class StrParser {
      */
     public static @NotNull Pattern processRegexp(final @NotNull CharSequence s) {
         final @NotNull CharSequence stripped = s.subSequence(2, s.length() - 1);
-        final @NotNull String removeEscapedSingleQuotes = escape(stripped);
-        return Pattern.compile(removeEscapedSingleQuotes);
+        final @NotNull StringBuilder removeEscapedSingleQuotes = escape(stripped);
+        return Pattern.compile(removeEscapedSingleQuotes.toString());
     }
 }

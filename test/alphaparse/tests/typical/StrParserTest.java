@@ -1,0 +1,32 @@
+package alphaparse.tests.typical;
+
+import alphaparse.util.StrParser;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+class StrParserTest {
+    @Test void testStr1() {
+        var s = StrParser.processString("\"a\"");
+        Assertions.assertEquals(1, s.length());
+        Assertions.assertEquals("a", s);
+    }
+    @Test void testStr2() {
+        var s = StrParser.processString("'a'");
+        Assertions.assertEquals(1, s.length());
+        Assertions.assertEquals("a", s);
+    }
+    @Test void testStr3() {
+        var s = StrParser.processString("'\\u1234'");
+        Assertions.assertEquals("ሴ", s);
+    }
+    @Test void testReg1() {
+        var s = StrParser.processString("#\"[a]\"");
+        Assertions.assertEquals(4, s.length());
+        Assertions.assertEquals("\"[a]", s);
+    }
+    @Test void testReg2() {
+        var s = StrParser.processString("#'[a]'");
+        Assertions.assertEquals(4, s.length());
+        Assertions.assertEquals("'[a]", s);
+    }
+}

@@ -25,6 +25,60 @@ final class PerfTest {
             final int testNumMultiplierForSlowTests,
             final int testNumMultiplier) // 10 for very few, 100 for normal, 1000 for really many, 10000 if you want to wait a day
     {
+        /*
+        ----------------------------------
+--- Standard performance tests ---
+----------------------------------
+Make parser: {:lowest 51.894, :highest 75.160, :diff 23.266, :average 53.833, :mid 52.717, :median 52.890, :total 107665.380}
+Previous:    {:lowest 57.658, :highest 103.016, :diff 45.358, :average 63.324, :mid 59.619, :median 61.341, :total 12664.708}
+Previous 2:  {:lowest 49.696, :highest 72.810, :diff 23.114, :average 51.662, :mid 50.159, :median 50.327, :total 103323.969}
+Original:    {:lowest 105.916, :highest 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000
+---
+First parse: {:lowest 1.347, :highest 5.029, :diff 3.681, :average 1.388, :mid 1.380, :median 1.381, :total 277694.938}
+Previous:    {:lowest 1.382, :highest 6.293, :diff 4.911, :average 1.520, :mid 1.443, :median 1.459, :total 30397.866}
+Previous 2:  {:lowest 1.274, :highest 3.420, :diff 2.146, :average 1.309, :mid 1.303, :median 1.303, :total 26187.008}
+Original:    {:lowest 3.238, :highest 9.338, :diff 6.100, :average 3.299, :mid 3.279, :median 3.280, :sum 65981.479} // n=20000
+---
+All parses:  {:lowest 0.001, :highest 1.860, :diff 1.859, :average 0.001, :mid 0.001, :median 0.001, :total 226.607}
+Previous:    {:lowest 0.000, :highest 0.045, :diff 0.045, :average 0.001, :mid 0.001, :median 0.001, :total 15.080}
+Previous 2:  {:lowest 1.246, :highest 3.653, :diff 2.407, :average 1.287, :mid 1.280, :median 1.280, :total 25736.796}
+Original:    {:lowest 3.235, :highest 6.767, :diff 3.532, :average 3.296, :mid 3.281, :median 3.282, :sum 65926.257} // n=20000
+---
+To array:    {:lowest 10.816, :highest 22.501, :diff 11.684, :average 11.091, :mid 11.033, :median 11.037, :total 221816.038}
+Previous:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}
+Previous 2:  {:lowest 13.913, :highest 19.723, :diff 5.810, ::average 14.222, :mid 14.141, :median 14.144, :total 284433.845}
+Original:    {:lowest 37.369, :highest 60.060, :diff 22.691, :average 38.122, :mid 37.937, :median 37.943, :sum 762444.823} // n=20000
+---
+Iteration:   {:lowest 10.970, :highest 17.890, :diff 6.920, :average 11.235, :mid 11.175, :median 11.182, :total 224704.078}
+Previous:    {:lowest 12.501, :highest 22.928, :diff 10.427, :average 13.509, :mid 12.809, :median 12.909, :total 27017.503}
+Previous 2:  {:lowest 13.906, :highest 23.016, :diff 9.110, :average 14.232, :mid 14.153, :median 14.155, :total 284642.717}
+Original:    {:lowest 37.264, :highest 46.080, :diff 8.816, :average 38.005, :mid 37.834, :median 37.833, :sum 760096.656} // n=20000
+---
+ArrayList:   {:lowest 10.842, :highest 15.053, :diff 4.211, :average 11.132, :mid 11.079, :median 11.084, :total 222648.187}
+Previous:    {:lowest 12.480, :highest 26.343, :diff 13.862, :average 13.395, :mid 12.804, :median 12.850, :total 26790.117}
+Previous 2:  {:lowest 13.909, :highest 23.171, :diff 9.262, :average 14.210, :mid 14.143, :median 14.141, :total 284207.290}
+Original:    {:lowest 37.336, :highest 45.696, :diff 8.360, :average 38.093, :mid 37.921, :median 37.919, :sum 761850.134} // n=20000
+---
+Cnt parses:  {:lowest 10.937, :highest 17.459, :diff 6.522, :average 11.211, :mid 11.153, :median 11.160, :total 224216.419}
+Previous:    {:lowest 12.539, :highest 23.903, :diff 11.364, :average 13.446, :mid 12.850, :median 12.895, :total 26892.826}
+Previous 2:  {:lowest 13.960, :highest 23.369, :diff 9.409, :average 14.266, :mid 14.191, :median 14.191, :total 285313.230}
+Original:    -
+Count of parses: 4096
+
+----------------------------------
+---   Memory optimized tests   ---
+----------------------------------
+First parse: {:lowest 1.351, :highest 5.075, :diff 3.723, :average 1.392, :mid 1.384, :median 1.384, :total 278327.042}
+Std prev:    {:lowest 1.382, :highest 6.293, :diff 4.911, :average 1.520, :mid 1.443, :median 1.459, :total 30397.866}
+Previous:    -
+Original:    {:lowest 3.243, :highest 6.779, :diff 3.537, :average 3.300, :mid 3.284, :median 3.284, :sum 65992.776} // n=20000
+---
+All parses:  {:lowest 0.001, :highest 1.646, :diff 1.645, :average 0.001, :mid 0.001, :median 0.001, :total 221.728}
+Std prev:    {:lowest 0.000, :highest 0.045, :diff 0.045, :average 0.001, :mid 0.001, :median 0.001, :total 15.080}
+Previous:    -
+Original:    {:lowest 3.238, :highest 6.909, :diff 3.671, :average 3.308, :mid 3.291, :median 3.291, :sum 66157.123} // n=20000
+---
+         */
 
         /**/
         if (!doRun)
