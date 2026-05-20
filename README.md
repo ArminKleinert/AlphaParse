@@ -31,34 +31,37 @@ TODO
 
 ## Grammar elements
 
-| Category                                | Notations                                                                        | Example                 | Note                                      | Option           |
-|-----------------------------------------|----------------------------------------------------------------------------------|-------------------------|-------------------------------------------|------------------|
+| Category                                | Notations                                                                        | Example                 | Note                                      |
+|-----------------------------------------|----------------------------------------------------------------------------------|-------------------------|-------------------------------------------|
 | <td colspan=5><h5>Default elements</h5> |
-| Rule                                    | `: := ::= =`                                                                     | `S = A`                 |                                           |                  |
-| End of rule                             | `;` `.` (optional)                                                               | `S = A;`                |                                           |                  |
-| Alternation                             | <code>&#124;</code>                                                              | <code>A &#124; B</code> | Also known as "Choice"                    | `CHOICE`         |
-| Concatenation                           | whitespace or `,`                                                                | `A B`                   |                                           |                  |
-| Grouping                                | `()`                                                                             | `(A  B)+ C`             |                                           |                  |
-| Optional                                | `?` `[]`                                                                         | `A?` `[A]`              |                                           | `OPTIONAL`       |
-| One or more                             | `+`                                                                              | `A+`                    |                                           | `PLUS`           |
-| Zero or more                            | `*` `{}`                                                                         | `A*` `{A}`              |                                           | `STAR`           |
-| String terminal                         | `""`                                                                             | `"a"`                   |                                           |                  |
-| String terminal (alt)                   | `''`                                                                             | `'a'`                   |                                           | `SINGLY_QUOTED`  |
-| Regex terminal                          | `#""` `#''`                                                                      | `#"[0-9]"` `#'[0-9]'`   |                                           | `REGEX`          |
-| Epsilon                                 | `Epsilon epsilon EPSILON eps ε "" ''`                                            | `S = epsilon`           |                                           | `EPSILON`        |
-| Comment                                 | `(* *)`                                                                          | `(* Comment *)`         |                                           |                  |
+| Rule                                    | `:` `:=` `::=` `=`                                                               | `S = A`                 |                                           |
+| End of rule                             | `;` `.` (optional)                                                               | `S = A;`                |                                           |
+| Alternation                             | <code>&#124;</code>                                                              | <code>A &#124; B</code> | Also known as "Choice"; Not in ABNF       |
+| Concatenation                           | whitespace or `,`                                                                | `A B`                   |                                           |
+| Grouping                                | `()`                                                                             | `(A  B)+ C`             |                                           |
+| Optional                                | `[]`                                                                             | `[A]`                   |                                           |
+| Optional (alt)                          | `?`                                                                              | `A?`                    |                                           |
+| One or more                             | `+`                                                                              | `A+`                    |                                           |
+| Zero or more                            | `{}`                                                                             | `{A}`                   |                                           |
+| Zero or more (alt)                      | `*`                                                                              | `A*`                    |                                           |
+| String terminal                         | `""`                                                                             | `"a"`                   |                                           |
+| String terminal (alt)                   | `''`                                                                             | `'a'`                   | Not in ABNF                               |
+| Regex terminal                          | `#""` `#''`                                                                      | `#"[0-9]"` `#'[0-9]'`   |                                           |
+| Epsilon                                 | `Epsilon epsilon EPSILON eps ε "" ''`                                            | `S = epsilon`           |                                           |
+| Comment                                 | `(* *)`                                                                          | `(* Comment *)`         |                                           |
 | <td colspan=5><h5>Extended options</h5> |
-| Variable repetition (zero or more)      | `*`                                                                              | `* A`                   | ABNF, not available if `STAR` is enabled. | `COUNTED_REPEAT` |
-| Variable repetition (n or more)         | `n*`                                                                             | `5* A`                  | ABNF                                      | `COUNTED_REPEAT` |
-| Variable repetition (zero to m)         | `*m`                                                                             | `*5 A`                  | ABNF                                      | `COUNTED_REPEAT` |
-| Variable repetition (n to m)            | `n*m`                                                                            | `5*19 A`                | ABNF                                      | `COUNTED_REPEAT` |
-| Variable repetition (exactly n)         | `n`                                                                              | `5 A`                   | ABNF                                      | `COUNTED_REPEAT` |
-| Value range                             | `%xXXXX` `%xXXXX-XXXX`, `%bBBBB`, `%bBBBB-BBBB`, `%dDDDD`, `%dDDDD-DDDD`         | `%x41-5a`               | ABNF                                      | `CHAR_RANGE`     |
-| ABNF core rules                         | [See the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-25) |                         |                                           | `ABNF_CORE`      |
+| Variable repetition (zero or more)      | `*`                                                                              | `* A`                   | ABNF, not available if `STAR` is enabled. |
+| Variable repetition (n or more)         | `n*`                                                                             | `5* A`                  | ABNF                                      |
+| Variable repetition (zero to m)         | `*m`                                                                             | `*5 A`                  | ABNF                                      |
+| Variable repetition (n to m)            | `n*m`                                                                            | `5*19 A`                | ABNF                                      |
+| Variable repetition (exactly n)         | `n`                                                                              | `5 A`                   | ABNF                                      |
+| Value range                             | `%xXXXX` `%xXXXX-XXXX`, `%bBBBB`, `%bBBBB-BBBB`, `%dDDDD`, `%dDDDD-DDDD`         | `%x41-5a`               | ABNF                                      |
+| ABNF core rules                         | See [the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-25) |                         |                                           |
+| Explicit string case sensitivity        | `%i"..."` `%s"..."` (and `%i'...'` `%s'...'`)                                    | `%i"A"`, `%s"A"`        | ABNF                                      |
 
 ## Problems
 
-- Grammars like `S : S` or `S : A\nA : S` will produce no output, but also not log a failure.
+- Grammars like `S : S` or `S : A\nA : S` will terminate, but produce no output and also not log a failure.
 - Grammars like `S : epsilon | S` produce an infinite number of results if the input is empty. This is technically
   correct behavior, but very confusing to users.
 
@@ -88,33 +91,30 @@ import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 
 class RedefTest {
-  static void main(String[] args) {
-    ParserCreationOptions opts = ParserCreationOptions
-            .getDefault()
-            .withRedefinitionOption(RedefinitionOption.OVERRIDE);
-    String gr = "S : 'A'\nS : 'B'\nS : 'C'";
-    Parser p;
+    static void main(String[] args) {
+        String gr = "S : 'A'\nS : 'B'\nS : 'C'";
+        Parser p;
 
-    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
-    IO.println(p.parse("A").isSuccess()); // false
-    IO.println(p.parse("B").isSuccess()); // false
-    IO.println(p.parse("C").isSuccess()); // true
+        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
+        IO.println(p.parse("A").isSuccess()); // false
+        IO.println(p.parse("B").isSuccess()); // false
+        IO.println(p.parse("C").isSuccess()); // true
 
-    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.ERROR)); // Fails
-    IO.println(p.parse("A").isSuccess()); // n.a.
-    IO.println(p.parse("B").isSuccess()); // n.a.
-    IO.println(p.parse("C").isSuccess()); // n.a.
+        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.ERROR)); // Fails
+        IO.println(p.parse("A").isSuccess()); // n.a.
+        IO.println(p.parse("B").isSuccess()); // n.a.
+        IO.println(p.parse("C").isSuccess()); // n.a.
 
-    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.CHOICE));
-    IO.println(p.parse("A").isSuccess()); // true
-    IO.println(p.parse("B").isSuccess()); // true
-    IO.println(p.parse("C").isSuccess()); // true
+        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.CHOICE));
+        IO.println(p.parse("A").isSuccess()); // true
+        IO.println(p.parse("B").isSuccess()); // true
+        IO.println(p.parse("C").isSuccess()); // true
 
-    p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.KEEP));
-    IO.println(p.parse("A").isSuccess()); // true
-    IO.println(p.parse("B").isSuccess()); // false
-    IO.println(p.parse("C").isSuccess()); // false
-  }
+        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.KEEP));
+        IO.println(p.parse("A").isSuccess()); // true
+        IO.println(p.parse("B").isSuccess()); // false
+        IO.println(p.parse("C").isSuccess()); // false
+    }
 }
 ```
 
@@ -125,8 +125,8 @@ When starting this project, I made a few decisions that are all over the code.
 ### `@NotNull` and `@Nullable` everywhere.
 
 Despite some people
-[being very unhappy with the use of these annotations](https://news.ycombinator.com/item?id=37534184)
-, I found the compiler warnings helpful. These annotations ultimately help
+[being very unhappy with the use of these annotations](https://news.ycombinator.com/item?id=37534184),
+I found the compiler warnings helpful. These annotations ultimately help
 [make the code more readable](https://stackoverflow.com/a/70817574).
 
 ### `final` classes, methods and variables
@@ -163,11 +163,11 @@ types. But only *sometimes*. I prefer deterministic behavior.
 
 ```java
 // Could be java.util.function.Consumer<AlphaParseMessage>. New type for clarity.
-alphaparse.functions.Listener listener = (AlphaParseMessage o) -> { System.out.println("Listener"); };
+alphaparse.functions.Listener listener = (AlphaParseMessage o) -> System.out.println("Listener");
 
 // Could be java.lang.Runnable. New type because Runnable is associated with Threads.
-alphaparse.functions.NegativeListener negativeListener = () -> { System.out.println("NegativeListener"); };
-alphaparse.functions.Procedure procedure = () -> { System.out.println("Procedure"); };
+alphaparse.functions.NegativeListener negativeListener = () -> System.out.println("NegativeListener");
+alphaparse.functions.Procedure procedure = () -> System.out.println("Procedure");
 ```
 
 ### New collection types

@@ -9,12 +9,18 @@ import java.util.Set;
 
 /**
  * Rules that can be used when building parsers. Some appear only in EBNF, some only in ABNF.
+ * <p>
+ * If some kind of rule is not allowed, there are alternatives for most.
+ * Check the source code of {@code RuleAlternativesTests} (cannot link here because that file is in the "test" folder).
  */
 public enum RulesAvailable {
     /**
      * Regex rules.
      * <p>
      * Notation: {@code #'...'} or {@code #"..."}
+     * <p>
+     * Possible replacements through other rule types:
+     * Can be replaced by using combinations of all other kinds of rules, mainly Strings.
      *
      * @see TerminalRegexpCombinator
      */
@@ -24,6 +30,9 @@ public enum RulesAvailable {
      * "Once or more" repetition.
      * <p>
      * Notation: {@code rule+}
+     * <p>
+     * Possible replacements through other rule types:
+     * Can be replaced by using {@link #OPTIONAL_REPETITION}.
      *
      * @see PlusCombinator
      */
@@ -33,6 +42,8 @@ public enum RulesAvailable {
      * "Alternation" or "choice" rule.
      * <p>
      * Notation: {@code rule1 | rule2}
+     * <p>
+     * Possible replacements through other rule types: None.
      *
      * @see ChoiceCombinator
      */
@@ -42,6 +53,9 @@ public enum RulesAvailable {
      * "Zero or more" repetition.
      * <p>
      * Notation: {@code {rule}}
+     * <p>
+     * Possible replacements through other rule types:
+     * Can be replaced by using {@link #ALTERNATION} and more productions.
      *
      * @see RulesAvailable#OPTIONAL_REPETITION_STAR
      * @see CombinatorStar
@@ -49,9 +63,11 @@ public enum RulesAvailable {
     OPTIONAL_REPETITION,
 
     /**
-     * "Zero or more" repetition.
+     * "Zero or more" repetition. Similar to {@link #OPTIONAL_REPETITION}, but different notation.
      * <p>
      * Notation: {@code rule*}
+     * <p>
+     * Possible replacements through other rule types: Equivalent to {@link #OPTIONAL_REPETITION}.
      *
      * @see RulesAvailable#OPTIONAL_REPETITION
      * @see CombinatorStar
@@ -60,6 +76,10 @@ public enum RulesAvailable {
 
     /**
      * Empty or "end of input" rule. This rule can be inferred by Alphaparse and is thus optional.
+     * For formats, see {@link EpsilonCombinator}.
+     * <p>
+     * Possible replacements through other rule types:
+     * Epsilon can be replaced by an empty String terminal.
      *
      * @see EpsilonCombinator
      */
@@ -71,6 +91,8 @@ public enum RulesAvailable {
      * Notation: {@code &look rule}.
      * <p>
      * Example: {@code &'a' ('a' | 'b')} means "use the alternation a|b, but start with an 'a'". I can't think of better examples.
+     * <p>
+     * Possible replacements through other rule types: None.
      *
      * @see LookaheadCombinator
      */
@@ -82,13 +104,18 @@ public enum RulesAvailable {
      * Notation: {@code !look rule}
      * <p>
      * Example: {@code !'a' ('a' | 'b')} means "use the alternation a|b, but do NOT start with an 'a'". I can't think of better examples.
+     * <p>
+     * Possible replacements through other rule types: None.
      *
      * @see NegativeLookaheadCombinator
      */
     NEGATIVE_LOOKAHEAD,
 
     /**
-     * Singly quoted strings are technically not allowed by EBNF.
+     * Single-quoted strings are technically not allowed by EBNF.
+     * <p>
+     * Possible replacements through other rule types:
+     * {@code S = 'a'} can be safely replaced by {@code S = "a"}, but this requires escaping the quotation-marks in code.
      *
      * @see TerminalStringCombinator
      */
@@ -96,24 +123,35 @@ public enum RulesAvailable {
 
     /**
      * ABNF string prefixes {@code %i"..."} for case insensitivity and {@code %s"..."} for forced case sensitivity.
+     * <p>
+     * {@code S = %i"..."} is already implicit in ABNF, but needs to be explicit in other formats.
+     * {@code S = %s"..."} is already implicit in EBNF, but needs to be explicit in ABNF.
+     * <p>
+     * Possible replacements through other rule types: None.
      *
      * @see CombinatorFactory#stringTerminal(String, boolean)
      */
     STRING_CASE_SENSITIVITY_PREFIX,
 
     /**
-     * ABNF char range.
+     * ABNF value range.
      * <p>
      * Notation: {@code %xXXXX} or {@code %xXXXX-XXXX}, {@code %bBBBB} or {@code %bBBBB-BBBB}, {@code %dDDDD} or {@code %dDDDD-DDDD}. "X" denotes a hexadecimal digit, "B" denotes a binary digit, "O" (uppercase o) denotes an octal digit.
+     * <p>
+     * Possible replacements through other rule types:
+     * A value range can be replaced by a regex or an alternation of string terminals.
+     * If you need multiple characters outside the range of 16-bit characters, value ranges become useful.
      *
      * @see TerminalUnicodeCharCombinator
      */
-    CHAR_RANGE,
+    VALUE_RANGE,
 
     /**
      * ABNF-style choice combinator '/' with the extension that the output should be ordered and deterministic.
      * <p>
-     * Notation:  {@code rule1 / rule2}
+     * Notation: {@code rule1 / rule2}
+     * <p>
+     * Possible replacements through other rule types: None, but {@link #ALTERNATION} is close enough.
      *
      * @see OrderedChoiceCombinator
      */
@@ -123,6 +161,9 @@ public enum RulesAvailable {
      * "Zero or once" or "Optional" rule.
      * <p>
      * Notation: {@code [rule]}
+     * <p>
+     * Possible replacements through other rule types:
+     * {@code S = [rule]} can be replaced by {@code S = rule | epsilon}
      *
      * @see RulesAvailable#OPTIONAL_QUERY
      * @see OptionalCombinator
@@ -133,6 +174,8 @@ public enum RulesAvailable {
      * Similar to {@link #OPTIONAL}, but different notation.
      * <p>
      * Notation: {@code rule?}
+     * <p>
+     * Possible replacements through other rule types: Equivalent to {@link #OPTIONAL}.
      *
      * @see RulesAvailable#OPTIONAL
      * @see OptionalCombinator
@@ -142,7 +185,16 @@ public enum RulesAvailable {
     /**
      * ABNF "counted repetition" or "variable repetition" rule, notated by a star-prefix.
      * <p>
-     * Notation: {@code n*m rule} or {@code n* rule} or {@code *m rule} or {@code * rule} (this is only available if {@link RulesAvailable#OPTIONAL_REPETITION_STAR} is not allowed.
+     * Notation: {@code n*m rule} or {@code n* rule} or {@code *m rule} or {@code n rule} or {@code * rule} (this is only available if {@link RulesAvailable#OPTIONAL_REPETITION_STAR} is not allowed).
+     * <p>
+     * Possible replacements through other rule types:
+     * <ul>
+     *     <li>{@code n*m rule} can be replaced by using n occurrences of the rule followed by m-n {@link #OPTIONAL} occurrences of the rule</li>
+     *     <li>{@code n* rule} can be replaced by using n occurrences of the rule followed by an {@link #OPTIONAL_REPETITION} of the rule</li>
+     *     <li>{@code *m rule} can be replaced by using m {@link #OPTIONAL} occurrences of the rule</li>
+     *     <li>{@code n rule} is equivalent to n occurrences of the rule</li>
+     *     <li>{@code * rule} is equivalent to {@link #OPTIONAL_REPETITION}</li>
+     * </ul>
      *
      * @see RepetitionCombinator
      */
@@ -171,6 +223,8 @@ public enum RulesAvailable {
      * WSP    = SP / HTAB                   // Space or horizontal tag
      * }
      * </pre>
+     *
+     * Possible replacements through other rule types: See above.
      */
     ABNF_CORE,
 
@@ -181,6 +235,8 @@ public enum RulesAvailable {
      * {@code " ' ! ? + * [ ] ( ) { } < > : = / | # & }
      * <p>
      * This means that the production {@code 🎁 = "a"} becomes legal with this option.
+     * <p>
+     * Possible replacements through other rule types: N.A.
      */
     EXTENDED_IDENTIFIERS;
 
@@ -190,17 +246,21 @@ public enum RulesAvailable {
      * {@link RulesAvailable#ALTERNATION},
      * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#OPTIONAL_REPETITION},
      * {@link RulesAvailable#REGEX},
      * {@link RulesAvailable#SINGLY_QUOTED},
-     * {@link RulesAvailable#OPTIONAL_REPETITION}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> pureEbnfRules() {
         return Set.of(
-                ALTERNATION, EPSILON, OPTIONAL, REGEX, SINGLY_QUOTED,
-                OPTIONAL_REPETITION);
+                ALTERNATION,
+                EPSILON,
+                OPTIONAL,
+                OPTIONAL_REPETITION,
+                REGEX,
+                SINGLY_QUOTED);
     }
 
     /**
@@ -211,68 +271,96 @@ public enum RulesAvailable {
      * {@link RulesAvailable#LOOKAHEAD},
      * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
      * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#OPTIONAL_QUERY},
+     * {@link RulesAvailable#OPTIONAL_REPETITION},
+     * {@link RulesAvailable#OPTIONAL_REPETITION_STAR},
      * {@link RulesAvailable#PLUS},
      * {@link RulesAvailable#REGEX},
-     * {@link RulesAvailable#SINGLY_QUOTED},
-     * {@link RulesAvailable#OPTIONAL_REPETITION}
-     * {@link RulesAvailable#OPTIONAL_REPETITION_STAR}
+     * {@link RulesAvailable#SINGLY_QUOTED}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> ebnfRules() {
         return Set.of(
-                ALTERNATION, EPSILON, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL,
-                OPTIONAL_QUERY, PLUS, REGEX, SINGLY_QUOTED, OPTIONAL_REPETITION,
-                OPTIONAL_REPETITION_STAR);
+                ALTERNATION,
+                EPSILON,
+                LOOKAHEAD,
+                NEGATIVE_LOOKAHEAD,
+                OPTIONAL,
+                OPTIONAL_QUERY,
+                OPTIONAL_REPETITION,
+                OPTIONAL_REPETITION_STAR,
+                PLUS,
+                REGEX,
+                SINGLY_QUOTED);
     }
 
     /**
      * Rules that appear in ABNF.
      * <p>
      * {@link RulesAvailable#ABNF_CORE},
-     * {@link RulesAvailable#CHAR_RANGE},
-     * {@link RulesAvailable#VARIABLE_REPEAT},
+     * {@link RulesAvailable#VALUE_RANGE},
      * {@link RulesAvailable#OPTIONAL},
      * {@link RulesAvailable#ORDERED_CHOICE},
-     * {@link RulesAvailable#PLUS},
-     * {@link RulesAvailable#REGEX}
+     * {@link RulesAvailable#REGEX},
+     * {@link RulesAvailable#STRING_CASE_SENSITIVITY_PREFIX},
+     * {@link RulesAvailable#VARIABLE_REPEAT}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
     public static @NotNull @Unmodifiable Set<RulesAvailable> abnfRules() {
         return Set.of(
-                ABNF_CORE, CHAR_RANGE, VARIABLE_REPEAT, OPTIONAL, ORDERED_CHOICE,
-                REGEX, STRING_CASE_SENSITIVITY_PREFIX);
+                ABNF_CORE,
+                VALUE_RANGE,
+                OPTIONAL,
+                ORDERED_CHOICE,
+                REGEX,
+                STRING_CASE_SENSITIVITY_PREFIX,
+                VARIABLE_REPEAT);
     }
 
     /**
      * The standard set of rules that Alphaparse allows.
      * <p>
-     * {@link RulesAvailable#CHAR_RANGE},
      * {@link RulesAvailable#ALTERNATION},
-     * {@link RulesAvailable#VARIABLE_REPEAT},
+     * {@link RulesAvailable#VALUE_RANGE},
      * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#EXTENDED_IDENTIFIERS},
      * {@link RulesAvailable#LOOKAHEAD},
      * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
      * {@link RulesAvailable#OPTIONAL},
+     * {@link RulesAvailable#OPTIONAL_QUERY},
+     * {@link RulesAvailable#OPTIONAL_REPETITION},
+     * {@link RulesAvailable#OPTIONAL_REPETITION_STAR},
      * {@link RulesAvailable#ORDERED_CHOICE},
      * {@link RulesAvailable#PLUS},
      * {@link RulesAvailable#REGEX},
      * {@link RulesAvailable#SINGLY_QUOTED},
-     * {@link RulesAvailable#OPTIONAL_REPETITION_STAR}
+     * {@link RulesAvailable#STRING_CASE_SENSITIVITY_PREFIX},
+     * {@link RulesAvailable#VARIABLE_REPEAT}
      *
      * @return A set of rule types to allow when constructing a parser.
      * @see ParserCreationOptions
      */
     public static @NotNull Set<RulesAvailable> defaultRules() {
         return Set.of(
-                CHAR_RANGE, ALTERNATION, VARIABLE_REPEAT, EPSILON,
-                EXTENDED_IDENTIFIERS, LOOKAHEAD, NEGATIVE_LOOKAHEAD, OPTIONAL,
-                OPTIONAL_QUERY, OPTIONAL_REPETITION_STAR, ORDERED_CHOICE,
-                OPTIONAL_REPETITION, PLUS, REGEX, SINGLY_QUOTED,
-                STRING_CASE_SENSITIVITY_PREFIX);
+                ALTERNATION,
+                VALUE_RANGE,
+                EPSILON,
+                EXTENDED_IDENTIFIERS,
+                LOOKAHEAD,
+                NEGATIVE_LOOKAHEAD,
+                OPTIONAL,
+                OPTIONAL_QUERY,
+                OPTIONAL_REPETITION,
+                OPTIONAL_REPETITION_STAR,
+                ORDERED_CHOICE,
+                PLUS,
+                REGEX,
+                SINGLY_QUOTED,
+                STRING_CASE_SENSITIVITY_PREFIX,
+                VARIABLE_REPEAT);
     }
 }

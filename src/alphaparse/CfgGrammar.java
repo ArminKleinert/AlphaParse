@@ -139,7 +139,7 @@ final class CfgGrammar {
                                         cf.makeNonTerminal(Sym.sym("hide")),
                                         cf.makeNonTerminal(Sym.sym("epsilon")),
                                         makeNT("rep", RulesAvailable.VARIABLE_REPEAT), // ABNF feature
-                                        makeNT("num-val", RulesAvailable.CHAR_RANGE) // ABNF feature
+                                        makeNT("num-val", RulesAvailable.VALUE_RANGE) // ABNF feature
                                 ))
                         .hideTag();
         return rulesRule;
@@ -499,7 +499,7 @@ final class CfgGrammar {
         if (rulesAvailable.contains(RulesAvailable.NEGATIVE_LOOKAHEAD))
             grammarMap.put(Sym.sym("neg"), makeCfgNegRhs());
 
-        if (rulesAvailable.contains(RulesAvailable.CHAR_RANGE))
+        if (rulesAvailable.contains(RulesAvailable.VALUE_RANGE))
             grammarMap.put(Sym.sym("num-val"), makeABNFNumVal()); // ABNF
 
         return new Grammar(grammarMap).applyStandardReductions(cs);

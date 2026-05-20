@@ -1,6 +1,8 @@
 package alphaparse.tests.obnoxious_tests;
 
 import alphaparse.Alpha;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.ParseTree;
 import org.junit.Rule;
 import org.junit.Test;
@@ -96,7 +98,7 @@ public class ObnoxiousTestCase {
      * </pre>
      */
     @Test
-    public void SEps() {
+    public void SSParses() {
         var p = Alpha.parser("S : S");
         Assertions.assertTrue(p.parses("").isEmpty());
     }
