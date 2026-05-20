@@ -11,7 +11,7 @@ class CombinatorExamplesTests {
     @Test
     void testChoiceExample1() {
         {
-            var p = Alpha.parser("S = 'a' | 'b' | 'ab'");
+            var p = Alpha.parser("S := 'a' | 'b' | 'ab'");
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
             Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));

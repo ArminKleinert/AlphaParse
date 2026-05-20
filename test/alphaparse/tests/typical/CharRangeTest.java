@@ -17,7 +17,7 @@ class CharRangeTest {
     
     @Test
     void unicodeCodepointSingleParse() {
-        var parser = Alpha.parser("S : %x1F381", options);
+        var parser = Alpha.parser("S := %x1F381", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
         Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure());
@@ -26,7 +26,7 @@ class CharRangeTest {
 
     @Test
     void unicodeCodepointSingleParse2() {
-        var parser = Alpha.parser("S : %x1F381-1F381", options);
+        var parser = Alpha.parser("S := %x1F381-1F381", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
         Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure());
@@ -35,7 +35,7 @@ class CharRangeTest {
 
     @Test
     void unicodeCodepointShortRangeParse() {
-        var parser = Alpha.parser("S : %x1F381-1F382", options);
+        var parser = Alpha.parser("S := %x1F381-1F382", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
         Assertions.assertEquals(ParseTree.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"));
@@ -44,7 +44,7 @@ class CharRangeTest {
 
     @Test
     void unicodeCodepointLongRangeParse() {
-        var parser = Alpha.parser("S : %x41-1F382", options);
+        var parser = Alpha.parser("S := %x41-1F382", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "A"), parser.parse("A"));
         Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
@@ -53,7 +53,7 @@ class CharRangeTest {
 
     @Test
     void unicodeCodepointSmallCharParse() {
-        var parser = Alpha.parser("S : %x41-5A", options);
+        var parser = Alpha.parser("S := %x41-5A", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "A"), parser.parse("A"));
         Assertions.assertEquals(ParseTree.create("S", "Z"), parser.parse("Z"));
@@ -62,27 +62,27 @@ class CharRangeTest {
 
     @Test
     void unicodeCodepointBinaryDecimalHexEquivalenceRange() {
-        var parserBin = Alpha.parser("S : %b1000001-1011010", options).grammar().getProduction(Sym.sym("S"));
-        var parserDec = Alpha.parser("S : %d65-90", options).grammar().getProduction(Sym.sym("S"));
-        var parserHex = Alpha.parser("S : %x41-5A", options).grammar().getProduction(Sym.sym("S"));
+        var parserBin = Alpha.parser("S := %b1000001-1011010", options).grammar().getProduction(Sym.sym("S"));
+        var parserDec = Alpha.parser("S := %d65-90", options).grammar().getProduction(Sym.sym("S"));
+        var parserHex = Alpha.parser("S := %x41-5A", options).grammar().getProduction(Sym.sym("S"));
         Assertions.assertEquals(parserBin, parserDec);
         Assertions.assertEquals(parserBin, parserHex);
     }
 
     @Test
     void unicodeCodepointBinaryDecimalHexEquivalenceSingle() {
-        var parserBin = Alpha.parser("S : %b1000001", options).grammar().getProduction(Sym.sym("S"));
-        var parserDec = Alpha.parser("S : %d65", options).grammar().getProduction(Sym.sym("S"));
-        var parserHex = Alpha.parser("S : %x41", options).grammar().getProduction(Sym.sym("S"));
+        var parserBin = Alpha.parser("S := %b1000001", options).grammar().getProduction(Sym.sym("S"));
+        var parserDec = Alpha.parser("S := %d65", options).grammar().getProduction(Sym.sym("S"));
+        var parserHex = Alpha.parser("S := %x41", options).grammar().getProduction(Sym.sym("S"));
         Assertions.assertEquals(parserBin, parserDec);
         Assertions.assertEquals(parserBin, parserHex);
     }
 
     @Test
     void unicodeCodepointBinaryDecimalHexEquivalenceRangeSingle() {
-        var parserBin = Alpha.parser("S : %b1000001-1000001", options).grammar().getProduction(Sym.sym("S"));
-        var parserDec = Alpha.parser("S : %d65-65", options).grammar().getProduction(Sym.sym("S"));
-        var parserHex = Alpha.parser("S : %x41-41", options).grammar().getProduction(Sym.sym("S"));
+        var parserBin = Alpha.parser("S := %b1000001-1000001", options).grammar().getProduction(Sym.sym("S"));
+        var parserDec = Alpha.parser("S := %d65-65", options).grammar().getProduction(Sym.sym("S"));
+        var parserHex = Alpha.parser("S := %x41-41", options).grammar().getProduction(Sym.sym("S"));
         Assertions.assertEquals(parserBin, parserDec);
         Assertions.assertEquals(parserBin, parserHex);
     }
@@ -93,19 +93,19 @@ class CharRangeTest {
         var tree = ParseTree.create("S", "🎁", "🎁", "🎁");
         Assertions.assertEquals(
                 tree,
-                Alpha.parser("S : %x1F381-1F381 %x1F381-1F381 %x1F381-1F381", options).parse(text));
+                Alpha.parser("S := %x1F381-1F381 %x1F381-1F381 %x1F381-1F381", options).parse(text));
         Assertions.assertEquals(
                 tree,
-                Alpha.parser("S : %x1F381 %x1F381 %x1F381", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : %x1F381+", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : %x1F381-1F381+", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : %x1F381*", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : %x1F381-1F381*", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : 1*3 %x1F381", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : 1*3 %x1F381-1F381", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : *3 %x1F381", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : *3 %x1F381-1F381", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : 1* %x1F381", options).parse(text));
-        Assertions.assertEquals(tree, Alpha.parser("S : 1* %x1F381-1F381", options).parse(text));
+                Alpha.parser("S := %x1F381 %x1F381 %x1F381", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := %x1F381+", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := %x1F381-1F381+", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := %x1F381*", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := %x1F381-1F381*", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := 1*3 %x1F381", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := 1*3 %x1F381-1F381", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := *3 %x1F381", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := *3 %x1F381-1F381", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := 1* %x1F381", options).parse(text));
+        Assertions.assertEquals(tree, Alpha.parser("S := 1* %x1F381-1F381", options).parse(text));
     }
 }

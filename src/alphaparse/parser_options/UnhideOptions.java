@@ -6,16 +6,16 @@ package alphaparse.parser_options;
  * As an example, take the grammar
  * <pre>
  * {@code
- *      S : 'a' <B> C <D> 'a'
- *      B : 'b'+
- *      <C> : 'c'
- *      <D> : 'd'
+ *      S   := 'a' <B> C <D> 'a'
+ *      B   := 'b'+
+ *      <C> := 'c'
+ *      <D> := 'd'
  * }
  * </pre>
  * Now, parsing the text {@code "abcda"}, the expected tree would be {@code [:S, "a", "c", "a"]}. Where the `B` subtree is completely hidden, `C` is flattened (merged into `S`) and `D` is also completely hidden.
  * <pre>
  * {@code
- *      var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+ *      var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
  *
  *      // [:S, "a", "c", "a"]
  *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.NONE));

@@ -48,8 +48,8 @@ public final class Transform {
      * <pre>
      * {@code
      *         var p = Alpha.parser("""
-     *                 S : NUM ('+' NUM)*
-     *                 NUM : #'\\d+'
+     *                 S := NUM ('+' NUM)*
+     *                 NUM := #'\\d+'
      *                 """);
      *         var tree = p.parse("1+2+3").castToParseSuccess();
      *
@@ -94,9 +94,9 @@ public final class Transform {
      * <pre>
      * {@code
      *         var p = Alpha.parser("""
-     *                 S : A
-     *                 A : NUM ('+' NUM)*
-     *                 NUM : #'\\d+'
+     *                 S := A
+     *                 A := NUM ('+' NUM)*
+     *                 NUM := #'\\d+'
      *                 """);
      *         var tree = p.parse("1+2+3").castToParseSuccess();
      *

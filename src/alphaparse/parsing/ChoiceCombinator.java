@@ -19,10 +19,10 @@ import java.util.List;
  * <pre>
  *{@code
  *         // Accepts the language {"a", "b", "ab"}
- *         var p = Alpha.parser("S : 'a' | 'b' | 'ab'");
- *         IO2.println(p.parse("a"));  // [:S, a]
- *         IO2.println(p.parse("b"));  // [:S, b]
- *         IO2.println(p.parse("ab")); // [:S, ab]
+ *         var p = Alpha.parser("S := 'a' | 'b' | 'ab'");
+ *         println(p.parse("a"));  // [:S, a]
+ *         println(p.parse("b"));  // [:S, b]
+ *         println(p.parse("ab")); // [:S, ab]
  *}
  * </pre>
  *
@@ -37,9 +37,9 @@ import java.util.List;
  *                 S : 'b'
  *                 S : 'ab'
  *                 """, opts);
- *         IO2.println(p.parse("a"));  // [:S, a]
- *         IO2.println(p.parse("b"));  // [:S, b]
- *         IO2.println(p.parse("ab")); // [:S, ab]
+ *         println(p.parse("a"));  // [:S, a]
+ *         println(p.parse("b"));  // [:S, b]
+ *         println(p.parse("ab")); // [:S, ab]
  * }
  * </pre>
  */

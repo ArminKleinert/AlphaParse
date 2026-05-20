@@ -25,8 +25,8 @@ class AlphaParserCreationTest {
     @Test
     void parserFromString() {
         {
-            final @NotNull var p = Alpha.parser("S : '1'");
-            final @NotNull var p2 = Alpha.parser("S : '1'");
+            final @NotNull var p = Alpha.parser("S := '1'");
+            final @NotNull var p2 = Alpha.parser("S := '1'");
             Assertions.assertEquals(p, p2);
         }
     }
@@ -97,14 +97,14 @@ class AlphaParserCreationTest {
     void parserCreationFail() {
         {
             // Error: Illegal grammar
-            final @NotNull var grammar = "S : A";
+            final @NotNull var grammar = "S := A";
             Assertions.assertThrows(
                     ParserCreationFailure.class,
                     () -> Alpha.parser(grammar));
         }
         {
             // Error: Starting symbol not in grammar
-            final @NotNull var grammar = "S : 'abc'";
+            final @NotNull var grammar = "S := 'abc'";
             final @NotNull var options = new ParserCreationOptions(
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,

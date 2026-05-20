@@ -28,7 +28,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: Single parse.
-     *     Grammar: {@code S : A\nA : S}
+     *     Grammar: {@code S := A\nA := S}
      *     Text: {@code ""}
      *     Expect: Failure
      * </pre>
@@ -36,7 +36,7 @@ public class ObnoxiousTestCase {
     @Test
     public void SA() {
         {
-            var p = Alpha.parser("S : A\nA : S");
+            var p = Alpha.parser("S := A\nA := S");
             Assertions.assertTrue(p.parse("").isFailure());
         }
     }
@@ -44,7 +44,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: Single parse.
-     *     Grammar: {@code S : S}
+     *     Grammar: {@code S := S}
      *     Text: {@code ""}
      *     Expect: Failure
      * </pre>
@@ -52,7 +52,7 @@ public class ObnoxiousTestCase {
     @Test
     public void SS1() {
         {
-            var p = Alpha.parser("S : S");
+            var p = Alpha.parser("S := S");
             Assertions.assertTrue(p.parse("").isFailure());
         }
     }
@@ -60,7 +60,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: Single parse.
-     *     Grammar: {@code S : S}
+     *     Grammar: {@code S := S}
      *     Text: {@code "a"}
      *     Expect: Failure
      * </pre>
@@ -68,7 +68,7 @@ public class ObnoxiousTestCase {
     @Test
     public void SS2() {
         {
-            var p = Alpha.parser("S : S");
+            var p = Alpha.parser("S := S");
             Assertions.assertTrue(p.parse("a").isFailure());
         }
     }
@@ -76,7 +76,7 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: Single parse.
-     *     Grammar: {@code S : S | 'a'}
+     *     Grammar: {@code S := S | 'a'}
      *     Text: {@code "a"}
      *     Expect: Parse tree {@code [:S, "a"]}
      * </pre>
@@ -84,7 +84,7 @@ public class ObnoxiousTestCase {
     @Test
     public void SS3() {
         {
-            var p = Alpha.parser("S : S | 'a'");
+            var p = Alpha.parser("S := S | 'a'");
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
         }
     }
@@ -92,28 +92,28 @@ public class ObnoxiousTestCase {
     /**
      * <pre>
      *     Mode: All parses.
-     *     Grammar: {@code S : S}
+     *     Grammar: {@code S := S}
      *     Text: {@code ""}
      *     Expect: Empty
      * </pre>
      */
     @Test
     public void SSParses() {
-        var p = Alpha.parser("S : S");
+        var p = Alpha.parser("S := S");
         Assertions.assertTrue(p.parses("").isEmpty());
     }
 
     /**
      * <pre>
      *     Mode: All parses.
-     *     Grammar: {@code S : S | epsilon}
+     *     Grammar: {@code S := S | epsilon}
      *     Text: {@code ""}
      *     Expect: Does something other than timing out.
      * </pre>
      */
     @Test
     public void infiniteEpsilon() {
-        var p = Alpha.parser("S : S | epsilon");
+        var p = Alpha.parser("S := S | epsilon");
         Assertions.assertDoesNotThrow(() -> p.parses("").size());
     }
 }

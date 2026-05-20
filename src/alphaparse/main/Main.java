@@ -66,13 +66,13 @@ final class Main {
 
         /**/
         {
-            final var p = Alpha.parser("S : <'a'>");
+            final var p = Alpha.parser("S := <'a'>");
             println(p.parse("a"));
         }
 
         /**/
         {
-            final @NotNull var p = Alpha.parser("S : 'ABC'");
+            final @NotNull var p = Alpha.parser("S := 'ABC'");
             println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.CONTENT, true, false, false)));
             println(Alpha.parsesOrFailure(p, "ABD", ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
             println(Alpha.parse(p, "ABD", ParsingOptions.getDefault()).castToParseFailure().contentsToString());
@@ -89,7 +89,7 @@ final class Main {
                     true,
                     null,
                     null);
-            final @NotNull var p = Alpha.parser("S : 'ABC'", opts);
+            final @NotNull var p = Alpha.parser("S := 'ABC'", opts);
             println(Alpha.parses(p, "ABC"));
             println(Alpha.parses(p, "AbC"));
             println(Alpha.parses(p, "abc"));
@@ -105,14 +105,14 @@ final class Main {
 
         /**/
         {
-            final @NotNull var p = Alpha.parser("S : A | B\nA : #'\\d'*\nB : #'\\d'*");
+            final @NotNull var p = Alpha.parser("S := A | B\nA := #'\\d'*\nB := #'\\d'*");
             println(Alpha.parses(p, "11"));
             println();
         }
 
         /**/
         {
-            final @NotNull var p = Alpha.parser("S : #'\\d'+");
+            final @NotNull var p = Alpha.parser("S := #'\\d'+");
             println(Alpha.parse(p, "11", ParsingOptions.optMemory()));
             println(((AlphaParseFailure) Alpha.parse(p, "a1", ParsingOptions.optMemory())).contentsToString());
             println(((AlphaParseFailure) Alpha.parse(p, "a", ParsingOptions.optMemory())).contentsToString());
@@ -121,7 +121,7 @@ final class Main {
 
         /**/
         {
-            final @NotNull var p = Alpha.parser("S : #'\\d'*");
+            final @NotNull var p = Alpha.parser("S := #'\\d'*");
             println(Alpha.parse(p, "11", ParsingOptions.optMemory()));
             println(((AlphaParseFailure) Alpha.parse(p, "a1", ParsingOptions.optMemory())).contentsToString());
             println(((AlphaParseFailure) Alpha.parse(p, "a", ParsingOptions.optMemory())).contentsToString());
@@ -130,7 +130,7 @@ final class Main {
 
 //        /**/
 //        {
-//            final @NotNull var p = Alpha.parser("S : 1*3 #'\\d'");
+//            final @NotNull var p = Alpha.parser("S := 1*3 #'\\d'");
 //            println(Alpha.parse(p, "11", Alpha.ParsingOptions.optMemory()));
 //            println(((AlphaParseFailure) Alpha.parse(p, "a1", Alpha.ParsingOptions.optMemory())).contentsToString());
 //            println(((AlphaParseFailure) Alpha.parse(p, "a", Alpha.ParsingOptions.optMemory())).contentsToString());
@@ -147,11 +147,11 @@ final class Main {
         {
             println("\n----------------------------------\n---    Partial/Total tests     ---\n----------------------------------");
             final @NotNull var grammar = """
-                    S : T+
-                    T : r1 | r2 | r3
-                    r1 : 'a'
-                    r2 : 'b'
-                    r3 : 'a'
+                    S  := T+
+                    T  := r1 | r2 | r3
+                    r1 := 'a'
+                    r2 := 'b'
+                    r3 := 'a'
                     """;
             final @NotNull var text = "aba";
             final @NotNull var p = Alpha.parser(grammar);
@@ -169,19 +169,19 @@ final class Main {
         {
             println("\n----------------------------------\n---        Other tests         ---\n----------------------------------");
 
-            @NotNull var p = Alpha.parser("S : '1' | '11' | '111' | '1111'", ParserCreationOptions.newWithStandardWhitespace());
+            @NotNull var p = Alpha.parser("S := '1' | '11' | '111' | '1111'", ParserCreationOptions.newWithStandardWhitespace());
             println(
                     Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false))
                             + " // Expect: [[:S, 11], [:S, 1]]");
             println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false))
                     + " // Expect: [[:S, 1111], [:S, 111], [:S, 11], [:S, 1]]");
 
-            p = Alpha.parser("S : #'\\d\\d[\\d]?'", ParserCreationOptions.newWithStandardWhitespace());
+            p = Alpha.parser("S := #'\\d\\d[\\d]?'", ParserCreationOptions.newWithStandardWhitespace());
             println(Alpha.parse(p, "11") + " // Expect: [:S, 11]");
             println(Alpha.parse(p, "111") + " // Expect: [:S, 111]");
             println(Alpha.parse(p, "1111").castToParseFailure().contentsToString());
 
-            p = Alpha.parser("S : !'2' A*\n<A> : '1' | '2'", ParserCreationOptions.newWithStandardWhitespace());
+            p = Alpha.parser("S := !'2' A*\n<A> := '1' | '2'", ParserCreationOptions.newWithStandardWhitespace());
             println(Alpha.parse(p, "21").castToParseFailure().contentsToString());
             println(Alpha.parse(p, "11") + " // Expect: [:S, 1, 1]");
             println(Alpha.parse(p, "111") + " // Expect: [:S, 1, 1, 1]");
@@ -192,7 +192,7 @@ final class Main {
         {
             println("\n----------------------------------\n---  Failure attribute tests   ---\n----------------------------------");
 
-            final @NotNull var p = Alpha.parser("S : &'1' S S | '1'+", ParserCreationOptions.newWithStandardWhitespace());
+            final @NotNull var p = Alpha.parser("S := &'1' S S | '1'+", ParserCreationOptions.newWithStandardWhitespace());
             final @NotNull var parse = Alpha.parse(p, "112").castToParseFailure();
             final var failIndex = parse.index();
             final var failColumn = parse.column();
@@ -259,7 +259,7 @@ final class Main {
         {
             println("\n----------------------------------\n--- Total/partial/memory tests ---\n----------------------------------");
 
-            final @NotNull var grammar = "S : T+\nT : r1 / r2 / r3\nr1 : 'a'\nr2 : 'b'\nr3 : 'a'";
+            final @NotNull var grammar = "S := T+\nT := r1 / r2 / r3\nr1 := 'a'\nr2 := 'b'\nr3 := 'a'";
             final @NotNull var text = "ab";
             final @NotNull var p = Alpha.parser(grammar);
             final @NotNull var parses = Alpha.parses(p, text);

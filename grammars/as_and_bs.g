@@ -1,4 +1,4 @@
-S = AB*
-AB = A B
-A = 'a'+
-B = 'b'+
+S  := AB*
+AB := A B
+A  := 'a'+
+B  := 'b'+

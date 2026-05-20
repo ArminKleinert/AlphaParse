@@ -305,8 +305,8 @@ public final class Alpha {
         }
         if (predefinedWsParsers == null) {
             predefinedWsParsers = Map.of(
-                    "standard", parser("whitespace = #'\\s+'", ParserCreationOptions.getDefault()),
-                    "comma", parser("whitespace = #'[,\\s]+'", ParserCreationOptions.getDefault())
+                    "standard", parser("whitespace := #'\\s+'", ParserCreationOptions.getDefault()),
+                    "comma", parser("whitespace := #'[,\\s]+'", ParserCreationOptions.getDefault())
             );
         }
         return predefinedWsParsers.get(wsParserName);

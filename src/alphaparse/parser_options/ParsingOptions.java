@@ -91,9 +91,9 @@ public record ParsingOptions(
      * <pre>
      * {@code
      *      // The grammar has these two, unrelated productions. The first production is A. So that is the production the parser uses.
-     *      //    A = 'a'
-     *      //    B = 'b'
-     *      var p = Alpha.parser("A = 'a'\nB = 'b'");
+     *      //    A := 'a'
+     *      //    B := 'b'
+     *      var p = Alpha.parser("A := 'a'\nB := 'b'");
      *
      *      println(p.parse("a")); // Success: [:A, a]
      *      println(p.parse("b")); // Failure: 'b' could not be parsed from production A.
@@ -116,7 +116,7 @@ public record ParsingOptions(
      * The option only applies when requesting the full parse forest (e.g. {@link Alpha#parses(Parser, String, ParsingOptions)} and {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)}), but not when only a single parse is requested (e.g. {@link Alpha#parse(Parser, String, ParsingOptions)}).
      * <pre>
      * {@code
-     *      var p = Alpha.parser("S = 'a'+");
+     *      var p = Alpha.parser("S := 'a'+");
      *      println(p.parses("aa")); // [[:S, a, a]]
      *
      *      var opts = Alpha.ParsingOptions.getDefault().withPartialSetTo(true);
@@ -152,7 +152,7 @@ public record ParsingOptions(
      * Now the code:
      * <pre>
      * {@code
-     *   var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+     *   var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
      *
      *   // No options.
      *   println("Default => " + p.parse("abcda"));       // [:S, a, c, a]
@@ -186,7 +186,7 @@ public record ParsingOptions(
      * If true, a failed parse results in a {@link ParseTree}, as a success would, but a {@link ParseFailureNode} is embedded in the tree.
      * <pre>
      * {@code
-     *      var p = Alpha.parser("S = #'a'+");
+     *      var p = Alpha.parser("S := #'a'+");
      *      var text = "ab";
      *
      *      // A normal parse results in a failure.

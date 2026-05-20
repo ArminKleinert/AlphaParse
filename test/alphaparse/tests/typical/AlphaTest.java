@@ -46,10 +46,10 @@ class AlphaTest {
     @Test
     void singleOrDoubleQuotationEquivalenceForStrings() {
         var pSingleQuoted = """
-                S : 'a' 'b"c\\''
+                S := 'a' 'b"c\\''
                 """;
         var pDoubleQuoted = """
-                S : "a" "b\\"c'"
+                S := "a" "b\\"c'"
                 """;
 
         // Valid parse
@@ -71,10 +71,10 @@ class AlphaTest {
     @Test
     void singleOrDoubleQuotationEquivalenceForRegexes() {
         var pSingleQuoted = """
-                S : #'a' #'b"c\\''
+                S := #'a' #'b"c\\''
                 """;
         var pDoubleQuoted = """
-                S : #"a" #"b\\"c'"
+                S := #"a" #"b\\"c'"
                 """;
 
         // Valid parse
@@ -95,7 +95,7 @@ class AlphaTest {
 
     @Test
     void testOptimizeMemoryDoesNotChangeOutput() {
-        var p = Alpha.parser("S : 'u' (('a'+ | #'b*') / C)\n<C> : 'c'+");
+        var p = Alpha.parser("S := 'u' (('a'+ | #'b*') / C)\n<C> := 'c'+");
         var opt = ParsingOptions.getDefault().withOptimizeMemory(true);
 
         Assertions.assertTrue(p.parse("", opt).isFailure());
@@ -110,7 +110,7 @@ class AlphaTest {
     @Test
     void testParserCreationNewWithStandardWhitespace() {
         var p = Alpha.parser(
-                "S : ('a' | 'b')*",
+                "S := ('a' | 'b')*",
                 ParserCreationOptions.newWithStandardWhitespace()
         );
         var tree = ParseTree.create("S", "a", "b", "a", "b", "a");
@@ -119,7 +119,7 @@ class AlphaTest {
 
     @Test
     void testUnhideOptionsNone() {
-        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
         var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.NONE);
         var tree = ParseTree.create("S", "a", "c", "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
@@ -127,7 +127,7 @@ class AlphaTest {
 
     @Test
     void testUnhideOptionsTags() {
-        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
         var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS);
         var tree = ParseTree.create("S", "a", ParseTree.create("C", "c"), "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
@@ -135,7 +135,7 @@ class AlphaTest {
 
     @Test
     void testUnhideOptionsContent() {
-        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
         var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT);
         var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), "c", "d", "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
@@ -143,7 +143,7 @@ class AlphaTest {
 
     @Test
     void testUnhideOptionsAll() {
-        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
         var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL);
         var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), ParseTree.create("C", "c"), ParseTree.create("D", "d"), "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
@@ -151,7 +151,7 @@ class AlphaTest {
 
     @Test
     void testUnhideOptionsInOneCase() {
-        var p = Alpha.parser("S : 'a' <B> C <D> 'a'\nB : 'b'+\n<C> : 'c'\n<D> : 'd'");
+        var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
 
         Assertions.assertEquals(
                 ParseTree.create("S", "a", "c", "a"),
@@ -178,12 +178,12 @@ class AlphaTest {
     @Test
     void testPartialParseOptionIgnoredOnSingleParse() {
         {
-            var p = Alpha.parser("S = 'a'+");
+            var p = Alpha.parser("S := 'a'+");
             var opts = ParsingOptions.getDefault().withPartial(true);
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa", opts));
         }
         {
-            var p = Alpha.parser("S = 'a'");
+            var p = Alpha.parser("S := 'a'");
             var opts = ParsingOptions.getDefault().withPartial(true);
             Assertions.assertTrue(p.parse("aa", opts).isFailure());
         }
@@ -192,7 +192,7 @@ class AlphaTest {
     @Test
     void testPartialParseOptionIfNotInGrammar() {
         {
-            var p = Alpha.parser("S = 'a'");
+            var p = Alpha.parser("S := 'a'");
             var opts = ParsingOptions.getDefault().withPartial(true);
             Assertions.assertEquals(List.of(ParseTree.create("S", "a")), p.parses("aa", opts));
         }
@@ -202,7 +202,7 @@ class AlphaTest {
     void parserCreationWithExplicitStartProduction() {
         {
             final var opts = ParserCreationOptions.getDefault().withStartProduction(Sym.sym("B"));
-            final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'", opts);
+            final @NotNull var p = Alpha.parser("A := 'a'\nB := 'b'", opts);
 
             Assertions.assertEquals(p.startProduction(), opts.startProduction());
 
@@ -212,14 +212,14 @@ class AlphaTest {
         {
             // The production is not in the grammar => Fail
             final var opts = ParserCreationOptions.getDefault().withStartProduction(Sym.sym("B"));
-            Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("A : 'a'", opts));
+            Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("A := 'a'", opts));
         }
     }
 
     @Test
     void parseWithExplicitStartProduction() {
         {
-            final @NotNull var p = Alpha.parser("A : 'a'\nB : 'b'");
+            final @NotNull var p = Alpha.parser("A := 'a'\nB := 'b'");
 
             final var opts = ParsingOptions.getDefault().withStart(Sym.sym("B"));
 
@@ -229,14 +229,14 @@ class AlphaTest {
         {
             // The production is not in the grammar => Fail
             final var opts = ParsingOptions.getDefault().withStart(Sym.sym("B"));
-            final @NotNull var p = Alpha.parser("A : 'a'");
+            final @NotNull var p = Alpha.parser("A := 'a'");
             Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parse(p, "a", opts));
         }
     }
 
     @Test
     void parse() {
-        final @NotNull var p = Alpha.parser("S : 'A' | 'B' | S S");
+        final @NotNull var p = Alpha.parser("S := 'A' | 'B' | S S");
         {
             final @NotNull var res = Alpha.parse(p, "A");
             Assertions.assertEquals(ParseTree.create("S", "A"), res);
@@ -256,17 +256,17 @@ class AlphaTest {
     @Test
     void parseCat() {
         {
-            final @NotNull var p = Alpha.parser("S : 'A' 'B'");
+            final @NotNull var p = Alpha.parser("S := 'A' 'B'");
             final @NotNull var res = Alpha.parse(p, "AB");
             Assertions.assertEquals(ParseTree.create("S", "A", "B"), res);
         }
         {
-            final @NotNull var p = Alpha.parser("S : 'A' 'B' S | eps");
+            final @NotNull var p = Alpha.parser("S := 'A' 'B' S | eps");
             Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
             Assertions.assertEquals(ParseTree.create("S", "A", "B", ParseTree.create("S")), Alpha.parse(p, "AB"));
         }
         {
-            final @NotNull var p = Alpha.parser("S : 'a' 'a' 'a'");
+            final @NotNull var p = Alpha.parser("S := 'a' 'a' 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertTrue(p.parse("aa").isFailure());
@@ -278,14 +278,14 @@ class AlphaTest {
     @Test
     void parsePlus() {
         {
-            final @NotNull var p = Alpha.parser("S : 'a'+");
+            final @NotNull var p = Alpha.parser("S := 'a'+");
             Assertions.assertTrue(Alpha.parse(p, "").isFailure());
             Assertions.assertEquals(ParseTree.create("S", "a"), Alpha.parse(p, "a"));
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), Alpha.parse(p, "aa"));
             Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), Alpha.parse(p, "aaa"));
         }
         {
-            final @NotNull var p = Alpha.parser("S : ('a' | 'b')+");
+            final @NotNull var p = Alpha.parser("S := ('a' | 'b')+");
             Assertions.assertTrue(Alpha.parse(p, "").isFailure());
             Assertions.assertEquals(ParseTree.create("S", "b"), Alpha.parse(p, "b"));
             Assertions.assertEquals(ParseTree.create("S", "a", "b", "a"), Alpha.parse(p, "aba"));
@@ -295,14 +295,14 @@ class AlphaTest {
     @Test
     void parseStar() {
         {
-            final @NotNull var p = Alpha.parser("S : 'a'*");
+            final @NotNull var p = Alpha.parser("S := 'a'*");
             Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
             Assertions.assertEquals(ParseTree.create("S", "a"), Alpha.parse(p, "a"));
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), Alpha.parse(p, "aa"));
             Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), Alpha.parse(p, "aaa"));
         }
         {
-            final @NotNull var p = Alpha.parser("S : ('a' | 'b')*");
+            final @NotNull var p = Alpha.parser("S := ('a' | 'b')*");
             Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
             Assertions.assertEquals(ParseTree.create("S", "b"), Alpha.parse(p, "b"));
             Assertions.assertEquals(ParseTree.create("S", "a", "b", "a"), Alpha.parse(p, "aba"));
@@ -312,7 +312,7 @@ class AlphaTest {
     @Test
     void parseSimpleComplex() {
         {
-            final @NotNull var p = Alpha.parser("S : epsilon | S");
+            final @NotNull var p = Alpha.parser("S := epsilon | S");
             var forest = p.parses("").castToParsesSuccess();
             Assertions.assertEquals(
                     List.of(
@@ -327,12 +327,12 @@ class AlphaTest {
     @Test
     void parseSimpleString() {
         {
-            final @NotNull var p = Alpha.parser("S : 'AB'");
+            final @NotNull var p = Alpha.parser("S := 'AB'");
             final @NotNull var res = Alpha.parse(p, "AB");
             Assertions.assertEquals(ParseTree.create("S", "AB"), res);
         }
         {
-            final @NotNull var p = Alpha.parser("S : ''");
+            final @NotNull var p = Alpha.parser("S := ''");
             final @NotNull var res = Alpha.parse(p, "");
             Assertions.assertEquals(ParseTree.create("S"), res);
         }
@@ -341,12 +341,12 @@ class AlphaTest {
     @Test
     void parsePartial() {
         {
-            final @NotNull var p = Alpha.parser("S : ''");
+            final @NotNull var p = Alpha.parser("S := ''");
             final @NotNull var res = Alpha.parse(p, "");
             Assertions.assertEquals(ParseTree.create("S"), res);
         }
         {
-            final @NotNull var p = Alpha.parser("S : 'AB'");
+            final @NotNull var p = Alpha.parser("S := 'AB'");
             final @NotNull var res = Alpha.parse(p, "AB");
             Assertions.assertEquals(ParseTree.create("S", "AB"), res);
         }
@@ -355,7 +355,7 @@ class AlphaTest {
     @Test
     void parsesWithChoice() {
         {
-            final @NotNull var p = Alpha.parser("S : 'A' | 'B' | S S");
+            final @NotNull var p = Alpha.parser("S := 'A' | 'B' | S S");
             final @NotNull var res = Alpha.parses(p, "ABA");
             final var possibleResults = new HashSet<>(sabssPossibleResults());
 
@@ -367,7 +367,7 @@ class AlphaTest {
     @Test
     void parsesWithChoiceEps() {
         {
-            final @NotNull var p = Alpha.parser("S : eps | A | B | C\nA : C \nB : C \nC : eps");
+            final @NotNull var p = Alpha.parser("S := eps | A | B | C\nA := C \nB := C \nC := eps");
             final @NotNull var possibleTrees = Set.of(
                     ParseTree.create("S"),
                     ParseTree.create("S", ParseTree.create("C")),
@@ -378,10 +378,10 @@ class AlphaTest {
         }
         {
             final @NotNull var grammar = """
-                    S : (r1 | r2 | r3)* | eps
-                    r1 : 'a'
-                    r2 : 'a'
-                    r3 : 'a'
+                    S  := (r1 | r2 | r3)* | eps
+                    r1 := 'a'
+                    r2 := 'a'
+                    r3 := 'a'
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
@@ -394,7 +394,7 @@ class AlphaTest {
     @Test
     void parsesWithOrderedChoice() {
         {
-            final @NotNull var p = Alpha.parser("S : 'A' / 'B' / S S");
+            final @NotNull var p = Alpha.parser("S := 'A' / 'B' / S S");
             final @NotNull var res = Alpha.parses(p, "ABA");
             final @NotNull var possibleResults = sabssPossibleResults();
 
@@ -402,10 +402,10 @@ class AlphaTest {
         }
         {
             final @NotNull var p = Alpha.parser("""
-                    S : A / B / eps / C
-                    A : C
-                    B : C
-                    C : eps
+                    S := A / B / eps / C
+                    A := C
+                    B := C
+                    C := eps
                     """);
             final @NotNull var possibleTrees = List.of(
                     ParseTree.create("S", ParseTree.create("A", ParseTree.create("C"))),
@@ -416,21 +416,21 @@ class AlphaTest {
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, ""));
         }
         {
-            final @NotNull var p = Alpha.parser("S : 'a' / eps / 'a'");
+            final @NotNull var p = Alpha.parser("S := 'a' / eps / 'a'");
             final @NotNull var possibleTrees = List.of(ParseTree.create("S", "a"));
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, "a"));
         }
         {
-            final @NotNull var p = Alpha.parser("S : eps / 'a' / 'a' / eps");
+            final @NotNull var p = Alpha.parser("S := eps / 'a' / 'a' / eps");
             final @NotNull var possibleTrees = List.of(ParseTree.create("S", "a"));
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, "a"));
         }
         {
             final @NotNull var grammar = """
-                    S : (r1 / r2 / r3)*
-                    r1 : 'a'
-                    r2 : 'a'
-                    r3 : 'a'
+                    S := (r1 / r2 / r3)*
+                    r1 := 'a'
+                    r2 := 'a'
+                    r3 := 'a'
                     """;
             final @NotNull var text = "a";
             final @NotNull var p = Alpha.parser(grammar);
@@ -444,9 +444,9 @@ class AlphaTest {
         }
         {
             final @NotNull var grammar = """
-                    S : (r1 / r2)*
-                    r1 : 'a'
-                    r2 : 'a'
+                    S := (r1 / r2)*
+                    r1 := 'a'
+                    r2 := 'a'
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
@@ -494,10 +494,10 @@ class AlphaTest {
     void parsesPartial() {
         {
             final @NotNull var grammar = """
-                    S : (r1 / r2 / r3)*
-                    r1 : 'a'
-                    r2 : 'a'
-                    r3 : 'a'
+                    S  := (r1 / r2 / r3)*
+                    r1 := 'a'
+                    r2 := 'a'
+                    r3 := 'a'
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
@@ -507,10 +507,10 @@ class AlphaTest {
         }
         {
             final @NotNull var grammar = """
-                    S : (r1 | r2 | r3)*
-                    r1 : 'a'
-                    r2 : 'a'
-                    r3 : 'a'
+                    S  := (r1 | r2 | r3)*
+                    r1 := 'a'
+                    r2 := 'a'
+                    r3 := 'a'
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
@@ -540,7 +540,7 @@ class AlphaTest {
 
     @Test
     void parserWithStart() {
-        final @NotNull var p = Alpha.parser("S1 : 'A'\nS2 : 'B'");
+        final @NotNull var p = Alpha.parser("S1 := 'A'\nS2 := 'B'");
         Assertions.assertEquals(ParseTree.create("S1", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());
 
@@ -551,7 +551,7 @@ class AlphaTest {
 
     @Test
     void parseWithStart() {
-        final @NotNull var p = Alpha.parser("S1 : 'A'\nS2 : 'B'");
+        final @NotNull var p = Alpha.parser("S1 := 'A'\nS2 := 'B'");
         Assertions.assertEquals(ParseTree.create("S1", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());
 

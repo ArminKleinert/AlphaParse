@@ -21,66 +21,58 @@ class AlphaCoreTest {
 
     final @NotNull Parser as_and_bs = Alpha.parser(
             """
-                    S = AB*
-                    AB = A B
-                    A = 'a'+
-                    B = 'b'+
+                    S := AB*
+                    AB := A B
+                    A := 'a'+
+                    B := 'b'+
                     """);
 
     final @NotNull Parser as_and_bs_regex = Alpha.parser(
             """
-                    S = AB*
-                    AB = A B
-                    A = #'a'+
-                    B = #'b'+
+                    S := AB*
+                    AB := A B
+                    A := #'a'+
+                    B := #'b'+
                     """);
-
-//    final @NotNull Parser as_and_bs_enlive = Alpha.parser(
-//            """
-//                    S = AB*
-//                    AB = A B
-//                    A = 'a'+
-//                    B = 'b'+""",
-//            new Alpha.ParserCreationOptions(ReductionType.ReductionTypesAvailable.ENLIVE));
 
     final @NotNull Parser as_and_bs_variation1 = Alpha.parser(
             """
-                    S = AB*
-                    AB = 'a'+ 'b'+
+                    S := AB*
+                    AB := 'a'+ 'b'+
                     """);
 
     final @NotNull Parser as_and_bs_variation2 = Alpha.parser(
             """
-                    S = ('a'+ 'b'+)*
+                    S := ('a'+ 'b'+)*
                     """);
 
     final @NotNull Parser paren_ab = Alpha.parser(
             """
-                    paren-wrapped = '(' seq-of-A-or-B ')'
-                    seq-of-A-or-B = ('a' | 'b')*
+                    paren-wrapped := '(' seq-of-A-or-B ')'
+                    seq-of-A-or-B := ('a' | 'b')*
                     """);
 
     final @NotNull Parser paren_ab_hide_parens = Alpha.parser(
             """
-                    paren-wrapped = <'('> seq-of-A-or-B <')'>
-                    seq-of-A-or-B = ('a' | 'b')*
+                    paren-wrapped := <'('> seq-of-A-or-B <')'>
+                    seq-of-A-or-B := ('a' | 'b')*
                     """);
 
     final @NotNull Parser paren_ab_manually_flattened = Alpha.parser(
             """
-                    paren-wrapped = <'('> ('a' | 'b')* <')'>
+                    paren-wrapped := <'('> ('a' | 'b')* <')'>
                     """);
 
     final @NotNull Parser paren_ab_hide_tag = Alpha.parser(
             """
-                    paren-wrapped = <'('> seq-of-A-or-B <')'>
-                    <seq-of-A-or-B> = ('a' | 'b')*
+                    paren-wrapped := <'('> seq-of-A-or-B <')'>
+                    <seq-of-A-or-B> := ('a' | 'b')*
                     """);
 
     final @NotNull Parser paren_ab_hide_both_tags = Alpha.parser(
             """
-                    <paren-wrapped> = <'('> seq-of-A-or-B <')'>
-                    <seq-of-A-or-B> = ('a' | 'b')*
+                    <paren-wrapped> := <'('> seq-of-A-or-B <')'>
+                    <seq-of-A-or-B> := ('a' | 'b')*
                     """);
 
 //    final @NotNull Parser addition = Alpha.parser(
@@ -91,206 +83,181 @@ class AlphaCoreTest {
 
     final @NotNull Parser words_and_numbers = Alpha.parser(
             """
-                    sentence = token (<whitespace> token)*
-                    <token> = word | number
-                    whitespace = #'\\s+'
-                    word = #'[a-zA-Z]+'
-                    number = #'[0-9]+'
+                    sentence := token (<whitespace> token)*
+                    <token> := word | number
+                    whitespace := #'\\s+'
+                    word := #'[a-zA-Z]+'
+                    number := #'[0-9]+'
                     """);
 
     final @NotNull Parser words_and_numbers_one_character_at_a_time = Alpha.parser(
             """
-                    sentence = token (<whitespace> token)*
-                    <token> = word | number
-                    whitespace = #'\\s+'
-                    word = letter+
-                    number = digit+
-                    <letter> = #'[a-zA-Z]'
-                    <digit> = #'[0-9]'
+                    sentence := token (<whitespace> token)*
+                    <token> := word | number
+                    whitespace := #'\\s+'
+                    word := letter+
+                    number := digit+
+                    <letter> := #'[a-zA-Z]'
+                    <digit> := #'[0-9]'
                     """);
 
     final @NotNull Parser ambiguous = Alpha.parser(
             """
-                    S = A A
-                    A = 'a'*
+                    S := A A
+                    A := 'a'*
                     """);
 
     final @NotNull Parser not_ambiguous = Alpha.parser(
             """
-                    S = A A
-                    A = #'a*'
+                    S := A A
+                    A := #'a*'
                     """);
 
     final @NotNull Parser repeated_a = Alpha.parser(
             """
-                    S = 'a'+
+                    S := 'a'+
                     """);
 
     final @NotNull Parser lookahead_example = Alpha.parser(
             """
-                    S = &'ab' ('a' | 'b')+
+                    S := &'ab' ('a' | 'b')+
                     """);
 
     final @NotNull Parser negative_lookahead_example = Alpha.parser(
             """
-                    S = !'ab' ('a' | 'b')+
+                    S := !'ab' ('a' | 'b')+
                     """);
 
 //    final @NotNull Parser abc = Alpha.parser(
 //            """
-//                    S = &(A 'c') 'a'+ B
+//                    S := &(A 'c') 'a'+ B
 //                    A = 'a' A? 'b'
 //                    <B> = 'b' B? 'c'
 //                    """);
 
     final @NotNull Parser ambiguous_tokenizer = Alpha.parser(
             """
-                    sentence = token (<whitespace> token)*
-                    <token> = keyword | identifier
-                    whitespace = #'\\s+'
-                    identifier = #'[a-zA-Z]+'
-                    keyword = 'cond' | 'defn'
+                    sentence := token (<whitespace> token)*
+                    <token> := keyword | identifier
+                    whitespace := #'\\s+'
+                    identifier := #'[a-zA-Z]+'
+                    keyword := 'cond' | 'defn'
                     """);
 
     final @NotNull Parser unambiguous_tokenizer = Alpha.parser(
             """
-                    sentence = token (<whitespace> token)*
-                    <token> = keyword | !keyword identifier
-                    whitespace = #'\\s+'
-                    identifier = #'[a-zA-Z]+'
-                    keyword = 'cond' | 'defn'
+                    sentence := token (<whitespace> token)*
+                    <token> := keyword | !keyword identifier
+                    whitespace := #'\\s+'
+                    identifier := #'[a-zA-Z]+'
+                    keyword := 'cond' | 'defn'
                     """);
 
     final @NotNull Parser preferential_tokenizer = Alpha.parser(
             """
-                    sentence = token (<whitespace> token)*
-                    <token> = keyword / identifier
-                    whitespace = #'\\s+'
-                    identifier = #'[a-zA-Z]+'
-                    keyword = 'cond' | 'defn'
+                    sentence := token (<whitespace> token)*
+                    <token> := keyword / identifier
+                    whitespace := #'\\s+'
+                    identifier := #'[a-zA-Z]+'
+                    keyword := 'cond' | 'defn'
                     """);
-
-//    final @NotNull Parser ord_test = Alpha.parser(
-//            """
-//                    S = Even / Odd
-//                    Even = 'aa'*
-//                    Odd = 'a'+
-//                    """);
-
-//    final @NotNull Parser ord2_test = Alpha.parser(
-//            """
-//                    S = token (<ws> token)*
-//                    ws = #'\\s+'
-//                    keyword = 'hello' | 'bye'
-//                    identifier = #'\\S+'
-//                    token = keyword / identifier
-//                    """
-//    );
-
-//    final @NotNull Parser even_odd = Alpha.parser(
-//            """
-//                    S = Even | Odd
-//                    eos = !#'.'
-//                    Even = 'aa'*
-//                    Odd = !(Even eos) 'a'+
-//                    """);
 
     final @NotNull Parser arithmetic = Alpha.parser(
             """
-                    expr = add-sub
-                    <add-sub> = mul-div | add | sub
-                    add = add-sub <'+'> mul-div
-                    sub = add-sub <'-'> mul-div
-                    <mul-div> = term | mul | div
-                    mul = mul-div <'*'> term
-                    div = mul-div <'/'> term
-                    <term> = number | <'('> add-sub <')'>
-                    number = #'[0-9]+'
+                    expr := add-sub
+                    <add-sub> := mul-div | add | sub
+                    add := add-sub <'+'> mul-div
+                    sub := add-sub <'-'> mul-div
+                    <mul-div> := term | mul | div
+                    mul := mul-div <'*'> term
+                    div := mul-div <'/'> term
+                    <term> := number | <'('> add-sub <')'>
+                    number := #'[0-9]+'
                     """);
 
     final @NotNull Parser tricky_ebnf_build = Alpha.parser("""
-                    S = A | B
-                    <A> = '='*
-                    B = 'b' '='
+                    S := A | B
+                    <A> := '='*
+                    B := 'b' '='
                     """,
             ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))
     );
 
     final @NotNull Parser whitespace = Alpha.parser(
             """
-                    whitespace = #'\\s+'
+                    whitespace := #'\\s+'
                     """);
 
     final @NotNull Parser auto_whitespace_example = Alpha.parser(
             """
-                    S = A B
-                    <A> = 'foo'
-                    <B> = #'\\d+'
+                    S := A B
+                    <A> := 'foo'
+                    <B> := #'\\d+'
                     """,
             ParserCreationOptions.getDefault().withWhitespaceParser(whitespace));
 
     final @NotNull Parser words_and_numbers_auto_whitespace = Alpha.parser(
             """
-                    sentence = token+
-                    <token> = word | number
-                    word = #'[a-zA-Z]+'
-                    number = #'[0-9]+'
+                    sentence := token+
+                    <token> := word | number
+                    word := #'[a-zA-Z]+'
+                    number := #'[0-9]+'
                     """,
             ParserCreationOptions.getDefault().withWhitespaceParser(whitespace));
 
     final @NotNull Parser auto_whitespace_example2 = Alpha.parser(
             """
-                    S = A B
-                    <A> = 'foo'
-                    <B> = #'\\d+'
+                    S := A B
+                    <A> := 'foo'
+                    <B> := #'\\d+'
                     """,
             ParserCreationOptions.getDefault().withWhitespaceParser(
                     Alpha.getPredefinedWhitespaceParser("standard")));
 
     final @NotNull Parser words_and_numbers_auto_whitespace2 = Alpha.parser(
             """
-                    sentence = token+
-                    <token> = word | number
-                    word = #'[a-zA-Z]+'
-                    number = #'[0-9]+'
+                    sentence := token+
+                    <token> := word | number
+                    word := #'[a-zA-Z]+'
+                    number := #'[0-9]+'
                     """,
             ParserCreationOptions.getDefault().withWhitespaceParser(
                     Alpha.getPredefinedWhitespaceParser("standard")));
 
     final @NotNull Parser whitespace_or_comments = Alpha.parser(
             """
-                    ws-or-comments = #'\\s+' | comments
-                    comments = comment+
-                    comment = '(*' inside-comment* '*)'
-                    inside-comment =  !'*)' !'(*' #'.' | comment
+                    ws-or-comments := #'\\s+' | comments
+                    comments := comment+
+                    comment := '(*' inside-comment* '*)'
+                    inside-comment :=  !'*)' !'(*' #'.' | comment
                     """,
             ParserCreationOptions.getDefault().withWhitespaceParser(whitespace));
 
     final @NotNull Parser words_and_numbers_auto_whitespace_and_comments = Alpha.parser(
             """
-                    sentence = token+
-                    <token> = word | number
-                    word = #'[a-zA-Z]+'
-                    number = #'[0-9]+'
+                    sentence := token+
+                    <token> := word | number
+                    word := #'[a-zA-Z]+'
+                    number := #'[0-9]+'
                     """,
             ParserCreationOptions.getDefault().withWhitespaceParser(whitespace_or_comments));
 
-    final @NotNull Parser eat_a = Alpha.parser("Aeater = #'[a]'+",
+    final @NotNull Parser eat_a = Alpha.parser("Aeater := #'[a]'+",
             ParserCreationOptions.getDefault());
 
     final @NotNull Parser int_or_double = Alpha.parser(
             """
-                    ws = #'\\s+';
-                    Int = #'[0-9]+';
-                    Double = #'[0-9]+\\.[0-9]*|\\.[0-9]+';
-                    <ConstExpr> = Int | Double;
-                    Input = ConstExpr <ws> ConstExpr;
+                    ws := #'\\s+';
+                    Int := #'[0-9]+';
+                    Double := #'[0-9]+\\.[0-9]*|\\.[0-9]+';
+                    <ConstExpr> := Int | Double;
+                    Input := ConstExpr <ws> ConstExpr;
                     """,
             ParserCreationOptions.getDefault().withStartProduction(Sym.sym("Input")));
 
     final @NotNull Parser case_insensitive_regexp = Alpha.parser(
             """
-                    S = #'(?i)a+'
+                    S := #'(?i)a+'
                     """);
 
     @Test
@@ -496,7 +463,7 @@ class AlphaCoreTest {
     @Test
     void testParserAsFunction() {
         var text = "aaaa";
-        var grammar = "S = 'a' S / '' ";
+        var grammar = "S := 'a' S / '' ";
         var tree =
                 ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S", "a", ParseTree.create("S")))));
 
@@ -506,7 +473,7 @@ class AlphaCoreTest {
     @Test
     void testParserAsFunction2() {
         var text = "aaaa";
-        var grammar = "S = S 'a' / Epsilon";
+        var grammar = "S := S 'a' / Epsilon";
         var tree =
                 ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"), "a"), "a"), "a"), "a");
 
@@ -602,10 +569,10 @@ class AlphaCoreTest {
     @Test
     void testCharRangeExampleFailure() {
         var p = Alpha.parser("""
-                        Regex = (CharNonRange | Range) +
-                        Range = Char <'-'> Char
-                        CharNonRange = Char ! ('-' Char)
-                Char = #'[-x]' | 'c' (! 'd') 'x'
+                Regex := (CharNonRange | Range) +
+                Range := Char <'-'> Char
+                CharNonRange := Char ! ('-' Char)
+                Char := #'[-x]' | 'c' (! 'd') 'x'
                 """);
 
         var tree = ParseTree.create("Regex",
@@ -740,21 +707,21 @@ class AlphaCoreTest {
     void testFail() {
         Assertions.assertEquals(
                 ParseTree.create("S", "a")
-                , Alpha.parser("S = A\n<A> = 'a'").parse("a"));
+                , Alpha.parser("S := A\n<A> := 'a'").parse("a"));
         Assertions.assertEquals(
                 ParseTree.create("S", "a")
-                , Alpha.parser("S = A\n<A> = 'a'").parse("a", ParsingOptions.optMemory()));
+                , Alpha.parser("S := A\n<A> := 'a'").parse("a", ParsingOptions.optMemory()));
         Assertions.assertEquals(
                 ParseTree.create("S", ParseTree.create("A")),
-                Alpha.parser("S = A\nA = <'a'>").parse("a"));
+                Alpha.parser("S := A\nA := <'a'>").parse("a"));
         Assertions.assertEquals(
                 ParseTree.create("S", ParseTree.create("A")),
-                Alpha.parser("S = A\nA = <'a'>").parse("a", ParsingOptions.optMemory()));
+                Alpha.parser("S := A\nA := <'a'>").parse("a", ParsingOptions.optMemory()));
     }
 
     @Test
     void testOptionalRepeat() {
-        var parser = Alpha.parser("S = ('a'?)+");
+        var parser = Alpha.parser("S := ('a'?)+");
         var tree = ParseTree.create("S");
 
         Assertions.assertEquals(tree, parser.parse(""));
@@ -764,9 +731,9 @@ class AlphaCoreTest {
     @Test
     void testDot() {
         var parser = Alpha.parser("""
-                a = b c .
-                b = 'b' .
-                c = 'c' .
+                a := b c .
+                b := 'b' .
+                c := 'c' .
                 """);
         var tree = ParseTree.create("a",
                 ParseTree.create("b", "b"),
@@ -822,41 +789,41 @@ class AlphaCoreTest {
     void testEps() {
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = eps").parse(""));
+                Alpha.parser("S := eps").parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = epsilon").parse(""));
+                Alpha.parser("S := epsilon").parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = Epsilon").parse(""));
+                Alpha.parser("S := Epsilon").parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = EPSILON").parse(""));
+                Alpha.parser("S := EPSILON").parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = ε").parse(""));
+                Alpha.parser("S := ε").parse(""));
     }
 
     @Test
     void testEpsFail() {
         Assertions.assertTrue(
-                Alpha.parser("S = eps")
+                Alpha.parser("S := eps")
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = epsilon")
+                Alpha.parser("S := epsilon")
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = Epsilon")
+                Alpha.parser("S := Epsilon")
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = EPSILON")
+                Alpha.parser("S := EPSILON")
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = ε")
+                Alpha.parser("S := ε")
                         .parse("a")
                         .isFailure());
     }
@@ -947,7 +914,7 @@ class AlphaCoreTest {
     @Test
     void testGreedyRegex() {
         {
-            final @NotNull Parser p = Alpha.parser("S = #'\\s*'");
+            final @NotNull Parser p = Alpha.parser("S := #'\\s*'");
             final @NotNull var text = "     ";
             var tree = ParseTree.create("S", text);
 
@@ -955,7 +922,7 @@ class AlphaCoreTest {
             Assertions.assertEquals(tree, p.parse(text, ParsingOptions.optMemory()));
         }
         {
-            final @NotNull Parser p = Alpha.parser("S = #'a+'");
+            final @NotNull Parser p = Alpha.parser("S := #'a+'");
             final @NotNull var text = "aaaaaa";
             var tree = ParseTree.create("S", text);
 
@@ -966,7 +933,7 @@ class AlphaCoreTest {
 
     @Test
     void testSimpleOrderedChoice() {
-        final @NotNull Parser p = Alpha.parser("S = 'a' / eps");
+        final @NotNull Parser p = Alpha.parser("S := 'a' / eps");
 
         Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
         Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
@@ -974,7 +941,7 @@ class AlphaCoreTest {
 
     @Test
     void testStarRepetitionFailures() {
-        var p = Alpha.parser("S = 'a'*");
+        var p = Alpha.parser("S := 'a'*");
 
         Assertions.assertTrue(p.parse("AaaAaa").isFailure());
         Assertions.assertTrue(p.parse("").isSuccess());
@@ -982,7 +949,7 @@ class AlphaCoreTest {
 
     @Test
     void testStarRepetitionFailuresTotal() {
-        var p = Alpha.parser("S = 'a'*");
+        var p = Alpha.parser("S := 'a'*");
         var opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
 
         Assertions.assertEquals(
@@ -999,7 +966,7 @@ class AlphaCoreTest {
 
     @Test
     void testPlusRepetitionFailures() {
-        var p = Alpha.parser("S = 'a'+");
+        var p = Alpha.parser("S := 'a'+");
 
         Assertions.assertTrue(p.parse("AaaAaa").isFailure());
         Assertions.assertTrue(p.parse("").isFailure());
@@ -1007,7 +974,7 @@ class AlphaCoreTest {
 
     @Test
     void testPlusRepetitionFailuresTotal() {
-        var p = Alpha.parser("S = 'a'+");
+        var p = Alpha.parser("S := 'a'+");
         var opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
 
         Assertions.assertEquals(
@@ -1024,7 +991,7 @@ class AlphaCoreTest {
 
     @Test
     void testStringVsStringCi() {
-        var grammar = "S = 'a'+";
+        var grammar = "S := 'a'+";
         var text = "AaaAaa";
 
         var pStandard1 = Alpha.parser(grammar);
@@ -1041,7 +1008,7 @@ class AlphaCoreTest {
 
     @Test
     void testStringExplicitCiFalse() {
-        var grammar = "S = 'a'+";
+        var grammar = "S := 'a'+";
         var text = "AaaAaa";
 
         var pStandard1 = Alpha.parser(grammar);
@@ -1062,7 +1029,7 @@ class AlphaCoreTest {
 
     @Test
     void testStringExplicitCiTrue() {
-        var grammar = "S = 'a'+";
+        var grammar = "S := 'a'+";
         var text = "AaaAaa";
 
         var tree = ParseTree.create("S", "a", "a", "a", "a", "a", "a");
@@ -1092,11 +1059,11 @@ class AlphaCoreTest {
     @Test
     void testRegexFail() {
         Assertions.assertTrue(
-                Alpha.parser("f = #'asdf'").parse("asdf").isSuccess());
+                Alpha.parser("f := #'asdf'").parse("asdf").isSuccess());
         Assertions.assertTrue(
-                Alpha.parser("f = #'asdf'").parse("").isFailure());
+                Alpha.parser("f := #'asdf'").parse("").isFailure());
         Assertions.assertFalse(
-                Alpha.parser("f = #'asdf'").parse("").isSuccess());
+                Alpha.parser("f := #'asdf'").parse("").isSuccess());
     }
 
     @Test

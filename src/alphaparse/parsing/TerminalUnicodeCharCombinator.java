@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * Represents an ABNF Unicode char range.
+ * Represents an ABNF value range.
  */
 public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     private final int lo;

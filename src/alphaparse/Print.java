@@ -128,9 +128,9 @@ public final class Print {
     private static @NotNull String ruleToString(final @NotNull Sym startProd, final @NotNull Combinator parser) {
         final ReductionType red = parser.getReduction();
         if (red.isHiddenOrRaw())
-            return "<" + startProd + '>' + " = " + combinatorToString(parser);
+            return "<" + startProd + '>' + " := " + combinatorToString(parser);
         else
-            return startProd + " = " + combinatorToString(parser);
+            return startProd + " := " + combinatorToString(parser);
     }
 
     /**

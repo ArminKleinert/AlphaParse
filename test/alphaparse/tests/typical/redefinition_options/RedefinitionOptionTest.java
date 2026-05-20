@@ -13,7 +13,7 @@ class RedefinitionOptionTest {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
                 .withRedefinitionOption(RedefinitionOption.OVERRIDE);
-        var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
+        var p = Alpha.parser("S := 'A'\nS := 'B'\nS := 'C'", redefinitionOpts);
         Assertions.assertTrue(p.parse("A").isFailure());
         Assertions.assertTrue(p.parse("B").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "C"), p.parse("C"));
@@ -27,24 +27,24 @@ class RedefinitionOptionTest {
         // Only one production -> No duplicates, no problem
         Assertions.assertEquals(
                 ParseTree.create("S", "A"),
-                Alpha.parser("S : 'A'", redefinitionOpts).parse("A"));
+                Alpha.parser("S := 'A'", redefinitionOpts).parse("A"));
 
         // Duplicate name, different lhs -> Problem
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                ()->Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts));
+                ()->Alpha.parser("S := 'A'\nS := 'B'\nS := 'C'", redefinitionOpts));
 
         // Fails even if the production does not change
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                ()->Alpha.parser("S : 'A'\nS : 'A'\nS : 'A'", redefinitionOpts));
+                ()->Alpha.parser("S := 'A'\nS := 'A'\nS := 'A'", redefinitionOpts));
     }
     @Test
     void optionChoiceTest() {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
                 .withRedefinitionOption(RedefinitionOption.CHOICE);
-        var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
+        var p = Alpha.parser("S := 'A'\nS := 'B'\nS := 'C'", redefinitionOpts);
         Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("A"));
         Assertions.assertEquals(ParseTree.create("S", "B"), p.parse("B"));
         Assertions.assertEquals(ParseTree.create("S", "C"), p.parse("C"));
@@ -54,7 +54,7 @@ class RedefinitionOptionTest {
         var redefinitionOpts = ParserCreationOptions
                 .getDefault()
                 .withRedefinitionOption(RedefinitionOption.KEEP);
-        var p = Alpha.parser("S : 'A'\nS : 'B'\nS : 'C'", redefinitionOpts);
+        var p = Alpha.parser("S := 'A'\nS := 'B'\nS := 'C'", redefinitionOpts);
         Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());
         Assertions.assertTrue(p.parse("C").isFailure());

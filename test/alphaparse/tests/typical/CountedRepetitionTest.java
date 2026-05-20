@@ -11,7 +11,7 @@ class CountedRepetitionTest {
     @Test
     void parseRepetitionMinimumOnly() {
         {
-            final @NotNull var p = Alpha.parser("S : 2* 'a'");
+            final @NotNull var p = Alpha.parser("S := 2* 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
@@ -24,7 +24,7 @@ class CountedRepetitionTest {
     @Test
     void parseRepetitionMaximumOnly() {
         {
-            final @NotNull var p = Alpha.parser("S : *2 'a'");
+            final @NotNull var p = Alpha.parser("S := *2 'a'");
             Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
             Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
@@ -33,7 +33,7 @@ class CountedRepetitionTest {
             Assertions.assertTrue(p.parse("aaaaa").isFailure());
         }
         {
-            final @NotNull var p = Alpha.parser("S : *0 'a'");
+            final @NotNull var p = Alpha.parser("S := *0 'a'");
             Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertTrue(p.parse("aa").isFailure());
@@ -46,7 +46,7 @@ class CountedRepetitionTest {
     @Test
     void parseRepetitionMinMax() {
         {
-            final @NotNull var p = Alpha.parser("S : 2*4 'a'");
+            final @NotNull var p = Alpha.parser("S := 2*4 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
@@ -55,7 +55,7 @@ class CountedRepetitionTest {
             Assertions.assertTrue(p.parse("aaaaa").isFailure());
         }
         {
-            final @NotNull var p = Alpha.parser("S : 0*0 'a'");
+            final @NotNull var p = Alpha.parser("S := 0*0 'a'");
             Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertTrue(p.parse("aa").isFailure());
@@ -68,7 +68,7 @@ class CountedRepetitionTest {
     @Test
     void parseRepetitionExact() {
         {
-            final @NotNull var p = Alpha.parser("S : 2 'a'");
+            final @NotNull var p = Alpha.parser("S := 2 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
@@ -80,28 +80,28 @@ class CountedRepetitionTest {
     @Test
     void createRepetitionParserFormatFailure() {
         // Negative minimum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : -1*2"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := -1*2"));
         // Negative maximum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : *-1"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := *-1"));
         // Negative minimum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : -1*"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := -1*"));
         // Negative exact
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : -1"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := -1"));
         // Minimum greater than maximum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : 4*2"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := 4*2"));
     }
 
     @Test
     void createRepetitionParserFailure() {
         // Negative minimum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : -1*2 'a'"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := -1*2 'a'"));
         // Negative maximum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : *-1 'a'"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := *-1 'a'"));
         // Negative minimum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : -1* 'a'"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := -1* 'a'"));
         // Negative exact
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : -1 'a'"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := -1 'a'"));
         // Minimum greater than maximum
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S : 4*2 'a'"));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := 4*2 'a'"));
     }
 }

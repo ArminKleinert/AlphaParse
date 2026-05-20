@@ -37,7 +37,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      *
      * <pre>
      * {@code
-     *   var pt = Alpha.parser("S : 'a' 'b' 'c'").parse("abc");
+     *   var pt = Alpha.parser("S := 'a' 'b' 'c'").parse("abc");
      *   println(pt); // [:S, a, b, c]
      *   println(pt.castToParseSuccess().getTag().content()); // :S
      * }
@@ -54,7 +54,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      *
      * <pre>
      * {@code
-     *   var pt = Alpha.parser("S : 'a' 'b' 'c'").parse("abc");
+     *   var pt = Alpha.parser("S := 'a' 'b' 'c'").parse("abc");
      *   println(pt); // [:S, a, b, c]
      *   println(pt.castToParseSuccess().getContent()); // [a, b, c]
      * }
@@ -313,7 +313,8 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * This method also "flattens" nested trees if necessary. Trees need to be flattened if the content includes any subtrees that have the {@link ParseTree#NULL_TAG}.
      * <p>
      * E.g. {@code [:S, "A", [:S, "A"]]} is flat, but {@code [:S, [NULL_TAG, "A"], [:S, "A"]]} is not.
-     * This happens when hide-tags are used, for example in the grammar {@code "S : A S | EPS \n <A> : 'A'"}.
+     * This happens when hide-tags are used, for example in the grammar {@code "S := A S | EPS \n <A> := 'A'"}.
+     *
      * @param tag                    The tag as a node.
      * @param content                The content as a node.
      * @param usedMemoryOptimization Whether memory optimization was used when parsing.

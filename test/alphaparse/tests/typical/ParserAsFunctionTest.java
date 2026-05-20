@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 class ParserAsFunctionTest {
     @Test
     void asMapper() {
-        var p = Alpha.parser("S : #'[A-Z]'");
+        var p = Alpha.parser("S := #'[A-Z]'");
         var strings = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(it -> String.valueOf((char) it)).toList();
         Assertions.assertEquals(
                 strings.stream().map(it -> Alpha.parse(p, it)).toList(),
@@ -35,7 +35,7 @@ class ParserAsFunctionTest {
                         .map(Integer::valueOf)
                         .findFirst().orElseThrow()
         );
-        var p = Alpha.parser("S : #'[A-Z]'");
+        var p = Alpha.parser("S := #'[A-Z]'");
         var strings = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(it -> String.valueOf((char) it)).toList();
         var ints = strings.stream().map(s -> (int) s.charAt(0)).toList();
 
