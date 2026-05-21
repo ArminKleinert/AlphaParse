@@ -14,7 +14,8 @@ import java.util.function.Function;
  * This class provides methods for transforming parse trees via tag-to-function tables.
  */
 public final class Transform {
-    private Transform() {}
+    private Transform() {
+    }
 
     private static Object transform(
             final @NotNull Node node,
@@ -88,7 +89,7 @@ public final class Transform {
      *         );
      * }
      * </pre>
-     *
+     * <p>
      * If a tag is not in the Map, a parse tree is constructed.
      * In this case, all nodes in the content MUST have a corresponding {@link Node} wrapper ({@link ParseTree} or {@link String})!
      * <pre>
@@ -115,11 +116,12 @@ public final class Transform {
      *                 Transform.transform(tree, transformMap));
      * }
      * </pre>
-     * @param parseResult The parse result (expected to be a {@link ParseTree}).
+     *
+     * @param parseResult  The parse result (expected to be a {@link ParseTree}).
      * @param transformMap Map of tags (symbols) to functions.
-     * @param finalizer Casting from raw Object to specific output type.
+     * @param finalizer    Casting from raw Object to specific output type.
+     * @param <T>          The output type.
      * @return Transformed content.
-     * @param <T> The output type.
      * @throws IllegalArgumentException If the parseResult is not a parse tree.
      */
     public static <T> T transform(
@@ -133,7 +135,7 @@ public final class Transform {
     /**
      * Same as {@link #transform(AlphaParseResult, Map, Function)} but without a finalizer. The output is a plain object.
      *
-     * @param parseResult The parse result (expected to be a {@link ParseTree}).
+     * @param parseResult  The parse result (expected to be a {@link ParseTree}).
      * @param transformMap Map of tags (symbols) to functions.
      * @return Transformed content.
      * @throws IllegalArgumentException If the parseResult is not a parse tree.

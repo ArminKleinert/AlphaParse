@@ -9,11 +9,13 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A class for string-alternatives that are slightly slower to create than strings, but provide interning and O(1) comparisons via the buildin {@code ==} operator. Optionally, this interning can be disabled, which may save memory if the keywords are often discarded. If interning is disabled, the fast comparison is disabled as well.
+ * A class for string-alternatives that are slightly slower to create than strings, but provide interning and O(1) comparisons via the buildin {@code ==} operator.
  * <p>
- * {@code Keyword k1 = Keyword.intern(str);
- * Keyword k2 = Keyword.intern(str);
- * k1 == k2 // Guarantied to be true.}
+ * {@code
+ * Sym k1 = Sym.sym(str);
+ * Sym k2 = Sym.sym(str);
+ * k1 == k2 // Guarantied to be true.
+ * }
  */
 public final class Sym {
     private static final ConcurrentHashMap<String, Reference<Sym>> table =
@@ -24,10 +26,10 @@ public final class Sym {
     private final @NotNull String name;
 
     /**
-     * Creates a new keyword or returns an existing one.
+     * Creates a new symbol or returns an existing one.
      *
-     * @param sym The string for the keyword.
-     * @return The new or already existing keyword.
+     * @param sym The string for the symbol.
+     * @return The new or already existing symbol.
      */
     public static @NotNull Sym sym(final @NotNull String sym) {
         Sym k = null;
@@ -76,22 +78,6 @@ public final class Sym {
 
     @Override
     public boolean equals(Object o) {
-        //if (!(o instanceof Sym)) return false;
         return this == o;
     }
-
-//    @Override
-//    public int length() {
-//        return name.length();
-//    }
-//
-//    @Override
-//    public char charAt(int i) {
-//        return name.charAt(i);
-//    }
-//
-//    @Override
-//    public @NotNull CharSequence subSequence(int i, int i1) {
-//        return name.subSequence(i, i1);
-//    }
 }

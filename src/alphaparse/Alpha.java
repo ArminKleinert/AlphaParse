@@ -20,10 +20,10 @@ import java.nio.file.Files;
 import java.util.Map;
 
 /**
- * Helpers for creating and using parsers.
+ * The main interface for interacting with the library.
  */
 public final class Alpha {
-    private static Grammar bufferedEbnfGrammar = null;
+    private static Grammar bufferedDefaultGrammar = null;
 
     /**
      * Use this to keep the EBNF grammar in memory. Useful if many parsers are instantiated in a short time.
@@ -32,9 +32,9 @@ public final class Alpha {
      */
     public static void bufferEbnfGrammar(final boolean setting) {
         if (!setting) {
-            bufferedEbnfGrammar = null;
-        } else if (bufferedEbnfGrammar == null) {
-            bufferedEbnfGrammar = CfgGrammar.makeCfg(ParserCreationOptions.getDefault());
+            bufferedDefaultGrammar = null;
+        } else if (bufferedDefaultGrammar == null) {
+            bufferedDefaultGrammar = CfgGrammar.makeCfg(ParserCreationOptions.getDefault());
         }
     }
 
@@ -246,9 +246,9 @@ public final class Alpha {
     public static @NotNull Parser parser(final @NotNull String grammar,
                                          final @NotNull ParserCreationOptions options) {
         var grammarForParsingGrammar =
-                bufferedEbnfGrammar == null || options != ParserCreationOptions.getDefault()
+                bufferedDefaultGrammar == null || options != ParserCreationOptions.getDefault()
                         ? CfgGrammar.makeCfg(options)
-                        : bufferedEbnfGrammar;
+                        : bufferedDefaultGrammar;
         return Cfg.make(options).buildParser(grammar, grammarForParsingGrammar);
     }
 

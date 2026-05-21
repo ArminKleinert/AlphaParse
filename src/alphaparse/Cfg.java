@@ -245,10 +245,10 @@ final class Cfg {
                                 final @NotNull Grammar grammarGrammar) {
         final @NotNull AlphaParseResult rules;
 
-            rules = Gll.parse(
-                    grammarGrammar,
-                    Sym.sym("rules"),
-                    spec, false, false);
+        rules = Gll.parse(
+                grammarGrammar,
+                Sym.sym("rules"),
+                spec, false, false);
 
         if (rules instanceof AlphaParseFailure) {
             throw new ParserCreationFailure("Error parsing grammar specification:\n" + rules + "\n");

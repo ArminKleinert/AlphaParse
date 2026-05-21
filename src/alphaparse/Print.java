@@ -32,8 +32,8 @@ public final class Print {
     }
 
     private static @NotNull String escape(final @NotNull String s) {
-        return '"'
-                +s.replace("\\", "\\\\")
+        return '"' + s
+                .replace("\\", "\\\\")
                 .replace("\t", "\\t")
                 .replace("\b", "\\b")
                 .replace("\n", "\\n")
@@ -41,7 +41,7 @@ public final class Print {
                 .replace("\f", "\\f")
                 .replace("'", "\\'")      // <== not necessary
                 .replace("\"", "\\\"")
-                +'"';
+                + '"';
     }
 
     /**

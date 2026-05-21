@@ -17,8 +17,7 @@ public final class StrParser {
         sb = new StringBuilder();
     }
 
-    // Converts a single-quoted string to a double-quoted one.
-    private @NotNull String prepare(final int offset, final char starter, final @NotNull String s) {
+    private @NotNull String unescape(final int offset, final char starter, final @NotNull String s) {
         sb.setLength(0);
         for (int i = offset; i < s.length() - 1; i++) {
             char c = s.charAt(i);
@@ -45,9 +44,9 @@ public final class StrParser {
                         case 't' -> sb.append('\t');
                         case 'u' -> {
                             i += 5;
-                            sb.appendCodePoint( Integer.parseInt(s, i - 4, i, 16));
+                            sb.appendCodePoint(Integer.parseInt(s, i - 4, i, 16));
                         }
-                        default -> sb.append('\\').append( c2);
+                        default -> sb.append('\\').append(c2);
                     }
                 }
             } else {
@@ -59,24 +58,22 @@ public final class StrParser {
     }
 
     /**
-     * Converts single quoted string to double-quoted.
-     * The expected input has the format {@code '...'}.
+     * Unescapes a string. Handles most escape sequences, including Unicode chars (starting with "\\u"), but not octal escape sequences.
      *
-     * @param s The input string.
+     * @param s The input string. Format: '...' or "..."
      * @return A string.
      */
     public @NotNull String processString(final @NotNull String s) {
-        return prepare(1, s.charAt(0), s);
+        return unescape(1, s.charAt(0), s);
     }
 
     /**
-     * Converts single quoted string to double-quoted and then compiles it to a regex.
-     * The expected input has the format {@code #'...'}.
+     * Unescapes a string and turns it into a {@link Pattern}. Handles most escape sequences, including Unicode chars (starting with "\\u"), but not octal escape sequences.
      *
-     * @param s The input string.
+     * @param s The input string. Format: #'...' or #"..."
      * @return A regex.
      */
     public @NotNull Pattern processRegexp(final @NotNull String s) {
-        return Pattern.compile(prepare(2, s.charAt(1), s));
+        return Pattern.compile(unescape(2, s.charAt(1), s));
     }
 }
