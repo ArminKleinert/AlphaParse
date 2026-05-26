@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -197,19 +198,28 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      * @see GrammarInfo
      */
     public @NotNull GrammarInfo analyze() {
-        return new GrammarInfo(
-                keySet(),
-                listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet()));
-    }
+        return new GrammarInfo(this);    }
 
     /**
      * Holds some information about a grammar.
-     *
-     * @param definedNTs All non-terminals of the Grammar.
-     * @param usedNTs    All non-terminals which appear on the right-hand side of any production.
      */
-    public record GrammarInfo(@NotNull Collection<@NotNull Sym> definedNTs,
-                              @NotNull Collection<@NotNull Sym> usedNTs) {
+    public record GrammarInfo(@NotNull Grammar grammar) {
+        /**
+         * All non-terminals of the Grammar.
+         * @return A collection of all non-terminals of the Grammar.
+         */
+
+        public @NotNull Collection<@NotNull Sym> definedNTs() {
+            return grammar.keySet();
+        }
+        /**
+         * All non-terminals which appear on the right-hand side of any production.
+         * @return A collection of all non-terminals which appear on the right-hand side of any production.
+         */
+        public @NotNull Collection<@NotNull Sym> usedNTs() {
+            return grammar.listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet());
+        }
+
         /**
          * Returns all NTs that are defined but unused. Effectively, this is a list of unused productions.
          * <p>
@@ -226,7 +236,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
          * @return A collection of unused non-terminals.
          */
         public @NotNull Collection<Sym> getUnusedNTs() {
-            return definedNTs.stream().filter(it -> !usedNTs.contains(it)).collect(Collectors.toSet());
+            return definedNTs().stream().filter(it -> !usedNTs().contains(it)).collect(Collectors.toSet());
         }
 
         /**
@@ -240,7 +250,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
          * @return A collection which is hopefully empty.
          */
         public @NotNull Collection<Sym> getUndefinedUsedNTs() {
-            return usedNTs.stream().filter(it -> !definedNTs.contains(it)).collect(Collectors.toSet());
+            return usedNTs().stream().filter(it -> !definedNTs().contains(it)).collect(Collectors.toSet());
         }
 
         /**
@@ -253,22 +263,40 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
             return getUndefinedUsedNTs().isEmpty();
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof GrammarInfo(Collection<Sym> nTs, Collection<Sym> ts))) return false;
-            return Objects.equals(definedNTs(), nTs) && Objects.equals(usedNTs(), ts);
+        public @NotNull Collection<Combinator> collectRules(@Nullable Predicate<Combinator> predicate) {
+            if (predicate == null) predicate = (it) -> true;
+            var result = new LinkedHashSet<Combinator>();
+
+            List<Combinator> stack = new ArrayList<>(grammar.values());
+            while (!stack.isEmpty()) {
+                @NotNull Combinator top = stack.removeLast();
+                if (top instanceof CombinatorWithParser topC) stack.add((topC).getParser());
+                else if (top instanceof CombinatorWithManyParsers topC) stack.addAll(topC.getParsers());
+
+                if (predicate.test(top)) result.add(top);
+            }
+
+            return result;
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(definedNTs(), usedNTs());
-        }
+//        public Collection<Map.Entry<Sym, Combinator>> productionsWithLookaheadProblems() {
+//            List<Map.Entry<Sym,Combinator>> result = new ArrayList<>();
+//            for (Map.Entry<@NotNull Sym, Combinator> symCombinatorEntry : grammar.entrySet()) {
+//                var rhsCE = symCombinatorEntry.getValue();
+//                if (!(rhsCE instanceof ConcatCombinator rhs)) continue;
+//                for (int i = 0; i < ((ConcatCombinator) rhs).getParsers().size()-1; i++) {
+//                    var current = ((ConcatCombinator) rhs).getParsers().get(i);
+//                    if (current instanceof )
+//                }
+//            }
+//            return result;
+//        }
 
         @Override
         public @NotNull String toString() {
             return "GrammarInfo[" +
-                    "definedNTs=" + definedNTs +
-                    ", usedNTs=" + usedNTs +
+                    "definedNTs=" + definedNTs() +
+                    ", usedNTs=" + usedNTs() +
                     ", unusedNTs=" + getUnusedNTs() +
                     ", undefinedUsedNTs=" + getUndefinedUsedNTs() +
                     ", isValid=" + isValid() +

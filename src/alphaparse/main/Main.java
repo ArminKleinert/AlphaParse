@@ -89,7 +89,8 @@ final class Main {
                     GlobalCaseInsensitivity.TRUE,
                     true,
                     null,
-                    null);
+                    null,
+                    true);
             final @NotNull var p = Alpha.parser("S := 'ABC'", opts);
             println(Alpha.parses(p, "ABC"));
             println(Alpha.parses(p, "AbC"));

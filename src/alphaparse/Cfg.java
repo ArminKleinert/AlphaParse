@@ -233,8 +233,11 @@ final class Cfg {
         if (options.startProduction() == null)
             throw new ParserCreationFailure("No start production provided.");
         try {
+            var validatedGrammar = options.checkCorrectness()
+                    ? checkGrammarValidity(grammar)
+                    : grammar;
             return new Parser(
-                    checkGrammarValidity(grammar.applyStandardReductions(combinatorFactory)),
+                    validatedGrammar.applyStandardReductions(combinatorFactory),
                     options.startProduction());
         } catch (IllegalGrammarException exception) {
             throw new ParserCreationFailure(exception);
@@ -271,9 +274,11 @@ final class Cfg {
 
         @NotNull Grammar grammar;
         try {
-            grammar = checkGrammarValidity(
-                    Grammar.fromProductions(productions, options.redefinitionOption())
-                            .applyStandardReductions(combinatorFactory));
+            var tempGrammar = Grammar.fromProductions(productions, options.redefinitionOption());
+            if (options.checkCorrectness()) {
+                checkGrammarValidity(tempGrammar);
+            }
+            grammar = tempGrammar.applyStandardReductions(combinatorFactory);
         } catch (IllegalGrammarException exception) {
             throw new ParserCreationFailure(exception);
         }

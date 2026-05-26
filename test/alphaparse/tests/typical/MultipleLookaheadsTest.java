@@ -8,13 +8,11 @@ import alphaparse.parsing.ConcatCombinator;
 import alphaparse.parsing.LookaheadCombinator;
 import alphaparse.parsing.TerminalRegexpCombinator;
 import alphaparse.parsing.TerminalStringCombinator;
-import alphaparse.result.ParseTree;
-import alphaparse.util.Conversions;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 class MultipleLookaheadsTest {
@@ -31,7 +29,7 @@ class MultipleLookaheadsTest {
                                 new TerminalRegexpCombinator(Pattern.compile("[abc]"))))
         )),
                 ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
-        System.out.println(p.grammar().getProduction(Sym.sym("S")).getClass());
+        System.out.println(Objects.requireNonNull(p.grammar().getProduction(Sym.sym("S"))).getClass());
         System.out.println(p.parse("a"));
     }
     @Test

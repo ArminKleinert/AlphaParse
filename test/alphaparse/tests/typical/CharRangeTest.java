@@ -13,7 +13,7 @@ class CharRangeTest {
     private final ParserCreationOptions options =
          new ParserCreationOptions(
              null,null,null,false,null,
-                RulesAvailable.defaultRules()).addAvailableRule(RulesAvailable.VALUE_RANGE);
+                RulesAvailable.defaultRules(), true).addAvailableRule(RulesAvailable.VALUE_RANGE);
     
     @Test
     void unicodeCodepointSingleParse() {

@@ -109,7 +109,8 @@ class AlphaParserCreationTest {
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null,
-                    null);
+                    null,
+                    true);
             Assertions.assertThrows(
                     IllegalArgumentException.class,
                     () -> Alpha.parser(grammar, options));

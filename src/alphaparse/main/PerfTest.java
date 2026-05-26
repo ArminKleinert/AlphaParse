@@ -95,8 +95,14 @@ Original:    {:lowest 3.238, :highest 6.909, :diff 3.671, :average 3.308, :mid 3
 
         println("\n----------------------------------\n--- Standard performance tests ---\n----------------------------------");
         println("Make parser: " + TimeUtil.measureTimeMillis(2 * testNumMultiplierForSlowTests,
-                () -> Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace())));
+                () -> Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace().withCorrectnessCheck(false))));
         println("Previous:    {:lowest 57.658, :highest 103.016, :diff 45.358, :average 63.324, :mid 59.619, :median 61.341, :total 12664.708}");
+        println("Previous 2:  {:lowest 49.696, :highest 72.810, :diff 23.114, :average 51.662, :mid 50.159, :median 50.327, :total 103323.969}");
+        println("Original:    {:lowest 105.916, :highest 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000");
+
+        var presetOpts = ParserCreationOptions.newWithStandardWhitespace();
+        println("Make parser2:" + TimeUtil.measureTimeMillis(2 * testNumMultiplierForSlowTests,
+                () -> Alpha.parser(c99GrammarText, presetOpts)));
         println("Previous 2:  {:lowest 49.696, :highest 72.810, :diff 23.114, :average 51.662, :mid 50.159, :median 50.327, :total 103323.969}");
         println("Original:    {:lowest 105.916, :highest 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000");
 
