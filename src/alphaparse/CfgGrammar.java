@@ -57,7 +57,7 @@ final class CfgGrammar {
                 Map.entry(Sym.sym("HEXDIG"), cf.createRegexTerminal(Pattern.compile("[0-9a-fA-F]"))),
                 Map.entry(Sym.sym("HTAB"), cf.createRegexTerminal(Pattern.compile("\t"))),
                 Map.entry(Sym.sym("LF"), cf.createRegexTerminal(Pattern.compile("\n"))),
-                Map.entry(Sym.sym("LWSP"), cf.starCombinator(cf.choiceCombinator(List.of(WSP, cf.catCombinator(List.of(CRLF, WSP)))))),
+                Map.entry(Sym.sym("LWSP"), cf.starCombinator(cf.choiceCombinatorDistinct(List.of(WSP, cf.catCombinator(List.of(CRLF, WSP)))))),
                 Map.entry(Sym.sym("OCTET"), cf.createRegexTerminal(Pattern.compile("[\\u0000-\\u00FF]"))),
                 Map.entry(Sym.sym("SP"), cf.stringTerminal(" ")),
                 Map.entry(Sym.sym("VCHAR"), cf.createRegexTerminal(Pattern.compile("[\\u0021-\\u007E]"))),
@@ -115,7 +115,7 @@ final class CfgGrammar {
 
     private Combinator makeCfgEpsilonRhs() {
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
+                cf.choiceCombinatorDistinct(
                         List.of(cf.stringTerminal("Epsilon"),
                                 cf.stringTerminal("epsilon"),
                                 cf.stringTerminal("EPSILON"),
@@ -126,7 +126,7 @@ final class CfgGrammar {
 
     private @NotNull Combinator makeCfgFactorRhs() {
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
+                cf.choiceCombinatorDistinct(
                                 cListOf(cf.makeNonTerminal(Sym.sym("nt")),
                                         cf.makeNonTerminal(Sym.sym("string")),
                                         makeNT("regexp", RulesAvailable.REGEX),
@@ -218,7 +218,7 @@ final class CfgGrammar {
         final @NotNull Pattern doubleQuotedRegex =
                 regexDoc("#\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted regexp");
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
+                cf.choiceCombinatorDistinct(
                         List.of(cf.createRegexTerminal(singleQuotedRegex),
                                 cf.createRegexTerminal(doubleQuotedRegex)));
         return rulesRule;
@@ -226,7 +226,7 @@ final class CfgGrammar {
 
     private @NotNull Combinator makeCfgRulesOrParserRhs() {
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
+                cf.choiceCombinatorDistinct(
                                 List.of(cf.makeNonTerminal(Sym.sym("rules")),
                                         cf.makeNonTerminal(Sym.sym("alt-or-ord"))))
                         .hideTag();
@@ -333,7 +333,7 @@ final class CfgGrammar {
 
         if (i == 1) return l[0].hideTag();
 
-        final @NotNull Combinator rulesRule = cf.choiceCombinator(List.of(l)).hideTag();
+        final @NotNull Combinator rulesRule = cf.choiceCombinatorDistinct(List.of(l)).hideTag();
         return rulesRule;
     }
 
@@ -352,18 +352,18 @@ final class CfgGrammar {
         final @NotNull Combinator optWs = cf.makeNonTerminal(Sym.sym("opt-whitespace"));
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(
-                        List.of(cf.choiceCombinator(
+                        List.of(cf.choiceCombinatorDistinct(
                                         List.of(cf.makeNonTerminal(Sym.sym("nt")),
                                                 cf.makeNonTerminal(Sym.sym("hide-nt")))),
                                 optWhitespace,
                                 cf.makeNonTerminal(Sym.sym("rule-separator")).enableHideTag(),
                                 optWhitespace,
                                 cf.makeNonTerminal(Sym.sym("alt-or-ord")),
-                                cf.choiceCombinator(
+                                cf.choiceCombinatorDistinct(
                                                 List.of(optWs,
                                                         cf.catCombinator(
                                                                 List.of(optWs,
-                                                                        cf.choiceCombinator(
+                                                                        cf.choiceCombinatorDistinct(
                                                                                 List.of(cf.stringTerminal(";"),
                                                                                         cf.stringTerminal("."))),
                                                                         optWs))))
@@ -399,7 +399,7 @@ final class CfgGrammar {
     }
 
     private @NotNull Combinator makeCfgCatRhs() {
-        final @NotNull Combinator factorLookNeg = cf.choiceCombinator(cListOf(
+        final @NotNull Combinator factorLookNeg = cf.choiceCombinatorDistinct(cListOf(
                 cf.makeNonTerminal(Sym.sym("factor")),
                 makeNT("look", RulesAvailable.LOOKAHEAD),
                 makeNT("neg", RulesAvailable.NEGATIVE_LOOKAHEAD)
@@ -441,7 +441,7 @@ final class CfgGrammar {
         ));
         return cf.catCombinator(List.of(
                 cf.stringTerminal("%").enableHideTag(),
-                cf.choiceCombinator(List.of(binaryVal, decimalVal, hexadecimalVal))));
+                cf.choiceCombinatorDistinct(List.of(binaryVal, decimalVal, hexadecimalVal))));
     }
 
     @NotNull Grammar makeCfg() {

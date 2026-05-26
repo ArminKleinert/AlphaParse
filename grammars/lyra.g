@@ -1,64 +1,137 @@
 S: expression + ; 
 
-brace1: '(' ;
-brace2: ')' ;
+identifier : #"[^\s\[\]{}('\"`,;)0-9][^\s\[\]{}('\"`,;)]+'?"
 
 expression
   : let_expr
   | define
   | defmacro
-  | lambda_def
+  (* | lambda_def *)
   | literal
-  | brace_expr
-  | symbol
+  (* | symbol *)
+  | identifier
   ;
 
-brace_expr
-  : brace1 expression brace2
+args
+  : identifier* varargs_end?
   ;
 
-list_literal
-  : '(' expression* ')'
+varargs_end
+  : <'&'> identifier
   ;
 
-vector_literal
-  : '[' expression* ']'
+body
+  : expression*
   ;
 
-set_literal
-  : '#{' expression* '}'
-  ;
-
-map_literal
-  : '{' (expression expression)* '}'
-  ;
-
-bindings
-  : '(' ('(' symbol expression ')')* ')'
-  | '[' (symbol expression)* ']'
-  ;
-
-destructure_bindings
-  : '(' ('(' (symbol | list_literal | vector_literal | set_literal | map_literal) expression ')')* ')'
-  | '[' ((symbol | list_literal | vector_literal | set_literal | map_literal) expression)* ']'
-  ;
-
-let_expr
-  : "let*" bindings expression*
-  | "let" destructure_bindings expression*
-  ;
-
-lambda_def
-  : 'lambda*' symbol bindings expression*
-  | ("lambda'" | "fn") symbol? destructure_bindings expression*
-  | 'lambda' bindings expression*
+defmacro
+  : <'('> 'defmacro' identifier args body <')'>
   ;
 
 define
-  : "define" symbol (expression | (bindings expression*))
-  | "define*" symbol destructure_bindings expression*
+  : <'('> 'define' <'('> identifier args <')'> body <')'>
   ;
 
-def_generic
-  : 'def-generic' symbol symbol bindings expression
+let_expr
+  : <'('> 'let*' <'('> binding+ <')'> body <')'>
+
+binding
+  : <'('> identifier expression <')'>
+
+literal
+  : list_literal
+  | vector_literal
+  | set_literal
+  | map_literal
+  | string_literal
+  | number_literal
+  | float_literal
+  | ratio_literal
+  | char_literal
+  | bool_literal
+  | nothing_literal
   ;
+
+list_literal
+  : <'('> expression* <')'>
+  ;
+
+vector_literal
+  : <'['> expression* <']'>
+  ;
+
+set_literal
+  : <'#{'> expression* <'}'>
+  ;
+
+map_literal
+  : <'{'> (expression expression)* <'}'>
+  ;
+
+string_literal
+  : #'\"(\\.|[^\\"])*\"'
+  ;
+
+number_literal
+  : #'-?0b[01]+'
+  | #'-?0x[0-9a-fA-F]+'
+  | #'-?[0-9]+'
+  ;
+
+float_literal
+  : #'-?\d+\.\d+'
+  ;
+
+ratio_literal
+  : #'-?\d+\/\d+'
+  ;
+
+bool_literal
+  : "#f"
+  | "#t"
+  ;
+
+char_literal
+  : "\\" char_literal_inner
+
+<char_literal_inner>
+  : #'u\d{4}'
+  | '*'
+  | 'newline'
+  | 'space'
+  | 'tab'
+  | 'backspace'
+  | 'return'
+  | 'formfeed'
+  | #'[A-Za-z\d+-\/!?$%&()|\[\]{}]'
+  ;
+
+nothing_literal
+  : 'Nothing'
+  | 'nil'
+  ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

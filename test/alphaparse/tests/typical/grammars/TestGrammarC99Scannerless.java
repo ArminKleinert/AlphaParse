@@ -1,0 +1,46 @@
+package alphaparse.tests.typical.grammars;
+
+import alphaparse.Alpha;
+import alphaparse.Sym;
+import alphaparse.parser.Parser;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.result.ParseTree;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Collectors;
+
+/**
+ * Test(s) for the C99 grammar.
+ * <p>
+ * Grammar and tests from <a href="https://esolangs.org/wiki/Brainfuck#Examples">esolangs.org/wiki/Brainfuck</a>.
+ */
+public class TestGrammarC99Scannerless {
+    private Parser parser() {
+        try {
+            return Alpha.parser(
+                    Files.readString(Path.of("grammars/c99_sl.g")),
+                    ParserCreationOptions.newWithStandardWhitespace()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void verifySimpleProgram() {
+        var text = "int i; int main (int argc, char** argv) { i = 11; while (--i) { printf(\"%d\", i); } }";
+        Assertions.assertTrue(parser().parse(text).isSuccess());
+    }
+
+    @Test
+    void verifySimpleProgram1() throws IOException {
+        var text = "int i;";
+        System.out.println(parser().parses(text).stream().map(ParseTree::toString).collect(Collectors.joining("\n")));
+        System.out.println(parser().parses(text).size());
+    }
+}
+

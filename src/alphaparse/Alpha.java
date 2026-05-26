@@ -267,7 +267,7 @@ public final class Alpha {
      * @return The parser.
      * @throws ParserCreationFailure If the start production is invalid.
      */
-    public static @NotNull Parser parser(final @NotNull Grammar grammar,
+    public static @NotNull Parser parser(@NotNull Grammar grammar,
                                          final @NotNull ParserCreationOptions options) {
         if (options.startProduction() == null)
             throw new ParserCreationFailure("Start production must be specified when creating a parser from a Grammar object.");
@@ -275,10 +275,17 @@ public final class Alpha {
         if (!grammar.containsKey(options.startProduction()))
             throw new ParserCreationFailure("The start production " + options.startProduction() + " is not in the grammar.");
 
-        @NotNull var parser = Cfg.make(options).buildParserFromCombinators(grammar);
         if (options.whitespaceParser() != null) {
-            parser = parser.withWhitespaceParser(options.whitespaceParser());
+            var whitespaceParser = options.whitespaceParser();
+            grammar = (new CombinatorFactory(options.useParserBuffering())).autoWhitespace(
+                    grammar,
+                    options.startProduction(),
+                    whitespaceParser.grammar(),
+                    whitespaceParser.startProduction()
+            );
         }
+
+        final @NotNull var parser = Cfg.make(options).buildParserFromCombinators(grammar);
         return parser;
     }
 

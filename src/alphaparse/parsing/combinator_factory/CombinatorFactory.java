@@ -57,8 +57,22 @@ public final class CombinatorFactory {
      * @return A combinator.
      */
     public @NotNull Combinator choiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+        if (parsers.isEmpty()) return EpsilonCombinator.getDefault();
         if (parsers.size() == 1) return parsers.getFirst();
-        if (parsers.stream().allMatch(p -> p.equals(epsilon))) return EpsilonCombinator.getDefault();
+        return choiceCombinatorDistinct(parsers.stream().distinct().toList());
+    }
+
+    /**
+     * Like {@link CombinatorFactory#choiceCombinator(List)} except the input list is distinct (each rule in the list occurs exactly once). Use this method only if you are sure that the rules are distinct.
+     *
+     * @param parsers The rules.
+     * @return A combinator.
+     * @see #choiceCombinator(List)
+     * @see #alternationCombinator(List)
+     */
+    public @NotNull Combinator choiceCombinatorDistinct(final @NotNull List<@NotNull Combinator> parsers) {
+        if (parsers.isEmpty()) return EpsilonCombinator.getDefault();
+        if (parsers.size() == 1) return parsers.getFirst();
         final @NotNull var result = new ChoiceCombinator(parsers);
         if (!useBuffer) return result;
         assert buffer != null; // Only does something in debug-mode. But I know it's correct.
