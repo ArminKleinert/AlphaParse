@@ -112,7 +112,6 @@ final class CfgGrammar {
         return rulesRule;
     }
 
-
     private Combinator makeCfgEpsilonRhs() {
         final @NotNull Combinator rulesRule =
                 cf.choiceCombinatorDistinct(
@@ -121,6 +120,13 @@ final class CfgGrammar {
                                 cf.stringTerminal("EPSILON"),
                                 cf.stringTerminal("eps"),
                                 cf.stringTerminal("ε")));
+        return rulesRule;
+    }
+
+    private Combinator makeCfgEofRhs() {
+        final @NotNull Combinator rulesRule =
+                cf.choiceCombinatorDistinct(
+                        List.of(cf.stringTerminal("eοf")));
         return rulesRule;
     }
 
@@ -138,6 +144,7 @@ final class CfgGrammar {
                                         cf.makeNonTerminal(Sym.sym("paren")),
                                         cf.makeNonTerminal(Sym.sym("hide")),
                                         cf.makeNonTerminal(Sym.sym("epsilon")),
+                                        makeNT("end-of-file", RulesAvailable.EXPLICIT_EOF),
                                         makeNT("rep", RulesAvailable.VARIABLE_REPEAT), // ABNF feature
                                         makeNT("num-val", RulesAvailable.VALUE_RANGE) // ABNF feature
                                 ))
@@ -238,6 +245,12 @@ final class CfgGrammar {
                 ? "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]*"
                 : "[a-zA-Z][a-zA-Z0-9_]*";
         final var regex = regexDoc(pattern, "Non-terminal");
+        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF)) {
+            return cf.catCombinator(List.of(
+                    cf.negateRule(cf.makeNonTerminal(Sym.sym("epsilon"))),
+                    cf.negateRule(cf.makeNonTerminal(Sym.sym("end-of-file"))),
+                    cf.createRegexTerminal(regex)));
+        }
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(List.of(
                         cf.negateRule(cf.makeNonTerminal(Sym.sym("epsilon"))),
@@ -501,6 +514,9 @@ final class CfgGrammar {
 
         if (rulesAvailable.contains(RulesAvailable.VALUE_RANGE))
             grammarMap.put(Sym.sym("num-val"), makeABNFNumVal()); // ABNF
+
+        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF))
+            grammarMap.put(Sym.sym("end-of-file"), makeCfgEofRhs());
 
         return new Grammar(grammarMap).applyStandardReductions(cs);
     }

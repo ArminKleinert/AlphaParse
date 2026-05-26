@@ -263,6 +263,17 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
             return getUndefinedUsedNTs().isEmpty();
         }
 
+        /**
+         * This method collects all rules contained in the grammar.
+         * <pre>
+         * {@code
+         *   // Pseudocode
+         *   collectRules(S := ('0' | '1')*) == Set['0', '1', ('0'|'1'), ('0'|'1')*]
+         * }
+         * </pre>
+         * @param predicate A predicate which can be used to collect only rules which match it.
+         * @return A collection of all rules contained in the grammar.
+         */
         public @NotNull Collection<Combinator> collectRules(@Nullable Predicate<Combinator> predicate) {
             if (predicate == null) predicate = (it) -> true;
             var result = new LinkedHashSet<Combinator>();

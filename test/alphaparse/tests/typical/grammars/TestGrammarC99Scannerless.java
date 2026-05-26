@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>
  * Grammar and tests from <a href="https://esolangs.org/wiki/Brainfuck#Examples">esolangs.org/wiki/Brainfuck</a>.
  */
-public class TestGrammarC99Scannerless {
+class TestGrammarC99Scannerless {
     private Parser parser() {
         try {
             return Alpha.parser(
@@ -39,8 +39,8 @@ public class TestGrammarC99Scannerless {
     @Test
     void verifySimpleProgram1() throws IOException {
         var text = "int i;";
-        System.out.println(parser().parses(text).stream().map(ParseTree::toString).collect(Collectors.joining("\n")));
-        System.out.println(parser().parses(text).size());
+        //System.out.println(parser().parses(text).stream().map(ParseTree::toString).collect(Collectors.joining("\n")));
+        //System.out.println(parser().parses(text).size());
     }
 }
 

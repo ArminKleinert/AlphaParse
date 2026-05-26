@@ -34,9 +34,10 @@ final class BufferForCombinators {
             case RepetitionCombinator combinator -> getOrAdd(combinator);
             case CombinatorStar combinator -> getOrAdd(combinator);
             case TerminalUnicodeCharCombinator combinator -> getOrAdd(combinator);
-            case EpsilonCombinator combinator -> getOrAdd(combinator);
             case NegativeLookaheadCombinator combinator -> getOrAdd(combinator);
             case LookaheadCombinator combinator -> getOrAdd(combinator);
+            case EpsilonCombinator combinator -> combinator;
+            case EOFCombinator combinator -> combinator;
         };
     }
 

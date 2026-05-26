@@ -7,6 +7,7 @@ import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.Combinator;
+import alphaparse.parsing.EOFCombinator;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parsing.EpsilonCombinator;
 import alphaparse.parsing.Gll;
@@ -111,6 +112,11 @@ final class Cfg {
                     return combinatorFactory.makeNonTerminal(
                             Sym.sym((String) tree.getContent().getFirst().content()));
                 }
+                case "paren" -> {
+                    // The parse tree is wrapped in hidden "(" ")".
+                    tree = (ParseTree) tree.getContent().getFirst().content();
+                    continue; // Open up the grouping and take it to the top.
+                }
                 case "alt" -> {
                     return combinatorFactory.choiceCombinator(tree.getContent()
                             .stream().map((c) -> (Combinator) buildRule(
@@ -188,14 +194,6 @@ final class Cfg {
                         throw new ParserCreationFailure(exception);
                     }
                 }
-                case "epsilon" -> {
-                    return EpsilonCombinator.getDefault();
-                }
-                case "paren" -> {
-                    // The parse tree is wrapped in hidden "(" ")".
-                    tree = (ParseTree) tree.getContent().getFirst().content();
-                    continue; // Open up the grouping and take it to the top.
-                }
                 case "num-val" -> {
                     var content = tree.getContent();
                     var prefix = (String) content.get(0).content(); // "b"/"d"/"x"
@@ -212,6 +210,12 @@ final class Cfg {
                             ? Integer.parseInt((String) content.get(2).content(), radix)
                             : rangeFirst;
                     return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
+                }
+                case "epsilon" -> {
+                    return EpsilonCombinator.getDefault();
+                }
+                case "end-of-file" -> {
+                    return EOFCombinator.getDefault();
                 }
             }
             throw new UnsupportedOperationException(tag);

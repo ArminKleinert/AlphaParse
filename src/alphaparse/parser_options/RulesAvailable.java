@@ -223,7 +223,7 @@ public enum RulesAvailable {
      * WSP    = SP / HTAB                   // Space or horizontal tag
      * }
      * </pre>
-     *
+     * <p>
      * Possible replacements through other rule types: See above.
      */
     ABNF_CORE,
@@ -238,7 +238,12 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements through other rule types: N.A.
      */
-    EXTENDED_IDENTIFIERS;
+    EXTENDED_IDENTIFIERS,
+
+    /**
+     * Explicit EOF (end-of-file) rule. This can be useful in *very* specific circumstances, for example a negative lookahead which contains an EOF.
+     */
+    EXPLICIT_EOF;
 
     /**
      * Rules that appear in EBNF.
