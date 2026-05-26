@@ -128,9 +128,9 @@ public final class Print {
     private static @NotNull String ruleToString(final @NotNull Sym startProd, final @NotNull Combinator parser) {
         final ReductionType red = parser.getReduction();
         if (red.isHiddenOrRaw())
-            return "<" + startProd + '>' + " := " + combinatorToString(parser);
+            return "<" + startProd.name() + '>' + " := " + combinatorToString(parser);
         else
-            return startProd + " := " + combinatorToString(parser);
+            return startProd.name() + " := " + combinatorToString(parser);
     }
 
     /**
@@ -145,8 +145,6 @@ public final class Print {
 
         final @NotNull StringBuilder sb = new StringBuilder(
                 ruleToString(start, Objects.requireNonNull(grammar.getProduction(start))));
-
-        sb.append('\n').append(ruleToString(start, Objects.requireNonNull(grammar.getProduction(start))));
 
         grammar.forEach((nonTerminal, parser) -> {
                     if (!Objects.equals(nonTerminal, start)) {
