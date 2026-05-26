@@ -278,12 +278,6 @@ class AlphaCoreTest {
                 tree,
                 as_and_bs.parse(text)
         );
-
-        ParsingOptions options = ParsingOptions.optMemory();
-        Assertions.assertEquals(
-                tree,
-                as_and_bs.parse(text, options)
-        );
     }
 
     @Test
@@ -303,12 +297,6 @@ class AlphaCoreTest {
         Assertions.assertEquals(
                 tree,
                 as_and_bs_regex.parse(text)
-        );
-
-        ParsingOptions options = ParsingOptions.optMemory();
-        Assertions.assertEquals(
-                tree,
-                as_and_bs_regex.parse(text, options)
         );
     }
 
@@ -338,12 +326,6 @@ class AlphaCoreTest {
                 treeHiccup,
                 Alpha.parse(as_and_bs, text).castToParseSuccess().toRawList()
         );
-
-        var options = ParsingOptions.optMemory();
-        Assertions.assertEquals(
-                treeHiccup,
-                as_and_bs.parse(text, options).castToParseSuccess().toRawList()
-        );
     }
 
     @Test
@@ -357,11 +339,6 @@ class AlphaCoreTest {
         Assertions.assertEquals(
                 res,
                 as_and_bs_variation1.parse(text));
-
-        var options = ParsingOptions.optMemory();
-        Assertions.assertEquals(
-                res,
-                as_and_bs_variation1.parse(text, options));
     }
 
     @Test
@@ -381,14 +358,6 @@ class AlphaCoreTest {
         Assertions.assertEquals(
                 resList,
                 as_and_bs_variation2.parse(text).castToParseSuccess().toRawList());
-
-        var memOpt = ParsingOptions.optMemory();
-        Assertions.assertEquals(
-                res,
-                as_and_bs_variation2.parse(text, memOpt));
-        Assertions.assertEquals(
-                resList,
-                as_and_bs_variation2.parse(text, memOpt).castToParseSuccess().toRawList());
     }
 
     @Test
@@ -401,8 +370,6 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab, text));
 
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab, text, ParsingOptions.optMemory()));
-
         Assertions.assertEquals(Alpha.parse(paren_ab, text), paren_ab.parse(text));
     }
 
@@ -413,9 +380,6 @@ class AlphaCoreTest {
                 ParseTree.create("seq-of-A-or-B", "a", "b", "a"));
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text));
-
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text, ParsingOptions.optMemory()));
-
         Assertions.assertEquals(Alpha.parse(paren_ab_hide_parens, text), paren_ab_hide_parens.parse(text));
     }
 
@@ -425,9 +389,6 @@ class AlphaCoreTest {
         var tree = ParseTree.create("paren-wrapped", "a", "b", "a");
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text));
-
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text, ParsingOptions.optMemory()));
-
         Assertions.assertEquals(Alpha.parse(paren_ab_manually_flattened, text), paren_ab_manually_flattened.parse(text));
     }
 
@@ -437,9 +398,6 @@ class AlphaCoreTest {
         var tree = ParseTree.create("paren-wrapped", "a", "b", "a");
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text));
-
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text, ParsingOptions.optMemory()));
-
         Assertions.assertEquals(Alpha.parse(paren_ab_hide_tag, text), paren_ab_hide_tag.parse(text));
     }
 
@@ -456,7 +414,6 @@ class AlphaCoreTest {
         Assertions.assertEquals(List.of("a", "b", "a"), tree.toRawList());
 
         Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text));
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text, ParsingOptions.optMemory()));
         Assertions.assertEquals(Alpha.parse(paren_ab_hide_both_tags, text), paren_ab_hide_both_tags.parse(text));
     }
 
@@ -496,11 +453,9 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text));
         Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text, ParsingOptions.getDefault()));
-        Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text, ParsingOptions.optMemory()));
 
         Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text));
         Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text, ParsingOptions.getDefault()));
-        Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -514,11 +469,9 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text));
         Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text, ParsingOptions.getDefault()));
-        Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text, ParsingOptions.optMemory()));
 
         Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text));
         Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text, ParsingOptions.getDefault()));
-        Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -527,7 +480,6 @@ class AlphaCoreTest {
         var tree = ParseTree.create("S", "a", "b", "a", "a", "a", "a", "b");
         Assertions.assertEquals(tree, lookahead_example.parse(text));
         Assertions.assertEquals(tree, lookahead_example.parse(text, ParsingOptions.getDefault()));
-        Assertions.assertEquals(tree, lookahead_example.parse(text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -536,10 +488,6 @@ class AlphaCoreTest {
 
         Assertions.assertFalse(lookahead_example.parse(text).isSuccess());
         Assertions.assertTrue(lookahead_example.parse(text).isFailure());
-
-        Assertions.assertEquals(
-                lookahead_example.parse(text),
-                lookahead_example.parse(text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -548,10 +496,6 @@ class AlphaCoreTest {
         var tree = ParseTree.create("S", "b", "b", "a", "a", "a", "a", "b");
 
         Assertions.assertEquals(tree, negative_lookahead_example.parse(text));
-
-        Assertions.assertEquals(
-                tree,
-                negative_lookahead_example.parse(text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -560,10 +504,6 @@ class AlphaCoreTest {
 
         Assertions.assertFalse(negative_lookahead_example.parse(text).isSuccess());
         Assertions.assertTrue(negative_lookahead_example.parse(text).isFailure());
-
-        Assertions.assertEquals(
-                negative_lookahead_example.parse(text),
-                negative_lookahead_example.parse(text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -660,7 +600,6 @@ class AlphaCoreTest {
                 ParseTree.create("word", "d", "e", "f"));
 
         Assertions.assertEquals(tree, Alpha.parse(words_and_numbers_one_character_at_a_time, text));
-        Assertions.assertEquals(tree, Alpha.parse(words_and_numbers_one_character_at_a_time, text, ParsingOptions.optMemory()));
     }
 
     @Test
@@ -681,7 +620,6 @@ class AlphaCoreTest {
         );
 
         Assertions.assertEquals(tree, Alpha.parse(arithmetic, text));
-        Assertions.assertEquals(tree, Alpha.parse(arithmetic, text, ParsingOptions.optMemory()));
     }
 
     /*
@@ -706,17 +644,11 @@ class AlphaCoreTest {
     @Test
     void testFail() {
         Assertions.assertEquals(
-                ParseTree.create("S", "a")
-                , Alpha.parser("S := A\n<A> := 'a'").parse("a"));
-        Assertions.assertEquals(
-                ParseTree.create("S", "a")
-                , Alpha.parser("S := A\n<A> := 'a'").parse("a", ParsingOptions.optMemory()));
+                ParseTree.create("S", "a"),
+                Alpha.parser("S := A\n<A> := 'a'").parse("a"));
         Assertions.assertEquals(
                 ParseTree.create("S", ParseTree.create("A")),
                 Alpha.parser("S := A\nA := <'a'>").parse("a"));
-        Assertions.assertEquals(
-                ParseTree.create("S", ParseTree.create("A")),
-                Alpha.parser("S := A\nA := <'a'>").parse("a", ParsingOptions.optMemory()));
     }
 
     @Test
@@ -725,7 +657,6 @@ class AlphaCoreTest {
         var tree = ParseTree.create("S");
 
         Assertions.assertEquals(tree, parser.parse(""));
-        Assertions.assertEquals(tree, parser.parse("", ParsingOptions.optMemory()));
     }
 
     @Test
@@ -740,7 +671,6 @@ class AlphaCoreTest {
                 ParseTree.create("c", "c"));
 
         Assertions.assertEquals(tree, parser.parse("bc"));
-        Assertions.assertEquals(tree, parser.parse("bc", ParsingOptions.optMemory()));
     }
 
     @Test
@@ -919,7 +849,6 @@ class AlphaCoreTest {
             var tree = ParseTree.create("S", text);
 
             Assertions.assertEquals(tree, p.parse(text));
-            Assertions.assertEquals(tree, p.parse(text, ParsingOptions.optMemory()));
         }
         {
             final @NotNull Parser p = Alpha.parser("S := #'a+'");
@@ -927,7 +856,6 @@ class AlphaCoreTest {
             var tree = ParseTree.create("S", text);
 
             Assertions.assertEquals(tree, p.parse(text));
-            Assertions.assertEquals(tree, p.parse(text, ParsingOptions.optMemory()));
         }
     }
 

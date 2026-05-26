@@ -74,7 +74,7 @@ final class Main {
         /**/
         {
             final @NotNull var p = Alpha.parser("S := 'ABC'");
-            println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.CONTENT, true, false, false)));
+            println(Alpha.parses(p, "ABD", new ParsingOptions(null, false, UnhideOptions.CONTENT, true, false)));
             println(Alpha.parsesOrFailure(p, "ABD", ParsingOptions.getDefault()).castToParsesFailure().asFailure().contentsToString());
             println(Alpha.parse(p, "ABD", ParsingOptions.getDefault()).castToParseFailure().contentsToString());
             println(Alpha.parses(p, "ABD"));
@@ -111,24 +111,6 @@ final class Main {
             println();
         }
 
-        /**/
-        {
-            final @NotNull var p = Alpha.parser("S := #'\\d'+");
-            println(Alpha.parse(p, "11", ParsingOptions.optMemory()));
-            println(((AlphaParseFailure) Alpha.parse(p, "a1", ParsingOptions.optMemory())).contentsToString());
-            println(((AlphaParseFailure) Alpha.parse(p, "a", ParsingOptions.optMemory())).contentsToString());
-            println();
-        }
-
-        /**/
-        {
-            final @NotNull var p = Alpha.parser("S := #'\\d'*");
-            println(Alpha.parse(p, "11", ParsingOptions.optMemory()));
-            println(((AlphaParseFailure) Alpha.parse(p, "a1", ParsingOptions.optMemory())).contentsToString());
-            println(((AlphaParseFailure) Alpha.parse(p, "a", ParsingOptions.optMemory())).contentsToString());
-            println();
-        }
-
 //        /**/
 //        {
 //            final @NotNull var p = Alpha.parser("S := 1*3 #'\\d'");
@@ -158,9 +140,9 @@ final class Main {
             final @NotNull var p = Alpha.parser(grammar);
 
             println(Alpha.parses(p, text));
-            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.NONE, true, false, false)));
-            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false)));
-            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.NONE, true, false, false);
+            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.NONE, true, false)));
+            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false,  false)));
+            final @NotNull var commonParseOpts = new ParsingOptions(null, true, UnhideOptions.NONE, true, false);
             println(Alpha.parses(p, "c", commonParseOpts));
             println(Alpha.parses(p, "c", commonParseOpts).getFirst().getClass());
             println(Alpha.parse(p, "c", commonParseOpts));
@@ -172,9 +154,9 @@ final class Main {
 
             @NotNull var p = Alpha.parser("S := '1' | '11' | '111' | '1111'", ParserCreationOptions.newWithStandardWhitespace());
             println(
-                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false))
+                    Alpha.parses(p, "11", new ParsingOptions(null, true, UnhideOptions.NONE, false,  false))
                             + " // Expect: [[:S, 11], [:S, 1]]");
-            println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false))
+            println(Alpha.parses(p, "11111", new ParsingOptions(null, true, UnhideOptions.NONE, false,  false))
                     + " // Expect: [[:S, 1111], [:S, 111], [:S, 11], [:S, 1]]");
 
             p = Alpha.parser("S := #'\\d\\d[\\d]?'", ParserCreationOptions.newWithStandardWhitespace());
@@ -277,9 +259,9 @@ final class Main {
                     parses.castToParsesSuccess().toRawList(),
                     expected));
             println(parses + " // Expected: " + expected);
-            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.NONE, true, false, false)) + " // Expected: " + expected);
-            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false)));
-            println(Alpha.parses(p, text, ParsingOptions.optMemory()) + " // Expected: " + expected);
+            println(Alpha.parses(p, text, new ParsingOptions(null, false, UnhideOptions.NONE, true,  false)) + " // Expected: " + expected);
+            println(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false)));
+            println(Alpha.parses(p, text) + " // Expected: " + expected);
         }
 
         /**/

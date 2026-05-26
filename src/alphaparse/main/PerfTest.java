@@ -91,7 +91,7 @@ Original:    {:lowest 3.238, :highest 6.909, :diff 3.671, :average 3.308, :mid 3
         TimeUtil.measureTimeMillis(20,
                 () -> Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace()));
         TimeUtil.measureTimeMillis(2000,
-                () -> Alpha.parse(p, text, ParsingOptions.optMemory()));
+                () -> Alpha.parse(p, text));
 
         println("\n----------------------------------\n--- Standard performance tests ---\n----------------------------------");
         println("Make parser: " + TimeUtil.measureTimeMillis(2 * testNumMultiplierForSlowTests,
@@ -147,62 +147,6 @@ Original:    {:lowest 3.238, :highest 6.909, :diff 3.671, :average 3.308, :mid 3
         println("Original:    -");
 
         println("Count of parses: " + Alpha.parses(p, text).size());
-
-        println("\n----------------------------------\n---   Memory optimized tests   ---\n----------------------------------");
-        println("First parse: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> Alpha.parse(p, text, ParsingOptions.optMemory())));
-        println("Std prev:    {:lowest 1.382, :highest 6.293, :diff 4.911, :average 1.520, :mid 1.443, :median 1.459, :total 30397.866}");
-        println("Previous:    -");
-        println("Original:    {:lowest 3.243, :highest 6.779, :diff 3.537, :average 3.300, :mid 3.284, :median 3.284, :sum 65992.776} // n=20000");
-
-        println("---");
-        println("All parses:  " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> Alpha.parses(p, text, ParsingOptions.optMemory())));
-        println("Std prev:    {:lowest 0.000, :highest 0.045, :diff 0.045, :average 0.001, :mid 0.001, :median 0.001, :total 15.080}");
-        println("Previous:    -");
-        println("Original:    {:lowest 3.238, :highest 6.909, :diff 3.671, :average 3.308, :mid 3.291, :median 3.291, :sum 66157.123} // n=20000");
-
-        println("---");
-        println("List parses: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                () -> new ArrayList<>(Alpha.parses(p, text, ParsingOptions.optMemory()))));
-        println("Std prev:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}");
-        println("Previous:    -");
-        println("Original:    {:lowest 37.350, :highest 50.681, :diff 13.331, :average 38.118, :mid 37.937, :median 37.938, :sum 762350.525} // n=20000");
-
-//        println("---");
-//        println("List parses: " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-//                () -> new UnmodList<>(Alpha.parses(p, text, ParsingOptions.optMemory()))));
-//        println("Std prev:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}");
-//        println("Previous:    -");
-//        println("Original:    {:lowest 37.350, :highest 50.681, :diff 13.331, :average 38.118, :mid 37.937, :median 37.938, :sum 762350.525} // n=20000");
-
-        println("---");
-        println("Iteration:   " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                () -> {
-                    for (var ignored : Alpha.parses(p, text, ParsingOptions.optMemory())) ;
-                }));
-        println("Std prev:    {:lowest 12.501, :highest 22.928, :diff 10.427, :average 13.509, :mid 12.809, :median 12.909, :total 27017.503}");
-        println("Previous:    -");
-        println("Original:    {:lowest 37.219, :highest 46.091, :diff 8.872, :average 38.005, :mid 37.828, :median 37.831, :sum 760101.547} // n=20000");
-
-        println("---");
-        println("ArrayList:   " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                () -> {
-                    var l = new ArrayList<ParseTree>(8192);
-                    l.addAll(Alpha.parses(p, text, ParsingOptions.optMemory()));
-                }));
-        println("Std prev:    {:lowest 12.480, :highest 26.343, :diff 13.862, :average 13.395, :mid 12.804, :median 12.850, :total 26790.117}");
-        println("Previous:    -");
-        println("Original:    {:lowest 37.305, :highest 47.066, :diff 9.761, :average 38.076, :mid 37.894, :median 37.898, :sum 761521.718} // n=20000");
-
-        println("---");
-        println("Cnt parses:  " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                () -> Alpha.parses(p, text, ParsingOptions.optMemory()).size()));
-        println("Std prev:    {:lowest 12.539, :highest 23.903, :diff 11.364, :average 13.446, :mid 12.850, :median 12.895, :total 26892.826}");
-        println("Previous:    -");
-        println("Original:    {:lowest 37.236, :highest 47.796, :diff 10.560, :average 38.009, :mid 37.836, :median 37.835, :sum 760184.764} // n=20000");
-
-        println("Count of parses: " + Alpha.parses(p, text, ParsingOptions.optMemory()).size());
     }
 
 

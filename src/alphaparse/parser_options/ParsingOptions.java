@@ -18,20 +18,17 @@ import java.util.Objects;
  * @param usePartial              Whether to return partial (incomplete) parses.
  * @param unhide                  What (if anything) to "unhide" in the results.
  * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
- * @param optimizeMemory          Whether to attempt using more memory-efficient algorithms for parsing.
  * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link TerminalRegexpCombinator#parse}.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE
  * @see ParsingOptions#DEFAULT_TOTAL
- * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
  */
 public record ParsingOptions(
         @Nullable Sym start,
         boolean usePartial,
         @NotNull UnhideOptions unhide,
         boolean embedFailureInParseTree,
-        boolean optimizeMemory,
         boolean iterativeDeepening
 ) {
     /**
@@ -51,37 +48,23 @@ public record ParsingOptions(
      */
     public static final boolean DEFAULT_TOTAL = false;
     /**
-     * By default, use the normal parse algorithm, not the more memory-efficient one. ({@code false})
-     */
-    public static final boolean DEFAULT_OPTIMIZE_MEMORY = false;
-    /**
 * By default, do not iteratively deepen search when parsing with a regex. ({@code false})<br/>
      * The reason is that it is much slower to do.
      */
     public static final boolean DEFAULT_ITERATIVE_DEEPENING = false;
 
     /**
-     * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean, boolean)} with the static defaults.
+     * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
      *
      * @return An instance of this class, using all the static DEFAULT_* values.
      * @see ParsingOptions#DEFAULT_START
      * @see ParsingOptions#DEFAULT_PARTIAL
      * @see ParsingOptions#DEFAULT_UNHIDE
      * @see ParsingOptions#DEFAULT_TOTAL
-     * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
      * @see ParsingOptions#DEFAULT_ITERATIVE_DEEPENING
      */
     public static @NotNull ParsingOptions getDefault() {
-        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_OPTIMIZE_MEMORY, DEFAULT_ITERATIVE_DEEPENING);
-    }
-
-    /**
-     * An instance of this class with the {@link ParsingOptions#optimizeMemory} set to true.
-     *
-     * @return An instance of this class with the {@link ParsingOptions#optimizeMemory} set to true.
-     */
-    public static @NotNull ParsingOptions optMemory() {
-        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, true, DEFAULT_ITERATIVE_DEEPENING);
+        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_ITERATIVE_DEEPENING);
     }
 
     /**
@@ -209,18 +192,6 @@ public record ParsingOptions(
     }
 
     /**
-     * Whether to use a more memory efficient algorithm. Attention: This option has no influence on methods that return a parse forest.
-     *
-     * @return true or false.
-     * @see ParsingOptions#DEFAULT_OPTIMIZE_MEMORY
-     * @see ParsingOptions#getDefault()
-     * @see ParsingOptions#optMemory()
-     */
-    public boolean optimizeMemory() {
-        return optimizeMemory;
-    }
-
-    /**
      * Sets the start production explicitly.
      *
      * @param start The new start production.
@@ -231,7 +202,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
         if (Objects.equals(this.start, start)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
     }
 
     /**
@@ -243,7 +214,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withPartial(final boolean usePartial) {
         if (Objects.equals(this.usePartial, usePartial)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
     }
 
     /**
@@ -255,7 +226,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withUnhide(final @NotNull UnhideOptions unhide) {
         if (Objects.equals(this.unhide, unhide)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
     }
 
     /**
@@ -267,19 +238,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withEmbedFailureInParseTree(final boolean embedFailureInParseTree) {
         if (Objects.equals(this.embedFailureInParseTree, embedFailureInParseTree)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
-    }
-
-    /**
-     * Creates a new instance with the {@link #optimizeMemory()} option set to the parameter.
-     *
-     * @param optimizeMemory The new (or old) setting.
-     * @return A new instance.
-     * @see #optimizeMemory()
-     */
-    public @NotNull ParsingOptions withOptimizeMemory(final boolean optimizeMemory) {
-        if (Objects.equals(this.optimizeMemory, optimizeMemory)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
     }
 
     /**
@@ -291,6 +250,6 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withIterativeDeepening(final boolean iterativeDeepening) {
         if (Objects.equals(this.iterativeDeepening, iterativeDeepening)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, optimizeMemory, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
     }
 }

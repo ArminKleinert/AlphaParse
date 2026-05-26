@@ -69,7 +69,6 @@ public final class Alpha {
      * <p>
      * The options apply as follows:
      * <ul>
-     *     <li>{@link ParsingOptions#optimizeMemory()}: Try to use a different algorithm for parsing.</li>
      *     <li>{@link ParsingOptions#isTotal()}: Return a {@link ParseTree} on failure, with the information included in the tree.</li>
      *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
@@ -93,13 +92,6 @@ public final class Alpha {
         if (options.isTotal()) {
             parsingResult = AlphaParseResult.make(
                     Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
-        } else if (options.optimizeMemory()) {
-            @NotNull var result =
-                    MemoryOptimizedRepeatingParseStrategy.tryRepeatingParseStrategy(
-                            parser, text, startProduction);
-            if (result instanceof AlphaParseFailure)
-                result = Gll.parse(parser.grammar(), startProduction, text, false, options.iterativeDeepening());
-            parsingResult = AlphaParseResult.make(result);
         } else {
             parsingResult = AlphaParseResult.make(
                     Gll.parse(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));

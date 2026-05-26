@@ -94,20 +94,6 @@ class AlphaTest {
     }
 
     @Test
-    void testOptimizeMemoryDoesNotChangeOutput() {
-        var p = Alpha.parser("S := 'u' (('a'+ | #'b*') / C)\n<C> := 'c'+");
-        var opt = ParsingOptions.getDefault().withOptimizeMemory(true);
-
-        Assertions.assertTrue(p.parse("", opt).isFailure());
-        Assertions.assertEquals(p.parse(""), p.parse("", opt));
-
-        Assertions.assertEquals(p.parse("u"), p.parse("u", opt));
-        Assertions.assertEquals(p.parse("ua"), p.parse("ua", opt));
-        Assertions.assertEquals(p.parse("ucc"), p.parse("ucc", opt));
-        Assertions.assertEquals(p.parse("ucccc"), p.parse("ucccc", opt));
-    }
-
-    @Test
     void testParserCreationNewWithStandardWhitespace() {
         var p = Alpha.parser(
                 "S := ('a' | 'b')*",
@@ -501,7 +487,7 @@ class AlphaTest {
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
-            final @NotNull var ps = Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false));
+            final @NotNull var ps = Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false));
             final @NotNull var possibleParses = partialParsesOrderedR123();
             Assertions.assertEquals(possibleParses, ps);
         }
@@ -514,7 +500,7 @@ class AlphaTest {
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
-            final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false, false)));
+            final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false)));
             final @NotNull var possibleParses = new HashSet<>(partialParsesOrderedR123());
             Assertions.assertEquals(possibleParses, ps);
         }
