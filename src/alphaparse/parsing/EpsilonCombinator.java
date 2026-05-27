@@ -1,5 +1,6 @@
 package alphaparse.parsing;
 
+import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,9 @@ import java.util.Objects;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * This class represents the empty parse epsilon. It can be written in the following ways: "Epsilon", "epsilon", "EPSILON", "eps", "ε"
+ * This class represents the empty parse epsilon. It can typically be written in the following ways: "ε"
+ * <br/>
+ * Which specific formats are valid can be dictated by using {@link ParserCreationOptions#epsilonNames()} appropriately. See also: {@link ParserCreationOptions#defaultEpsilonNames()}
  * <br/>
  * When parsing, the process depends on whether a full parse is being done (matching to the end of the input):
  * If yes, success if the end of input has been reached, fail otherwise. If no, always success.

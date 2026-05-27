@@ -1,103 +1,102 @@
 package alphaparse.tests.typical.rules_available;
 
-import alphaparse.Alpha;
-import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 class RulesAvailableEbnfTest {
-    private @NotNull ParserCreationOptions opts() {
-        return ParserCreationOptions.getDefault().withRulesAvailable(RulesAvailable.ebnfRules());
+    /**
+     * @see ParserCreationOptions#ebnf()
+     * @see RulesAvailable#ebnfRules()
+     */
+    private final ParserCreationOptions opts = ParserCreationOptions.ebnf();
+
+    /* Section: The actual tests. */
+
+    @Test
+    void abnfCore() {
+        RulesAvailableGeneralizedTests.abnfCore(opts, false);
     }
 
     @Test
     void alternation() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := \"a\" | \"b\"", opts()));
+        RulesAvailableGeneralizedTests.alternation(opts, true);
     }
 
     @Test
     void epsilon() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := ε", opts()));
+        RulesAvailableGeneralizedTests.epsilon(opts, Set.of("ε"));
     }
 
     @Test
     void explicitStringCaseSensitivity() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := %i\"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := %s\"a\"", opts()));
+        RulesAvailableGeneralizedTests.explicitStringCaseSensitivity(opts, false);
     }
 
     @Test
     void extendedIdentifiers() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("\uD83C\uDF81 = \"a\"", opts()));
+        RulesAvailableGeneralizedTests.extendedIdentifiers(opts, false);
     }
 
     @Test
     void lookahead() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := &\"a\" \"a\"", opts()));
+        RulesAvailableGeneralizedTests.lookahead(opts, true);
     }
 
     @Test
     void negativeLookahead() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := !\"b\" \"a\"", opts()));
+        RulesAvailableGeneralizedTests.negativeLookahead(opts, true);
     }
 
     @Test
     void optional() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := [\"a\"]", opts()));
+        RulesAvailableGeneralizedTests.optional(opts, true);
     }
 
     @Test
     void optionalQuery() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := \"a\"?", opts()));
+        RulesAvailableGeneralizedTests.optionalQuery(opts, true);
     }
 
     @Test
     void optionalRepetition() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := {\"a\"}", opts()));
+        RulesAvailableGeneralizedTests.optionalRepetition(opts, true);
     }
 
     @Test
     void optionalRepetitionStar() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := \"a\"?", opts()));
+        RulesAvailableGeneralizedTests.optionalRepetitionStar(opts, true);
     }
 
     @Test
     void orderedChoice() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := \"a\" / \"b\"", opts()));
+        RulesAvailableGeneralizedTests.orderedChoice(opts, false);
     }
 
     @Test
     void plus() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := \"a\"+", opts()));
+        RulesAvailableGeneralizedTests.plus(opts, true);
     }
 
     @Test
     void regex() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := #\"a\"", opts()));
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := #'a'", opts()));
+        RulesAvailableGeneralizedTests.regex(opts, true);
     }
 
     @Test
     void singleQuotesForStringTerminals() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := 'abc'", opts()));
+        RulesAvailableGeneralizedTests.singleQuotesForStringTerminals(opts, true);
     }
 
     @Test
     void valueRange() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := %x41-5a", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := %d65-90", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := %b1000001-1011010", opts()));
+        RulesAvailableGeneralizedTests.valueRange(opts, false);
     }
 
     @Test
     void variableRepetition() {
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := 1*5 \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := 1* \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := *5 \"a\"", opts()));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := * \"a\"", opts()));
+        RulesAvailableGeneralizedTests.variableRepetition(opts, false);
     }
 }

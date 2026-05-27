@@ -4,7 +4,6 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser.Parser;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -26,6 +25,8 @@ import java.util.stream.Stream;
  * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
  * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
  * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
+ * @param ruleDefinitionOps     A collection of possible "definition operators" for rules.
+ * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}.
  */
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable Sym startProduction,
@@ -34,20 +35,30 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable RedefinitionOption redefinitionOption,
                                     @NotNull Set<RulesAvailable> usableRules,
                                     boolean checkCorrectness,
-                                    @NotNull Collection<String> ruleDefinitionOps,
-                                    @NotNull Collection<String> epsilonNames) {
+                                    @NotNull Collection<@NotNull String> ruleDefinitionOps,
+                                    @NotNull Collection<@NotNull String> epsilonNames) {
     private static final boolean defaultUseParserBuffering = true;
     private static final boolean defaultCheckCorrectness = true;
 
+    /**
+     * Default for {@link ParserCreationOptions#ruleDefinitionOps()}.
+     * Value (might not be up to date): {@code List.of(":=", "::=", "=", ":")}
+     *
+     * @return List of strings.
+     */
     public static @NotNull @Unmodifiable List<String> defaultRuleDefinitionOps() {
         return List.of(":=", "::=", "=", ":");
     }
 
+    /**
+     * Default for {@link ParserCreationOptions#epsilonNames()}.
+     * Value (might not be up to date): {@code List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε")}
+     *
+     * @return List of strings.
+     */
     public static @NotNull @Unmodifiable List<String> defaultEpsilonNames() {
         return List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε");
     }
-
-    private static ParserCreationOptions DEFAULT;
 
     /**
      * Constructor.
@@ -59,8 +70,8 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
      * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
-     * @param ruleDefinitionOps     A collection of possible "definition operators" for rules. Example: {@code List.of(":=", "::=", "=", ":")}
-     * @param epsilonNames          A collection of possible epsilon names. Example: {@code List.of("epsilon", "ε")}
+     * @param ruleDefinitionOps     A collection of possible "definition operators" for rules. If null, use {@link #defaultRuleDefinitionOps()}. Example: {@code List.of(":=", "::=", "=", ":")}
+     * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}. Example: {@code List.of("epsilon", "ε")}
      */
     public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                  final @Nullable Sym startProduction,
@@ -275,22 +286,28 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
-     * The default settings.
+     * The default settings. Equivalent to {@link ParserCreationOptions#ParserCreationOptions(Parser, Sym, GlobalCaseInsensitivity, boolean, RedefinitionOption, Set, boolean, Collection, Collection)} with using {@code null} or whichever defaults this class provides.
      *
      * @return default settings.
      */
     public static @NotNull ParserCreationOptions getDefault() {
-        if (DEFAULT == null) {
-            DEFAULT = new ParserCreationOptions(
-                    null, null, null,
-                    defaultUseParserBuffering, null, null,
-                    defaultCheckCorrectness, null, null);
-        }
-        return DEFAULT;
+        return new ParserCreationOptions(
+                null, null, null,
+                defaultUseParserBuffering, null, null,
+                defaultCheckCorrectness, null, null);
     }
 
     /**
      * ABNF settings: Strings are case-insensitive, redefinition of productions with {@code =/} creates a choice rule. For available rules, see {@link RulesAvailable#abnfRules()}.
+     * <p>
+     * Characteristics:
+     * <ul>
+     *     <li>Rules available: {@link RulesAvailable#abnfRules()}</li>
+     *     <li>Rule definition operators: {@code "=", "=/"}</li>
+     *     <li>Case insensitivity: {@code true}</li>
+     *     <li>Redefinition option: {@link RedefinitionOption#CHOICE}</li>
+     *     <li>Epsilon equivalents: {@code "ε"}</li>
+     * </ul>
      *
      * @return Options for ABNF parsers.
      */
@@ -299,13 +316,22 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 null, null, GlobalCaseInsensitivity.TRUE,
                 defaultUseParserBuffering, RedefinitionOption.CHOICE, RulesAvailable.abnfRules(),
                 defaultCheckCorrectness,
-                List.of("=/", "="),
+                List.of("=/", "=", ":="),
                 List.of("ε")
         );
     }
 
     /**
      * EBNF settings: Strings are case-sensitive. For available rules, see {@link RulesAvailable#ebnfRules()}.
+     * <p>
+     * Characteristics:
+     * <ul>
+     *     <li>Rules available: {@link RulesAvailable#ebnfRules()}</li>
+     *     <li>Rule definition operators: {@code "=", "::=", "=", ":"}</li>
+     *     <li>Case insensitivity: {@code false}</li>
+     *     <li>Redefinition option: {@link RedefinitionOption#defaultOption}</li>
+     *     <li>Epsilon equivalents: {@code "ε"}</li>
+     * </ul>
      *
      * @return Options for EBNF parsers.
      */
@@ -321,6 +347,14 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
 
     /**
      * EBNF settings without addons: Strings are case-sensitive. For available rules, see {@link RulesAvailable#pureEbnfRules()}.
+     * Characteristics:
+     * <ul>
+     *     <li>Rules available: {@link RulesAvailable#pureEbnfRules()}</li>
+     *     <li>Rule definition operators: {@code "="}</li>
+     *     <li>Case insensitivity: {@code false}</li>
+     *     <li>Redefinition option: {@link RedefinitionOption#defaultOption}</li>
+     *     <li>Epsilon equivalents: {@code "ε"}</li>
+     * </ul>
      *
      * @return Options for EBNF parsers.
      */

@@ -7,6 +7,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * This class should almost never be used, but can have its uses occasionally.
+ * <p>
+ * Format: {@code "eοf"} (Careful: That is not the same as {@code "eof"})
+ */
 public final class EOFCombinator extends CombinatorTerminal {
     private static final @NotNull EOFCombinator eof = new EOFCombinator();
 

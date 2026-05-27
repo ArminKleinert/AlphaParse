@@ -202,6 +202,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
 
     /**
      * Holds some information about a grammar.
+     * @param grammar The grammar.
      */
     public record GrammarInfo(@NotNull Grammar grammar) {
         /**

@@ -75,17 +75,6 @@ public enum RulesAvailable {
     OPTIONAL_REPETITION_STAR,
 
     /**
-     * Empty or "end of input" rule. This rule can be inferred by AlphaParse and is thus optional.
-     * For formats, see {@link EpsilonCombinator}.
-     * <p>
-     * Possible replacements through other rule types:
-     * Epsilon can be replaced by an empty String terminal.
-     *
-     * @see EpsilonCombinator
-     */
-    EPSILON,
-
-    /**
      * "Lookahead" or "expect" rule.
      * <p>
      * Notation: {@code &look rule}.
@@ -249,7 +238,6 @@ public enum RulesAvailable {
      * Rules that appear in EBNF.
      * <p>
      * {@link RulesAvailable#ALTERNATION},
-     * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#OPTIONAL},
      * {@link RulesAvailable#OPTIONAL_REPETITION},
      * {@link RulesAvailable#REGEX},
@@ -261,7 +249,6 @@ public enum RulesAvailable {
     public static @NotNull Set<RulesAvailable> pureEbnfRules() {
         return Set.of(
                 ALTERNATION,
-                EPSILON,
                 OPTIONAL,
                 OPTIONAL_REPETITION,
                 REGEX,
@@ -272,7 +259,6 @@ public enum RulesAvailable {
      * Rules that appear in EBNF.
      * <p>
      * {@link RulesAvailable#ALTERNATION},
-     * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#LOOKAHEAD},
      * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
      * {@link RulesAvailable#OPTIONAL},
@@ -289,7 +275,6 @@ public enum RulesAvailable {
     public static @NotNull Set<RulesAvailable> ebnfRules() {
         return Set.of(
                 ALTERNATION,
-                EPSILON,
                 LOOKAHEAD,
                 NEGATIVE_LOOKAHEAD,
                 OPTIONAL,
@@ -331,7 +316,6 @@ public enum RulesAvailable {
      * <p>
      * {@link RulesAvailable#ALTERNATION},
      * {@link RulesAvailable#VALUE_RANGE},
-     * {@link RulesAvailable#EPSILON},
      * {@link RulesAvailable#EXTENDED_IDENTIFIERS},
      * {@link RulesAvailable#LOOKAHEAD},
      * {@link RulesAvailable#NEGATIVE_LOOKAHEAD},
@@ -353,7 +337,6 @@ public enum RulesAvailable {
         return Set.of(
                 ALTERNATION,
                 VALUE_RANGE,
-                EPSILON,
                 EXTENDED_IDENTIFIERS,
                 LOOKAHEAD,
                 NEGATIVE_LOOKAHEAD,
