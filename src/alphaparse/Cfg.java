@@ -218,11 +218,8 @@ final class Cfg {
                     return EpsilonCombinator.getDefault();
                 }
                 case "exclude" -> {
-                    System.out.println(tree);
-                    var rule1 =
-                            (Combinator) buildRule((ParseTree) tree.getContent().get(0).content());
-                    var rule2 =
-                            (Combinator) buildRule((ParseTree) tree.getContent().get(1).content());
+                    var rule1 = (Combinator) buildRule((ParseTree) tree.getContent().get(0).content());
+                    var rule2 = (Combinator) buildRule((ParseTree) tree.getContent().get(1).content());
                     return combinatorFactory.exclusionCombinator(rule1, rule2);
                 }
             }

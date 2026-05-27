@@ -1,10 +1,16 @@
 package alphaparse.parsing;
 
-import alphaparse.functions.Listener;
+import alphaparse.Sym;
+import alphaparse.grammar.Grammar;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
+import alphaparse.result.AlphaParseResult;
+import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Random;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -15,12 +21,12 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * <p>
  * Example
  * <pre>
- *{@code
+ * {@code
  *         // Accepts the language {"a", "b", "ab"}
  *         var p = Alpha.parser("S := #'[0-9]+' - '11'"); // Any positive number except 11.
  *         println(p.parse("12"));  // [:S, 12]
  *         println(p.parse("11"));  // Failure
- *}
+ * }
  * </pre>
  * See also: <a href="https://www.iso.org/standard/26153.html">ISO/IEC 14977:1996</a> and <a href="https://stackoverflow.com/a/35138946">an explanation on StackOverflow</a>.
  */
@@ -36,69 +42,87 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
         this.parserExcluded = parserExcluded;
     }
 
-    private ExclusionCombinator(final @NotNull List<Combinator> parsers,
-                                    final boolean hide,
-                                    final @NotNull ReductionType red) {
-        this(hide, red, parsers.get(0), parsers.get(1));
-    }
-
     /**
      * Standard constructor. Represents {@code (parserExpected - parserExcluded)}.
+     *
      * @param parserExpected The rule that must be matched.
      * @param parserExcluded The rule that must not be matched.
      */
     public ExclusionCombinator(final @NotNull Combinator parserExpected,
-                                    final @NotNull Combinator parserExcluded) {
+                               final @NotNull Combinator parserExcluded) {
         this(defaultHidden, ReductionType.standardInitialReduction(), parserExpected, parserExcluded);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull TrampolineListenerKey nodeKeyForComb1 =
-                new TrampolineListenerKey(index, parserExpected);
-        final @NotNull TrampolineListenerKey nodeKeyForComb2 =
-                new TrampolineListenerKey(index, parserExcluded);
-        final @NotNull Listener listener =
-                runner.nodeListener(new TrampolineListenerKey(index, this));
-        runner.pushListener(nodeKeyForComb1, listener);
-        runner.pushNegativeListener(nodeKeyForComb1, () -> runner.pushListener(nodeKeyForComb2, listener));
+        final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForExpect = new TrampolineListenerKey(index, parserExpected);
+
+        runner.pushListener(
+                nodeKeyForExpect,
+                expectedSuccess -> {
+                    var substring = runner.tramp().getText().substring(index, expectedSuccess.index());
+
+                    if (reparsePart(substring, runner).isSuccess()) {
+                        runner.fail(nodeKeyForThis, index, ParseFailureReason.ofExclusion(this, false));
+                        return;
+                    }
+
+                    runner.pushSuccessAgainWithNewKey(nodeKeyForThis, expectedSuccess);
+                });
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull TrampolineListenerKey nodeKeyForComb1 =
-                new TrampolineListenerKey(index, parserExpected);
-        final @NotNull TrampolineListenerKey nodeKeyForComb2 =
-                new TrampolineListenerKey(index, parserExcluded);
-        final @NotNull Listener listener =
-                runner.nodeListener(new TrampolineListenerKey(index, this));
-        runner.pushFullListener(nodeKeyForComb1, listener);
-        runner.pushNegativeListener(nodeKeyForComb1, () -> runner.pushFullListener(nodeKeyForComb2, listener));
+        final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForExpect = new TrampolineListenerKey(index, parserExpected);
+
+        runner.pushListener(
+                nodeKeyForExpect,
+                expectedSuccess -> {
+                    var substring = runner.tramp().getText().substring(index, expectedSuccess.index());
+
+                    if (reparsePart(substring, runner).isSuccess()) {
+                        runner.fail(nodeKeyForThis, index, ParseFailureReason.ofExclusion(this, true));
+                        return;
+                    }
+
+                    runner.pushSuccessAgainWithNewKey(nodeKeyForThis, expectedSuccess);
+                });
     }
 
-//    private @NotNull Listener exclusionListener(final @NotNull RepetitionCombinator notParser,
-//                                          final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-//                                          final @NotNull Gll runner) {
-//        return result -> {
-//            final @Nullable Object parsedResult = result.getResult();
-//            final int continueIndex = result.index();
-//
-//            final @NotNull FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
-//                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
-//                    : resultsSoFar.append(parsedResult);
-//
-//            final int newNResultsSoFar = nResultsSoFar + 1;
-//
-//            if (Integer.max(parser.getMin(), 0) <= newNResultsSoFar && newNResultsSoFar <= parser.getMax())
-//                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
-//
-//            if (newNResultsSoFar < parser.getMax())
-//                runner.pushListener(
-//                        new TrampolineListenerKey(continueIndex, parser.getParser()),
-//                        exclusionListener(newResultsSoFar, newNResultsSoFar, parser, nodeKey, runner)
-//                );
-//        };
-//    }
+    private @NotNull AlphaParseResult reparsePart(final @NotNull String subs, final @NotNull Gll runner) {
+        final @NotNull var oldGrammar = runner.tramp().getGrammar();
+        final @NotNull Sym startSymbol;
+        final @NotNull Grammar grammar;
+
+        if (parserExcluded instanceof NonTerminalCombinator) {
+            // The rule was already a non-terminal. Simply change starting production.
+            startSymbol = ((NonTerminalCombinator) parserExcluded).getKeyword();
+            grammar = oldGrammar;
+        } else {
+            // Find a new start production name which is not in the grammar yet.
+            Sym tempSym;
+            do {
+                tempSym = Sym.sym("RerunForExclusion" + new Random().nextInt(oldGrammar.size() + 1));
+            } while (oldGrammar.containsKey(tempSym));
+            startSymbol = tempSym;
+
+            // Make new Grammar
+            var tempG = new LinkedHashMap<>(oldGrammar);
+            tempG.put(startSymbol, parserExcluded);
+            grammar = new Grammar(tempG).applyStandardReductions(new CombinatorFactory(true));
+        }
+        return Gll.parse(grammar, startSymbol, subs, false, false);
+    }
+
+    public @NotNull Combinator getParserExpected() {
+        return parserExpected;
+    }
+
+    public @NotNull Combinator getParserExcluded() {
+        return parserExcluded;
+    }
 
     @Override
     public @NotNull ExclusionCombinator withHideTag(final boolean hide) {

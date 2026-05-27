@@ -50,11 +50,11 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
         final @NotNull String head = text.substring(index, end);
 
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-            if (caseInsensitive ?string.equalsIgnoreCase(head) :string.equals(head)) {
-                runner.pushSuccessMessage(nodeKey, string, end);
-            } else {
-                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
-            }
+        if (caseInsensitive ? string.equalsIgnoreCase(head) : string.equals(head)) {
+            runner.pushSuccessMessage(nodeKey, string, end);
+        } else {
+            runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, false));
+        }
     }
 
     @Override
@@ -64,11 +64,11 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
         final var end = Integer.min(text.length(), string.length() + index);
         final @NotNull var head = text.substring(index, end);
         final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-            if (text.length() == end && (caseInsensitive ? string.equalsIgnoreCase(head) : string.equals(head))) {
-                runner.pushSuccessMessage(nodeKey, string, end);
-            } else {
-                runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
-            }
+        if (text.length() == end && (caseInsensitive ? string.equalsIgnoreCase(head) : string.equals(head))) {
+            runner.pushSuccessMessage(nodeKey, string, end);
+        } else {
+            runner.fail(nodeKey, index, ParseFailureReason.ofStringTerminal(this, true));
+        }
     }
 
     /**

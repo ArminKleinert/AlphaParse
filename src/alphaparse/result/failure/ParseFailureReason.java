@@ -105,7 +105,20 @@ public record ParseFailureReason(
      * @return A failure-reason based on the parameters.
      */
     public static @NotNull ParseFailureReason ofNegated(final NegativeLookaheadCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, "NOT " + Print.combinatorToString(combinator.getParser()), untilEndOfInput, "look");
+        return new ParseFailureReason(combinator, "NOT " + Print.combinatorToString(combinator.getParser()), untilEndOfInput, "neg");
+    }
+
+    /**
+     * Builds an instance based on a {@link ExclusionCombinator}.
+     *
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
+    public static @NotNull ParseFailureReason ofExclusion(final ExclusionCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator,
+                Print.combinatorToString(combinator.getParserExpected())+" but NOT " + Print.combinatorToString(combinator.getParserExcluded()),
+                untilEndOfInput, "exclude");
     }
 
     /**

@@ -56,9 +56,9 @@ public final class Alpha {
     private static @NotNull Sym getStartProductionFromParserOrOptionsAndCheck(
             final @NotNull ParsingOptions options,
             final @NotNull Parser parser) {
-        final var startProduction = options.start();
+        var startProduction = options.start();
         if (startProduction == null)
-            return parser.startProduction();
+            startProduction = parser.startProduction();
         if (!parser.grammar().containsKey(startProduction))
             throw new ParserCreationFailure("Start production not in grammar: " + startProduction);
         return startProduction;

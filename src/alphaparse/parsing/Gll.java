@@ -121,7 +121,7 @@ public final class Gll {
                 final @NotNull var successResult = tramp.getSuccess();
                 final var resultTree = successResult.getResult();
                 if (!(resultTree instanceof ParseTree))
-                    throw new IllegalStateException(successResult.toString());
+                    throw new IllegalStateException(successResult + " in instance " + getInstanceIdForDebug());
                 tramp.setSuccess(null);
                 foundResult.set(true);
                 return (ParseTree) resultTree;
@@ -244,8 +244,7 @@ public final class Gll {
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull String result,
             final int end) {
-        final @NotNull AlphaParseMessage aps;
-        aps = AlphaParseMessage.create(end, result);
+        final @NotNull AlphaParseMessage aps = AlphaParseMessage.create(end, result);
         pushResultHelper(nodeKey, aps);
     }
 
@@ -259,9 +258,15 @@ public final class Gll {
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull FlatSeq<T> result,
             final int end) {
-        final @NotNull AlphaParseMessage aps;
-        aps = AlphaParseMessage.create(end, result);
+        final @NotNull AlphaParseMessage aps = AlphaParseMessage.create(end, result);
         pushResultHelper(nodeKey, aps);
+    }
+
+    void pushSuccessAgainWithNewKey(
+            final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+            final @NotNull AlphaParseMessage message
+    ) {
+        pushResultHelper(nodeKey, message);
     }
 
     void fail(
@@ -457,4 +462,6 @@ public final class Gll {
         if (!(result instanceof AlphaParseFailure)) return result;
         return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial, iterativeDeepening);
     }
+
+    String getInstanceIdForDebug() {return ((Object)this).toString();}
 }
