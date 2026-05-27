@@ -9,7 +9,6 @@ import java.util.Set;
 class RulesAvailableDefaultTest {
     /**
      * @see ParserCreationOptions#getDefault()
-     * @see RulesAvailable#defaultRules()
      */
     private final ParserCreationOptions opts = ParserCreationOptions.getDefault();
 

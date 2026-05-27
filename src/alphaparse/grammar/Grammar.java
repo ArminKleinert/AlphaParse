@@ -94,11 +94,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      */
     public static @NotNull Grammar fromProductions(
             final @NotNull List<Map.Entry<Sym, Combinator>> kvs,
-            @Nullable RedefinitionOption redefinitionOption) {
+            @NotNull RedefinitionOption redefinitionOption) {
         final @NotNull SequencedMap<Sym, Combinator> m = new LinkedHashMap<>();
-
-        if (redefinitionOption == null)
-            redefinitionOption = RedefinitionOption.defaultOption;
 
         // Using an assignment here is not strictly necessary. I use it to force the switch to be exhaustive by default.
         @SuppressWarnings("unused")

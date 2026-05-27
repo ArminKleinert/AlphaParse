@@ -32,7 +32,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable Sym startProduction,
                                     @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
                                     boolean useParserBuffering,
-                                    @Nullable RedefinitionOption redefinitionOption,
+                                    @NotNull RedefinitionOption redefinitionOption,
                                     @NotNull Set<RulesAvailable> usableRules,
                                     boolean checkCorrectness,
                                     @NotNull Collection<@NotNull String> ruleDefinitionOps,
@@ -42,6 +42,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
 
     /**
      * Default for {@link ParserCreationOptions#ruleDefinitionOps()}.
+     * <p>
      * Value (might not be up to date): {@code List.of(":=", "::=", "=", ":")}
      *
      * @return List of strings.
@@ -52,6 +53,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
 
     /**
      * Default for {@link ParserCreationOptions#epsilonNames()}.
+     * <p>
      * Value (might not be up to date): {@code List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε")}
      *
      * @return List of strings.
@@ -61,14 +63,56 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
+     * Default set of rules the parser can use.
+     * <ul>
+     *     <li>{@link RulesAvailable#ALTERNATION}</li>
+     *     <li>{@link RulesAvailable#EXTENDED_IDENTIFIERS}</li>
+     *     <li>{@link RulesAvailable#LOOKAHEAD}</li>
+     *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL_QUERY}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION_STAR}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL}</li>
+     *     <li>{@link RulesAvailable#ORDERED_CHOICE}</li>
+     *     <li>{@link RulesAvailable#PLUS}</li>
+     *     <li>{@link RulesAvailable#REGEX}</li>
+     *     <li>{@link RulesAvailable#SINGLY_QUOTED}</li>
+     *     <li>{@link RulesAvailable#STRING_CASE_SENSITIVITY_PREFIX}</li>
+     *     <li>{@link RulesAvailable#VALUE_RANGE}</li>
+     *     <li>{@link RulesAvailable#VARIABLE_REPEAT}</li>
+     * </ul>
+     *
+     * @return Set.
+     */
+    public static @NotNull @Unmodifiable Set<RulesAvailable> defaultRulesAvailable() {
+        return Set.of(
+                RulesAvailable.ALTERNATION,
+                RulesAvailable.EXTENDED_IDENTIFIERS,
+                RulesAvailable.LOOKAHEAD,
+                RulesAvailable.NEGATIVE_LOOKAHEAD,
+                RulesAvailable.OPTIONAL,
+                RulesAvailable.OPTIONAL_QUERY,
+                RulesAvailable.OPTIONAL_REPETITION,
+                RulesAvailable.OPTIONAL_REPETITION_STAR,
+                RulesAvailable.ORDERED_CHOICE,
+                RulesAvailable.PLUS,
+                RulesAvailable.REGEX,
+                RulesAvailable.SINGLY_QUOTED,
+                RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX,
+                RulesAvailable.VALUE_RANGE,
+                RulesAvailable.VARIABLE_REPEAT
+        );
+    }
+
+    /**
      * Constructor.
      *
-     * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
-     * @param startProduction       The starting production name of the parser.
+     * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used. If null, no such parser is used.
+     * @param startProduction       The starting production name of the parser. If null, the first defined production is used.
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} is used.
-     * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+     * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
-     * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
+     * @param usableRules           A Set of rules that can be used when building the parser. If null, use {@link #defaultRulesAvailable()}. See {@link RulesAvailable}.
      * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
      * @param ruleDefinitionOps     A collection of possible "definition operators" for rules. If null, use {@link #defaultRuleDefinitionOps()}. Example: {@code List.of(":=", "::=", "=", ":")}
      * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}. Example: {@code List.of("epsilon", "ε")}
@@ -88,16 +132,20 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 ? GlobalCaseInsensitivity.DEFAULT
                 : stringCaseInsensitive;
         this.useParserBuffering = useParserBuffering;
-        this.redefinitionOption = redefinitionOption;
+        this.redefinitionOption = redefinitionOption == null
+        ? RedefinitionOption.defaultOption
+        : redefinitionOption;
         this.usableRules = usableRules == null
-                ? RulesAvailable.defaultRules()
+                ? defaultRulesAvailable()
                 : usableRules;
         this.checkCorrectness = checkCorrectness;
         this.ruleDefinitionOps = ruleDefinitionOps == null
-                ? defaultRuleDefinitionOps() : ruleDefinitionOps;
+                ? defaultRuleDefinitionOps()
+                : ruleDefinitionOps;
         this.epsilonNames = epsilonNames == null
                 ? defaultEpsilonNames()
                 : epsilonNames;
+
     }
 
     /**
@@ -298,23 +346,41 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
-     * ABNF settings: Strings are case-insensitive, redefinition of productions with {@code =/} creates a choice rule. For available rules, see {@link RulesAvailable#abnfRules()}.
+     * ABNF settings: Strings are case-insensitive, redefinition of productions with {@code =/} creates a choice rule.
      * <p>
      * Characteristics:
      * <ul>
-     *     <li>Rules available: {@link RulesAvailable#abnfRules()}</li>
      *     <li>Rule definition operators: {@code "=", "=/"}</li>
      *     <li>Case insensitivity: {@code true}</li>
      *     <li>Redefinition option: {@link RedefinitionOption#CHOICE}</li>
      *     <li>Epsilon equivalents: {@code "ε"}</li>
      * </ul>
+     * <p>
+     * Available rules:
+     * <ul>
+     *     <li>{@link RulesAvailable#ABNF_CORE}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL}</li>
+     *     <li>{@link RulesAvailable#ORDERED_CHOICE}</li>
+     *     <li>{@link RulesAvailable#REGEX}</li>
+     *     <li>{@link RulesAvailable#STRING_CASE_SENSITIVITY_PREFIX}</li>
+     *     <li>{@link RulesAvailable#VALUE_RANGE}</li>
+     *     <li>{@link RulesAvailable#VARIABLE_REPEAT}</li>
+     * </ul>
      *
      * @return Options for ABNF parsers.
      */
     public static @NotNull ParserCreationOptions abnf() {
+        var rules = Set.of(
+                RulesAvailable.ABNF_CORE,
+                RulesAvailable.OPTIONAL,
+                RulesAvailable.ORDERED_CHOICE,
+                RulesAvailable.REGEX,
+                RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX,
+                RulesAvailable.VALUE_RANGE,
+                RulesAvailable.VARIABLE_REPEAT);
         return new ParserCreationOptions(
                 null, null, GlobalCaseInsensitivity.TRUE,
-                defaultUseParserBuffering, RedefinitionOption.CHOICE, RulesAvailable.abnfRules(),
+                defaultUseParserBuffering, RedefinitionOption.CHOICE, rules,
                 defaultCheckCorrectness,
                 List.of("=/", "=", ":="),
                 List.of("ε")
@@ -322,23 +388,47 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
-     * EBNF settings: Strings are case-sensitive. For available rules, see {@link RulesAvailable#ebnfRules()}.
+     * EBNF settings.
      * <p>
      * Characteristics:
      * <ul>
-     *     <li>Rules available: {@link RulesAvailable#ebnfRules()}</li>
      *     <li>Rule definition operators: {@code "=", "::=", "=", ":"}</li>
      *     <li>Case insensitivity: {@code false}</li>
      *     <li>Redefinition option: {@link RedefinitionOption#defaultOption}</li>
      *     <li>Epsilon equivalents: {@code "ε"}</li>
      * </ul>
+     * <p>
+     * Available rules:
+     * <ul>
+     *     <li>{@link RulesAvailable#ALTERNATION},
+     *     <li>{@link RulesAvailable#LOOKAHEAD},
+     *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD},
+     *     <li>{@link RulesAvailable#OPTIONAL_QUERY},
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION_STAR},
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION},
+     *     <li>{@link RulesAvailable#OPTIONAL},
+     *     <li>{@link RulesAvailable#PLUS},
+     *     <li>{@link RulesAvailable#REGEX},
+     *     <li>{@link RulesAvailable#SINGLY_QUOTED}
+     * </ul>
      *
      * @return Options for EBNF parsers.
      */
     public static @NotNull ParserCreationOptions ebnf() {
+        var rules = Set.of(
+                RulesAvailable.ALTERNATION,
+                RulesAvailable.LOOKAHEAD,
+                RulesAvailable.NEGATIVE_LOOKAHEAD,
+                RulesAvailable.OPTIONAL,
+                RulesAvailable.OPTIONAL_QUERY,
+                RulesAvailable.OPTIONAL_REPETITION,
+                RulesAvailable.OPTIONAL_REPETITION_STAR,
+                RulesAvailable.PLUS,
+                RulesAvailable.REGEX,
+                RulesAvailable.SINGLY_QUOTED);
         return new ParserCreationOptions(
                 null, null, GlobalCaseInsensitivity.FALSE,
-                defaultUseParserBuffering, RedefinitionOption.defaultOption, RulesAvailable.ebnfRules(),
+                defaultUseParserBuffering, RedefinitionOption.defaultOption, rules,
                 defaultCheckCorrectness,
                 List.of("=", "::=", "=", ":"),
                 List.of("ε")
@@ -346,22 +436,37 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
-     * EBNF settings without addons: Strings are case-sensitive. For available rules, see {@link RulesAvailable#pureEbnfRules()}.
+     * EBNF settings without addons.
+     * <p>
      * Characteristics:
      * <ul>
-     *     <li>Rules available: {@link RulesAvailable#pureEbnfRules()}</li>
      *     <li>Rule definition operators: {@code "="}</li>
      *     <li>Case insensitivity: {@code false}</li>
      *     <li>Redefinition option: {@link RedefinitionOption#defaultOption}</li>
      *     <li>Epsilon equivalents: {@code "ε"}</li>
      * </ul>
+     * <p>
+     * Available rules:
+     * <ul>
+     *     <li>{@link RulesAvailable#ALTERNATION}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL}</li>
+     *     <li>{@link RulesAvailable#REGEX}</li>
+     *     <li>{@link RulesAvailable#SINGLY_QUOTED}</li>
+     * </ul>
      *
      * @return Options for EBNF parsers.
      */
     public static @NotNull ParserCreationOptions pureEbnf() {
+        var rules = Set.of(
+                RulesAvailable.ALTERNATION,
+                RulesAvailable.OPTIONAL,
+                RulesAvailable.OPTIONAL_REPETITION,
+                RulesAvailable.REGEX,
+                RulesAvailable.SINGLY_QUOTED);
         return new ParserCreationOptions(
                 null, null, GlobalCaseInsensitivity.FALSE,
-                defaultUseParserBuffering, RedefinitionOption.defaultOption, RulesAvailable.pureEbnfRules(),
+                defaultUseParserBuffering, RedefinitionOption.defaultOption, rules,
                 defaultCheckCorrectness,
                 List.of("="),
                 List.of("ε")

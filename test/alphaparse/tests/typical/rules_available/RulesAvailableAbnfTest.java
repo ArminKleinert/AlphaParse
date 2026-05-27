@@ -1,8 +1,6 @@
 package alphaparse.tests.typical.rules_available;
 
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parser_options.RulesAvailable;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -10,7 +8,6 @@ import java.util.Set;
 class RulesAvailableAbnfTest {
     /**
      * @see ParserCreationOptions#ebnf()
-     * @see RulesAvailable#abnfRules()
      */
     private final ParserCreationOptions opts = ParserCreationOptions.abnf();
 
