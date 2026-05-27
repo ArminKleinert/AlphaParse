@@ -38,6 +38,7 @@ final class BufferForCombinators {
             case LookaheadCombinator combinator -> getOrAdd(combinator);
             case EpsilonCombinator combinator -> combinator;
             case TerminalSpecialSequenceCombinator combinator -> combinator;
+            case ExclusionCombinator combinator-> getOrAdd(combinator);
         };
     }
 
@@ -45,6 +46,12 @@ final class BufferForCombinators {
 
     @NotNull NonTerminalCombinator getOrAdd(final @NotNull NonTerminalCombinator combinator) {
         return buffer(nonTerminalSet, combinator);
+    }
+
+    private final @NotNull Map<@NotNull ExclusionCombinator, @NotNull ExclusionCombinator> exclusionSet = new HashMap<>();
+
+    @NotNull ExclusionCombinator getOrAdd(final @NotNull ExclusionCombinator combinator) {
+        return buffer(exclusionSet, combinator);
     }
 
     private final @NotNull Map<@NotNull TerminalRegexpCombinator, @NotNull TerminalRegexpCombinator> regexpTerminalSet = new HashMap<>();

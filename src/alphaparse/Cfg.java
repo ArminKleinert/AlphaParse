@@ -65,8 +65,8 @@ final class Cfg {
         // If none of the cases were true, the input had the usual format [0-9]+\\*[0-9]+
         final int min = parts[0].isBlank() ? 0 : Integer.parseInt(parts[0]);
         final int max = parts[1].isBlank() ? Integer.MAX_VALUE : Integer.parseInt(parts[1]);
-        final @NotNull var repeatedRule = (Combinator) buildRule((ParseTree)
-                tree.getContent().get(1).content());
+        final @NotNull var repeatedRule =
+                (Combinator) buildRule((ParseTree) tree.getContent().get(1).content());
         return combinatorFactory.repetitionCombinator(min, max, repeatedRule);
     }
 
@@ -216,6 +216,14 @@ final class Cfg {
                 }
                 case "epsilon" -> {
                     return EpsilonCombinator.getDefault();
+                }
+                case "exclude" -> {
+                    System.out.println(tree);
+                    var rule1 =
+                            (Combinator) buildRule((ParseTree) tree.getContent().get(0).content());
+                    var rule2 =
+                            (Combinator) buildRule((ParseTree) tree.getContent().get(1).content());
+                    return combinatorFactory.exclusionCombinator(rule1, rule2);
                 }
             }
             throw new UnsupportedOperationException(tag);

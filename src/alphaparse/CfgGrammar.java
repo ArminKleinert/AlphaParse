@@ -479,7 +479,7 @@ final class CfgGrammar {
         final @NotNull Combinator rulesRule =
                         cf.catCombinator(
                                 List.of(factorLookNeg, optWhitespace,
-                                        cf.stringTerminal("-"),
+                                        cf.stringTerminal("-").enableHideTag(),
                                         optWhitespace,
                                         factorLookNeg));
         return rulesRule;

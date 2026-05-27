@@ -124,6 +124,13 @@ public final class Print {
             }
             case TerminalSpecialSequenceCombinator specialSequenceCombinator ->
             {return "?" + specialSequenceCombinator + "?";}
+            case ExclusionCombinator exclusionCombinator-> {
+                final @NotNull List<String> parserStrings =
+                        exclusionCombinator.getParsers().stream()
+                                .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
+                                .toList();
+                return String.join(" - ", parserStrings);
+            }
         }
     }
 

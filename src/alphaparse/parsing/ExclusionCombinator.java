@@ -25,15 +25,15 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * See also: <a href="https://www.iso.org/standard/26153.html">ISO/IEC 14977:1996</a> and <a href="https://stackoverflow.com/a/35138946">an explanation on StackOverflow</a>.
  */
 public final class ExclusionCombinator extends CombinatorWithManyParsers {
-    private final @NotNull Combinator parser1;
-    private final @NotNull Combinator parser2;
+    private final @NotNull Combinator parserExpected;
+    private final @NotNull Combinator parserExcluded;
 
-    private ExclusionCombinator(boolean hide, @NotNull ReductionType red,
-                                    @NotNull Combinator parser1,
-                                    @NotNull Combinator parser2) {
-        super(hide, red, List.of(parser1, parser2));
-        this.parser1 = parser1;
-        this.parser2 = parser2;
+    private ExclusionCombinator(final boolean hide, final @NotNull ReductionType red,
+                                final @NotNull Combinator parserExpected,
+                                final @NotNull Combinator parserExcluded) {
+        super(hide, red, List.of(parserExpected, parserExcluded));
+        this.parserExpected = parserExpected;
+        this.parserExcluded = parserExcluded;
     }
 
     private ExclusionCombinator(final @NotNull List<Combinator> parsers,
@@ -42,17 +42,22 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
         this(hide, red, parsers.get(0), parsers.get(1));
     }
 
-    public ExclusionCombinator(final @NotNull Combinator parser1,
-                                    final @NotNull Combinator parser2) {
-        this(defaultHidden, ReductionType.standardInitialReduction(), parser1, parser2);
+    /**
+     * Standard constructor. Represents {@code (parserExpected - parserExcluded)}.
+     * @param parserExpected The rule that must be matched.
+     * @param parserExcluded The rule that must not be matched.
+     */
+    public ExclusionCombinator(final @NotNull Combinator parserExpected,
+                                    final @NotNull Combinator parserExcluded) {
+        this(defaultHidden, ReductionType.standardInitialReduction(), parserExpected, parserExcluded);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
-                new TrampolineListenerKey(index, parser1);
+                new TrampolineListenerKey(index, parserExpected);
         final @NotNull TrampolineListenerKey nodeKeyForComb2 =
-                new TrampolineListenerKey(index, parser2);
+                new TrampolineListenerKey(index, parserExcluded);
         final @NotNull Listener listener =
                 runner.nodeListener(new TrampolineListenerKey(index, this));
         runner.pushListener(nodeKeyForComb1, listener);
@@ -62,9 +67,9 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
-                new TrampolineListenerKey(index, parser1);
+                new TrampolineListenerKey(index, parserExpected);
         final @NotNull TrampolineListenerKey nodeKeyForComb2 =
-                new TrampolineListenerKey(index, parser2);
+                new TrampolineListenerKey(index, parserExcluded);
         final @NotNull Listener listener =
                 runner.nodeListener(new TrampolineListenerKey(index, this));
         runner.pushFullListener(nodeKeyForComb1, listener);
@@ -97,12 +102,12 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
 
     @Override
     public @NotNull ExclusionCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new ExclusionCombinator(hide, this.getReduction(),parser1, parser2);
+        return isHidden() == hide ? this : new ExclusionCombinator(hide, this.getReduction(), parserExpected, parserExcluded);
     }
 
     @Override
     public @NotNull ExclusionCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new ExclusionCombinator(isHidden(), red,parser1, parser2);
+        return getReduction() == red ? this : new ExclusionCombinator(isHidden(), red, parserExpected, parserExcluded);
     }
 
     @Override

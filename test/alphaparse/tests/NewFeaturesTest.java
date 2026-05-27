@@ -2,17 +2,19 @@ package alphaparse.tests;
 
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.RulesAvailable;
 import org.junit.jupiter.api.Test;
 
 class NewFeaturesTest {
     @Test
     void oneOrMoreRepetitionReplacements() {
-        var p5 = Alpha.parser("S := &'ab' ('a' | 'b')+", ParserCreationOptions.getDefault().withCorrectnessCheck(false));
+        var p6 = Alpha.parser("S := #'[0-9]+' - '11'", ParserCreationOptions.getDefault().removeAvailableRule(RulesAvailable.EXCLUSION));
+        System.out.println(p6);
+        System.out.println(p6.parse("12"));
+        System.out.println(p6.parse("11"));
 
-        //System.out.println(((CombinatorWithManyParsers)p5.grammar().getProduction(Sym.sym("S"))).getParsers().stream().map(Object::getClass).toList());
-
-        System.out.println(p5);
-        System.out.println(p5.parse("aba"));
+//        var p5 = Alpha.parser("S := &'ab' ('a' | 'b')+", ParserCreationOptions.getDefault().withCorrectnessCheck(false));
+//        System.out.println(p5.parse("aba"));
 
 //        var p4 = Alpha.parser("S := 1*3 %x1F381", ParserCreationOptions.getDefault().withCorrectnessCheck(false));
 //        System.out.println(p4);

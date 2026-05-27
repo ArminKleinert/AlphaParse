@@ -54,8 +54,27 @@ public final class CombinatorFactory {
      * @param function    The function which does what the description says.
      * @return A {@link TerminalSpecialSequenceCombinator}.
      */
-    public @NotNull TerminalSpecialSequenceCombinator specialSequence(final @NotNull String description, final @NotNull Function<@NotNull String, Optional<String>> function) {
-        return new TerminalSpecialSequenceCombinator(description, function);
+    public @NotNull TerminalSpecialSequenceCombinator specialSequence(
+            final @NotNull String description,
+            final @NotNull Function<@NotNull String, Optional<String>> function) {
+        var result = new TerminalSpecialSequenceCombinator(description, function);
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return (TerminalSpecialSequenceCombinator) buffer.getOrAdd(result);
+    }
+
+    /**
+     * Creates a {@link ExclusionCombinator}.
+     *
+     * @param parserExpected The rule that must be matched.
+     * @param parserExcluded The rule that must not be matched.
+     */
+    public @NotNull ExclusionCombinator exclusionCombinator(final @NotNull Combinator parserExpected,
+                                                            final @NotNull Combinator parserExcluded) {
+        var result =  new ExclusionCombinator(parserExpected, parserExcluded);
+        if (!useBuffer) return result;
+        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+        return buffer.getOrAdd(result);
     }
 
     /**
