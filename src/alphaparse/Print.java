@@ -122,9 +122,8 @@ public final class Print {
             case NegativeLookaheadCombinator negativeLookaheadCombinator -> {
                 return "!" + parenForCompound(hidden, negativeLookaheadCombinator.getParser());
             }
-            case EOFCombinator ignored -> {
-                return "end-of-file";
-            }
+            case TerminalSpecialSequenceCombinator specialSequenceCombinator ->
+            {return "?" + specialSequenceCombinator + "?";}
         }
     }
 

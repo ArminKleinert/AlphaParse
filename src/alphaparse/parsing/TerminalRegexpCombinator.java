@@ -82,7 +82,6 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
             return;
         }
 
-
         if (!runner.iterativeDeepening()) {
             runner.pushSuccessMessage(nodeKey, firstMatch, index + firstMatch.length());
             return;
@@ -91,7 +90,6 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
         final int endIndexInSubString = firstMatch.length();
         runner.pushSuccessMessage(nodeKey, firstMatch, index + firstMatch.length());
         for (int end = endIndexInSubString; end >= 0; end--) {
-        //for (int end = endIndexInSubString; end >= 0; end--) {
             @Nullable String match = reMatchAtFront(regexp, subString.substring(0, end));
             if (match != null) {
                 runner.pushSuccessMessage(nodeKey, match, index + match.length());

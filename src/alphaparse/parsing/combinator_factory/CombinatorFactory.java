@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -43,6 +44,18 @@ public final class CombinatorFactory {
         if (!useBuffer) return c;
         assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(c);
+    }
+
+    /**
+     * Represents a special sequence. The typical EBNF-notation is {@code ?...?} where {@code ...} stands for some free-form text.
+     * For example, {@code S = ?any whitespace except newline?} means what it says. This allows some interaction with the program around the parser.
+     *
+     * @param description The description of the special sequence.
+     * @param function    The function which does what the description says.
+     * @return A {@link TerminalSpecialSequenceCombinator}.
+     */
+    public @NotNull TerminalSpecialSequenceCombinator specialSequence(final @NotNull String description, final @NotNull Function<@NotNull String, Optional<String>> function) {
+        return new TerminalSpecialSequenceCombinator(description, function);
     }
 
     /**

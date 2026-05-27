@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract sealed class CombinatorTerminal
         extends Combinator
-        permits EOFCombinator, EpsilonCombinator, TerminalRegexpCombinator, TerminalStringCombinator, TerminalUnicodeCharCombinator {
+        permits EpsilonCombinator, TerminalRegexpCombinator, TerminalSpecialSequenceCombinator, TerminalStringCombinator, TerminalUnicodeCharCombinator {
     protected CombinatorTerminal(final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
     }

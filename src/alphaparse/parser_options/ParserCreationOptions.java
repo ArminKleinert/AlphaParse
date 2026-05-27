@@ -8,10 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,8 +130,8 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 : stringCaseInsensitive;
         this.useParserBuffering = useParserBuffering;
         this.redefinitionOption = redefinitionOption == null
-        ? RedefinitionOption.defaultOption
-        : redefinitionOption;
+                ? RedefinitionOption.defaultOption
+                : redefinitionOption;
         this.usableRules = usableRules == null
                 ? defaultRulesAvailable()
                 : usableRules;
@@ -144,7 +141,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 : ruleDefinitionOps;
         this.epsilonNames = epsilonNames == null
                 ? defaultEpsilonNames()
-                : epsilonNames;
+                : epsilonNames.stream().sorted(Comparator.comparingInt(String::length)).toList();
 
     }
 

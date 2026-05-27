@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class CfgGrammar {
@@ -112,32 +113,53 @@ final class CfgGrammar {
     }
 
     private Combinator makeCfgEpsilonRhs() {
+        var epsilonNames = options.epsilonNames();
+
         // If no epsilon names are provided, use string terminal which matches the empty string `""`.
         // Empty string terminals are simplified to Epsilon later.
-        if (options.epsilonNames().isEmpty())
+        if (epsilonNames.isEmpty())
             return cf.stringTerminal("\"\"");
 
-        final @NotNull Combinator rulesRule =
-                cf.choiceCombinator(
-                        options.epsilonNames()
-                                .stream()
-                                .map(it -> cf.stringTerminal(it, false))
-                                .toList());
-        return rulesRule;
-    }
+        return cf.specialSequence(
+                "One of " + epsilonNames,
+                text -> {
+                    return epsilonNames.stream().filter(text::startsWith).max(Comparator.comparingInt(String::length));
+                }
+        );
 
-    private Combinator makeCfgEofRhs() {
-        final @NotNull Combinator rulesRule =
-                cf.choiceCombinatorDistinct(
-                        List.of(cf.stringTerminal("eοf")));
-        return rulesRule;
+//        @NotNull Combinator rulesRule =
+//                cf.choiceCombinator(
+//                        epsilonNames
+//                                .stream()
+//                                .map(it -> cf.stringTerminal(it, false))
+//                                .toList());
+//        return rulesRule;
+
+//        // If no epsilon names are provided, use string terminal which matches the empty string `""`.
+//        // Empty string terminals are simplified to Epsilon later.
+//        if (options.epsilonNames().isEmpty())
+//            return cf.stringTerminal("\"\"");
+//
+//        @NotNull Combinator rulesRule =
+//                cf.choiceCombinator(
+//                        options.epsilonNames()
+//                                .stream()
+//                                .map(it -> cf.stringTerminal(it, false))
+//                                .toList());
+//
+//        if (!options.usableRules().contains(RulesAvailable.EXTENDED_IDENTIFIERS))
+//            rulesRule = cf.catCombinator(List.of(
+//                    cf.negateRule(cf.makeNonTerminal(Sym.sym("nt"))),
+//                    rulesRule
+//            ));
+//
+//        return rulesRule;
     }
 
     private @NotNull Combinator makeCfgFactorRhs() {
         final @NotNull Combinator rulesRule =
                 cf.choiceCombinatorDistinct(
-                                cListOf(cf.makeNonTerminal(Sym.sym("nt")),
-                                        cf.makeNonTerminal(Sym.sym("string")),
+                                cListOf(cf.makeNonTerminal(Sym.sym("string")),
                                         makeNT("regexp", RulesAvailable.REGEX),
                                         makeNT("opt", RulesAvailable.OPTIONAL),
                                         makeNT("opt_query", RulesAvailable.OPTIONAL_QUERY),
@@ -147,9 +169,10 @@ final class CfgGrammar {
                                         cf.makeNonTerminal(Sym.sym("paren")),
                                         cf.makeNonTerminal(Sym.sym("hide")),
                                         cf.makeNonTerminal(Sym.sym("epsilon")),
-                                        makeNT("end-of-file", RulesAvailable.EXPLICIT_EOF),
                                         makeNT("rep", RulesAvailable.VARIABLE_REPEAT), // ABNF feature
-                                        makeNT("num-val", RulesAvailable.VALUE_RANGE) // ABNF feature
+                                        makeNT("num-val", RulesAvailable.VALUE_RANGE), // ABNF feature
+                                        cf.makeNonTerminal(Sym.sym("nt")),
+                                        null
                                 ))
                         .hideTag();
         return rulesRule;
@@ -244,22 +267,35 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    private final Pattern extendedNtPattern = Pattern.compile(
+            "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*");
+    private final Pattern defaultNtPattern = Pattern.compile(
+            "[a-zA-Z][a-zA-Z0-9_]*");
+
+
     private @NotNull Combinator makeCfgNtRhs() {
-        final var pattern = rulesAvailable.contains(RulesAvailable.EXTENDED_IDENTIFIERS)
-                ? "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]*"
-                : "[a-zA-Z][a-zA-Z0-9_]*";
-        final var regex = regexDoc(pattern, "Non-terminal");
-        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF)) {
-            return cf.catCombinator(List.of(
-                    cf.negateRule(cf.makeNonTerminal(Sym.sym("epsilon"))),
-                    cf.negateRule(cf.makeNonTerminal(Sym.sym("end-of-file"))),
-                    cf.createRegexTerminal(regex)));
-        }
-        final @NotNull Combinator rulesRule =
-                cf.catCombinator(List.of(
-                        cf.negateRule(cf.makeNonTerminal(Sym.sym("epsilon"))),
-                        cf.createRegexTerminal(regex)));
+        final var regex = rulesAvailable.contains(RulesAvailable.EXTENDED_IDENTIFIERS)
+                ? extendedNtPattern
+                : defaultNtPattern;
+
+        var rulesRule = cf.specialSequence(
+                "matches " + regex + " but is not reserved for other purposes",
+                text -> {
+                    final @NotNull Matcher matcher = regex.matcher(text);
+                    if (!matcher.lookingAt()) {
+                        return Optional.empty();
+                    }
+                    String matched = matcher.group();
+                    if (options.epsilonNames().contains(matched)) {
+                        return Optional.empty();
+                    }
+                    return Optional.of(matched);
+                });
         return rulesRule;
+
+//            return cf.catCombinator(List.of(
+//                    cf.negateRule(cf.makeNonTerminal(Sym.sym("epsilon"))),
+//                    cf.createRegexTerminal(regex)));
     }
 
     private @NotNull Combinator makeCfgRepRhs() {
@@ -518,9 +554,6 @@ final class CfgGrammar {
 
         if (rulesAvailable.contains(RulesAvailable.VALUE_RANGE))
             grammarMap.put(Sym.sym("num-val"), makeABNFNumVal()); // ABNF
-
-        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF))
-            grammarMap.put(Sym.sym("end-of-file"), makeCfgEofRhs());
 
         return new Grammar(grammarMap).applyStandardReductions(cs);
     }

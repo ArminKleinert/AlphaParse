@@ -140,4 +140,15 @@ public record ParseFailureReason(
     public static @NotNull ParseFailureReason ofStringTerminal(final TerminalStringCombinator combinator, final boolean untilEndOfInput) {
         return new ParseFailureReason(combinator, null, untilEndOfInput, "string");
     }
+
+    /**
+     * Builds an instance based on a {@link TerminalSpecialSequenceCombinator}.
+     *
+     * @param combinator      The combinator.
+     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @return A failure-reason based on the parameters.
+     */
+    public static @NotNull ParseFailureReason ofSpecialSequence(final TerminalSpecialSequenceCombinator combinator, final boolean untilEndOfInput) {
+        return new ParseFailureReason(combinator, null, untilEndOfInput, "function");
+    }
 }

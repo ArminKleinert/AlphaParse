@@ -7,7 +7,6 @@ import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.Combinator;
-import alphaparse.parsing.EOFCombinator;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parsing.EpsilonCombinator;
 import alphaparse.parsing.Gll;
@@ -109,8 +108,11 @@ final class Cfg {
                     return buildRuleRule(tree);
                 }
                 case "nt" -> {
+                    var name = (String) tree.getContent().getFirst().content();
+//                    if (options.epsilonNames().contains(name))
+//                        return EpsilonCombinator.getDefault();
                     return combinatorFactory.makeNonTerminal(
-                            Sym.sym((String) tree.getContent().getFirst().content()));
+                            Sym.sym(name));
                 }
                 case "paren" -> {
                     // The parse tree is wrapped in hidden "(" ")".
@@ -213,9 +215,6 @@ final class Cfg {
                 }
                 case "epsilon" -> {
                     return EpsilonCombinator.getDefault();
-                }
-                case "end-of-file" -> {
-                    return EOFCombinator.getDefault();
                 }
             }
             throw new UnsupportedOperationException(tag);

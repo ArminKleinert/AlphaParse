@@ -49,16 +49,16 @@ public enum RulesAvailable {
      */
     ALTERNATION,
 
-    /**
-     * Explicit EOF (end-of-file) rule. This can be useful in *very* specific circumstances, for example a negative lookahead which contains an EOF.
-     * <p>
-     * Notation: See {@link EOFCombinator}
-     * <p>
-     * Possible replacements through other rule types: None.
-     *
-     * @see EOFCombinator
-     */
-    EXPLICIT_EOF,
+//    /**
+//     * Explicit EOF (end-of-file) rule. This can be useful in *very* specific circumstances, for example a negative lookahead which contains an EOF.
+//     * <p>
+//     * Notation: See {@link EOFCombinator}
+//     * <p>
+//     * Possible replacements through other rule types: None.
+//     *
+//     * @see EOFCombinator
+//     */
+//    EXPLICIT_EOF,
 
     /**
      * EBNF and ABNF identifiers normally must have the following form: {@code letter (letter|digit|_)+}.

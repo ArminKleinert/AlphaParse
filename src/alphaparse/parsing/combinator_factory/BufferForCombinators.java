@@ -37,7 +37,7 @@ final class BufferForCombinators {
             case NegativeLookaheadCombinator combinator -> getOrAdd(combinator);
             case LookaheadCombinator combinator -> getOrAdd(combinator);
             case EpsilonCombinator combinator -> combinator;
-            case EOFCombinator combinator -> combinator;
+            case TerminalSpecialSequenceCombinator combinator -> combinator;
         };
     }
 
