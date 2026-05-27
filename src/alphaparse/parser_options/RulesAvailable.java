@@ -49,6 +49,17 @@ public enum RulesAvailable {
      */
     ALTERNATION,
 
+    /**
+     * EBNF "Syntactic exception" or "except"
+     * <p>
+     * Notation: {@code rule1 - rule2}
+     * <p>
+     * Possible replacements through other rule types: None, but {@link #NEGATIVE_LOOKAHEAD} comes close.
+     *
+     * @see ExclusionCombinator
+     */
+    EXCLUSION,
+
 //    /**
 //     * Explicit EOF (end-of-file) rule. This can be useful in *very* specific circumstances, for example a negative lookahead which contains an EOF.
 //     * <p>
@@ -184,7 +195,7 @@ public enum RulesAvailable {
     REGEX,
 
     /**
-     * Single-quoted strings are technically not allowed by EBNF.
+     * Single-quoted strings are technically not allowed by ABNF.
      * <p>
      * Possible replacements through other rule types:
      * {@code S = 'a'} can be safely replaced by {@code S = "a"}, but this requires escaping the quotation-marks in code.
@@ -194,9 +205,21 @@ public enum RulesAvailable {
     SINGLY_QUOTED,
 
     /**
+     * EBNF special sequence.
+     * <p>
+     * The notation {@code ?...?} is not implemented currently.
+     * <p>
+     * Possible replacements: None.
+     *
+     * @see TerminalSpecialSequenceCombinator
+     */
+    SPECIAL_SEQUENCE,
+
+    /**
      * ABNF string prefixes {@code %i"..."} for case insensitivity and {@code %s"..."} for forced case sensitivity.
      * <p>
      * {@code S = %i"..."} is already implicit in ABNF, but needs to be explicit in other formats.
+     * <br/>
      * {@code S = %s"..."} is already implicit in EBNF, but needs to be explicit in ABNF.
      * <p>
      * Possible replacements through other rule types: None.

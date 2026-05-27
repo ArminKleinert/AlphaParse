@@ -2,10 +2,6 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
-import alphaparse.error.ParserCreationFailure;
-import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parser_options.ParsingOptions;
-import alphaparse.result.ParseTree;
 import alphaparse.util.Transform;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 class ParserAsFunctionTest {
     @Test

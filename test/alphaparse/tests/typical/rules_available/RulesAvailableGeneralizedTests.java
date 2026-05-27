@@ -365,6 +365,14 @@ class RulesAvailableGeneralizedTests {
 
         var optsWithoutStar = opts.removeAvailableRule(RulesAvailable.OPTIONAL_REPETITION_STAR);
         Assertions.assertDoesNotThrow(() -> AlphaParser("S := * \"a\"", optsWithoutStar));
+
+        var p = AlphaParser("S := 1*3 \"a\" \"b\"", opts);
+        Assertions.assertTrue(p.parse("a").isFailure());
+        Assertions.assertTrue(p.parse("b").isFailure());
+        Assertions.assertEquals(ParseTree.create("S", "a", "b"), p.parse("ab"));
+        Assertions.assertEquals(ParseTree.create("S", "a", "a", "b"), p.parse("aab"));
+        Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "b"), p.parse("aaab"));
+        Assertions.assertTrue(p.parse("aaaab").isFailure());
     }
 
     private static void variableRepetitionUnavailable(ParserCreationOptions opts, boolean run) {

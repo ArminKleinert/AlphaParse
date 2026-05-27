@@ -1,14 +1,8 @@
 package alphaparse.tests;
 
 import alphaparse.Alpha;
-import alphaparse.Sym;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parsing.CombinatorWithManyParsers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.regex.Pattern;
 
 class NewFeaturesTest {
     @Test

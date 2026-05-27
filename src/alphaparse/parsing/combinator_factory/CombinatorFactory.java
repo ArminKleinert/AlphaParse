@@ -465,7 +465,7 @@ public final class CombinatorFactory {
             case CombinatorWithParser parser1 ->
                     buffer(parser1.withParser(autoWhitespaceHelper(parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
-                final @NotNull List<Combinator> parsers = combWithParsers.getParsers()
+                final @NotNull List<@NotNull Combinator> parsers = combWithParsers.getParsers()
                         .stream()
                         .map(p -> autoWhitespaceHelper(p, wsParser))
                         .toList();

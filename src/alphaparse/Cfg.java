@@ -196,21 +196,22 @@ final class Cfg {
                         throw new ParserCreationFailure(exception);
                     }
                 }
-                case "num-val" -> {
+                case "abnf-range" -> {
                     var content = tree.getContent();
-                    var prefix = (String) content.get(0).content(); // "b"/"d"/"x"
-                    final int radix = switch (prefix.charAt(0)) {
+                    var parts =( (String) content.get(0).content()).split("-");
+                    var prefix = parts[0]; // "%b..."/"%d..."/"%x..."
+                    final int radix = switch (prefix.charAt(1)) {
                         case 'b' -> 2;
                         case 'd' -> 10;
                         case 'x' -> 16;
                         default -> throw new ParserCreationFailure("Invalid format for value range.");
                     };
                     var rangeFirst = Integer.parseInt(
-                            (String) content.get(1).content(),
+                            parts[0].substring(2),
                             radix);
-                    var rangeLast = content.size() > 2
-                            ? Integer.parseInt((String) content.get(2).content(), radix)
-                            : rangeFirst;
+                    var rangeLast = parts.length == 1
+                            ? rangeFirst
+                            : Integer.parseInt(parts[1], radix);
                     return combinatorFactory.unicodeChar(rangeFirst, rangeLast);
                 }
                 case "epsilon" -> {

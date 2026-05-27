@@ -103,7 +103,7 @@ public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     @Override
-    public @NotNull OrderedChoiceCombinator withParsers(final @NotNull List<Combinator> parsers) {
+    public @NotNull OrderedChoiceCombinator withParsers(final @NotNull List<@NotNull Combinator> parsers) {
         return new OrderedChoiceCombinator(parsers, isHidden(), getReduction());
     }
 }

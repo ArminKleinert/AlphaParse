@@ -63,6 +63,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * Default set of rules the parser can use.
      * <ul>
      *     <li>{@link RulesAvailable#ALTERNATION}</li>
+     *     <li>{@link RulesAvailable#EXCLUSION}</li>
      *     <li>{@link RulesAvailable#EXTENDED_IDENTIFIERS}</li>
      *     <li>{@link RulesAvailable#LOOKAHEAD}</li>
      *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD}</li>
@@ -84,6 +85,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     public static @NotNull @Unmodifiable Set<RulesAvailable> defaultRulesAvailable() {
         return Set.of(
                 RulesAvailable.ALTERNATION,
+                RulesAvailable.EXCLUSION,
                 RulesAvailable.EXTENDED_IDENTIFIERS,
                 RulesAvailable.LOOKAHEAD,
                 RulesAvailable.NEGATIVE_LOOKAHEAD,
@@ -123,6 +125,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                  final boolean checkCorrectness,
                                  final @Nullable Collection<String> ruleDefinitionOps,
                                  final @Nullable Collection<String> epsilonNames) {
+
         this.whitespaceParser = whitespaceParser;
         this.startProduction = startProduction;
         this.stringCaseInsensitive = stringCaseInsensitive == null
@@ -139,10 +142,13 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         this.ruleDefinitionOps = ruleDefinitionOps == null
                 ? defaultRuleDefinitionOps()
                 : ruleDefinitionOps;
+
+        if (this.ruleDefinitionOps.isEmpty())
+            throw new IllegalArgumentException("Empty rule definition operator list.");
+
         this.epsilonNames = epsilonNames == null
                 ? defaultEpsilonNames()
                 : epsilonNames.stream().sorted(Comparator.comparingInt(String::length)).toList();
-
     }
 
     /**
@@ -397,16 +403,17 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * <p>
      * Available rules:
      * <ul>
-     *     <li>{@link RulesAvailable#ALTERNATION},
-     *     <li>{@link RulesAvailable#LOOKAHEAD},
-     *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD},
+     *     <li>{@link RulesAvailable#ALTERNATION}</li>
+     *     <li>{@link RulesAvailable#EXCLUSION}</li>
+     *     <li>{@link RulesAvailable#LOOKAHEAD}</li>
+     *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD}</li>
      *     <li>{@link RulesAvailable#OPTIONAL_QUERY},
-     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION_STAR},
-     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION},
-     *     <li>{@link RulesAvailable#OPTIONAL},
-     *     <li>{@link RulesAvailable#PLUS},
-     *     <li>{@link RulesAvailable#REGEX},
-     *     <li>{@link RulesAvailable#SINGLY_QUOTED}
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION_STAR}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL}</li>
+     *     <li>{@link RulesAvailable#PLUS}</li>
+     *     <li>{@link RulesAvailable#REGEX}</li>
+     *     <li>{@link RulesAvailable#SINGLY_QUOTED}</li>
      * </ul>
      *
      * @return Options for EBNF parsers.
@@ -414,6 +421,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     public static @NotNull ParserCreationOptions ebnf() {
         var rules = Set.of(
                 RulesAvailable.ALTERNATION,
+                RulesAvailable.EXCLUSION,
                 RulesAvailable.LOOKAHEAD,
                 RulesAvailable.NEGATIVE_LOOKAHEAD,
                 RulesAvailable.OPTIONAL,
@@ -446,6 +454,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * Available rules:
      * <ul>
      *     <li>{@link RulesAvailable#ALTERNATION}</li>
+     *     <li>{@link RulesAvailable#EXCLUSION}</li>
      *     <li>{@link RulesAvailable#OPTIONAL_REPETITION}</li>
      *     <li>{@link RulesAvailable#OPTIONAL}</li>
      *     <li>{@link RulesAvailable#REGEX}</li>
@@ -457,6 +466,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     public static @NotNull ParserCreationOptions pureEbnf() {
         var rules = Set.of(
                 RulesAvailable.ALTERNATION,
+                RulesAvailable.EXCLUSION,
                 RulesAvailable.OPTIONAL,
                 RulesAvailable.OPTIONAL_REPETITION,
                 RulesAvailable.REGEX,
