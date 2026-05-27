@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.rules.Timeout;
 
+import java.util.List;
+
 /**
  * Test cases for especially obnoxious test cases.
  */
@@ -115,5 +117,18 @@ public class ObnoxiousTestCase {
     public void infiniteEpsilon() {
         var p = Alpha.parser("S := S | epsilon");
         Assertions.assertDoesNotThrow(() -> p.parses("").size());
+    }
+
+    @Test
+    public void nonTerminalStartsWithEpsilonName() {
+        var opts = ParserCreationOptions.getDefault().withEpsilonNames(List.of("Eps"));
+
+        Assertions.assertDoesNotThrow(()->Alpha.parser("S = EpsNT\nEpsNT = \"1\"", opts));
+
+        var p = Alpha.parser("S = EpsNT\nEpsNT = \"1\"", opts);
+        Assertions.assertEquals(
+                ParseTree.create("S", ParseTree.create("EpsNT", "1")),
+                p.parse("1")
+        );
     }
 }

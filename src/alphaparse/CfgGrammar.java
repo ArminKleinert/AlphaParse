@@ -112,6 +112,11 @@ final class CfgGrammar {
     }
 
     private Combinator makeCfgEpsilonRhs() {
+        // If no epsilon names are provided, use string terminal which matches the empty string `""`.
+        // Empty string terminals are simplified to Epsilon later.
+        if (options.epsilonNames().isEmpty())
+            return cf.stringTerminal("\"\"");
+
         final @NotNull Combinator rulesRule =
                 cf.choiceCombinator(
                         options.epsilonNames()
