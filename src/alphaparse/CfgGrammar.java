@@ -1,7 +1,6 @@
 package alphaparse;
 
 import alphaparse.grammar.Grammar;
-import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parsing.Combinator;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parsing.NonTerminalCombinator;
@@ -114,12 +113,11 @@ final class CfgGrammar {
 
     private Combinator makeCfgEpsilonRhs() {
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinatorDistinct(
-                        List.of(cf.stringTerminal("Epsilon"),
-                                cf.stringTerminal("epsilon"),
-                                cf.stringTerminal("EPSILON"),
-                                cf.stringTerminal("eps"),
-                                cf.stringTerminal("ε")));
+                cf.choiceCombinator(
+                        options.epsilonNames()
+                                .stream()
+                                .map(it -> cf.stringTerminal(it, false))
+                                .toList());
         return rulesRule;
     }
 
@@ -163,10 +161,11 @@ final class CfgGrammar {
 
     private @NotNull Combinator makeCfgRuleSeparatorRhs() {
         // If redefinition via multiple production re-assignment is active, allow "=/" as an assignment operator.
-        if (Objects.equals(options.redefinitionOption(), RedefinitionOption.CHOICE)) {
-            return cf.createRegexTerminal(Pattern.compile("=/|:=|::=|=|:"));
-        }
-        return cf.createRegexTerminal(Pattern.compile(":=|::=|=|:"));
+        return cf.choiceCombinator(
+                options.ruleDefinitionOps()
+                        .stream()
+                        .map(it -> cf.stringTerminal(it, false))
+                        .toList());
     }
 
     private @NotNull Combinator makeCfgParenRhs() {

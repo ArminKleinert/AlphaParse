@@ -430,7 +430,7 @@ class AlphaCoreTest {
     @Test
     void testParserAsFunction2() {
         var text = "aaaa";
-        var grammar = "S := S 'a' / Epsilon";
+        var grammar = "S := S 'a' / ε";
         var tree =
                 ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S", ParseTree.create("S"), "a"), "a"), "a"), "a");
 
@@ -717,43 +717,49 @@ class AlphaCoreTest {
 
     @Test
     void testEps() {
+        var opts = ParserCreationOptions
+                .getDefault()
+                .withEpsilonNames(List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε"));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S := eps").parse(""));
+                Alpha.parser("S := eps",opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S := epsilon").parse(""));
+                Alpha.parser("S := epsilon",opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S := Epsilon").parse(""));
+                Alpha.parser("S := Epsilon",opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S := EPSILON").parse(""));
+                Alpha.parser("S := EPSILON",opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S := ε").parse(""));
+                Alpha.parser("S := ε",opts).parse(""));
     }
 
     @Test
     void testEpsFail() {
+        var opts = ParserCreationOptions
+                .getDefault()
+                .withEpsilonNames(List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε"));
         Assertions.assertTrue(
-                Alpha.parser("S := eps")
+                Alpha.parser("S := eps",opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S := epsilon")
+                Alpha.parser("S := epsilon",opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S := Epsilon")
+                Alpha.parser("S := Epsilon",opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S := EPSILON")
+                Alpha.parser("S := EPSILON",opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S := ε")
+                Alpha.parser("S := ε",opts)
                         .parse("a")
                         .isFailure());
     }
@@ -861,7 +867,7 @@ class AlphaCoreTest {
 
     @Test
     void testSimpleOrderedChoice() {
-        final @NotNull Parser p = Alpha.parser("S := 'a' / eps");
+        final @NotNull Parser p = Alpha.parser("S := 'a' / ε");
 
         Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
         Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));

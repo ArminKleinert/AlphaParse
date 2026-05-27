@@ -9,12 +9,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class CharRangeTest {
-    
+
     private final ParserCreationOptions options =
-         new ParserCreationOptions(
-             null,null,null,false,null,
-                RulesAvailable.defaultRules(), true).addAvailableRule(RulesAvailable.VALUE_RANGE);
-    
+ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
+
     @Test
     void unicodeCodepointSingleParse() {
         var parser = Alpha.parser("S := %x1F381", options);

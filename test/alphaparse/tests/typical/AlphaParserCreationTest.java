@@ -110,7 +110,9 @@ class AlphaParserCreationTest {
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null,
                     null,
-                    true);
+                    true,
+                    null,
+                    null);
             Assertions.assertThrows(
                     IllegalArgumentException.class,
                     () -> Alpha.parser(grammar, options));

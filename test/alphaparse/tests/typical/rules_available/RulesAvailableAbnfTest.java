@@ -20,7 +20,8 @@ class RulesAvailableAbnfTest {
 
     @Test
     void epsilon() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := epsilon", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := ε", opts()));
+        Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("S := \"a\" | \"b\"", opts()));
     }
 
     @Test

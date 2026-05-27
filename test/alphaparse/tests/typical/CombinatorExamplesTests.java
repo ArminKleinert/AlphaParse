@@ -7,6 +7,10 @@ import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 class CombinatorExamplesTests {
     @Test
     void testChoiceExample1() {
@@ -19,9 +23,10 @@ class CombinatorExamplesTests {
         {
             var opts = ParserCreationOptions
                     .getDefault()
-                    .withRedefinitionOption(RedefinitionOption.CHOICE);
+                    .withRedefinitionOption(RedefinitionOption.CHOICE)
+                    .withRuleDefinitionOps(Stream.concat(ParserCreationOptions.defaultRuleDefinitionOps().stream(), Stream.of("=/")).toList());
             var p = Alpha.parser("""
-                    S := 'a'
+                    S =  'a'
                     S =/ 'b'
                     S =/ 'ab'
                     """, opts);

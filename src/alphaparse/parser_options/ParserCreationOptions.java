@@ -4,10 +4,13 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser.Parser;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,9 +33,20 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     boolean useParserBuffering,
                                     @Nullable RedefinitionOption redefinitionOption,
                                     @NotNull Set<RulesAvailable> usableRules,
-                                    boolean checkCorrectness) {
+                                    boolean checkCorrectness,
+                                    @NotNull Collection<String> ruleDefinitionOps,
+                                    @NotNull Collection<String> epsilonNames) {
     private static final boolean defaultUseParserBuffering = true;
     private static final boolean defaultCheckCorrectness = true;
+
+    public static @NotNull @Unmodifiable List<String> defaultRuleDefinitionOps() {
+        return List.of(":=", "::=", "=", ":");
+    }
+
+    public static @NotNull @Unmodifiable List<String> defaultEpsilonNames() {
+        return List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε");
+    }
+
     private static ParserCreationOptions DEFAULT;
 
     /**
@@ -40,11 +54,13 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      *
      * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
      * @param startProduction       The starting production name of the parser.
-     * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} i.
+     * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} is used.
      * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
      * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
+     * @param ruleDefinitionOps     A collection of possible "definition operators" for rules. Example: {@code List.of(":=", "::=", "=", ":")}
+     * @param epsilonNames          A collection of possible epsilon names. Example: {@code List.of("epsilon", "ε")}
      */
     public ParserCreationOptions(final @Nullable Parser whitespaceParser,
                                  final @Nullable Sym startProduction,
@@ -52,7 +68,9 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                  final boolean useParserBuffering,
                                  final @Nullable RedefinitionOption redefinitionOption,
                                  final @Nullable Set<RulesAvailable> usableRules,
-                                 final boolean checkCorrectness) {
+                                 final boolean checkCorrectness,
+                                 final @Nullable Collection<String> ruleDefinitionOps,
+                                 final @Nullable Collection<String> epsilonNames) {
         this.whitespaceParser = whitespaceParser;
         this.startProduction = startProduction;
         this.stringCaseInsensitive = stringCaseInsensitive == null
@@ -64,6 +82,11 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 ? RulesAvailable.defaultRules()
                 : usableRules;
         this.checkCorrectness = checkCorrectness;
+        this.ruleDefinitionOps = ruleDefinitionOps == null
+                ? defaultRuleDefinitionOps() : ruleDefinitionOps;
+        this.epsilonNames = epsilonNames == null
+                ? defaultEpsilonNames()
+                : epsilonNames;
     }
 
     /**
@@ -79,7 +102,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness);
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
     /**
@@ -95,7 +118,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness);
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
     /**
@@ -111,7 +134,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness);
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
     /**
@@ -139,7 +162,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness);
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
     /**
@@ -153,7 +176,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness);
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
     /**
@@ -190,13 +213,42 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * Creates a new instance with {@link ParserCreationOptions#checkCorrectness()} set to the parameter.
      *
      * @param checkCorrectness The new setting for {@link ParserCreationOptions#checkCorrectness()}.
-     * @return A new instance.*/
+     * @return A new instance.
+     */
     public @NotNull ParserCreationOptions withCorrectnessCheck(
             final boolean checkCorrectness) {
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness);
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
+    }
+
+    /**
+     * Creates a new instance with {@link ParserCreationOptions#ruleDefinitionOps()} set to the parameter.
+     *
+     * @param ruleDefinitionOps The new setting for {@link ParserCreationOptions#ruleDefinitionOps()}.
+     * @return A new instance.
+     */
+    public @NotNull ParserCreationOptions withRuleDefinitionOps(
+            final @Nullable Collection<String> ruleDefinitionOps) {
+        return new ParserCreationOptions(
+                whitespaceParser, startProduction, stringCaseInsensitive,
+                useParserBuffering, redefinitionOption, usableRules,
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
+    }
+
+    /**
+     * Creates a new instance with {@link ParserCreationOptions#epsilonNames()} set to the parameter.
+     *
+     * @param epsilonNames The new setting for {@link ParserCreationOptions#epsilonNames()}.
+     * @return A new instance.
+     */
+    public @NotNull ParserCreationOptions withEpsilonNames(
+            final @Nullable Collection<String> epsilonNames) {
+        return new ParserCreationOptions(
+                whitespaceParser, startProduction, stringCaseInsensitive,
+                useParserBuffering, redefinitionOption, usableRules,
+                checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
     /**
@@ -232,7 +284,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             DEFAULT = new ParserCreationOptions(
                     null, null, null,
                     defaultUseParserBuffering, null, null,
-                    defaultCheckCorrectness);
+                    defaultCheckCorrectness, null, null);
         }
         return DEFAULT;
     }
@@ -246,7 +298,9 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 null, null, GlobalCaseInsensitivity.TRUE,
                 defaultUseParserBuffering, RedefinitionOption.CHOICE, RulesAvailable.abnfRules(),
-                defaultCheckCorrectness
+                defaultCheckCorrectness,
+                List.of("=/", "="),
+                List.of("ε")
         );
     }
 
@@ -259,7 +313,9 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 null, null, GlobalCaseInsensitivity.FALSE,
                 defaultUseParserBuffering, RedefinitionOption.defaultOption, RulesAvailable.ebnfRules(),
-                defaultCheckCorrectness
+                defaultCheckCorrectness,
+                List.of("=", "::=", "=", ":"),
+                List.of("ε")
         );
     }
 
@@ -272,7 +328,9 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 null, null, GlobalCaseInsensitivity.FALSE,
                 defaultUseParserBuffering, RedefinitionOption.defaultOption, RulesAvailable.pureEbnfRules(),
-                defaultCheckCorrectness
+                defaultCheckCorrectness,
+                List.of("="),
+                List.of("ε")
         );
     }
 }

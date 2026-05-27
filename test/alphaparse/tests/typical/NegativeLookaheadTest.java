@@ -10,7 +10,7 @@ class NegativeLookaheadTest {
 
     @Test void identifierButNotType(){
         var p = Alpha.parser(
-                "S := !type #'[a-zA-Z][a-zA-Z0-9_]+'\n"+"type := 'int' epsilon",
+                "S := !type #'[a-zA-Z][a-zA-Z0-9_]+'\n"+"type := 'int' ε",
                 ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.EXPLICIT_EOF));
 //        System.out.println(p.parse("int"));
 //        System.out.println(p.parse("int1"));

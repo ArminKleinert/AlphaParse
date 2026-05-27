@@ -90,7 +90,9 @@ final class Main {
                     true,
                     null,
                     null,
-                    true);
+                    true,
+                    null,
+                    null);
             final @NotNull var p = Alpha.parser("S := 'ABC'", opts);
             println(Alpha.parses(p, "ABC"));
             println(Alpha.parses(p, "AbC"));

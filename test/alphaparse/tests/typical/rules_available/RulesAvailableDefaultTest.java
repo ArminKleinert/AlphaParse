@@ -20,7 +20,7 @@ class RulesAvailableDefaultTest {
 
     @Test
     void epsilon() {
-        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := epsilon", opts()));
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S := ε", opts()));
     }
 
     @Test

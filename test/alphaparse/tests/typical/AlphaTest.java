@@ -247,7 +247,7 @@ class AlphaTest {
             Assertions.assertEquals(ParseTree.create("S", "A", "B"), res);
         }
         {
-            final @NotNull var p = Alpha.parser("S := 'A' 'B' S | eps");
+            final @NotNull var p = Alpha.parser("S := 'A' 'B' S | ε");
             Assertions.assertEquals(ParseTree.create("S"), Alpha.parse(p, ""));
             Assertions.assertEquals(ParseTree.create("S", "A", "B", ParseTree.create("S")), Alpha.parse(p, "AB"));
         }
@@ -298,7 +298,7 @@ class AlphaTest {
     @Test
     void parseSimpleComplex() {
         {
-            final @NotNull var p = Alpha.parser("S := epsilon | S");
+            final @NotNull var p = Alpha.parser("S := ε | S");
             var forest = p.parses("").castToParsesSuccess();
             Assertions.assertEquals(
                     List.of(
@@ -353,7 +353,7 @@ class AlphaTest {
     @Test
     void parsesWithChoiceEps() {
         {
-            final @NotNull var p = Alpha.parser("S := eps | A | B | C\nA := C \nB := C \nC := eps");
+            final @NotNull var p = Alpha.parser("S := ε | A | B | C\nA := C \nB := C \nC := ε");
             final @NotNull var possibleTrees = Set.of(
                     ParseTree.create("S"),
                     ParseTree.create("S", ParseTree.create("C")),
@@ -364,7 +364,7 @@ class AlphaTest {
         }
         {
             final @NotNull var grammar = """
-                    S  := (r1 | r2 | r3)* | eps
+                    S  := (r1 | r2 | r3)* | ε
                     r1 := 'a'
                     r2 := 'a'
                     r3 := 'a'
@@ -388,10 +388,10 @@ class AlphaTest {
         }
         {
             final @NotNull var p = Alpha.parser("""
-                    S := A / B / eps / C
+                    S := A / B / ε / C
                     A := C
                     B := C
-                    C := eps
+                    C := ε
                     """);
             final @NotNull var possibleTrees = List.of(
                     ParseTree.create("S", ParseTree.create("A", ParseTree.create("C"))),
@@ -402,12 +402,12 @@ class AlphaTest {
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, ""));
         }
         {
-            final @NotNull var p = Alpha.parser("S := 'a' / eps / 'a'");
+            final @NotNull var p = Alpha.parser("S := 'a' / ε / 'a'");
             final @NotNull var possibleTrees = List.of(ParseTree.create("S", "a"));
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, "a"));
         }
         {
-            final @NotNull var p = Alpha.parser("S := eps / 'a' / 'a' / eps");
+            final @NotNull var p = Alpha.parser("S := ε / 'a' / 'a' / ε");
             final @NotNull var possibleTrees = List.of(ParseTree.create("S", "a"));
             Assertions.assertEquals(possibleTrees, Alpha.parses(p, "a"));
         }
