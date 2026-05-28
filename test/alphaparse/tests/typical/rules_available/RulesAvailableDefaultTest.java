@@ -30,6 +30,11 @@ class RulesAvailableDefaultTest {
     }
 
     @Test
+    void exclusion() {
+        RulesAvailableGeneralizedTests.exclusion(opts, true);
+    }
+
+    @Test
     void explicitStringCaseSensitivity() {
         RulesAvailableGeneralizedTests.explicitStringCaseSensitivity(opts, true);
     }

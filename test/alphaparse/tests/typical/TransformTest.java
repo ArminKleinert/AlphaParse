@@ -33,8 +33,8 @@ class TransformTest {
     @Test
     void testAdd2() {
         var p = Alpha.parser("""
-                S     := NUM (<'+'> NUM)*
-                <NUM> := #'\\d+'
+                S     = NUM (<'+'> NUM)*
+                <NUM> = #'\\d+'
                 """);
         var tree = p.parse("1+2+3").castToParseSuccess();
         Function<List<Object>, Object> transformFn =
@@ -55,8 +55,8 @@ class TransformTest {
     @Test
     void testAdd3() {
         var p = Alpha.parser("""
-                S   := NUM ('+' NUM)*
-                NUM := #'\\d+'
+                S   = NUM ('+' NUM)*
+                NUM = #'\\d+'
                 """);
         var tree = p.parse("1+2+3").castToParseSuccess();
         Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(
@@ -82,9 +82,9 @@ class TransformTest {
     @Test
     void testAdd4() {
         var p = Alpha.parser("""
-                S   := A
-                A   := NUM ('+' NUM)*
-                NUM := #'\\d+'
+                S   = A
+                A   = NUM ('+' NUM)*
+                NUM = #'\\d+'
                 """);
         var tree = p.parse("1+2+3").castToParseSuccess();
         Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(

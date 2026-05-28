@@ -35,20 +35,20 @@ class MultipleLookaheadsTest {
     }
     @Test
     void doubledLookahead() {
-        var p = Alpha.parser("S := &'a' &'a' ('a' | 'b' | 'c')+");
+        var p = Alpha.parser("S = &'a' &'a' ('a' | 'b' | 'c')+");
         Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());
     }
     @Test
     void doubledNegativeLookahead() {
-        var p = Alpha.parser("S := !'a' !'a' ('a' | 'b' | 'c')+");
+        var p = Alpha.parser("S = !'a' !'a' ('a' | 'b' | 'c')+");
         Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
         Assertions.assertEquals(ParseTree.create("S", "c"), p.parse("c"));
         Assertions.assertTrue(p.parse("a").isFailure());
     }
     @Test
     void doubledNegativeLookahead1() {
-        var p = Alpha.parser("S := !'a' !'b' ('a' | 'b' | 'c')+");
+        var p = Alpha.parser("S = !'a' !'b' ('a' | 'b' | 'c')+");
         Assertions.assertEquals(ParseTree.create("S", "c"), p.parse("c"));
         Assertions.assertTrue(p.parse("a").isFailure());
         Assertions.assertTrue(p.parse("b").isFailure());

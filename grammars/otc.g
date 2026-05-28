@@ -1,27 +1,27 @@
 (* From https://esolangs.org/wiki/Obfuscated_Tiny_C *)
 
-program: decl*
+program= decl*
 
-NAME   : #'[a-zA-Z][a-zA-Z0-9_]*'
-INT    : #"[0-9]+"
-CHAR   : #"'[^\\']'"
-STRING : #'\"(\\.|[^\\"])*\"'
+NAME   = #'[a-zA-Z][a-zA-Z0-9_]*'
+INT    = #"[0-9]+"
+CHAR   = #"'[^\\']'"
+STRING = #'\"(\\.|[^\\"])*\"'
 
-decl: vardecl
+decl= vardecl
     | fundecl
 
-vardecl: type NAME ";"
+vardecl= type NAME ";"
        | type NAME "[" INT "]" ";"
 
-fundecl: type NAME "(" args ")" "{" body "}"
+fundecl= type NAME "(" args ")" "{" body "}"
 
-args: (( arg "," )* arg)?
+args= (( arg "," )* arg)?
 
-arg: type NAME
+arg= type NAME
 
-body: vardecl* stmt*
+body= vardecl* stmt*
 
-stmt: ifstmt
+stmt= ifstmt
     | whilestmt
     | dowhilestmt
     | "return" expr <";">
@@ -29,14 +29,14 @@ stmt: ifstmt
     | "{" stmt* "}"
     | <";">
 
-ifstmt: "if" "(" expr ")" stmt
+ifstmt= "if" "(" expr ")" stmt
       |  "if" "(" expr ")" stmt "else" stmt
 
-whilestmt: "while" "(" expr ")" stmt
+whilestmt= "while" "(" expr ")" stmt
 
-dowhilestmt: "do" stmt "while" "(" expr ")" <";">
+dowhilestmt= "do" stmt "while" "(" expr ")" <";">
 
-expr: expr binop expr
+expr= expr binop expr
     | unop expr
     | expr "[" expr "]"
     | "(" expr ")"
@@ -46,15 +46,15 @@ expr: expr binop expr
     | CHAR
     | STRING
 
-exprs: ((expr ",")* expr)?
+exprs= ((expr ",")* expr)?
 
-binop: "+" | "-" | "*" | "/" | "%"
+binop= "+" | "-" | "*" | "/" | "%"
      | "="
      | "<" | "==" | "!="
 
-unop: "!" | "-" | "*"
+unop= "!" | "-" | "*"
 
-<type>: "int" stars?
+<type>= "int" stars?
       | "char" stars?
 
-stars: "*"+
+stars= "*"+

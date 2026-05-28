@@ -1,9 +1,9 @@
-S: expression + ; 
+S = expression + ;
 
-identifier : #"[^\s\[\]{}('\"`,;)0-9][^\s\[\]{}('\"`,;)]+'?"
+identifier = #"[^\s\[\]{}('\"`,;)0-9][^\s\[\]{}('\"`,;)]+'?"
 
 expression
-  : let_expr
+  = let_expr
   | define
   | defmacro
   (* | lambda_def *)
@@ -13,33 +13,34 @@ expression
   ;
 
 args
-  : identifier* varargs_end?
+  = identifier* varargs_end?
   ;
 
 varargs_end
-  : <'&'> identifier
+  = <'&'> identifier
   ;
 
 body
-  : expression*
+  = expression*
   ;
 
 defmacro
-  : <'('> 'defmacro' identifier args body <')'>
+  = <'('> 'defmacro' identifier args body <')'>
   ;
 
 define
-  : <'('> 'define' <'('> identifier args <')'> body <')'>
+  = <'('> 'define' <'('> identifier args <')'> body <')'>
   ;
 
 let_expr
-  : <'('> 'let*' <'('> binding+ <')'> body <')'>
+  = <'('> 'let*' <'('> binding+ <')'> body <')'>
 
 binding
-  : <'('> identifier expression <')'>
+  = <'('> identifier expression <')'>
+  ;
 
 literal
-  : list_literal
+  = list_literal
   | vector_literal
   | set_literal
   | map_literal
@@ -53,49 +54,49 @@ literal
   ;
 
 list_literal
-  : <'('> expression* <')'>
+  = <'('> expression* <')'>
   ;
 
 vector_literal
-  : <'['> expression* <']'>
+  = <'['> expression* <']'>
   ;
 
 set_literal
-  : <'#{'> expression* <'}'>
+  = <'#{'> expression* <'}'>
   ;
 
 map_literal
-  : <'{'> (expression expression)* <'}'>
+  = <'{'> (expression expression)* <'}'>
   ;
 
 string_literal
-  : #'\"(\\.|[^\\"])*\"'
+  = #'\"(\\.|[^\\"])*\"'
   ;
 
 number_literal
-  : #'-?0b[01]+'
+  = #'-?0b[01]+'
   | #'-?0x[0-9a-fA-F]+'
   | #'-?[0-9]+'
   ;
 
 float_literal
-  : #'-?\d+\.\d+'
+  = #'-?\d+\.\d+'
   ;
 
 ratio_literal
-  : #'-?\d+\/\d+'
+  = #'-?\d+\/\d+'
   ;
 
 bool_literal
-  : "#f"
+  = "#f"
   | "#t"
   ;
 
 char_literal
-  : "\\" char_literal_inner
+  = "\\" char_literal_inner
 
 <char_literal_inner>
-  : #'u\d{4}'
+  = #'u\d{4}'
   | '*'
   | 'newline'
   | 'space'
@@ -107,7 +108,7 @@ char_literal
   ;
 
 nothing_literal
-  : 'Nothing'
+  = 'Nothing'
   | 'nil'
   ;
 

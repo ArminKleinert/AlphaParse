@@ -13,8 +13,8 @@ class RuleAlternativesTests {
         var p1 = Alpha.parser("S = \"a\"+");
         var p2 = Alpha.parser("S = \"a\" {\"a\"}");
         var p3 = Alpha.parser("""
-                S   := "a" | "a" A
-                <A> := "a" A | ε
+                S   = "a" | "a" A
+                <A> = "a" A | ε
                 """);
 
         Assertions.assertTrue(p1.parse("").isFailure());
@@ -29,8 +29,8 @@ class RuleAlternativesTests {
     void optionalRepetitionReplacements() {
         var p1 = Alpha.parser("S = {\"a\"}");
         var p2 = Alpha.parser("""
-                S   := ε | A
-                <A> := "a" A | ε
+                S   = ε | A
+                <A> = "a" A | ε
                 """);
         Assertions.assertEquals(p1.parse(""), p2.parse(""));
         Assertions.assertEquals(p1.parse("aa"), p2.parse("aa"));
@@ -69,7 +69,7 @@ class RuleAlternativesTests {
     @Test
     void variableRepeatMin() {
         var p1 = Alpha.parser("S = 4* \"a\"", ParserCreationOptions.abnf());
-        var p2 = Alpha.parser("S := \"a\" \"a\" \"a\" \"a\" {\"a\"}");
+        var p2 = Alpha.parser("S = \"a\" \"a\" \"a\" \"a\" {\"a\"}");
         Assertions.assertEquals(p1.parse("aaaa"), p2.parse("aaaa"));
         Assertions.assertEquals(p1.parse("aaaaaa"), p2.parse("aaaaaa"));
     }

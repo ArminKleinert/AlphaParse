@@ -29,6 +29,11 @@ class RulesAvailableAbnfTest {
     }
 
     @Test
+    void exclusion() {
+        RulesAvailableGeneralizedTests.exclusion(opts, false);
+    }
+
+    @Test
     void explicitStringCaseSensitivity() {
         RulesAvailableGeneralizedTests.explicitStringCaseSensitivity(opts, true);
     }

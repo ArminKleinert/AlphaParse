@@ -16,7 +16,7 @@ import java.util.Set;
 class GrammarTest {
    @Test
    void grammarCollectRules() {
-       var g = Alpha.parser("S := '1' | '2' S").grammar();
+       var g = Alpha.parser("S = '1' | '2' S").grammar();
        var ga = g.analyze();
 
        Assertions.assertTrue(ga.isValid());

@@ -13,7 +13,7 @@ import java.util.Set;
 class IterativeRegexTest {
     @Test
     void testCheckByPartials() {
-        var p = Alpha.parser("S := #'A+'");
+        var p = Alpha.parser("S = #'A+'");
         var parses = Alpha.parses(p, "AAAA",
                 ParsingOptions.getDefault()
                         .withIterativeDeepening(true)
@@ -28,7 +28,7 @@ class IterativeRegexTest {
 
     @Test
     void testRegexString() {
-        var p = Alpha.parser("S := #'A+' 'A' | #'A+' 'AA' | #'A+' 'AAA' | #'A+' 'AAAA'");
+        var p = Alpha.parser("S = #'A+' 'A' | #'A+' 'AA' | #'A+' 'AAA' | #'A+' 'AAAA'");
 
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
@@ -44,7 +44,7 @@ class IterativeRegexTest {
 
     @Test
     void testStringRegex() {
-        var p = Alpha.parser("S := 'A' #'A+' | 'AA' #'A+' | 'AAA' #'A+' | 'AAAA' #'A+'");
+        var p = Alpha.parser("S = 'A' #'A+' | 'AA' #'A+' | 'AAA' #'A+' | 'AAAA' #'A+'");
 
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
@@ -60,7 +60,7 @@ class IterativeRegexTest {
 
     @Test
     void testRegexRegex() {
-        var p = Alpha.parser("S := #'A+' #'A+'");
+        var p = Alpha.parser("S = #'A+' #'A+'");
 
         Assertions.assertTrue(p.parses("").isEmpty());
         Assertions.assertTrue(p.parses("ABA").isEmpty());
@@ -76,7 +76,7 @@ class IterativeRegexTest {
 
     @Test
     void defaultTest() {
-        var p = Alpha.parser("S := #'A+' 'A'");
+        var p = Alpha.parser("S = #'A+' 'A'");
         var opts = ParsingOptions.getDefault().withIterativeDeepening(true);
         Assertions.assertEquals(
                 ParseTree.create("S", "AA", "A"),

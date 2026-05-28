@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 
 class AlphaParserCreationTest {
@@ -25,8 +26,8 @@ class AlphaParserCreationTest {
     @Test
     void parserFromString() {
         {
-            final @NotNull var p = Alpha.parser("S := '1'");
-            final @NotNull var p2 = Alpha.parser("S := '1'");
+            final @NotNull var p = Alpha.parser("S = '1'");
+            final @NotNull var p2 = Alpha.parser("S = '1'");
             Assertions.assertEquals(p, p2);
         }
     }
@@ -104,7 +105,7 @@ class AlphaParserCreationTest {
         }
         {
             // Error: Starting symbol not in grammar
-            final @NotNull var grammar = "S := 'abc'";
+            final @NotNull var grammar = "S = 'abc'";
             final @NotNull var options = new ParserCreationOptions(
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
@@ -129,4 +130,63 @@ class AlphaParserCreationTest {
         }
     }
 
+    @Test
+    void withRuleDefinitionOps() {
+        var dOpts = ParserCreationOptions.getDefault().withRuleDefinitionOps(List.of("::=", ":=", "=", ":", "→", "->", "-->"));
+
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                ()->Alpha.parser("S = \"a\"", dOpts.withRuleDefinitionOps(List.of())));
+
+        // Using an operator that can't be used leads to an error.
+        Assertions.assertThrows(
+                ParserCreationFailure.class,
+                () -> Alpha.parser("S = \"a\"", dOpts.withRuleDefinitionOps(List.of("→"))));
+
+        // Using an operator that is okay is valid.
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = \"a\"", dOpts.withRuleDefinitionOps(List.of("="))));
+
+        // Define a bunch of equal parsers and extract the grammars.
+        var g1 = Alpha.parser("S ::= \"a\"", dOpts).grammar();
+        var g2 = Alpha.parser("S := \"a\"", dOpts).grammar();
+        var g3 = Alpha.parser("S = \"a\"", dOpts).grammar();
+        var g4 = Alpha.parser("S : \"a\"", dOpts).grammar();
+        var g5 = Alpha.parser("S → \"a\"", dOpts).grammar();
+        var g6 = Alpha.parser("S -> \"a\"", dOpts).grammar();
+        var g7 = Alpha.parser("S --> \"a\"", dOpts).grammar();
+
+        // Check equivalences of the grammars.
+        Assertions.assertEquals(g1, g2);
+        Assertions.assertEquals(g1, g3);
+        Assertions.assertEquals(g1, g4);
+        Assertions.assertEquals(g1, g5);
+        Assertions.assertEquals(g1, g6);
+        Assertions.assertEquals(g1, g7);
+    }
+
+    @Test
+    void withEpsilonNames() {
+        var dOpts = ParserCreationOptions.getDefault().withEpsilonNames(List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε"));
+
+        // Using an operator that can't be used leads to an error.
+        Assertions.assertThrows(
+                ParserCreationFailure.class,
+                () -> Alpha.parser("S = Epsilon", dOpts.withEpsilonNames(List.of("ε"))));
+
+        // Using an operator that is okay is valid.
+        Assertions.assertDoesNotThrow(() -> Alpha.parser("S = ε", dOpts.withEpsilonNames(List.of("ε"))));
+
+        // Define a bunch of equal parsers and extract the grammars.
+        var g1 = Alpha.parser("S = ε", dOpts).grammar();
+        var g2 = Alpha.parser("S = eps", dOpts).grammar();
+        var g3 = Alpha.parser("S = EPSILON", dOpts).grammar();
+        var g4 = Alpha.parser("S = epsilon", dOpts).grammar();
+        var g5 = Alpha.parser("S = Epsilon", dOpts).grammar();
+
+        // Check equivalences of the grammars.
+        Assertions.assertEquals(g1, g2);
+        Assertions.assertEquals(g1, g3);
+        Assertions.assertEquals(g1, g4);
+        Assertions.assertEquals(g1, g5);
+    }
 }

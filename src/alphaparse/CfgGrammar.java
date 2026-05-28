@@ -2,6 +2,7 @@ package alphaparse;
 
 import alphaparse.grammar.Grammar;
 import alphaparse.parsing.Combinator;
+import alphaparse.parsing.EOFCombinator;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parsing.NonTerminalCombinator;
 import alphaparse.parser_options.ParserCreationOptions;
@@ -484,6 +485,7 @@ final class CfgGrammar {
                                         factorLookNeg));
         return rulesRule;
     }
+    private @NotNull Combinator makeEofRhs() {return cf.stringTerminal("EOF");}
 
     private @NotNull Combinator makeABNFValueRange() {
         final Pattern regex = regexDoc(
@@ -491,35 +493,6 @@ final class CfgGrammar {
                 "ABNF Value Range"
         );
         return cf.createRegexTerminal(regex);
-
-//        final @NotNull Combinator connectingMinusTerminal = cf.stringTerminal("-").enableHideTag();
-//
-//        @NotNull Combinator regexCombinatorBin = cf.createRegexTerminal(Pattern.compile("[01]+"));
-//        final Combinator binaryVal = cf.catCombinator(List.of(
-//                cf.stringTerminal("b"), // binary indicator
-//                regexCombinatorBin,
-//                cf.optionalCombinator(cf.catCombinator(
-//                        List.of(connectingMinusTerminal, regexCombinatorBin)))
-//        ));
-//
-//        @NotNull Combinator regexCombinatorDec = cf.createRegexTerminal(Pattern.compile("[0-9]+"));
-//        final Combinator decimalVal = cf.catCombinator(List.of(
-//                cf.stringTerminal("d"), // decimal indicator
-//                regexCombinatorDec,
-//                cf.optionalCombinator(cf.catCombinator(
-//                        List.of(connectingMinusTerminal, regexCombinatorDec)))
-//        ));
-//
-//        @NotNull Combinator regexCombinatorHex = cf.createRegexTerminal(Pattern.compile("[0-9a-fA-F]+"));
-//        final Combinator hexadecimalVal = cf.catCombinator(List.of(
-//                cf.stringTerminal("x"), // hexadecimal indicator
-//                regexCombinatorHex,
-//                cf.optionalCombinator(cf.catCombinator(
-//                        List.of(connectingMinusTerminal, regexCombinatorHex)))
-//        ));
-//        return cf.catCombinator(List.of(
-//                cf.stringTerminal("%").enableHideTag(),
-//                cf.choiceCombinatorDistinct(List.of(binaryVal, decimalVal, hexadecimalVal))));
     }
 
     @NotNull Grammar makeCfg() {
@@ -580,6 +553,9 @@ final class CfgGrammar {
 
         if (rulesAvailable.contains(RulesAvailable.EXCLUSION))
             grammarMap.put(Sym.sym("exclude"), makeCfgExclude());
+
+        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF))
+            grammarMap.put(Sym.sym("eof"), makeEofRhs());
 
         return new Grammar(grammarMap).applyStandardReductions(cs);
     }

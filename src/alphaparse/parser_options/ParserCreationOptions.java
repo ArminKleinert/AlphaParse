@@ -339,6 +339,16 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     /**
      * The default settings. Equivalent to {@link ParserCreationOptions#ParserCreationOptions(Parser, Sym, GlobalCaseInsensitivity, boolean, RedefinitionOption, Set, boolean, Collection, Collection)} with using {@code null} or whichever defaults this class provides.
      *
+     * <p>
+     * Characteristics:
+     * <ul>
+     *     <li>Rule definition operators: See {@link #defaultRuleDefinitionOps}</li>
+     *     <li>Case insensitivity: {@link GlobalCaseInsensitivity#DEFAULT}</li>
+     *     <li>Redefinition option: {@link RedefinitionOption#defaultOption}</li>
+     *     <li>Epsilon equivalents: {@link #defaultEpsilonNames()}</li>
+     * </ul>
+     * Available rules: See {@link #defaultRulesAvailable()}
+     *
      * @return default settings.
      */
     public static @NotNull ParserCreationOptions getDefault() {
@@ -385,7 +395,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 null, null, GlobalCaseInsensitivity.TRUE,
                 defaultUseParserBuffering, RedefinitionOption.CHOICE, rules,
                 defaultCheckCorrectness,
-                List.of("=/", "=", ":="),
+                List.of("=/", "="),
                 List.of("ε")
         );
     }
@@ -435,7 +445,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 null, null, GlobalCaseInsensitivity.FALSE,
                 defaultUseParserBuffering, RedefinitionOption.defaultOption, rules,
                 defaultCheckCorrectness,
-                List.of("=", "::=", "=", ":"),
+                List.of("="),
                 List.of("ε")
         );
     }

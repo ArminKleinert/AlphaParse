@@ -14,10 +14,10 @@ class StringTest {
                 .addAvailableRule(RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX);
         Assertions.assertEquals(
                 ParseTree.create("S", "A"),
-                Alpha.parser("S := %i\"A\"", opts).parse("A"));
+                Alpha.parser("S = %i\"A\"", opts).parse("A"));
         Assertions.assertEquals(
                 ParseTree.create("S", "A"),
-                Alpha.parser("S := %i\"A\"", opts).parse("a"));
+                Alpha.parser("S = %i\"A\"", opts).parse("a"));
     }
 
     @Test
@@ -26,8 +26,8 @@ class StringTest {
                 .addAvailableRule(RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX);
         Assertions.assertEquals(
                 ParseTree.create("S", "A"),
-                Alpha.parser("S := %s\"A\"", opts).parse("A"));
+                Alpha.parser("S = %s\"A\"", opts).parse("A"));
         Assertions.assertTrue(
-                Alpha.parser("S := %s\"A\"", opts).parse("a").isFailure());
+                Alpha.parser("S = %s\"A\"", opts).parse("a").isFailure());
     }
 }

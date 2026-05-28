@@ -68,6 +68,7 @@ public final class CombinatorFactory {
      *
      * @param parserExpected The rule that must be matched.
      * @param parserExcluded The rule that must not be matched.
+     * @return A {@link ExclusionCombinator}.
      */
     public @NotNull ExclusionCombinator exclusionCombinator(final @NotNull Combinator parserExpected,
                                                             final @NotNull Combinator parserExcluded) {

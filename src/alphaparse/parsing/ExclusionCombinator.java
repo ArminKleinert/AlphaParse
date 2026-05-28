@@ -116,10 +116,18 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
         return Gll.parse(grammar, startSymbol, subs, false, false);
     }
 
+    /**
+     * The rule that is expected. E.g. in the exclusion rule {@code (A - B)}, it would be {@code A}.
+     * @return The expected rule.
+     */
     public @NotNull Combinator getParserExpected() {
         return parserExpected;
     }
 
+    /**
+     * The rule that is to be excluded. E.g. in the exclusion rule {@code (A - B)}, it would be {@code B}.
+     * @return The excluded rule.
+     */
     public @NotNull Combinator getParserExcluded() {
         return parserExcluded;
     }
