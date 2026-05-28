@@ -5,7 +5,7 @@ import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ParseTreeSpanTest {
+class ParseTreeSpanTest {
     @Test
     void testBasics() {
         var p = Alpha.parser("S = 'b' A 'n'\nA = 'Aa'");

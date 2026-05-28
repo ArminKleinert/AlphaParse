@@ -112,21 +112,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      */
     public static @NotNull ParseTree create(final @NotNull Sym tag,
                                             final @Nullable Object content) {
-        final @NotNull var afs = switch (content) {
-            case null -> List.<Node>of();
-            case FlatSeq<?> objects -> {
-                final @NotNull var res = new ArrayList<Node>();
-                for (@NotNull var t : objects) res.add(Node.of(t));
-                yield res;
-            }
-            case String ignored -> List.of(Node.of(content));
-            case TotalParsesFailureNode ignored -> List.of(Node.of(content));
-            case ParseFailureNode ignored -> List.of(Node.of(content));
-            case ParseTree ignored -> List.of(Node.of(content));
-            case List<?> objects -> objects.stream().map(Node::of).toList();
-            default -> throw new IllegalArgumentException(content.getClass().toString());
-        };
-        return create(new Node.NodeTreeTag(tag), afs);
+        return create(tag, content, -1, -1);
     }
 
     /**
@@ -136,6 +122,8 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      *
      * @param tag     The tag as a node.
      * @param content The content as a node.
+     * @param spanStart Starting index in the input (inclusive).
+     * @param spanEnd   End index in the input (exclusive).
      * @return A new parse tree.
      * @see #create(Node.NodeTreeTag, List)
      */
