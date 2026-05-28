@@ -1,10 +1,8 @@
 package alphaparse;
 
 import alphaparse.grammar.Grammar;
-import alphaparse.parsing.Combinator;
-import alphaparse.parsing.EOFCombinator;
+import alphaparse.parsing.*;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
-import alphaparse.parsing.NonTerminalCombinator;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +37,8 @@ final class CfgGrammar {
         return rulesAvailable.contains(ra) ? cf.makeNonTerminal(Sym.sym(symString)) : null;
     }
 
-    /*These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
+    /*
+     * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
      */
     static @NotNull List<Map.Entry<Sym, Combinator>> makeAbnfCoreRules() {
         final @NotNull CombinatorFactory cf = new CombinatorFactory(false);
@@ -114,6 +113,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link EpsilonCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private Combinator makeCfgEpsilonRhs() {
         var epsilonNames = options.epsilonNames();
 
@@ -124,38 +128,9 @@ final class CfgGrammar {
 
         return cf.specialSequence(
                 "One of " + epsilonNames,
-                text -> {
-                    return epsilonNames.stream().filter(text::startsWith).max(Comparator.comparingInt(String::length));
-                }
+                text -> epsilonNames.stream().filter(text::startsWith).max(Comparator.comparingInt(String::length))
         );
 
-//        @NotNull Combinator rulesRule =
-//                cf.choiceCombinator(
-//                        epsilonNames
-//                                .stream()
-//                                .map(it -> cf.stringTerminal(it, false))
-//                                .toList());
-//        return rulesRule;
-
-//        // If no epsilon names are provided, use string terminal which matches the empty string `""`.
-//        // Empty string terminals are simplified to Epsilon later.
-//        if (options.epsilonNames().isEmpty())
-//            return cf.stringTerminal("\"\"");
-//
-//        @NotNull Combinator rulesRule =
-//                cf.choiceCombinator(
-//                        options.epsilonNames()
-//                                .stream()
-//                                .map(it -> cf.stringTerminal(it, false))
-//                                .toList());
-//
-//        if (!options.usableRules().contains(RulesAvailable.EXTENDED_IDENTIFIERS))
-//            rulesRule = cf.catCombinator(List.of(
-//                    cf.negateRule(cf.makeNonTerminal(Sym.sym("nt"))),
-//                    rulesRule
-//            ));
-//
-//        return rulesRule;
     }
 
     private @NotNull Combinator makeCfgFactorRhs() {
@@ -181,6 +156,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link PlusCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgPlusRhs() {
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(
@@ -190,6 +170,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of dividers. For example, that is "=" in "S = ...".
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgRuleSeparatorRhs() {
         return cf.choiceCombinator(
                 options.ruleDefinitionOps()
@@ -220,16 +205,20 @@ final class CfgGrammar {
         return rulesRule;
     }
 
-    private final @NotNull String doubleQuoteString = "\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"";
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String doubleQuoteStringPrefixed = "(%[is])?" + doubleQuoteString;
-    private final @NotNull String singleQuoteString = "'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'";
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String singleQuoteStringPrefixed = "(%[is])?" + singleQuoteString;
 
+    /**
+     * Recognition of {@link TerminalStringCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgStringRhs() {
         final boolean hasCiPrefixAvailable =
                 options.usableRules().contains(RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX);
+
+        final @NotNull String doubleQuoteString = "\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"";
+        final @NotNull String doubleQuoteStringPrefixed = "(%[is])?" + doubleQuoteString;
+        final @NotNull String singleQuoteString = "'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'";
+        final @NotNull String singleQuoteStringPrefixed = "(%[is])?" + singleQuoteString;
 
         final @NotNull Pattern doubleQuotedString = hasCiPrefixAvailable
                 ? regexDoc(doubleQuoteStringPrefixed, "Prefixed double-quoted string")
@@ -248,6 +237,11 @@ final class CfgGrammar {
                 cf.createRegexTerminal(singleQuotedString)));
     }
 
+    /**
+     * Recognition of {@link TerminalRegexpCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgRegexRhs() {
         final @NotNull Pattern singleQuotedRegex =
                 regexDoc("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted regexp");
@@ -270,16 +264,15 @@ final class CfgGrammar {
         return rulesRule;
     }
 
-    private final Pattern extendedNtPattern = Pattern.compile(
-            "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*");
-    private final Pattern defaultNtPattern = Pattern.compile(
-            "[a-zA-Z][a-zA-Z0-9_]*");
-
-
+    /**
+     * Recognition of {@link NonTerminalCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgNtRhs() {
         final var regex = rulesAvailable.contains(RulesAvailable.EXTENDED_IDENTIFIERS)
-                ? extendedNtPattern
-                : defaultNtPattern;
+                ? Pattern.compile("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*")
+                : Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*");
 
         return cf.specialSequence(
                 "matches " + regex + " but is not reserved for other purposes",
@@ -294,12 +287,13 @@ final class CfgGrammar {
                     }
                     return Optional.of(matched);
                 });
-
-//            return cf.catCombinator(List.of(
-//                    cf.negateRule(cf.makeNonTerminal(Sym.sym("epsilon"))),
-//                    cf.createRegexTerminal(regex)));
     }
 
+    /**
+     * Recognition of {@link RepetitionCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgRepRhs() {
         final @NotNull Combinator repRegexChoice;
         if (!rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR)) {
@@ -318,6 +312,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link LookaheadCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgLookRhs() {
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(
@@ -328,6 +327,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link NegativeLookaheadCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgNegRhs() {
         final @NotNull Combinator rulesRule =
                 cf.catCombinator(
@@ -338,6 +342,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link CombinatorStar} with the pattern {@code {rule}}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgZeroOrMoreStdRhs() {
         final @NotNull Combinator rule =
                 cf.catCombinator(
@@ -349,6 +358,11 @@ final class CfgGrammar {
         return rule;
     }
 
+    /**
+     * Recognition of {@link CombinatorStar} with the pattern {@code rule*}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgZeroOrMoreStarRhs() {
         final @NotNull Combinator rule =
                 cf.catCombinator(
@@ -358,6 +372,11 @@ final class CfgGrammar {
         return rule;
     }
 
+    /**
+     * Recognition of {@link OptionalCombinator} with the pattern {@code [rule]}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgOptRhs() {
         final @NotNull Combinator rule =
                 cf.catCombinator(
@@ -369,6 +388,11 @@ final class CfgGrammar {
         return rule;
     }
 
+    /**
+     * Recognition of {@link OptionalCombinator} with the pattern {@code rule*}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgOptQueryRhs() {
         final @NotNull Combinator rule =
                 cf.catCombinator(
@@ -430,6 +454,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link OrderedChoiceCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgOrdRhs() {
         final @NotNull Combinator catNt = cf.makeNonTerminal(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
         final @NotNull Combinator rulesRule =
@@ -444,6 +473,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link ChoiceCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgAltRhs() {
         final @NotNull Combinator catNt = cf.makeNonTerminal(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
         final @NotNull Combinator rulesRule =
@@ -457,6 +491,11 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link ConcatCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgCatRhs() {
         final @NotNull Combinator factorLookNeg = cf.choiceCombinatorDistinct(cListOf(
                 cf.makeNonTerminal(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
@@ -473,20 +512,38 @@ final class CfgGrammar {
         return rulesRule;
     }
 
+    /**
+     * Recognition of {@link ExclusionCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeCfgExclude() {
         final @NotNull Combinator factorLookNeg = cf.choiceCombinatorDistinct(cListOf(
                 cf.makeNonTerminal(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
         ));
         final @NotNull Combinator rulesRule =
-                        cf.catCombinator(
-                                List.of(factorLookNeg, optWhitespace,
-                                        cf.stringTerminal("-").enableHideTag(),
-                                        optWhitespace,
-                                        cf.choiceCombinatorDistinct(List.of(factorLookNeg, cf.makeNonTerminal(Sym.sym("exclude"))))));
+                cf.catCombinator(
+                        List.of(factorLookNeg, optWhitespace,
+                                cf.stringTerminal("-").enableHideTag(),
+                                optWhitespace,
+                                cf.choiceCombinatorDistinct(List.of(factorLookNeg, cf.makeNonTerminal(Sym.sym("exclude"))))));
         return rulesRule;
     }
-    private @NotNull Combinator makeEofRhs() {return cf.stringTerminal("EOF");}
 
+    /**
+     * Recognition of {@link EOFCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
+    private @NotNull Combinator makeEofRhs() {
+        return cf.stringTerminal("EOF");
+    }
+
+    /**
+     * Recognition of {@link TerminalUnicodeCharCombinator}.
+     *
+     * @return A {@link Combinator}.
+     */
     private @NotNull Combinator makeABNFValueRange() {
         final Pattern regex = regexDoc(
                 "%b[01]+(\\-[01]+)?|%d[0-9]+(\\-[0-9]+)?|%x[0-9a-fA-F]+(\\-[0-9a-fA-F]+)?",
