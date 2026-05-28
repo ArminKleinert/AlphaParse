@@ -716,25 +716,25 @@ class AlphaCoreTest {
     }
 
     @Test
-    void testEps() {
+    void testEpsEquivalence() {
         var opts = ParserCreationOptions
                 .getDefault()
                 .withEpsilonNames(List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε"));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = eps",opts).parse(""));
+                Alpha.parser("S = eps", opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = epsilon",opts).parse(""));
+                Alpha.parser("S = epsilon", opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = Epsilon",opts).parse(""));
+                Alpha.parser("S = Epsilon", opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = EPSILON",opts).parse(""));
+                Alpha.parser("S = EPSILON", opts).parse(""));
         Assertions.assertEquals(
                 ParseTree.create("S"),
-                Alpha.parser("S = ε",opts).parse(""));
+                Alpha.parser("S = ε", opts).parse(""));
     }
 
     @Test
@@ -743,23 +743,23 @@ class AlphaCoreTest {
                 .getDefault()
                 .withEpsilonNames(List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε"));
         Assertions.assertTrue(
-                Alpha.parser("S = eps",opts)
+                Alpha.parser("S = eps", opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = epsilon",opts)
+                Alpha.parser("S = epsilon", opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = Epsilon",opts)
+                Alpha.parser("S = Epsilon", opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = EPSILON",opts)
+                Alpha.parser("S = EPSILON", opts)
                         .parse("a")
                         .isFailure());
         Assertions.assertTrue(
-                Alpha.parser("S = ε",opts)
+                Alpha.parser("S = ε", opts)
                         .parse("a")
                         .isFailure());
     }

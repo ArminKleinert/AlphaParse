@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 class MultipleLookaheadsTest {
-//    @Test
+    //    @Test
 //    void contradictoryLookaheads() {
 //        var p = Alpha.parser("S := &'a' &'b' ('a' | 'b' | 'c')+");
 //        System.out.println(p.show());
@@ -26,19 +26,21 @@ class MultipleLookaheadsTest {
     @Test
     void lookaheads1() {
         var p = Alpha.parser(new Grammar(Map.of(
-                Sym.sym("S"), new ConcatCombinator(List.of(new LookaheadCombinator(new LookaheadCombinator(new TerminalStringCombinator("a", false))),
+                        Sym.sym("S"), new ConcatCombinator(List.of(new LookaheadCombinator(new LookaheadCombinator(new TerminalStringCombinator("a", false))),
                                 new TerminalRegexpCombinator(Pattern.compile("[abc]"))))
-        )),
+                )),
                 ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
         Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());
     }
+
     @Test
     void doubledLookahead() {
         var p = Alpha.parser("S = &'a' &'a' ('a' | 'b' | 'c')+");
         Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());
     }
+
     @Test
     void doubledNegativeLookahead() {
         var p = Alpha.parser("S = !'a' !'a' ('a' | 'b' | 'c')+");
@@ -46,6 +48,7 @@ class MultipleLookaheadsTest {
         Assertions.assertEquals(ParseTree.create("S", "c"), p.parse("c"));
         Assertions.assertTrue(p.parse("a").isFailure());
     }
+
     @Test
     void doubledNegativeLookahead1() {
         var p = Alpha.parser("S = !'a' !'b' ('a' | 'b' | 'c')+");

@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 class LazySupplierListTest {
     @Test
     void simpleTest() {
-        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-        final var lsl = new LazySupplierList<>((i) -> i < 15 ? i : null, Integer.MAX_VALUE);
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") final var lsl = new LazySupplierList<>((i) -> i < 15 ? i : null, Integer.MAX_VALUE);
 
         Assertions.assertFalse(lsl.isFullyEvaluated());
 
@@ -25,8 +24,7 @@ class LazySupplierListTest {
 
     @Test
     void emptyTest() {
-        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-        final var lsl = new LazySupplierList<>((i) -> null, Integer.MAX_VALUE);
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") final var lsl = new LazySupplierList<>((i) -> null, Integer.MAX_VALUE);
 
         Assertions.assertFalse(lsl.isFullyEvaluated());
         Assertions.assertNull(lsl.getOrNull(0));
@@ -34,6 +32,6 @@ class LazySupplierListTest {
         Assertions.assertEquals(0, lsl.size());
         Assertions.assertTrue(lsl.isFullyEvaluated());
 
-        Assertions.assertThrows(IndexOutOfBoundsException.class, ()->lsl.get(1));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> lsl.get(1));
     }
 }

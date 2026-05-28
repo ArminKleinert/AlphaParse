@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
- class ConvTest {
+class ConvTest {
     @Test
     void listToTreeTest() {
         var l = List.of(Sym.sym("S"), "A", List.of(Sym.sym("S"), "A"));

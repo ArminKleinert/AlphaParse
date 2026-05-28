@@ -6,26 +6,36 @@ import org.junit.jupiter.api.Test;
 
 class StrParserTest {
     private final StrParser strParser = new StrParser();
-    @Test void testStr1() {
+
+    @Test
+    void testStr1() {
         var s = strParser.processString("\"a\"");
         Assertions.assertEquals(1, s.length());
         Assertions.assertEquals("a", s);
     }
-    @Test void testStr2() {
+
+    @Test
+    void testStr2() {
         var s = strParser.processString("'a'");
         Assertions.assertEquals(1, s.length());
         Assertions.assertEquals("a", s);
     }
-    @Test void testStr3() {
+
+    @Test
+    void testStr3() {
         var s = strParser.processString("'\\u1234'");
         Assertions.assertEquals("ሴ", s);
     }
-    @Test void testReg1() {
+
+    @Test
+    void testReg1() {
         var s = strParser.processString("#\"[a]\"");
         Assertions.assertEquals(4, s.length());
         Assertions.assertEquals("\"[a]", s);
     }
-    @Test void testReg2() {
+
+    @Test
+    void testReg2() {
         var s = strParser.processString("#'[a]'");
         //Assertions.assertEquals(4, s.length());
         Assertions.assertEquals("'[a]", s);

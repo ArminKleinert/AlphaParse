@@ -72,7 +72,7 @@ public final class CombinatorFactory {
      */
     public @NotNull ExclusionCombinator exclusionCombinator(final @NotNull Combinator parserExpected,
                                                             final @NotNull Combinator parserExcluded) {
-        var result =  new ExclusionCombinator(parserExpected, parserExcluded);
+        var result = new ExclusionCombinator(parserExpected, parserExcluded);
         if (!useBuffer) return result;
         assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);

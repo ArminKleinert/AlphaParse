@@ -136,7 +136,7 @@ class AlphaParserCreationTest {
 
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                ()->Alpha.parser("S = \"a\"", dOpts.withRuleDefinitionOps(List.of())));
+                () -> Alpha.parser("S = \"a\"", dOpts.withRuleDefinitionOps(List.of())));
 
         // Using an operator that can't be used leads to an error.
         Assertions.assertThrows(
@@ -168,12 +168,12 @@ class AlphaParserCreationTest {
     void withEpsilonNames() {
         var dOpts = ParserCreationOptions.getDefault().withEpsilonNames(List.of("Epsilon", "epsilon", "EPSILON", "eps", "ε"));
 
-        // Using an operator that can't be used leads to an error.
+        // Using an epsilon that can't be used leads to an error.
         Assertions.assertThrows(
                 ParserCreationFailure.class,
                 () -> Alpha.parser("S = Epsilon", dOpts.withEpsilonNames(List.of("ε"))));
 
-        // Using an operator that is okay is valid.
+        // Using an epsilon that is okay is valid.
         Assertions.assertDoesNotThrow(() -> Alpha.parser("S = ε", dOpts.withEpsilonNames(List.of("ε"))));
 
         // Define a bunch of equal parsers and extract the grammars.
