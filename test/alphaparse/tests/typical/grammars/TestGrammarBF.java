@@ -2,7 +2,7 @@ package alphaparse.tests.typical.grammars;
 
 import alphaparse.Alpha;
 import alphaparse.parser.Parser;
-import alphaparse.parser_options.ParserCreationOptions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import java.nio.file.Path;
  * Grammar and tests from <a href="https://esolangs.org/wiki/Brainfuck#Examples">esolangs.org/wiki/Brainfuck</a>.
  */
 class TestGrammarBF {
-    private Parser parser() {
+    private @NotNull Parser parser() {
         try {
             return Alpha.parser(
                     Files.readString(Path.of("grammars/bf.g"))
@@ -52,13 +52,14 @@ class TestGrammarBF {
         Assertions.assertTrue(parser().parse(text).isSuccess());}
 
     @Test void quine() {
-        var text = "-->+++>+>+>+>+++++>++>++>->+++>++>+>>>>>>>>>>>>>>>>->++++>>>>->+++>+++>+++>+++>+\n" +
-                "++>+++>+>+>>>->->>++++>+>>>>->>++++>+>+>>->->++>++>++>++++>+>++>->++>++++>+>+>++\n" +
-                ">++>->->++>++>++++>+>+>>>>>->>->>++++>++>++>++++>>>>>->>>>>+++>->++++>->->->+++>\n" +
-                ">>+>+>+++>+>++++>>+++>->>>>>->>>++++>++>++>+>+++>->++++>>->->+++>+>+++>+>++++>>>\n" +
-                "+++>->++++>>->->++>++++>++>++++>>++[-[->>+[>]++[<]<]>>+[>]<--[++>++++>]+[<]<<++]\n" +
-                ">>>[>]++++>++++[--[+>+>++++<<[-->>--<<[->-<[--->>+<<[+>+++<[+>>++<<]]]]]]>+++[>+\n" +
-                "++++++++++++++<-]>--.<<<]";
+        var text = """
+                -->+++>+>+>+>+++++>++>++>->+++>++>+>>>>>>>>>>>>>>>>->++++>>>>->+++>+++>+++>+++>+
+                ++>+++>+>+>>>->->>++++>+>>>>->>++++>+>+>>->->++>++>++>++++>+>++>->++>++++>+>+>++
+                >++>->->++>++>++++>+>+>>>>>->>->>++++>++>++>++++>>>>>->>>>>+++>->++++>->->->+++>
+                >>+>+>+++>+>++++>>+++>->>>>>->>>++++>++>++>+>+++>->++++>>->->+++>+>+++>+>++++>>>
+                +++>->++++>>->->++>++++>++>++++>>++[-[->>+[>]++[<]<]>>+[>]<--[++>++++>]+[<]<<++]
+                >>>[>]++++>++++[--[+>+>++++<<[-->>--<<[->-<[--->>+<<[+>+++<[+>>++<<]]]]]]>+++[>+
+                ++++++++++++++<-]>--.<<<]""";
         Assertions.assertTrue(parser().parse(text).isSuccess());}
     @Test void xkcdRandom() {
         var text = "+c+h+o+s[e-n> +b+y+ <f]a>i+r[ -d>i+c+e+ +r<o]l-l+>;\n" +

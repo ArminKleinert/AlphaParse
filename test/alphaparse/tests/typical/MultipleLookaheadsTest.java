@@ -17,12 +17,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 class MultipleLookaheadsTest {
-    //    @Test
-//    void contradictoryLookaheads() {
-//        var p = Alpha.parser("S := &'a' &'b' ('a' | 'b' | 'c')+");
-//        System.out.println(p.show());
-//        System.out.println(p.parse("a"));
-//    }
+    @Test
+    void contradictoryLookaheads() {
+        var p = Alpha.parser("S := &'a' &'b' ('a' | 'b' | 'c')+");
+        Assertions.assertTrue(p.parse("a").isFailure());
+        Assertions.assertTrue(p.parse("b").isFailure());
+        Assertions.assertTrue(p.parse("c").isFailure());
+    }
+
     @Test
     void lookaheads1() {
         var p = Alpha.parser(new Grammar(Map.of(

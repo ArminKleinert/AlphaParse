@@ -21,22 +21,6 @@ import java.util.List;
 
 class AlphaTest {
     @Test
-    void outputForTemps() {
-//        {
-//            IO2.println(Alpha.parser("a = 'a'"));
-//            IO2.println(Alpha.parser("a123 = 'a'"));
-//            IO2.println(Alpha.parser("🎁 = 'a'"));
-//        }
-    }
-
-//    @Test
-//    void testMostDerived() {
-//        IO2.println(ClassUtil.mostDerived(List.of("abc", "abc")));
-//        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), new StringBuffer("abc"))));
-//        IO2.println(ClassUtil.mostDerived(List.of(new StringBuilder("abc"), "abc")));
-//    }
-
-    @Test
     void simplifiedParseTreeCreation() {
         var pt1 = ParseTree.create("S", "a", "a");
         var pt2 = ParseTree.create(new Node.NodeTreeTag(Sym.sym("S")), List.of(Node.of("a"), Node.of("a")));

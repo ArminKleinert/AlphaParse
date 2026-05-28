@@ -1,15 +1,11 @@
 package alphaparse.tests.obnoxious_tests;
 
 import alphaparse.Alpha;
-import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.ParseTree;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.rules.Timeout;
-
-import java.util.List;
 
 /**
  * Test cases for especially obnoxious test cases.

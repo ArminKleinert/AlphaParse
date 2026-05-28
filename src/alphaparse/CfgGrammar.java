@@ -482,7 +482,7 @@ final class CfgGrammar {
                                 List.of(factorLookNeg, optWhitespace,
                                         cf.stringTerminal("-").enableHideTag(),
                                         optWhitespace,
-                                        factorLookNeg));
+                                        cf.choiceCombinatorDistinct(List.of(factorLookNeg, cf.makeNonTerminal(Sym.sym("exclude"))))));
         return rulesRule;
     }
     private @NotNull Combinator makeEofRhs() {return cf.stringTerminal("EOF");}

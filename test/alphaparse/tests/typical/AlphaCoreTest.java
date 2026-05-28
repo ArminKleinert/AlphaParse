@@ -75,12 +75,6 @@ class AlphaCoreTest {
                     <seq-of-A-or-B> = ('a' | 'b')*
                     """);
 
-//    final @NotNull Parser addition = Alpha.parser(
-//            """
-//                    plus = plus <'+'> plus | num
-//                    num = #'[0-9]'+
-//                    """);
-
     final @NotNull Parser words_and_numbers = Alpha.parser(
             """
                     sentence = token (<whitespace> token)*
@@ -127,13 +121,6 @@ class AlphaCoreTest {
             """
                     S = !'ab' ('a' | 'b')+
                     """);
-
-//    final @NotNull Parser abc = Alpha.parser(
-//            """
-//                    S = &(A 'c') 'a'+ B
-//                    A = 'a' A? 'b'
-//                    <B> = 'b' B? 'c'
-//                    """);
 
     final @NotNull Parser ambiguous_tokenizer = Alpha.parser(
             """

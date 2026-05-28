@@ -1,17 +1,15 @@
 package alphaparse.tests.typical.grammars;
 
 import alphaparse.Alpha;
-import alphaparse.Sym;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.result.ParseTree;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 
 /**
  * Test(s) for the C99 grammar.
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
  * Grammar and tests from <a href="https://esolangs.org/wiki/Brainfuck#Examples">esolangs.org/wiki/Brainfuck</a>.
  */
 class TestGrammarC99Scannerless {
-    private Parser parser() {
+    private @NotNull Parser parser() {
         try {
             return Alpha.parser(
                     Files.readString(Path.of("grammars/c99_sl.g")),

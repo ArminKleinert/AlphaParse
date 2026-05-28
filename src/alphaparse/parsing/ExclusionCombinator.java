@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -103,14 +102,19 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
         } else {
             // Find a new start production name which is not in the grammar yet.
             Sym tempSym;
+            int n = 0;
             do {
-                tempSym = Sym.sym("RerunForExclusion" + new Random().nextInt(oldGrammar.size() + 1));
+                tempSym = Sym.sym("RerunForExclusion" + n++);
             } while (oldGrammar.containsKey(tempSym));
             startSymbol = tempSym;
 
             // Make new Grammar
             var tempG = new LinkedHashMap<>(oldGrammar);
-            tempG.put(startSymbol, parserExcluded);
+
+            // TODO: Simplify by implementing spans on ParseTrees.
+            tempG.put(startSymbol, (new CombinatorFactory(false)).catCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
+            //tempG.put(startSymbol, parserExcluded);
+
             grammar = new Grammar(tempG).applyStandardReductions(new CombinatorFactory(true));
         }
         return Gll.parse(grammar, startSymbol, subs, false, false);

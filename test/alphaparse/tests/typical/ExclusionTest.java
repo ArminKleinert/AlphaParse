@@ -1,16 +1,11 @@
 package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
-import alphaparse.Sym;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
-import alphaparse.parsing.TerminalStringCombinator;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.Set;
 
 class ExclusionTest {
     @Test
