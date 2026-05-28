@@ -264,7 +264,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * The starting index in the input string of the parse (inclusive).
      * <pre>
      * {@code
-     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'A'", opts);
+     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'A'");
      *         var tree = p.parse("bAn").castToParseSuccess();
      *         System.out.println(tree.toString());            // [:S, b, [:A, A], n]
      *         System.out.println(tree.getSpanStart());        // 0
@@ -282,7 +282,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * The end index in the input string of the parse (exclusive).
      * <pre>
      * {@code
-     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'A'", opts);
+     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'A'");
      *         var tree = p.parse("bAn").castToParseSuccess();
      *         System.out.println(tree.toString());            // [:S, b, [:A, A], n]
      *         System.out.println(tree.getSpanStart());        // 0
@@ -300,7 +300,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * Given a string (hopefully the one this tree was parsed from), will output the substring which is covered by this tree.
      * <pre>
      * {@code
-     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'Aa'", opts);
+     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'Aa'");
      *         var tree = p.parse("bAan").castToParseSuccess();
      *         var subTree = (ParseTree) tree.getContent().get(1).content();
      *         System.out.println(tree);                            // [:S, b, [:A, Aa], n]

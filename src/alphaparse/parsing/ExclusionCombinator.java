@@ -5,6 +5,7 @@ import alphaparse.grammar.Grammar;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseResult;
+import alphaparse.result.ParseTree;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
@@ -110,10 +111,9 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
 
             // Make new Grammar
             var tempG = new LinkedHashMap<>(oldGrammar);
-
-            // TODO: Simplify by implementing spans on ParseTrees.
-            tempG.put(startSymbol, (new CombinatorFactory(false)).catCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
-            //tempG.put(startSymbol, parserExcluded);
+            tempG.put(
+                    startSymbol,
+                    (new CombinatorFactory(false)).catCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
 
             grammar = new Grammar(tempG).applyStandardReductions(new CombinatorFactory(true));
         }
