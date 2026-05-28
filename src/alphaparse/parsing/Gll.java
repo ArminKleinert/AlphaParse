@@ -38,6 +38,7 @@ public final class Gll {
     Tramp tramp() {
         return tramp;
     }
+
     boolean iterativeDeepening() {
         return iterativeDeepening;
     }
@@ -195,8 +196,8 @@ public final class Gll {
         }
         if (parser.getReduction().getReductionType() != ReductionType.ReductionTypesAvailable.INITIAL) {
             final ParseTree tree = ParseTree.create(
-                    parser.getReduction().getKey(),
-                    result.getResult());
+                    parser.getReduction().getKey(), result.getResult(),
+                    nodeKey.index(), result.index());
             result = AlphaParseMessage.create(result.index(), tree);
         }
 
@@ -315,10 +316,10 @@ public final class Gll {
     /**
      * This method should not be called directly. Use {@link Alpha#parses(Parser, String)} or {@link Alpha#parses(Parser, String, ParsingOptions)} instead.
      *
-     * @param grammar The grammar.
-     * @param start   The name of the start production.
-     * @param text    The text.
-     * @param partial Whether to include partial results.
+     * @param grammar            The grammar.
+     * @param start              The name of the start production.
+     * @param text               The text.
+     * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String)
@@ -341,10 +342,10 @@ public final class Gll {
     /**
      * This method should not be called directly. Use {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)} instead.
      *
-     * @param grammar The grammar.
-     * @param start   The name of the start production.
-     * @param text    The text.
-     * @param partial Whether to include partial results.
+     * @param grammar            The grammar.
+     * @param start              The name of the start production.
+     * @param text               The text.
+     * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse forest or failure.
      * @see Alpha#parsesOrFailure(Parser, String, ParsingOptions)
@@ -372,10 +373,10 @@ public final class Gll {
     /**
      * This method should not be called directly. Use {@link Alpha#parse(Parser, String)} or {@link Alpha#parse(Parser, String, ParsingOptions)} instead.
      *
-     * @param grammar The grammar.
-     * @param start   The name of the start production.
-     * @param text    The text.
-     * @param partial Whether to include partial results.
+     * @param grammar            The grammar.
+     * @param start              The name of the start production.
+     * @param text               The text.
+     * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String)
@@ -403,10 +404,10 @@ public final class Gll {
     /**
      * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, ParsingOptions)} with {@link ParsingOptions#isTotal()} set to true instead.
      *
-     * @param grammar The grammar.
-     * @param start   The name of the start production.
-     * @param text    The text.
-     * @param partial Whether to include partial results.
+     * @param grammar            The grammar.
+     * @param start              The name of the start production.
+     * @param text               The text.
+     * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String, ParsingOptions)
@@ -443,10 +444,10 @@ public final class Gll {
     /**
      * This method should not be called directly. Use {@link Alpha#parse(Parser, String, ParsingOptions)} with {@link ParsingOptions#isTotal()} set to true instead.
      *
-     * @param grammar The grammar.
-     * @param start   The name of the start production.
-     * @param text    The text.
-     * @param partial Whether to include partial results.
+     * @param grammar            The grammar.
+     * @param start              The name of the start production.
+     * @param text               The text.
+     * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String, ParsingOptions)
@@ -463,5 +464,7 @@ public final class Gll {
         return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial, iterativeDeepening);
     }
 
-    String getInstanceIdForDebug() {return ((Object)this).toString();}
+    String getInstanceIdForDebug() {//noinspection RedundantCast
+        return ((Object) this).toString();
+    }
 }

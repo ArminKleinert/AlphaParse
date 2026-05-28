@@ -12,22 +12,29 @@ import java.util.*;
  */
 public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
-     * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See {@link #create(Node.NodeTreeTag, List, boolean)}
+     * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See {@link #create(Node.NodeTreeTag, List, int, int)}
      */
     public static @NotNull Node.NodeTreeTag NULL_TAG = new Node.NodeTreeTag(Sym.sym("\0\0\0\0"));
 
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
     private int hashCode = 0;
-    private final boolean usedMemoryOptimization;
+
+    private final int spanStart;
+    private final int spanEndExclusive;
 
     private ParseTree(final @NotNull Node.NodeTreeTag tag,
                       final @NotNull List<@NotNull Node> content,
-                      final boolean usedMemoryOptimization) {
+                      final int spanStart,
+                      final int spanEndExclusive) {
         this.tag = tag;
-        // this.content = flattenRawProductions(content);
         this.content = content;
-        this.usedMemoryOptimization = usedMemoryOptimization;
+
+        if ((spanStart == -1 && spanEndExclusive != -1) || (spanStart != -1 && spanStart > spanEndExclusive))
+            throw new IllegalArgumentException("Invalid span " + spanStart + " to " + spanEndExclusive + ".");
+
+        this.spanStart = spanStart;
+        this.spanEndExclusive = spanEndExclusive;
     }
 
     /**
@@ -67,15 +74,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
-     * True if memory optimization was turned on when generating the tree.
-     *
-     * @return whether memory optimization was turned on when parsing.
-     */
-    public boolean usedMemoryOptimization() {
-        return usedMemoryOptimization;
-    }
-
-    /**
      * Returns the tag ({@link #getTag()} and content ({@link #getContent()}) into a single list.
      * This method is not recursive, ie does not apply to subtrees.
      *
@@ -89,193 +87,17 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
 
-    @Override
-    public int size() {
-        return content.size() + 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return Objects.equals(tag, o) || content.contains(o);
-    }
-
-    @Override
-    public @NotNull Iterator<@NotNull Node> iterator() {
-        return new Iterator<>() {
-            Iterator<@NotNull Node> delegate = null;
-
-            @Override
-            public boolean hasNext() {
-                return delegate == null || delegate.hasNext();
-            }
-
-            @Override
-            public Node next() {
-                if (delegate == null) {
-                    delegate = content.iterator();
-                    return tag;
-                } else {
-                    return delegate.next();
-                }
-            }
-        };
-    }
-
-    @Override
-    public @NotNull Object @NotNull [] toArray() {
-        return toList().toArray();
-    }
-
-    @Override
-    public @NotNull <T> T @NotNull [] toArray(@NotNull T @NotNull [] ts) {
-        return toList().toArray(ts);
-    }
-
-    @Override
-    public boolean add(Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsAll(@NotNull Collection<?> collection) {
-        return new HashSet<>(content).containsAll(collection);
-    }
-
-    @Override
-    public boolean addAll(@NotNull Collection<? extends Node> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(int i, @NotNull Collection<? extends Node> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(@NotNull Collection<?> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(@NotNull Collection<?> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof List<?> c)) {
-            return false;
-        }
-        if (o instanceof ParseTree that) {
-            return Objects.equals(getTag(), that.getTag()) && Objects.equals(getContent(), that.getContent());
-        }
-        final @NotNull var otherIter = c.iterator();
-        if (!otherIter.hasNext()) return false;
-
-        for (var thisNext : this) {
-            if (!otherIter.hasNext()) return false;
-            final @NotNull var otherNext = otherIter.next();
-            if (!Objects.equals(thisNext, otherNext)) return false;
-        }
-
-        return !otherIter.hasNext();
-    }
-
-    @Override
-    public int hashCode() {
-        if (hashCode != 0)
-            return hashCode;
-        int hc = 1;
-        for (final var e : this)
-            hc = hc * 31 + Objects.hashCode(e);
-        hashCode = hc;
-        return hc;
-    }
-
-    @Override
-    public Node get(final int i) {
-        if (i == 0) return tag;
-        return content.get(i - 1);
-    }
-
-    @Override
-    public Node set(final int i, final @NotNull Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void add(final int i, final @NotNull Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Node remove(final int i) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int indexOf(final Object o) {
-        if (Objects.equals(tag, o)) return 0;
-        int i = content.indexOf(o);
-        if (i < 0) return i;
-        return i + 1;
-    }
-
-    @Override
-    public int lastIndexOf(final Object o) {
-        int i = content.lastIndexOf(o);
-        if (i >= 0) return i + 1;
-        if (Objects.equals(tag, o)) return 0;
-        return -1;
-    }
-
-    @Override
-    public @NotNull ListIterator<@NotNull Node> listIterator() {
-        return toList().listIterator();
-    }
-
-    @Override
-    public @NotNull ListIterator<@NotNull Node> listIterator(final int i) {
-        return toList().listIterator();
-    }
-
-    @Override
-    public @NotNull List<@NotNull Node> subList(final int i, final int i1) {
-        if (i == 1 && i1 == content.size() + 1) return content;
-        return toList().subList(i, i1);
-    }
-
-    @Override
-    public @NotNull String toString() {
-        return toList().toString();
-    }
-
     /**
      * Creates a parse tree from a tag and content.
      *
      * @param tag     The tag as a node.
      * @param content The content as a node.
      * @return A new parse tree.
-     * @see #create(Node.NodeTreeTag, List, boolean)
+     * @see #create(Node.NodeTreeTag, List, int, int)
      */
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content) {
-        return create(tag, content, false);
+        return create(tag, content, -1, -1);
     }
 
     /**
@@ -310,20 +132,52 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
      * Creates a parse tree from a tag and content.
      * <p>
+     * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
+     *
+     * @param tag     The tag as a node.
+     * @param content The content as a node.
+     * @return A new parse tree.
+     * @see #create(Node.NodeTreeTag, List)
+     */
+    public static @NotNull ParseTree create(final @NotNull Sym tag,
+                                            final @Nullable Object content,
+                                            final int spanStart,
+                                            final int spanEnd) {
+        final @NotNull var afs = switch (content) {
+            case null -> List.<Node>of();
+            case FlatSeq<?> objects -> {
+                final @NotNull var res = new ArrayList<Node>();
+                for (@NotNull var t : objects) res.add(Node.of(t));
+                yield res;
+            }
+            case String ignored -> List.of(Node.of(content));
+            case TotalParsesFailureNode ignored -> List.of(Node.of(content));
+            case ParseFailureNode ignored -> List.of(Node.of(content));
+            case ParseTree ignored -> List.of(Node.of(content));
+            case List<?> objects -> objects.stream().map(Node::of).toList();
+            default -> throw new IllegalArgumentException(content.getClass().toString());
+        };
+        return create(new Node.NodeTreeTag(tag), afs, spanStart, spanEnd);
+    }
+
+    /**
+     * Creates a parse tree from a tag and content.
+     * <p>
      * This method also "flattens" nested trees if necessary. Trees need to be flattened if the content includes any subtrees that have the {@link ParseTree#NULL_TAG}.
      * <p>
      * E.g. {@code [:S, "A", [:S, "A"]]} is flat, but {@code [:S, [NULL_TAG, "A"], [:S, "A"]]} is not.
      * This happens when hide-tags are used, for example in the grammar {@code "S := A S | EPS \n <A> := 'A'"}.
      *
-     * @param tag                    The tag as a node.
-     * @param content                The content as a node.
-     * @param usedMemoryOptimization Whether memory optimization was used when parsing.
+     * @param tag       The tag as a node.
+     * @param content   The content as a node.
+     * @param spanStart Starting index in the input (inclusive).
+     * @param spanEnd   End index in the input (exclusive).
      * @return A new parse tree.
      */
     public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
                                             final @NotNull List<Node> content,
-                                            final boolean usedMemoryOptimization) {
-
+                                            final int spanStart,
+                                            final int spanEnd) {
         // If the content contains a ParseTree which has the NULL_TAG, it has to be "flattened".
         boolean isFlat = true;
         for (Node node : content) {
@@ -335,7 +189,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
             }
         }
         if (isFlat) {
-            return new ParseTree(tag, content, usedMemoryOptimization);
+            return new ParseTree(tag, content, spanStart, spanEnd);
         }
 
         // The rest of this method handles the case that there is an unflattened subtree.
@@ -356,7 +210,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
             }
         }
 
-        return new ParseTree(tag, entries, usedMemoryOptimization);
+        return new ParseTree(tag, entries, spanStart, spanEnd);
     }
 
     /**
@@ -404,5 +258,247 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         }
 
         return Arrays.asList(l);
+    }
+
+    /**
+     * The starting index in the input string of the parse (inclusive).
+     * <pre>
+     * {@code
+     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'A'", opts);
+     *         var tree = p.parse("bAn").castToParseSuccess();
+     *         System.out.println(tree.toString());            // [:S, b, [:A, A], n]
+     *         System.out.println(tree.getSpanStart());        // 0
+     *         System.out.println(tree.getSpanEndExclusive()); // 3
+     * }
+     * </pre>
+     *
+     * @return The starting index in the input string of the parse (inclusive).
+     */
+    public int getSpanStart() {
+        return spanStart;
+    }
+
+    /**
+     * The end index in the input string of the parse (exclusive).
+     * <pre>
+     * {@code
+     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'A'", opts);
+     *         var tree = p.parse("bAn").castToParseSuccess();
+     *         System.out.println(tree.toString());            // [:S, b, [:A, A], n]
+     *         System.out.println(tree.getSpanStart());        // 0
+     *         System.out.println(tree.getSpanEndExclusive()); // 3
+     * }
+     * </pre>
+     *
+     * @return The end index in the input string of the parse (exclusive).
+     */
+    public int getSpanEndExclusive() {
+        return spanEndExclusive;
+    }
+
+    /**
+     * Given a string (hopefully the one this tree was parsed from), will output the substring which is covered by this tree.
+     * <pre>
+     * {@code
+     *         var p = Alpha.parser("S = 'b' A 'n'\nA = 'Aa'", opts);
+     *         var tree = p.parse("bAan").castToParseSuccess();
+     *         var subTree = (ParseTree) tree.getContent().get(1).content();
+     *         System.out.println(tree);                            // [:S, b, [:A, Aa], n]
+     *         System.out.println(subTree);                         // [:A, Aa]
+     *         System.out.println(subTree.getSpanStart());          // 1
+     *         System.out.println(subTree.getSpanEndExclusive());   // 3
+     *         System.out.println(subTree.containedString("bAan")); // Optional[Aa]
+     * }
+     * </pre>
+     *
+     * @param s Input string.
+     * @return An {@link Optional} containing the string if present or an empty {@link Optional} if the string is not covered by this tree.
+     * @throws IllegalArgumentException if this tree has no span specified.
+     */
+    public @NotNull Optional<@NotNull String> containedString(String s) {
+        if (spanEndExclusive == -1) return Optional.empty();
+        if (s.length() < spanEndExclusive) throw new IllegalArgumentException();
+        return Optional.of(s.substring(spanStart, spanEndExclusive));
+    }
+
+    @Override
+    public @NotNull String toString() {
+        //return getSpanStart() + " " + getSpanEndExclusive() + " " + toList();
+        return toList().toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof List<?> c)) {
+            return false;
+        }
+        if (o instanceof ParseTree that) {
+            return Objects.equals(getTag(), that.getTag()) && Objects.equals(getContent(), that.getContent());
+        }
+        final @NotNull var otherIter = c.iterator();
+        if (!otherIter.hasNext()) return false;
+
+        for (var thisNext : this) {
+            if (!otherIter.hasNext()) return false;
+            final @NotNull var otherNext = otherIter.next();
+            if (!Objects.equals(thisNext, otherNext)) return false;
+        }
+
+        return !otherIter.hasNext();
+    }
+
+    /* SECTION: Methods that allow treating the tree like a list. */
+
+    @Override
+    public int size() {
+        return content.size() + 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return !(tag.equals(NULL_TAG) && content.isEmpty());
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return Objects.equals(tag, o) || content.contains(o);
+    }
+
+    @Override
+    public @NotNull Iterator<@NotNull Node> iterator() {
+        return new Iterator<>() {
+            Iterator<@NotNull Node> delegate = null;
+
+            @Override
+            public boolean hasNext() {
+                return delegate == null || delegate.hasNext();
+            }
+
+            @Override
+            public Node next() {
+                if (delegate == null) {
+                    delegate = content.iterator();
+                    return tag;
+                } else {
+                    return delegate.next();
+                }
+            }
+        };
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> collection) {
+        return new HashSet<>(content).containsAll(collection);
+    }
+
+    @Override
+    public @NotNull Object @NotNull [] toArray() {
+        return toList().toArray();
+    }
+
+    @Override
+    public @NotNull <T> T @NotNull [] toArray(@NotNull T @NotNull [] ts) {
+        return toList().toArray(ts);
+    }
+
+    @Override
+    public int hashCode() {
+        if (hashCode != 0)
+            return hashCode;
+        int hc = 1;
+        for (final var e : this)
+            hc = hc * 31 + Objects.hashCode(e);
+        hashCode = hc;
+        return hc;
+    }
+
+    @Override
+    public Node get(final int i) {
+        if (i == 0) return tag;
+        return content.get(i - 1);
+    }
+
+    @Override
+    public int indexOf(final Object o) {
+        if (Objects.equals(tag, o)) return 0;
+        int i = content.indexOf(o);
+        if (i < 0) return i;
+        return i + 1;
+    }
+
+    @Override
+    public int lastIndexOf(final Object o) {
+        int i = content.lastIndexOf(o);
+        if (i >= 0) return i + 1;
+        if (Objects.equals(tag, o)) return 0;
+        return -1;
+    }
+
+    @Override
+    public @NotNull ListIterator<@NotNull Node> listIterator() {
+        return toList().listIterator();
+    }
+
+    @Override
+    public @NotNull ListIterator<@NotNull Node> listIterator(final int i) {
+        return toList().listIterator();
+    }
+
+    @Override
+    public @NotNull List<@NotNull Node> subList(final int i, final int i1) {
+        if (i == 1 && i1 == content.size() + 1) return content;
+        return toList().subList(i, i1);
+    }
+
+    /* SECTION: Methods that always throw UnsupportedOperationException. */
+
+    @Override
+    public boolean add(Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends Node> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(int i, @NotNull Collection<? extends Node> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Node set(final int i, final @NotNull Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void add(final int i, final @NotNull Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Node remove(final int i) {
+        throw new UnsupportedOperationException();
     }
 }
