@@ -130,7 +130,6 @@ final class CfgGrammar {
                 "One of " + epsilonNames,
                 text -> epsilonNames.stream().filter(text::startsWith).max(Comparator.comparingInt(String::length))
         );
-
     }
 
     private @NotNull Combinator makeCfgFactorRhs() {

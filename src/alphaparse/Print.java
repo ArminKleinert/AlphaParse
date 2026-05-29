@@ -74,11 +74,11 @@ public final class Print {
             case RepetitionCombinator repParser -> {
                 final int min = repParser.getMin();
                 final int max = repParser.getMax();
-                final @NotNull StringBuilder sb = new StringBuilder(parenForCompound(hidden, repParser.getParser()));
-                sb.append('{').append(min);
-                if (min != max) sb.append(',').append(max);
-                sb.append('}');
-                return sb.toString();
+                return ""
+                        + min
+                        + '*'
+                        + max
+                        + parenForCompound(hidden, repParser.getParser());
             }
             case ChoiceCombinator choiceCombinator -> {
                 final @NotNull List<String> parserStrings =
@@ -122,14 +122,18 @@ public final class Print {
             case NegativeLookaheadCombinator negativeLookaheadCombinator -> {
                 return "!" + parenForCompound(hidden, negativeLookaheadCombinator.getParser());
             }
-            case TerminalSpecialSequenceCombinator specialSequenceCombinator ->
-            {return "?" + specialSequenceCombinator + "?";}
-            case ExclusionCombinator exclusionCombinator-> {
+            case TerminalSpecialSequenceCombinator specialSequenceCombinator -> {
+                return "?" + specialSequenceCombinator + "?";
+            }
+            case ExclusionCombinator exclusionCombinator -> {
                 final @NotNull List<String> parserStrings =
                         exclusionCombinator.getParsers().stream()
                                 .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
                                 .toList();
                 return String.join(" - ", parserStrings);
+            }
+            case EOFCombinator ignored -> {
+                return "eof";
             }
         }
     }
@@ -137,9 +141,9 @@ public final class Print {
     private static @NotNull String ruleToString(final @NotNull Sym startProd, final @NotNull Combinator parser) {
         final ReductionType red = parser.getReduction();
         if (red.isHiddenOrRaw())
-            return "<" + startProd.name() + '>' + " := " + combinatorToString(parser);
+            return "<" + startProd.name() + '>' + " = " + combinatorToString(parser);
         else
-            return startProd.name() + " := " + combinatorToString(parser);
+            return startProd.name() + " = " + combinatorToString(parser);
     }
 
     /**
