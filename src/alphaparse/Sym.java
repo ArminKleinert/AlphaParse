@@ -1,6 +1,5 @@
 package alphaparse;
 
-import alphaparse.util.ClassUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.Reference;
@@ -35,7 +34,19 @@ public final class Sym {
         Sym k = null;
         Reference<Sym> existingRef = table.get(sym);
         if (existingRef == null) {
-            ClassUtil.clearReferenceCache(rq, table);
+            if (rq.poll() != null) {
+                Object o = rq.poll();
+                while (o != null) {
+                    o = rq.poll();
+                }
+
+                for (final @NotNull var e : table.entrySet()) {
+                    final @NotNull Reference<Sym> val = e.getValue();
+                    if (val != null && val.get() == null) {
+                        table.remove(e.getKey(), val);
+                    }
+                }
+            }
 
             k = new Sym(sym);
             existingRef = table.putIfAbsent(sym, new WeakReference<>(k, rq));

@@ -7,6 +7,14 @@ import alphaparse.parsing.*;
 import org.junit.jupiter.api.Test;
 
 class NewFeaturesTest {
+    @Test void repRepTest() {
+        var p = Alpha.parser("S = 0*3 (0*4 'a')");
+        var sb = new StringBuilder();
+        for (int i = 0; i < 3*4; i++) {
+            System.out.println(i + ": " + p.parse(sb.toString()));
+            sb.append("a");
+        }
+    }
     @Test void exclusionFullTest1() {
         var p6 = Alpha.parser(
                 "S := #'[0-9]+' - ('11' | '13')",

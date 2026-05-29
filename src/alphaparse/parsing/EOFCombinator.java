@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * This class should almost never be used, but can have its uses occasionally.
  * <p>
- * Format: {@code "eοf"} (Careful: That is not the same as {@code "eof"})
+ * Format: {@code "EOF"}
  */
 public final class EOFCombinator extends CombinatorTerminal {
     private EOFCombinator(final boolean hide, final @NotNull ReductionType red) {
@@ -22,9 +22,9 @@ public final class EOFCombinator extends CombinatorTerminal {
     }
 
     /**
-     * The default is always buffered. {@link #getReduction()} and {@link #isHidden()} have their default values.
+     * Default EOF rule. Can be buffered.
      *
-     * @return The canonical instance of Epsilon.
+     * @return Default EOF rule. Can be buffered.
      */
     public static @NotNull EOFCombinator getDefault() {
         return new EOFCombinator();

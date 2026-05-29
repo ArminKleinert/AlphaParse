@@ -5,13 +5,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Utilities for tests.
@@ -79,32 +76,6 @@ public final class ClassUtil {
             Files.write(Path.of("logfile"), List.of(s), StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Clears a reference queue and removes references to deallocated objects from the concurrent hashmap.
-     *
-     * @param rq    The reference queue.
-     * @param table The table.
-     * @param <K>   Key type.
-     * @param <T>   Value type.
-     */
-    public static <K, T> void clearReferenceCache(
-            final @NotNull ReferenceQueue<T> rq,
-            final @NotNull ConcurrentHashMap<K, Reference<T>> table) {
-        if (rq.poll() != null) {
-            Object o = rq.poll();
-            while (o != null) {
-                o = rq.poll();
-            }
-
-            for (final @NotNull Map.Entry<K, Reference<T>> e : table.entrySet()) {
-                final @NotNull Reference<T> val = e.getValue();
-                if (val != null && val.get() == null) {
-                    table.remove(e.getKey(), val);
-                }
-            }
         }
     }
 }
