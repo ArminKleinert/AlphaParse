@@ -102,7 +102,7 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
     record NodeString(@NotNull String content) implements Node {
         @Override
         public @NotNull String toString() {
-            return content();
+            return '"' + content() + '"';
         }
     }
 

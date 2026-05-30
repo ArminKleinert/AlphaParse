@@ -162,6 +162,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
                 case NonTerminalCombinator nonTerminalCombinator -> result.add(nonTerminalCombinator);
                 case CombinatorTerminal ignored -> {
                 }
+                case SimpleCombinator ignored -> {
+                }
                 case CombinatorWithManyParsers combinatorWithManyParsers ->
                         combinatorStack.addAll(combinatorWithManyParsers.getParsers());
                 case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
@@ -195,23 +197,28 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      * @see GrammarInfo
      */
     public @NotNull GrammarInfo analyze() {
-        return new GrammarInfo(this);    }
+        return new GrammarInfo(this);
+    }
 
     /**
      * Holds some information about a grammar.
+     *
      * @param grammar The grammar.
      */
     public record GrammarInfo(@NotNull Grammar grammar) {
         /**
          * All non-terminals of the Grammar.
+         *
          * @return A collection of all non-terminals of the Grammar.
          */
 
         public @NotNull Collection<@NotNull Sym> definedNTs() {
             return grammar.keySet();
         }
+
         /**
          * All non-terminals which appear on the right-hand side of any production.
+         *
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
          */
         public @NotNull Collection<@NotNull Sym> usedNTs() {
@@ -269,6 +276,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
          *   collectRules(S := ('0' | '1')*) == Set['0', '1', ('0'|'1'), ('0'|'1')*]
          * }
          * </pre>
+         *
          * @param predicate A predicate which can be used to collect only rules which match it.
          * @return A collection of all rules contained in the grammar.
          */

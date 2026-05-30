@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * A class representing the right-hand sides of productions.
  */
 public abstract sealed class Combinator
-        permits CombinatorTerminal, NonTerminalCombinator, CombinatorWithManyParsers, CombinatorWithParser {
+        permits CombinatorWithManyParsers, CombinatorWithParser, SimpleCombinator {
     /**
      * Default value for {@link Combinator#isHidden()}.
      */

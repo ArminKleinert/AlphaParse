@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A general type of {@link Combinator} for terminals (epsilon, regex, string, char)
  */
-public abstract sealed class CombinatorTerminal
-        extends Combinator
-        permits EOFCombinator, EpsilonCombinator, TerminalRegexpCombinator, TerminalSpecialSequenceCombinator, TerminalStringCombinator, TerminalUnicodeCharCombinator {
+public abstract sealed class CombinatorTerminal extends SimpleCombinator permits
+        EOFCombinator, EpsilonCombinator, TerminalRegexpCombinator,
+        TerminalStringCombinator, TerminalUnicodeCharCombinator {
     protected CombinatorTerminal(final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
     }

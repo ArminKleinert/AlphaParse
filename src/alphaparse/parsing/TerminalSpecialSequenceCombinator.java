@@ -17,7 +17,7 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * <p>
  * You should not use this class unless it is very important!
  */
-public final class TerminalSpecialSequenceCombinator extends CombinatorTerminal {
+public final class TerminalSpecialSequenceCombinator extends SimpleCombinator {
     private final @NotNull String description;
     private final @NotNull Function<@NotNull String, Optional<String>> function;
 

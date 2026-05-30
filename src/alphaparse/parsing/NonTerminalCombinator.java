@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * This type represents non-terminals.
  */
-public final class NonTerminalCombinator extends Combinator {
+public final class NonTerminalCombinator extends SimpleCombinator {
     private final @NotNull Sym keyword;
 
     private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Sym keyword) {

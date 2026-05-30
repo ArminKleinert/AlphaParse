@@ -485,6 +485,7 @@ public final class CombinatorFactory {
                 }
                 yield result;
             }
+            case SimpleCombinator ignored -> parser;
         };
     }
 
