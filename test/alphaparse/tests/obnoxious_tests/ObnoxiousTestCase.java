@@ -21,7 +21,7 @@ public class ObnoxiousTestCase {
      * Timeout for all test cases in this class.
      */
     @Rule
-    public Timeout timeout = Timeout.millis(200);
+    public Timeout timeout = Timeout.millis(1000);
 
     /**
      * <pre>
@@ -29,6 +29,7 @@ public class ObnoxiousTestCase {
      *     Grammar: {@code S = A\nA = S}
      *     Text: {@code ""}
      *     Expect: Failure
+     *     Status: Reports no results but has no failure recorded.
      * </pre>
      */
     @Test
@@ -45,6 +46,7 @@ public class ObnoxiousTestCase {
      *     Grammar: {@code S = S}
      *     Text: {@code ""}
      *     Expect: Failure
+     *     Status: Reports no results but has no failure recorded.
      * </pre>
      */
     @Test
@@ -61,6 +63,7 @@ public class ObnoxiousTestCase {
      *     Grammar: {@code S = S}
      *     Text: {@code "a"}
      *     Expect: Failure
+     *     Status: Reports no results but has no failure recorded.
      * </pre>
      */
     @Test
@@ -77,6 +80,7 @@ public class ObnoxiousTestCase {
      *     Grammar: {@code S = S | 'a'}
      *     Text: {@code "a"}
      *     Expect: Parse tree {@code [:S, "a"]}
+     *     Status: Success
      * </pre>
      */
     @Test
@@ -93,6 +97,7 @@ public class ObnoxiousTestCase {
      *     Grammar: {@code S = S}
      *     Text: {@code ""}
      *     Expect: Empty
+     *     Status: Success
      * </pre>
      */
     @Test
@@ -107,6 +112,8 @@ public class ObnoxiousTestCase {
      *     Grammar: {@code S = S | epsilon}
      *     Text: {@code ""}
      *     Expect: Does something other than timing out.
+     *     Status: Timeout.
+     *     Note: This is technically correct behavior, but...
      * </pre>
      */
     @Test

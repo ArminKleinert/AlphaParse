@@ -37,7 +37,7 @@ class AlphaParserCreationTest {
         try {
 
             final @NotNull String text = "aaaaabbbaaaabb";
-            final @NotNull var grammarFile = new File("grammars/as_and_bs.g");
+            final @NotNull var grammarFile = new File("testres/grammars/as_and_bs.g");
             final @NotNull var p = Alpha.parser(Files.readString(grammarFile.toPath()));
             final @NotNull var grammarText = Files.readString(grammarFile.toPath());
 
@@ -53,7 +53,7 @@ class AlphaParserCreationTest {
             throw new RuntimeException(e);
         }
         try {
-            final @NotNull var grammarFile = new File("grammars/as_and_bs.g");
+            final @NotNull var grammarFile = new File("testres/grammars/as_and_bs.g");
             final @NotNull var p = Alpha.parser(Files.readString(grammarFile.toPath()));
             Assertions.assertEquals(p, Alpha.parser(grammarFile));
         } catch (IOException e) {
@@ -61,7 +61,7 @@ class AlphaParserCreationTest {
         }
 
         try {
-            final @NotNull var grammarFile = new File("grammars/c99.g");
+            final @NotNull var grammarFile = new File("testres/grammars/c99.g");
             final @NotNull var pFromString = Alpha.parser(
                     Files.readString(grammarFile.toPath()),
                     ParserCreationOptions.newWithStandardWhitespace());

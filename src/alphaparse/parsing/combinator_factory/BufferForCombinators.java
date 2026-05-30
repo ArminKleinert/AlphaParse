@@ -39,6 +39,7 @@ final class BufferForCombinators {
             case EpsilonCombinator combinator -> combinator;
             case TerminalSpecialSequenceCombinator combinator -> combinator;
             case ExclusionCombinator combinator-> getOrAdd(combinator);
+            case EOFCombinator eofCombinator -> eofCombinator;
         };
     }
 

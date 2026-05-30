@@ -19,7 +19,7 @@ class TestGrammarBF {
     private @NotNull Parser parser() {
         try {
             return Alpha.parser(
-                    Files.readString(Path.of("grammars/bf.g"))
+                    Files.readString(Path.of("testres/grammars/bf.g"))
             );
         } catch (IOException e) {
             throw new RuntimeException(e);

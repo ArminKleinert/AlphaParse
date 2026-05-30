@@ -4,16 +4,29 @@ import alphaparse.Alpha;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
+import alphaparse.result.ParseTree;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class NewFeaturesTest {
+    @Test void simple() {
+        var g = """
+                Expression = Term , { ( '+' | '-' ) , Term } ;
+                Term       = Factor , { ( '*' | '/' ) , Factor } ;
+                Factor     = Number | '(', Expression, ')' ;
+                Number     = ['+' | '-' ] Digit , { Digit } ;
+                Digit      = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+                """;
+        var p = Alpha.parser(g);
+        System.out.println(p.parse("(8-9)*-20/18+1"));
+    }
     @Test void repRepTest() {
-        var p = Alpha.parser("S = 0*3 (0*4 'a')");
-        var sb = new StringBuilder();
-        for (int i = 0; i < 3*4; i++) {
-            System.out.println(i + ": " + p.parse(sb.toString()));
-            sb.append("a");
-        }
+        var p = Alpha.parser("S = 0*4A\n<A> = 'a'");
+        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
+        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+        Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
+        Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
     }
     @Test void exclusionFullTest1() {
         var p6 = Alpha.parser(

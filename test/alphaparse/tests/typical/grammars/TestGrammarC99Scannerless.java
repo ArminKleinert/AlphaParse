@@ -20,7 +20,7 @@ class TestGrammarC99Scannerless {
     private @NotNull Parser parser() {
         try {
             return Alpha.parser(
-                    Files.readString(Path.of("grammars/c99_sl.g")),
+                    Files.readString(Path.of("testres/grammars/c99_sl.g")),
                     ParserCreationOptions.newWithStandardWhitespace()
             );
         } catch (IOException e) {

@@ -35,7 +35,7 @@ final class Main {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        final @NotNull String c99GrammarText = readFile("grammars/c99.g");
+        final @NotNull String c99GrammarText = readFile("testres/grammars/c99.g");
 
         int i = 0;
 

@@ -1,8 +1,9 @@
-# AlphaParse 0.9
+# AlphaParse 0.9.1
 
 A tool to generate and use parsers at runtime.
 
-This project started as a conversion of the great Clojure-library [Instaparse](https://github.com/engelberg/instaparse).
+This project started as a conversion of the great Clojure-library [Instaparse](https://github.com/engelberg/instaparse)
+but has grown beyond it.
 
 ## Features
 
@@ -13,51 +14,52 @@ This project started as a conversion of the great Clojure-library [Instaparse](h
 - [x] Can produce lazy sequences of all parses. This is useful for ambiguous grammars.
 - [x] Grammars can be built using combinators.
 - [x] Heavily optimized, with some tradeoffs where good style demanded it.
+- [x] Many options for customizing the parser-construction and parsing-process.
 
-Missing:
+Missing features and problems:
 
-- [ ] ABNF variable repetition does not support the `rule{n, m}` syntax yet.
-- [ ] ABNF variable repetition `n*m rule` currently requires a space before the rule name.
-- [ ] Does not support the `%i` (case-insensitive) and `%s` (case-sensitive) prefixes for ABNF strings yet.
 - [ ] ABNF line comments are not implemented yet.
-- [ ] Instaparse's `:optimize :memory` is not implemented yet. The need for it needs to be investigated as AlphaParse
-  does require less memory already.
 - [ ] PEG-like ordered alternative `rule1 / rule2` needs to be investigated. I am not entirely sure whether it does or
   does not work.
 
 ## Usage
 
-TODO
+1. Download the `.jar` file or compile it yourself. 
+2. Add the library to your classpath. I recommend using an IDE for this.
 
 ## Grammar elements
 
-| Category                                | Notations                                                                        | Example                 | Note                                      |
-|-----------------------------------------|----------------------------------------------------------------------------------|-------------------------|-------------------------------------------|
+| Category                                | Notations                                         | Example                 | Note                                |
+|-----------------------------------------|---------------------------------------------------|-------------------------|-------------------------------------|
 | <td colspan=5><h5>Default elements</h5> |
-| Rule                                    | `:` `:=` `::=` `=`                                                               | `S = A`                 |                                           |
-| End of rule                             | `;` `.` (optional)                                                               | `S = A;`                |                                           |
-| Alternation                             | <code>&#124;</code>                                                              | <code>A &#124; B</code> | Also known as "Choice"; Not in ABNF       |
-| Concatenation                           | whitespace or `,`                                                                | `A B`                   |                                           |
-| Grouping                                | `()`                                                                             | `(A  B)+ C`             |                                           |
-| Optional                                | `[]`                                                                             | `[A]`                   |                                           |
-| Optional (alt)                          | `?`                                                                              | `A?`                    |                                           |
-| One or more                             | `+`                                                                              | `A+`                    |                                           |
-| Zero or more                            | `{}`                                                                             | `{A}`                   |                                           |
-| Zero or more (alt)                      | `*`                                                                              | `A*`                    |                                           |
-| String terminal                         | `""`                                                                             | `"a"`                   |                                           |
-| String terminal (alt)                   | `''`                                                                             | `'a'`                   | Not in ABNF                               |
-| Regex terminal                          | `#""` `#''`                                                                      | `#"[0-9]"` `#'[0-9]'`   |                                           |
-| Epsilon                                 | `Epsilon epsilon EPSILON eps ε "" ''`                                            | `S = epsilon`           |                                           |
-| Comment                                 | `(* *)`                                                                          | `(* Comment *)`         |                                           |
+| Rule                                    | `:` `:=` `::=` `=`                                | `S = A`                 |                                     |
+| End of rule                             | `;` `.` (optional)                                | `S = A;`                |                                     |
+| Alternation                             | <code>&#124;</code> and `/`                       | <code>A &#124; B</code> | Also known as "Choice"; Not in ABNF |
+| Concatenation                           | whitespace or `,`                                 | `A B`                   |                                     |
+| Grouping                                | `()`                                              | `(A  B)+ C`             |                                     |
+| Optional                                | `[]`                                              | `[A]`                   |                                     |
+| Optional (alt)                          | `?`                                               | `A?`                    |                                     |
+| One or more                             | `+`                                               | `A+`                    |                                     |
+| Zero or more                            | `{}`                                              | `{A}`                   |                                     |
+| Zero or more (alt)                      | `*`                                               | `A*`                    |                                     |
+| String terminal                         | `""`                                              | `"a"`                   |                                     |
+| String terminal (alt)                   | `''`                                              | `'a'`                   | Not in ABNF                         |
+| Regex terminal                          | `#""` `#''`                                       | `#"[0-9]"` `#'[0-9]'`   |                                     |
+| Epsilon                                 | `Epsilon epsilon EPSILON eps ε "" ''`             | `S = epsilon`           |                                     |
+| Comment                                 | `(* *)`                                           | `(* Comment *)`         |                                     |
 | <td colspan=5><h5>Extended options</h5> |
-| Variable repetition (zero or more)      | `*`                                                                              | `* A`                   | ABNF, not available if `STAR` is enabled. |
-| Variable repetition (n or more)         | `n*`                                                                             | `5* A`                  | ABNF                                      |
-| Variable repetition (zero to m)         | `*m`                                                                             | `*5 A`                  | ABNF                                      |
-| Variable repetition (n to m)            | `n*m`                                                                            | `5*19 A`                | ABNF                                      |
-| Variable repetition (exactly n)         | `n`                                                                              | `5 A`                   | ABNF                                      |
-| Value range                             | `%xXXXX` `%xXXXX-XXXX`, `%bBBBB`, `%bBBBB-BBBB`, `%dDDDD`, `%dDDDD-DDDD`         | `%x41-5a`               | ABNF                                      |
-| ABNF core rules                         | See [the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-25) |                         |                                           |
-| Explicit string case sensitivity        | `%i"..."` `%s"..."` (and `%i'...'` `%s'...'`)                                    | `%i"A"`, `%s"A"`        | ABNF                                      |
+| Variable repetition (zero or more)      | `*`                                               | `* A`                   | ABNF, see below.                    |
+| Variable repetition (n or more)         | `n*`                                              | `5* A`                  | ABNF                                |
+| Variable repetition (zero to m)         | `*m`                                              | `*5 A`                  | ABNF                                |
+| Variable repetition (n to m)            | `n*m`                                             | `5*19 A`                | ABNF                                |
+| Variable repetition (exactly n)         | `n`                                               | `5 A`                   | ABNF                                |
+| Value range                             | `%xXXXX[-XXXX]`, `%bBBBB[-BBBB]`, `%dDDDD[-DDDD]` | `%x41-5a`               | ABNF                                |
+| ABNF core rules                         | See below.                                        |                         |                                     |
+| Explicit string case sensitivity        | `%i"..."` `%s"..."` (and `%i'...'` `%s'...'`)     | `%i"A"`, `%s"A"`        | ABNF                                |
+| Exclusion / Exception                   | `-`                                               | `A - B`                 | EBNF                                |
+
+- For available value range formats, see [the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-11).
+- For available ABNF core rules, see [the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-25).
 
 ## Problems
 
@@ -69,6 +71,15 @@ TODO
 
 The biggest difference to Instaparse is that AlphaParse does not require Clojure. Jokes aside, there are a few important
 internal differences.
+
+### Smaller things
+
+AlphaParse does not support Instaparse's `:optimize :memory` mode. I found that the additional work is not worth it.
+Rest assured that AlphaParse tries its best to save both time and memory by default.
+
+AlphaParse treats some features of Instaparse as bugs. For example, Instaparse treats
+`S = epsir \n epsir = 'a'` as equivalent to `S = epsilon ir epsilon\nir = 'a'`. AlphaParse treats it as
+`S = epsir \n epsir = 'a'`.
 
 ### Production redefinitions
 
@@ -92,7 +103,7 @@ import alphaparse.parser_options.ParserCreationOptions;
 
 class RedefTest {
     static void main(String[] args) {
-        String gr = "S : 'A'\nS : 'B'\nS : 'C'";
+        String gr = "S : 'A'\nS : 'B'\nS : 'C'"; // Three different definitions for "S".
         Parser p;
 
         p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
@@ -124,10 +135,10 @@ When starting this project, I made a few decisions that are all over the code.
 
 ### `@NotNull` and `@Nullable` everywhere.
 
-Despite some people
-[being very unhappy with the use of these annotations](https://news.ycombinator.com/item?id=37534184),
-I found the compiler warnings helpful. These annotations ultimately help
-[make the code more readable](https://stackoverflow.com/a/70817574).
+Despite some
+people [being very unhappy with the use of these annotations](https://news.ycombinator.com/item?id=37534184), I found
+the compiler warnings helpful. These annotations ultimately
+help [make the code more readable](https://stackoverflow.com/a/70817574).
 
 ### `final` classes, methods and variables
 
@@ -193,9 +204,11 @@ either of these, but never both.
 alphaparse.collections.FlatSeq<T> flatSeq;
 ```
 
-When returning a parse forest, a lazy list is used. Java (to my knowledge) does not have these. The only alternative I
-can think of are `Stream`s, but those can only be iterated once. Implementing a construct like `Cons` could achieve the
-same purpose while being simpler, but after testing each approach, I found this new type to be substantially faster.
+When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries. Java (
+to my knowledge) does not have these. The only alternative I
+can think of are `Stream`s, but those can only be iterated once. A construct like
+Clojure's [LazySeq](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LazySeq.java) could achieve the
+same while being simpler, but after testing each approach, I found this new type to be substantially faster.
 
 ```java
 alphaparse.collections.LazySupplierList<T> lazySupplierList;
