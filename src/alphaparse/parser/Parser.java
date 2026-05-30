@@ -110,7 +110,7 @@ public record Parser(@NotNull Grammar grammar,
      * @see CombinatorFactory#autoWhitespace(Grammar, Sym, Grammar, Sym)
      */
     public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
-        return withGrammar((new CombinatorFactory(true)).autoWhitespace(
+        return withGrammar((new CombinatorFactory()).autoWhitespace(
                 grammar(),
                 startProduction(),
                 whitespaceParser.grammar(),

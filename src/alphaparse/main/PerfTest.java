@@ -29,41 +29,41 @@ final class PerfTest {
 ----------------------------------
 --- Standard performance tests ---
 ----------------------------------
-Make parser: {:lowest 50.448, :highest 68.273, :diff 17.825, :average 52.204, :mid 51.005, :median 51.100, :total 10440.763}
+Make parser: {:lowest 33.431, :highest 48.009, :diff 14.578, :average 34.518, :mid 33.899, :median 33.983, :total 6903.684}
 Previous:    {:lowest 57.658, :highest 103.016, :diff 45.358, :average 63.324, :mid 59.619, :median 61.341, :total 12664.708}
 Previous 2:  {:lowest 49.696, :highest 72.810, :diff 23.114, :average 51.662, :mid 50.159, :median 50.327, :total 103323.969}
 Original:    {:lowest 105.916, :highest 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000
 ---
-Make parser2:{:lowest 50.581, :highest 65.225, :diff 14.644, :average 52.088, :mid 51.055, :median 51.146, :total 10417.602}
+Make parser2:{:lowest 33.407, :highest 41.040, :diff 7.632, :average 34.385, :mid 33.958, :median 33.985, :total 6877.022}
 Previous 2:  {:lowest 49.696, :highest 72.810, :diff 23.114, :average 51.662, :mid 50.159, :median 50.327, :total 103323.969}
 Original:    {:lowest 105.916, :highest 214.071, :diff 108.155, :average 112.053, :mid 110.125, :median 110.065, :sum 224105.047} // n=2000
 ---
-First parse: {:lowest 1.267, :highest 3.647, :diff 2.380, :average 1.307, :mid 1.300, :median 1.300, :total 26148.859}
+First parse: {:lowest 1.224, :highest 5.836, :diff 4.612, :average 1.264, :mid 1.255, :median 1.256, :total 25289.421}
 Previous:    {:lowest 1.382, :highest 6.293, :diff 4.911, :average 1.520, :mid 1.443, :median 1.459, :total 30397.866}
 Previous 2:  {:lowest 1.274, :highest 3.420, :diff 2.146, :average 1.309, :mid 1.303, :median 1.303, :total 26187.008}
 Original:    {:lowest 3.238, :highest 9.338, :diff 6.100, :average 3.299, :mid 3.279, :median 3.280, :sum 65981.479} // n=20000
 ---
-All parses:  {:lowest 0.001, :highest 0.062, :diff 0.061, :average 0.001, :mid 0.001, :median 0.001, :total 29.224}
+All parses:  {:lowest 0.001, :highest 1.086, :diff 1.085, :average 0.002, :mid 0.001, :median 0.001, :total 33.164}
 Previous:    {:lowest 0.000, :highest 0.045, :diff 0.045, :average 0.001, :mid 0.001, :median 0.001, :total 15.080}
 Previous 2:  {:lowest 1.246, :highest 3.653, :diff 2.407, :average 1.287, :mid 1.280, :median 1.280, :total 25736.796}
 Original:    {:lowest 3.235, :highest 6.767, :diff 3.532, :average 3.296, :mid 3.281, :median 3.282, :sum 65926.257} // n=20000
 ---
-To array:    {:lowest 10.549, :highest 21.916, :diff 11.367, :average 10.752, :mid 10.702, :median 10.703, :total 21503.549}
+To array:    {:lowest 10.133, :highest 23.778, :diff 13.645, :average 10.408, :mid 10.304, :median 10.320, :total 20815.943}
 Previous:    {:lowest 12.567, :highest 36.166, :diff 23.599, :average 13.600, :mid 12.906, :median 12.971, :total 27200.583}
 Previous 2:  {:lowest 13.913, :highest 19.723, :diff 5.810, ::average 14.222, :mid 14.141, :median 14.144, :total 284433.845}
 Original:    {:lowest 37.369, :highest 60.060, :diff 22.691, :average 38.122, :mid 37.937, :median 37.943, :sum 762444.823} // n=20000
 ---
-Iteration:   {:lowest 10.521, :highest 14.212, :diff 3.691, :average 10.747, :mid 10.703, :median 10.705, :total 21494.820}
+Iteration:   {:lowest 10.146, :highest 14.883, :diff 4.738, :average 10.421, :mid 10.346, :median 10.356, :total 20841.719}
 Previous:    {:lowest 12.501, :highest 22.928, :diff 10.427, :average 13.509, :mid 12.809, :median 12.909, :total 27017.503}
 Previous 2:  {:lowest 13.906, :highest 23.016, :diff 9.110, :average 14.232, :mid 14.153, :median 14.155, :total 284642.717}
 Original:    {:lowest 37.264, :highest 46.080, :diff 8.816, :average 38.005, :mid 37.834, :median 37.833, :sum 760096.656} // n=20000
 ---
-ArrayList:   {:lowest 10.530, :highest 13.127, :diff 2.597, :average 10.738, :mid 10.706, :median 10.707, :total 21476.129}
+ArrayList:   {:lowest 10.048, :highest 15.511, :diff 5.463, :average 10.408, :mid 10.328, :median 10.341, :total 20815.559}
 Previous:    {:lowest 12.480, :highest 26.343, :diff 13.862, :average 13.395, :mid 12.804, :median 12.850, :total 26790.117}
 Previous 2:  {:lowest 13.909, :highest 23.171, :diff 9.262, :average 14.210, :mid 14.143, :median 14.141, :total 284207.290}
 Original:    {:lowest 37.336, :highest 45.696, :diff 8.360, :average 38.093, :mid 37.921, :median 37.919, :sum 761850.134} // n=20000
 ---
-Cnt parses:  {:lowest 10.537, :highest 14.283, :diff 3.747, :average 10.739, :mid 10.700, :median 10.703, :total 21478.946}
+Cnt parses:  {:lowest 10.113, :highest 17.211, :diff 7.098, :average 10.380, :mid 10.312, :median 10.321, :total 20759.507}
 Previous:    {:lowest 12.539, :highest 23.903, :diff 11.364, :average 13.446, :mid 12.850, :median 12.895, :total 26892.826}
 Previous 2:  {:lowest 13.960, :highest 23.369, :diff 9.409, :average 14.266, :mid 14.191, :median 14.191, :total 285313.230}
 Original:    -
@@ -71,8 +71,9 @@ Count of parses: 4096
          */
 
         /**/
-        if (!doRun)
+        if (!doRun) {
             return;
+        }
 
         var text = "int a(int r){return r;}\n            int a(int r, int a){return r;}";
         var p = Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace());

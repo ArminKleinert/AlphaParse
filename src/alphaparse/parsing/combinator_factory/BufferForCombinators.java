@@ -1,7 +1,9 @@
 package alphaparse.parsing.combinator_factory;
 
+import alphaparse.Sym;
 import alphaparse.parsing.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,122 +16,156 @@ final class BufferForCombinators {
     BufferForCombinators() {
     }
 
-    private <T extends Combinator> @NotNull T buffer(final @NotNull Map<@NotNull T, @NotNull T> buff, final @NotNull T c) {
-        final T temp = buff.get(c);
-        if (temp != null) return temp;
-        buff.put(c, c);
-        return c;
-    }
-
-    @NotNull Combinator getOrAdd(final @NotNull Combinator combinator1) {
-        return switch (combinator1) {
-            case NonTerminalCombinator combinator -> getOrAdd(combinator);
-            case TerminalRegexpCombinator combinator -> getOrAdd(combinator);
-            case TerminalStringCombinator combinator -> getOrAdd(combinator);
-            case ChoiceCombinator combinator -> getOrAdd(combinator);
-            case ConcatCombinator combinator -> getOrAdd(combinator);
-            case OptionalCombinator combinator -> getOrAdd(combinator);
-            case OrderedChoiceCombinator combinator -> getOrAdd(combinator);
-            case PlusCombinator combinator -> getOrAdd(combinator);
-            case RepetitionCombinator combinator -> getOrAdd(combinator);
-            case CombinatorStar combinator -> getOrAdd(combinator);
-            case TerminalUnicodeCharCombinator combinator -> getOrAdd(combinator);
-            case NegativeLookaheadCombinator combinator -> getOrAdd(combinator);
-            case LookaheadCombinator combinator -> getOrAdd(combinator);
-            case EpsilonCombinator combinator -> combinator;
-            case TerminalSpecialSequenceCombinator combinator -> combinator;
-            case ExclusionCombinator combinator-> getOrAdd(combinator);
+    @NotNull Combinator getOrAdd(final @NotNull Combinator c1) {
+        return switch (c1) {
+            case NonTerminalCombinator c -> getOrAdd(c);
+            case TerminalRegexpCombinator c -> getOrAdd(c);
+            case TerminalStringCombinator c -> getOrAdd(c);
+            case ChoiceCombinator c -> getOrAdd(c);
+            case ConcatCombinator c -> getOrAdd(c);
+            case OptionalCombinator c -> getOrAdd(c);
+            case OrderedChoiceCombinator c -> getOrAdd(c);
+            case PlusCombinator c -> getOrAdd(c);
+            case RepetitionCombinator c -> getOrAdd(c);
+            case CombinatorStar c -> getOrAdd(c);
+            case TerminalUnicodeCharCombinator c -> getOrAdd(c);
+            case NegativeLookaheadCombinator c -> getOrAdd(c);
+            case LookaheadCombinator c -> getOrAdd(c);
+            case EpsilonCombinator c -> c;
+            case TerminalSpecialSequenceCombinator c -> c;
+            case ExclusionCombinator c-> getOrAdd(c);
             case EOFCombinator eofCombinator -> eofCombinator;
         };
     }
 
-    private final @NotNull Map<@NotNull NonTerminalCombinator, @NotNull NonTerminalCombinator> nonTerminalSet = new HashMap<>();
+    private final @NotNull Map<@NotNull NonTerminalCombinator, @NotNull NonTerminalCombinator>
+            nonTerminalSet = new HashMap<>();
 
-    @NotNull NonTerminalCombinator getOrAdd(final @NotNull NonTerminalCombinator combinator) {
-        return buffer(nonTerminalSet, combinator);
+    @NotNull NonTerminalCombinator getOrAdd(final @NotNull NonTerminalCombinator c) {
+        final var temp = nonTerminalSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull ExclusionCombinator, @NotNull ExclusionCombinator> exclusionSet = new HashMap<>();
+    private final @NotNull Map<@NotNull ExclusionCombinator, @NotNull ExclusionCombinator>
+            exclusionSet = new HashMap<>();
 
-    @NotNull ExclusionCombinator getOrAdd(final @NotNull ExclusionCombinator combinator) {
-        return buffer(exclusionSet, combinator);
+    @NotNull ExclusionCombinator getOrAdd(final @NotNull ExclusionCombinator c) {
+        final var temp = exclusionSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull TerminalRegexpCombinator, @NotNull TerminalRegexpCombinator> regexpTerminalSet = new HashMap<>();
+    private final @NotNull Map<@NotNull TerminalRegexpCombinator, @NotNull TerminalRegexpCombinator>
+            regexpTerminalSet = new HashMap<>();
 
-    @NotNull TerminalRegexpCombinator getOrAdd(final @NotNull TerminalRegexpCombinator combinator) {
-        return buffer(regexpTerminalSet, combinator);
+    @NotNull TerminalRegexpCombinator getOrAdd(final @NotNull TerminalRegexpCombinator c) {
+        final var temp = regexpTerminalSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull TerminalStringCombinator, @NotNull TerminalStringCombinator> combStringTerminalSet = new HashMap<>();
+    private final @NotNull Map<@NotNull TerminalStringCombinator, @NotNull TerminalStringCombinator>
+            combStringTerminalSet = new HashMap<>();
 
-    @NotNull TerminalStringCombinator getOrAdd(final @NotNull TerminalStringCombinator combinator) {
-        return buffer(combStringTerminalSet, combinator);
+    @NotNull TerminalStringCombinator getOrAdd(final @NotNull TerminalStringCombinator c) {
+        final var temp = combStringTerminalSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull ChoiceCombinator, @NotNull ChoiceCombinator> alternationCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull ChoiceCombinator, @NotNull ChoiceCombinator>
+            alternationCombinatorSet = new HashMap<>();
 
-    @NotNull ChoiceCombinator getOrAdd(final @NotNull ChoiceCombinator combinator) {
-        return buffer(alternationCombinatorSet, combinator);
+    @NotNull ChoiceCombinator getOrAdd(final @NotNull ChoiceCombinator c) {
+        final var temp = alternationCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull ConcatCombinator, @NotNull ConcatCombinator> catCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull ConcatCombinator, @NotNull ConcatCombinator>
+            catCombinatorSet = new HashMap<>();
 
-    @NotNull ConcatCombinator getOrAdd(final @NotNull ConcatCombinator combinator) {
-        return buffer(catCombinatorSet, combinator);
+    @NotNull ConcatCombinator getOrAdd(final @NotNull ConcatCombinator c) {
+        final var temp = catCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull OptionalCombinator, @NotNull OptionalCombinator> alternationCombinators = new HashMap<>();
+    private final @NotNull Map<@NotNull OptionalCombinator, @NotNull OptionalCombinator>
+            alternationCombinators = new HashMap<>();
 
-    @NotNull OptionalCombinator getOrAdd(final @NotNull OptionalCombinator combinator) {
-        return buffer(alternationCombinators, combinator);
+    @NotNull OptionalCombinator getOrAdd(final @NotNull OptionalCombinator c) {
+        final var temp = alternationCombinators.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull OrderedChoiceCombinator, @NotNull OrderedChoiceCombinator> orderedCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull OrderedChoiceCombinator, @NotNull OrderedChoiceCombinator>
+            orderedCombinatorSet = new HashMap<>();
 
-    @NotNull OrderedChoiceCombinator getOrAdd(final @NotNull OrderedChoiceCombinator combinator) {
-        return buffer(orderedCombinatorSet, combinator);
+    @NotNull OrderedChoiceCombinator getOrAdd(final @NotNull OrderedChoiceCombinator c) {
+        final var temp = orderedCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull PlusCombinator, @NotNull PlusCombinator> plusCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull PlusCombinator, @NotNull PlusCombinator>
+            plusCombinatorSet = new HashMap<>();
 
-    @NotNull PlusCombinator getOrAdd(final @NotNull PlusCombinator combinator) {
-        return buffer(plusCombinatorSet, combinator);
+    @NotNull PlusCombinator getOrAdd(final @NotNull PlusCombinator c) {
+        final var temp = plusCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull RepetitionCombinator, @NotNull RepetitionCombinator> repetitionCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull RepetitionCombinator, @NotNull RepetitionCombinator>
+            repetitionCombinatorSet = new HashMap<>();
 
-    @NotNull RepetitionCombinator getOrAdd(final @NotNull RepetitionCombinator combinator) {
-        return buffer(repetitionCombinatorSet, combinator);
+    @NotNull RepetitionCombinator getOrAdd(final @NotNull RepetitionCombinator c) {
+        final var temp = repetitionCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull CombinatorStar, @NotNull CombinatorStar> starCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull CombinatorStar, @NotNull CombinatorStar>
+            starCombinatorSet = new HashMap<>();
 
-    @NotNull CombinatorStar getOrAdd(final @NotNull CombinatorStar combinator) {
-        return buffer(starCombinatorSet, combinator);
+    @NotNull CombinatorStar getOrAdd(final @NotNull CombinatorStar c) {
+        final var temp = starCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull TerminalUnicodeCharCombinator, @NotNull TerminalUnicodeCharCombinator> unicodeCharTerminalSet = new HashMap<>();
+    private final @NotNull Map<@NotNull TerminalUnicodeCharCombinator, @NotNull TerminalUnicodeCharCombinator>
+            unicodeCharTerminalSet = new HashMap<>();
 
-    @NotNull TerminalUnicodeCharCombinator getOrAdd(final @NotNull TerminalUnicodeCharCombinator combinator) {
-        return buffer(unicodeCharTerminalSet, combinator);
+    @NotNull TerminalUnicodeCharCombinator getOrAdd(final @NotNull TerminalUnicodeCharCombinator c) {
+        final var temp = unicodeCharTerminalSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull EpsilonCombinator, @NotNull EpsilonCombinator> epsilonCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull EpsilonCombinator, @NotNull EpsilonCombinator>
+            epsilonCombinatorSet = new HashMap<>();
 
-    @NotNull EpsilonCombinator getOrAdd(final @NotNull EpsilonCombinator combinator) {
-        return buffer(epsilonCombinatorSet, combinator);
+    @NotNull EpsilonCombinator getOrAdd(final @NotNull EpsilonCombinator c) {
+        final var temp = epsilonCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull NegativeLookaheadCombinator, @NotNull NegativeLookaheadCombinator> negateCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull NegativeLookaheadCombinator, @NotNull NegativeLookaheadCombinator>
+            negateCombinatorSet = new HashMap<>();
 
-    @NotNull NegativeLookaheadCombinator getOrAdd(final @NotNull NegativeLookaheadCombinator combinator) {
-        return buffer(negateCombinatorSet, combinator);
+    @NotNull NegativeLookaheadCombinator getOrAdd(final @NotNull NegativeLookaheadCombinator c) {
+        final var temp = negateCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
     }
 
-    private final @NotNull Map<@NotNull LookaheadCombinator, @NotNull LookaheadCombinator> lookaheadCombinatorSet = new HashMap<>();
+    private final @NotNull Map<@NotNull LookaheadCombinator, @NotNull LookaheadCombinator>
+            lookaheadCombinatorSet = new HashMap<>();
 
-    @NotNull LookaheadCombinator getOrAdd(final @NotNull LookaheadCombinator combinator) {
-        return buffer(lookaheadCombinatorSet, combinator);
+    @NotNull LookaheadCombinator getOrAdd(final @NotNull LookaheadCombinator c) {
+        final var temp = lookaheadCombinatorSet.putIfAbsent(c, c);
+        return temp == null ? c : temp;
+    }
+
+    private final @NotNull Map<@NotNull Sym, @NotNull NonTerminalCombinator>
+            symToNtSet = new HashMap<>();
+
+    @Nullable NonTerminalCombinator nt(@NotNull Sym keyword) {
+        return symToNtSet.get(keyword);
+    }
+
+    void putNt(@NotNull NonTerminalCombinator temp) {
+        symToNtSet.put(temp.getKeyword(), temp);
     }
 }

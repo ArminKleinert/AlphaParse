@@ -43,7 +43,7 @@ public final class Alpha {
 
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull UnhideOptions unhide) {
-        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory(true);
+        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory();
 
         return switch (unhide) {
             case NONE -> parser;
@@ -277,7 +277,7 @@ public final class Alpha {
 
         if (options.whitespaceParser() != null) {
             var whitespaceParser = options.whitespaceParser();
-            grammar = (new CombinatorFactory(options.useParserBuffering())).autoWhitespace(
+            grammar = (new CombinatorFactory()).autoWhitespace(
                     grammar,
                     options.startProduction(),
                     whitespaceParser.grammar(),

@@ -18,19 +18,14 @@ import java.util.regex.Pattern;
  */
 public final class CombinatorFactory {
     private final @NotNull EpsilonCombinator epsilon;
-    private final @Nullable BufferForCombinators buffer;
-    private final boolean useBuffer;
+    private final @NotNull BufferForCombinators buffer;
 
     /**
-     * The constructor. The parameters allow buffering of created {@link Combinator} objects.
-     * Buffering can reduce memory consumption if the grammar is very big, but might momentarily increase memory consumption for very small grammars, too. In general, using the buffer is a bit faster.
-     *
-     * @param useBuffer Set to true if buffering should be used, false otherwise.
+     * The constructor.
      */
-    public CombinatorFactory(final boolean useBuffer) {
-        this.useBuffer = useBuffer;
+    public CombinatorFactory() {
         epsilon = EpsilonCombinator.getDefault();
-        buffer = useBuffer ? new BufferForCombinators() : null;
+        buffer = new BufferForCombinators();
     }
 
     /**
@@ -40,15 +35,16 @@ public final class CombinatorFactory {
      * @param c A combinator.
      * @return The input or a buffered equivalent.
      */
-    public Combinator buffer(final Combinator c) {
-        if (!useBuffer) return c;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
+    public @NotNull Combinator buffer(final Combinator c) {
         return buffer.getOrAdd(c);
     }
 
     /**
-     * Represents a special sequence. The typical EBNF-notation is {@code ?...?} where {@code ...} stands for some free-form text.
-     * For example, {@code S = ?any whitespace except newline?} means what it says. This allows some interaction with the program around the parser.
+     * Represents a special sequence. The typical EBNF-notation is {@code ?...?}
+     * where {@code ...} stands for some free-form text.
+     * For example, {@code S = ?any whitespace except newline?} means what it says.
+     * This allows some interaction with the program around the parser.
+     * However, special sequences have to be heavily abstracted here.
      *
      * @param description The description of the special sequence.
      * @param function    The function which does what the description says.
@@ -58,8 +54,6 @@ public final class CombinatorFactory {
             final @NotNull String description,
             final @NotNull Function<@NotNull String, Optional<String>> function) {
         var result = new TerminalSpecialSequenceCombinator(description, function);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return (TerminalSpecialSequenceCombinator) buffer.getOrAdd(result);
     }
 
@@ -70,11 +64,10 @@ public final class CombinatorFactory {
      * @param parserExcluded The rule that must not be matched.
      * @return A {@link ExclusionCombinator}.
      */
-    public @NotNull ExclusionCombinator exclusionCombinator(final @NotNull Combinator parserExpected,
-                                                            final @NotNull Combinator parserExcluded) {
+    public @NotNull ExclusionCombinator exclusionCombinator(
+            final @NotNull Combinator parserExpected,
+            final @NotNull Combinator parserExcluded) {
         var result = new ExclusionCombinator(parserExpected, parserExcluded);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -89,26 +82,28 @@ public final class CombinatorFactory {
      * @param parsers The parsers for the output.
      * @return A combinator.
      */
-    public @NotNull Combinator choiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    public @NotNull Combinator choiceCombinator(
+            final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.isEmpty()) return EpsilonCombinator.getDefault();
         if (parsers.size() == 1) return parsers.getFirst();
         return choiceCombinatorDistinct(parsers.stream().distinct().toList());
     }
 
     /**
-     * Like {@link CombinatorFactory#choiceCombinator(List)} except the input list is distinct (each rule in the list occurs exactly once). Use this method only if you are sure that the rules are distinct.
+     * Like {@link CombinatorFactory#choiceCombinator(List)} except the input
+     * list is distinct (each rule in the list occurs exactly once).
+     * Use this method only if you are sure that the rules are distinct.
      *
      * @param parsers The rules.
      * @return A combinator.
      * @see #choiceCombinator(List)
      * @see #alternationCombinator(List)
      */
-    public @NotNull Combinator choiceCombinatorDistinct(final @NotNull List<@NotNull Combinator> parsers) {
+    public @NotNull Combinator choiceCombinatorDistinct(
+            final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.isEmpty()) return EpsilonCombinator.getDefault();
         if (parsers.size() == 1) return parsers.getFirst();
         final @NotNull var result = new ChoiceCombinator(parsers);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -118,7 +113,8 @@ public final class CombinatorFactory {
      * @param parsers The parsers for the output.
      * @return A combinator.
      */
-    public @NotNull Combinator alternationCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    public @NotNull Combinator alternationCombinator(
+            final @NotNull List<@NotNull Combinator> parsers) {
         return choiceCombinator(parsers);
     }
 
@@ -131,8 +127,6 @@ public final class CombinatorFactory {
     public @NotNull Combinator optionalCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new OptionalCombinator(parser);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -145,8 +139,6 @@ public final class CombinatorFactory {
     public @NotNull Combinator plusCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new PlusCombinator(parser);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -159,8 +151,6 @@ public final class CombinatorFactory {
     public @NotNull Combinator starCombinator(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new CombinatorStar(parser);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -178,9 +168,12 @@ public final class CombinatorFactory {
      * @param parser The parser.
      * @return A combinator, as described.
      */
-    public @NotNull Combinator repetitionCombinator(final int m, final int n, final @NotNull Combinator parser) {
-        if (m < 0 || m > n)
-            throw new IllegalArgumentException("Minimum number of repetitions must be below maximum number of repetitions.");
+    public @NotNull Combinator repetitionCombinator(
+            final int m, final int n, final @NotNull Combinator parser) {
+        if (m < 0 || m > n) {
+            var msg = "Minimum number of repetitions must be below maximum number of repetitions.";
+            throw new IllegalArgumentException(msg);
+        }
         if ((m == 0 && n == 0) || parser.equals(epsilon)) return epsilon;
         if (m == 1 && n == 1) return parser;
         if (m == n) {
@@ -190,8 +183,6 @@ public final class CombinatorFactory {
             // Otherwise fallthrough.
         }
         final @NotNull var result = new RepetitionCombinator(parser, m, n);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -206,7 +197,8 @@ public final class CombinatorFactory {
      * @param parsers The parsers for the output.
      * @return A combinator.
      */
-    public @NotNull Combinator orderedChoiceCombinator(final @NotNull List<@NotNull Combinator> parsers) {
+    public @NotNull Combinator orderedChoiceCombinator(
+            final @NotNull List<@NotNull Combinator> parsers) {
         if (parsers.isEmpty())
             return epsilon;
 
@@ -223,12 +215,13 @@ public final class CombinatorFactory {
         if (newParserList == null)
             newParserList = parsers;
         else
-            newParserList = newParserList.stream().filter(Objects::nonNull).toList();
+            newParserList = newParserList
+                    .stream()
+                    .filter(Objects::nonNull).toList();
 
-        if (newParserList.size() == 1) return Objects.requireNonNull(newParserList.getFirst());
+        if (newParserList.size() == 1)
+            return Objects.requireNonNull(newParserList.getFirst());
         final @NotNull var result = new OrderedChoiceCombinator(newParserList);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -243,8 +236,11 @@ public final class CombinatorFactory {
      * @param parsers The parsers for the output.
      * @return A combinator.
      */
-    public @NotNull Combinator catCombinator(final @NotNull List<@NotNull Combinator> parsers) {
-        final var parserStream = parsers.stream().filter(p -> !p.equals(epsilon)).iterator();
+    public @NotNull Combinator catCombinator(
+            final @NotNull List<@NotNull Combinator> parsers) {
+        final var parserStream = parsers
+                .stream()
+                .filter(p -> !p.equals(epsilon)).iterator();
 
         // If no parsers are provided, return the first one only.
         if (!parserStream.hasNext())
@@ -263,13 +259,12 @@ public final class CombinatorFactory {
         }
 
         final @NotNull var result = new ConcatCombinator(parserList);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
     /**
-     * Creates a {@link TerminalStringCombinator} or {@link EpsilonCombinator} if the string is empty.
+     * Creates a {@link TerminalStringCombinator}
+     * or {@link EpsilonCombinator} if the string is empty.
      *
      * @param string          The string to match.
      * @param caseInsensitive Whether the Terminal will match without caring about casing.
@@ -279,13 +274,12 @@ public final class CombinatorFactory {
                                               final boolean caseInsensitive) {
         if (string.isEmpty()) return epsilon;
         final @NotNull var result = new TerminalStringCombinator(string, caseInsensitive);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
     /**
-     * Creates a case-sensitive {@link TerminalStringCombinator} or {@link EpsilonCombinator} if the string is empty.
+     * Creates a case-sensitive {@link TerminalStringCombinator}
+     * or {@link EpsilonCombinator} if the string is empty.
      *
      * @param string The string to match.
      * @return The new parser.
@@ -304,8 +298,6 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator unicodeChar(final int lohi) {
         final @NotNull var result = new TerminalUnicodeCharCombinator(lohi, lohi);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -324,19 +316,7 @@ public final class CombinatorFactory {
         if (lo == hi)
             return unicodeChar(lo);
 
-//        final @NotNull String regex = new StringBuilder()
-//                .append("[\\x{")
-//                .append(Integer.toString(lo, 16))
-//                .append("}-\\x{")
-//                .append(Integer.toString(hi, 16))
-//                .append("}]")
-//                .toString();
-//        return createRegexTerminal(Pattern.compile(regex));
-        //"[\\x{1F601}-\\x{1F64F}]"
-
         final @NotNull var result = new TerminalUnicodeCharCombinator(lo, hi);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -346,10 +326,9 @@ public final class CombinatorFactory {
      * @param regex The pattern.
      * @return The new parser.
      */
-    public @NotNull TerminalRegexpCombinator createRegexTerminal(final @NotNull Pattern regex) {
+    public @NotNull TerminalRegexpCombinator createRegexTerminal(
+            final @NotNull Pattern regex) {
         final @NotNull var result = new TerminalRegexpCombinator(regex);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -359,11 +338,14 @@ public final class CombinatorFactory {
      * @param keyword The name of the non-terminal.
      * @return The new parser.
      */
-    public @NotNull NonTerminalCombinator makeNonTerminal(final @NotNull Sym keyword) {
-        final @NotNull var result = new NonTerminalCombinator(keyword);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
-        return buffer.getOrAdd(result);
+    public @NotNull NonTerminalCombinator makeNonTerminal(
+            final @NotNull Sym keyword) {
+        var temp = buffer.nt(keyword);
+        if (temp == null) {
+            temp = new NonTerminalCombinator(keyword);
+            buffer.putNt(temp);
+        }
+        return temp;
     }
 
     /**
@@ -372,7 +354,8 @@ public final class CombinatorFactory {
      * @param keyword The name of the non-terminal.
      * @return The new parser.
      */
-    public static @NotNull NonTerminalCombinator staticMakeNonTerminal(final @NotNull Sym keyword) {
+    public static @NotNull NonTerminalCombinator staticMakeNonTerminal(
+            final @NotNull Sym keyword) {
         return new NonTerminalCombinator(keyword);
     }
 
@@ -386,8 +369,6 @@ public final class CombinatorFactory {
     public @NotNull Combinator makeLookahead(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new LookaheadCombinator(parser);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -401,8 +382,6 @@ public final class CombinatorFactory {
     public @NotNull Combinator negateRule(final @NotNull Combinator parser) {
         if (parser.equals(epsilon)) return epsilon;
         final @NotNull var result = new NegativeLookaheadCombinator(parser);
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -414,8 +393,6 @@ public final class CombinatorFactory {
      */
     public @NotNull Combinator hideTag(final @NotNull Combinator parser) {
         final @NotNull var result = parser.hideTag();
-        if (!useBuffer) return result;
-        assert buffer != null; // Only does something in debug-mode. But I know it's correct.
         return buffer.getOrAdd(result);
     }
 
@@ -431,9 +408,8 @@ public final class CombinatorFactory {
         for (final @NotNull var keywordCombinatorEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
-            final @NotNull var pUnhide = value.unhideContent();
-            final @NotNull var pB = buffer(pUnhide);
-            res.put(key, pB);
+            final @NotNull var pUnhide = buffer(value.unhideContent());
+            res.put(key, pUnhide);
         }
         return new Grammar(res);
     }
@@ -450,16 +426,15 @@ public final class CombinatorFactory {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
-
-            final @NotNull var pUnhide = value.withReduction(reduction);
-            final @NotNull var comb = buffer(pUnhide);
-            res.put(key, comb);
+            final @NotNull var pUnhide = buffer(value.withReduction(reduction));
+            res.put(key, pUnhide);
         }
         return new Grammar(res);
     }
 
     /**
-     * Applies the reduction-type to all entries in the grammar and applies {@link Combinator#unhideContent()}.
+     * Applies the reduction-type to all entries in the grammar
+     * and applies {@link Combinator#unhideContent()}.
      *
      * @param grammar The grammar.
      * @return The new grammar.
@@ -470,22 +445,24 @@ public final class CombinatorFactory {
             final @NotNull var key = keywordCombinatorEntry.getKey();
             final @NotNull var value = keywordCombinatorEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
-            final @NotNull var p = value.unhideContent().withReduction(reduction);
-            final @NotNull var comb = buffer(p);
-            res.put(key, comb);
+            final @NotNull var p = buffer(value.unhideContent().withReduction(reduction));
+            res.put(key, p);
         }
         return new Grammar(res);
     }
 
-    private @NotNull Combinator autoWhitespaceHelper(final @NotNull Combinator parser,
-                                                     final @NotNull Combinator wsParser) {
+    private @NotNull Combinator autoWhitespaceHelper(
+            final @NotNull Combinator parser,
+            final @NotNull Combinator wsParser) {
         return switch (parser) {
             case NonTerminalCombinator ignored -> parser;
             case EpsilonCombinator ignored2 -> parser;
             case CombinatorWithParser parser1 ->
-                    buffer(parser1.withParser(autoWhitespaceHelper(parser1.getParser(), wsParser)));
+                    buffer(parser1.withParser(autoWhitespaceHelper(
+                            parser1.getParser(), wsParser)));
             case CombinatorWithManyParsers combWithParsers -> {
-                final @NotNull List<@NotNull Combinator> parsers = combWithParsers.getParsers()
+                final @NotNull List<@NotNull Combinator> parsers = combWithParsers
+                        .getParsers()
                         .stream()
                         .map(p -> autoWhitespaceHelper(p, wsParser))
                         .toList();
@@ -496,9 +473,12 @@ public final class CombinatorFactory {
                 parsers.add(wsParser);
                 final @NotNull Combinator result;
                 if (!parser.getReduction().isHiddenOrRaw()) {
-                    // Hide the terminal in the output. It still appears in the tree, but is flattened into the concatenation.
-                    parsers.add(parser.withReduction(ReductionType.standardIntermediateReduction()));
-                    result = catCombinator(parsers).withReduction(parser.getReduction());
+                    // Hide the terminal in the output.
+                    // It still appears in the tree, but is flattened into the concatenation.
+                    parsers.add(parser.withReduction(ReductionType.
+                            standardIntermediateReduction()));
+                    result = catCombinator(parsers).withReduction(
+                            parser.getReduction());
                 } else {
                     parsers.add(parser);
                     result = catCombinator(parsers);
@@ -509,8 +489,11 @@ public final class CombinatorFactory {
     }
 
     /**
-     * Merges another grammar into this grammar which eats whitespaces (at least that is the intended purpose).
-     * This method should not be used directly. Use {@link ParserCreationOptions#withWhitespaceParser} or set the option in the {@link ParserCreationOptions} instead when creating a parser.
+     * Merges another grammar into this grammar which eats whitespaces (at
+     * least that is the intended purpose).
+     * This method should not be used directly.
+     * Use {@link ParserCreationOptions#withWhitespaceParser} or set the
+     * option in the {@link ParserCreationOptions} instead when creating a parser.
      *
      * @param grammar   The main grammar.
      * @param start     The starting symbol of the main grammar.
@@ -522,12 +505,14 @@ public final class CombinatorFactory {
                                            final @NotNull Sym start,
                                            final @NotNull Grammar grammarWS,
                                            final @NotNull Sym startWS) {
-        final @NotNull Combinator wsParser = optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
+        final @NotNull Combinator wsParser =
+                optionalCombinator(makeNonTerminal(startWS)).enableHideTag();
 
         final @NotNull SequencedMap<@NotNull Sym, @NotNull Combinator> finalGrammar =
                 new LinkedHashMap<>(grammar);
         for (var keywordCombinatorEntry : finalGrammar.sequencedEntrySet()) {
-            keywordCombinatorEntry.setValue(autoWhitespaceHelper(keywordCombinatorEntry.getValue(), wsParser));
+            keywordCombinatorEntry.setValue(autoWhitespaceHelper(
+                    keywordCombinatorEntry.getValue(), wsParser));
         }
 
         final @NotNull Combinator startWithoutReduction = buffer(
@@ -539,7 +524,8 @@ public final class CombinatorFactory {
 
         finalGrammar.put(start, newStartComb);
         finalGrammar.putAll(grammarWS);
-        finalGrammar.put(startWS, hideTag(Objects.requireNonNull(grammarWS.getProduction(startWS))));
+        finalGrammar.put(startWS, hideTag(
+                Objects.requireNonNull(grammarWS.getProduction(startWS))));
         return new Grammar(finalGrammar);
     }
 }

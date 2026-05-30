@@ -113,9 +113,9 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
             var tempG = new LinkedHashMap<>(oldGrammar);
             tempG.put(
                     startSymbol,
-                    (new CombinatorFactory(false)).catCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
+                    (new CombinatorFactory()).catCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
 
-            grammar = new Grammar(tempG).applyStandardReductions(new CombinatorFactory(true));
+            grammar = new Grammar(tempG).applyStandardReductions(new CombinatorFactory());
         }
         return Gll.parse(grammar, startSymbol, subs, false, false);
     }

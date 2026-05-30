@@ -20,9 +20,7 @@ final class CfgGrammar {
     private CfgGrammar(final @NotNull ParserCreationOptions options) {
         this.options = options;
         this.rulesAvailable = options.usableRules();
-        this.cf = options.useParserBuffering()
-                ? new CombinatorFactory(true)
-                : new CombinatorFactory(false);
+        this.cf = new CombinatorFactory();
     }
 
     private final @NotNull Combinator optWhitespace =
@@ -41,7 +39,7 @@ final class CfgGrammar {
      * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
      */
     static @NotNull List<Map.Entry<Sym, Combinator>> makeAbnfCoreRules() {
-        final @NotNull CombinatorFactory cf = new CombinatorFactory(false);
+        final @NotNull CombinatorFactory cf = new CombinatorFactory();
         var CRLF = cf.stringTerminal("\r\n");
         var WSP = cf.createRegexTerminal(Pattern.compile("[\\u0020\\u0009]"));
 
@@ -553,7 +551,7 @@ final class CfgGrammar {
 
     @NotNull Grammar makeCfg() {
         final @NotNull SequencedMap<Sym, Combinator> grammarMap = new LinkedHashMap<>();
-        final @NotNull CombinatorFactory cs = new CombinatorFactory(false);
+        final @NotNull CombinatorFactory cs = new CombinatorFactory();
         grammarMap.put(Sym.sym("rules"), makeCfgRulesRhs());
         grammarMap.put(Sym.sym("comment"), makeCfgCommentRhs());
         //grammarMap.put(Sym.sym("inside-comment"), g.makeCfgInsideCommentRhs());

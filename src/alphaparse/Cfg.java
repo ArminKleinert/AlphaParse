@@ -24,8 +24,7 @@ final class Cfg {
     private final @NotNull ParserCreationOptions options;
 
     private Cfg(final @NotNull ParserCreationOptions options) {
-        this.combinatorFactory = new CombinatorFactory(
-                options.useParserBuffering());
+        this.combinatorFactory = new CombinatorFactory();
         this.options = options;
     }
 
@@ -110,8 +109,7 @@ final class Cfg {
                 }
                 case "nt" -> {
                     var name = (String) tree.getContent().getFirst().content();
-                    return combinatorFactory.makeNonTerminal(
-                            Sym.sym(name));
+                    return combinatorFactory.makeNonTerminal(Sym.sym(name));
                 }
                 case "paren" -> {
                     // The parse tree is wrapped in hidden "(" ")".
@@ -119,15 +117,19 @@ final class Cfg {
                     continue; // Open up the grouping and take it to the top.
                 }
                 case "alt" -> {
-                    return combinatorFactory.choiceCombinator(tree.getContent()
-                            .stream().map((c) -> (Combinator) buildRule(
+                    return combinatorFactory.choiceCombinator(tree
+                            .getContent()
+                            .stream()
+                            .map((c) -> (Combinator) buildRule(
                                     (ParseTree) c.content()))
                             .toList());
                 }
                 case "ord" -> {
-                    return combinatorFactory.orderedChoiceCombinator(tree.getContent()
-                            .stream().map((c) -> (Combinator) buildRule(
-                                    (ParseTree) c.content()))
+                    return combinatorFactory.orderedChoiceCombinator(tree
+                            .getContent()
+                            .stream()
+                            .map((c) ->
+                                    (Combinator) buildRule((ParseTree) c.content()))
                             .toList());
                 }
                 case "hide" -> {
@@ -135,8 +137,10 @@ final class Cfg {
                             ((Node.NodeParseTree) tree.getContent().getFirst()).content())).enableHideTag();
                 }
                 case "cat" -> {
-                    return combinatorFactory.catCombinator(tree.getContent()
-                            .stream().map((c) -> (Combinator) buildRule(
+                    return combinatorFactory.catCombinator(tree
+                            .getContent()
+                            .stream()
+                            .map((c) -> (Combinator) buildRule(
                                     (ParseTree) c.content()))
                             .toList());
                 }
@@ -161,12 +165,14 @@ final class Cfg {
                 }
                 case "string-ci" -> {
                     return combinatorFactory.stringTerminal(
-                            strParser.processString((String) tree.getContent().getFirst().content()),
+                            strParser.processString((String)
+                                    tree.getContent().getFirst().content()),
                             true);
                 }
                 case "regexp" -> {
                     return combinatorFactory.createRegexTerminal(
-                            strParser.processRegexp((String) tree.getContent().getFirst().content()));
+                            strParser.processRegexp((String)
+                                    tree.getContent().getFirst().content()));
                 }
                 case "neg" -> {
                     return combinatorFactory.negateRule((Combinator) buildRule(
@@ -217,8 +223,10 @@ final class Cfg {
                     return EpsilonCombinator.getDefault();
                 }
                 case "exclude" -> {
-                    var rule1 = (Combinator) buildRule((ParseTree) tree.getContent().get(0).content());
-                    var rule2 = (Combinator) buildRule((ParseTree) tree.getContent().get(1).content());
+                    var rule1 = (Combinator) buildRule((ParseTree)
+                            tree.getContent().get(0).content());
+                    var rule2 = (Combinator) buildRule((ParseTree)
+                            tree.getContent().get(1).content());
                     return combinatorFactory.exclusionCombinator(rule1, rule2);
                 }
                 case "eof" -> {
@@ -235,7 +243,8 @@ final class Cfg {
             throw new IllegalGrammarException(
                     "The keys "
                             + analysisResult.getUndefinedUsedNTs()
-                            + " appear on the right-hand side of the grammar, but not on the left.");
+                            + " appear on the right-hand side of the"
+                            + " grammar, but not on the left.");
 
         return g;
     }
@@ -265,7 +274,8 @@ final class Cfg {
                 spec, false, false);
 
         if (rules instanceof AlphaParseFailure) {
-            throw new ParserCreationFailure("Error parsing grammar specification:\n" + rules + "\n");
+            throw new ParserCreationFailure(
+                    "Error parsing grammar specification:\n" + rules + "\n");
         }
 
         final @NotNull var productions = new ArrayList<Map.Entry<Sym, Combinator>>();
@@ -285,7 +295,8 @@ final class Cfg {
 
         @NotNull Grammar grammar;
         try {
-            var tempGrammar = Grammar.fromProductions(productions, options.redefinitionOption());
+            var tempGrammar = Grammar.fromProductions(
+                    productions, options.redefinitionOption());
             if (options.checkCorrectness()) {
                 checkGrammarValidity(tempGrammar);
             }
