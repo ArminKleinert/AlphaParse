@@ -2,7 +2,6 @@ package alphaparse.parsing;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -18,10 +17,9 @@ public final class OptionalCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param parser The parser.
-     * @see CombinatorFactory#optionalCombinator(Combinator)
      */
     public OptionalCombinator(final @NotNull Combinator parser) {
         super(parser);

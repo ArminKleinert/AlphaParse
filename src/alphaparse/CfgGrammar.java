@@ -3,7 +3,6 @@ package alphaparse;
 import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
 import alphaparse.parsing.*;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class CfgGrammar extends GrammarBuilder {
-    final @NotNull CombinatorFactory cf;
     final @NotNull Set<RulesAvailable> rulesAvailable;
     final @NotNull ParserCreationOptions options;
 
@@ -22,11 +20,10 @@ final class CfgGrammar extends GrammarBuilder {
         super(options);
         this.options = options;
         this.rulesAvailable = options.usableRules();
-        this.cf = new CombinatorFactory();
     }
 
     private final @NotNull Combinator optWhitespace =
-            CombinatorFactory.staticMakeNonTerminal(Sym.sym("opt-whitespace")).enableHideTag();
+            NonTerminalCombinator.create(Sym.sym("opt-whitespace")).enableHideTag();
 
     private @NotNull List<@NotNull Combinator> cListOf(Combinator... elements) {
         return Arrays.stream(elements).filter(Objects::nonNull).toList();
@@ -34,33 +31,32 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @Nullable NonTerminalCombinator makeNT(
             final @NotNull String symString, final @NotNull RulesAvailable ra) {
-        return rulesAvailable.contains(ra) ? cf.makeNonTerminal(Sym.sym(symString)) : null;
+        return rulesAvailable.contains(ra) ? nt(Sym.sym(symString)) : null;
     }
 
     /*
      * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
      */
-    static @NotNull List<Map.Entry<Sym, Combinator>> makeAbnfCoreRules() {
-        final @NotNull CombinatorFactory cf = new CombinatorFactory();
-        var CRLF = cf.stringTerminal("\r\n");
-        var WSP = cf.createRegexTerminal(Pattern.compile("[\\u0020\\u0009]"));
+     static @NotNull List<Map.Entry<Sym, Combinator>> makeAbnfCoreRules() {
+         var CRLF = new TerminalStringCombinator("\r\n", false);
+        var WSP = new TerminalRegexpCombinator(Pattern.compile("[\\u0020\\u0009]"));
 
         final @NotNull List<Map.Entry<Sym, Combinator>> m = List.of(
-                Map.entry(Sym.sym("ALPHA"), cf.createRegexTerminal(Pattern.compile("[a-zA-Z]"))),
-                Map.entry(Sym.sym("BIT"), cf.createRegexTerminal(Pattern.compile("[01]"))),
-                Map.entry(Sym.sym("CHAR"), cf.createRegexTerminal(Pattern.compile("[\\u0001-\\u007F]"))),
-                Map.entry(Sym.sym("CR"), cf.stringTerminal("\r")),
+                Map.entry(Sym.sym("ALPHA"), new TerminalRegexpCombinator(Pattern.compile("[a-zA-Z]"))),
+                Map.entry(Sym.sym("BIT"), new TerminalRegexpCombinator(Pattern.compile("[01]"))),
+                Map.entry(Sym.sym("CHAR"), new TerminalRegexpCombinator(Pattern.compile("[\\u0001-\\u007F]"))),
+                Map.entry(Sym.sym("CR"), new TerminalStringCombinator("\r", false)),
                 Map.entry(Sym.sym("CRLF"), CRLF),
-                Map.entry(Sym.sym("CTL"), cf.createRegexTerminal(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
-                Map.entry(Sym.sym("DIGIT"), cf.createRegexTerminal(Pattern.compile("[0-9]"))),
-                Map.entry(Sym.sym("DQUOTE"), cf.stringTerminal("\"")),
-                Map.entry(Sym.sym("HEXDIG"), cf.createRegexTerminal(Pattern.compile("[0-9a-fA-F]"))),
-                Map.entry(Sym.sym("HTAB"), cf.createRegexTerminal(Pattern.compile("\t"))),
-                Map.entry(Sym.sym("LF"), cf.createRegexTerminal(Pattern.compile("\n"))),
-                Map.entry(Sym.sym("LWSP"), cf.starCombinator(cf.choiceCombinatorDistinct(List.of(WSP, cf.catCombinator(List.of(CRLF, WSP)))))),
-                Map.entry(Sym.sym("OCTET"), cf.createRegexTerminal(Pattern.compile("[\\u0000-\\u00FF]"))),
-                Map.entry(Sym.sym("SP"), cf.stringTerminal(" ")),
-                Map.entry(Sym.sym("VCHAR"), cf.createRegexTerminal(Pattern.compile("[\\u0021-\\u007E]"))),
+                Map.entry(Sym.sym("CTL"), new TerminalRegexpCombinator(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
+                Map.entry(Sym.sym("DIGIT"), new TerminalRegexpCombinator(Pattern.compile("[0-9]"))),
+                Map.entry(Sym.sym("DQUOTE"), new TerminalStringCombinator("\"", false)),
+                Map.entry(Sym.sym("HEXDIG"), new TerminalRegexpCombinator(Pattern.compile("[0-9a-fA-F]"))),
+                Map.entry(Sym.sym("HTAB"), new TerminalRegexpCombinator(Pattern.compile("\t"))),
+                Map.entry(Sym.sym("LF"), new TerminalRegexpCombinator(Pattern.compile("\n"))),
+                Map.entry(Sym.sym("LWSP"), new CombinatorStar(new ChoiceCombinator(List.of(WSP, new ConcatCombinator(List.of(CRLF, WSP)))))),
+                Map.entry(Sym.sym("OCTET"), new TerminalRegexpCombinator(Pattern.compile("[\\u0000-\\u00FF]"))),
+                Map.entry(Sym.sym("SP"), new TerminalStringCombinator(" ", false)),
+                Map.entry(Sym.sym("VCHAR"), new TerminalRegexpCombinator(Pattern.compile("[\\u0021-\\u007E]"))),
                 Map.entry(Sym.sym("WSP"), WSP)
         );
         return m;
@@ -71,10 +67,10 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     private @NotNull Combinator makeCfgRulesRhs() {
-        final @NotNull Combinator rulesRule = cf.catCombinator(
+        final @NotNull Combinator rulesRule = concat(
                         List.of(optWhitespace,
-                                cf.plusCombinator(
-                                        cf.makeNonTerminal(Sym.sym("rule")) /// {@link #makeCfgRuleRhs}
+                                onceOrMore(
+                                        nt(Sym.sym("rule")) /// {@link #makeCfgRuleRhs}
                                 )))
                 .hideTag();
         return rulesRule;
@@ -82,34 +78,34 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Combinator makeCfgCommentRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("(*"),
+                concat(
+                        List.of(string("(*"),
                                 makeCfgInsideCommentRhs(),
-                                cf.stringTerminal("*)"))).hideTag();
+                                string("*)"))).hideTag();
         return rulesRule;
     }
 
     private @NotNull Combinator makeCfgInsideCommentRhs() {
         final @NotNull Pattern insideComment = Pattern.compile("(?s)(?:(?!\\(\\*|\\*\\)).)* (?x) # Comment text");
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.createRegexTerminal(insideComment),
-                                cf.starCombinator(
-                                        cf.catCombinator(
-                                                List.of(cf.makeNonTerminal(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
-                                                        cf.createRegexTerminal(insideComment))))));
+                concat(
+                        List.of(regex(insideComment),
+                                zeroOrMore(
+                                        concat(
+                                                List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
+                                                        regex(insideComment))))));
         return rulesRule;
     }
 
     private @NotNull Combinator makeCfgOptWhitespaceRhs() {
         final @NotNull Pattern ws = regexDoc("[,\\s]*", "optional whitespace");
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.createRegexTerminal(ws),
-                                cf.starCombinator(
-                                        cf.catCombinator(
-                                                List.of(cf.makeNonTerminal(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
-                                                        cf.createRegexTerminal(ws))))));
+                concat(
+                        List.of(regex(ws),
+                                zeroOrMore(
+                                        concat(
+                                                List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
+                                                        regex(ws))))));
         return rulesRule;
     }
 
@@ -124,9 +120,9 @@ final class CfgGrammar extends GrammarBuilder {
         // If no epsilon names are provided, use string terminal which matches the empty string `""`.
         // Empty string terminals are simplified to Epsilon later.
         if (epsilonNames.isEmpty())
-            return cf.stringTerminal("\"\"");
+            return string("\"\"");
 
-        return cf.specialSequence(
+        return specialSequence(
                 "One of " + epsilonNames,
                 text -> epsilonNames.stream().filter(text::startsWith).max(Comparator.comparingInt(String::length))
         );
@@ -134,21 +130,21 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Combinator makeCfgFactorRhs() {
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinatorDistinct(
+                alternationGuaranteeDistinct(
                                 cListOf(
-                                        cf.makeNonTerminal(Sym.sym("string")), /// {@link #makeCfgStringRhs}
+                                        nt(Sym.sym("string")), /// {@link #makeCfgStringRhs}
                                         makeNT("regexp", RulesAvailable.REGEX), /// {@link #makeCfgRegexRhs}
                                         makeNT("opt", RulesAvailable.OPTIONAL), /// {@link #makeCfgOptRhs}
                                         makeNT("opt_query", RulesAvailable.OPTIONAL_QUERY), /// {@link #makeCfgOptQueryRhs}
                                         makeNT("star", RulesAvailable.OPTIONAL_REPETITION_STAR), /// {@link #makeCfgZeroOrMoreStarRhs}
                                         makeNT("opt_rep", RulesAvailable.OPTIONAL_REPETITION), /// {@link #makeCfgZeroOrMoreStdRhs}
                                         makeNT("plus", RulesAvailable.PLUS), /// {@link #makeCfgPlusRhs}
-                                        cf.makeNonTerminal(Sym.sym("paren")), /// {@link #makeCfgParenRhs}
-                                        cf.makeNonTerminal(Sym.sym("hide")), /// {@link #makeCfgHideRhs}
-                                        cf.makeNonTerminal(Sym.sym("epsilon")), /// {@link #makeCfgEpsilonRhs}
+                                        nt(Sym.sym("paren")), /// {@link #makeCfgParenRhs}
+                                        nt(Sym.sym("hide")), /// {@link #makeCfgHideRhs}
+                                        nt(Sym.sym("epsilon")), /// {@link #makeCfgEpsilonRhs}
                                         makeNT("rep", RulesAvailable.VARIABLE_REPEAT), /// ABNF feature {@link #makeCfgRepRhs}
                                         makeNT("abnf-range", RulesAvailable.VALUE_RANGE), /// ABNF feature {@link #makeABNFValueRange}
-                                        cf.makeNonTerminal(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
+                                        nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
                                         null
                                 ))
                         .hideTag();
@@ -162,10 +158,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgPlusRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.makeNonTerminal(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
+                concat(
+                        List.of(nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
-                                cf.stringTerminal("+").enableHideTag()));
+                                string("+").enableHideTag()));
         return rulesRule;
     }
 
@@ -175,32 +171,32 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Combinator}.
      */
     private @NotNull Combinator makeCfgRuleSeparatorRhs() {
-        return cf.choiceCombinator(
+        return alternationC(
                 options.ruleDefinitionOps()
                         .stream()
-                        .map(it -> cf.stringTerminal(it, false))
+                        .map(it -> string(it, false))
                         .toList());
     }
 
     private @NotNull Combinator makeCfgParenRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("(").enableHideTag(),
+                concat(
+                        List.of(string("(").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                cf.stringTerminal(")").enableHideTag()));
+                                string(")").enableHideTag()));
         return rulesRule;
     }
 
     private @NotNull Combinator makeCfgHideRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("<").enableHideTag(),
+                concat(
+                        List.of(string("<").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                cf.stringTerminal(">").enableHideTag()));
+                                string(">").enableHideTag()));
         return rulesRule;
     }
 
@@ -222,7 +218,7 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Pattern doubleQuotedString = hasCiPrefixAvailable
                 ? regexDoc(doubleQuoteStringPrefixed, "Prefixed double-quoted string")
                 : regexDoc(doubleQuoteString, "Double-quoted string");
-        var doubleQuoteStringRegexCombinator = cf.createRegexTerminal(doubleQuotedString);
+        var doubleQuoteStringRegexCombinator = regex(doubleQuotedString);
 
         if (!options.usableRules().contains(RulesAvailable.SINGLY_QUOTED))
             return doubleQuoteStringRegexCombinator;
@@ -231,9 +227,9 @@ final class CfgGrammar extends GrammarBuilder {
                 ? regexDoc(singleQuoteStringPrefixed, "Prefixed single-quoted string")
                 : regexDoc(singleQuoteString, "Single-quoted string");
 
-        return cf.choiceCombinator(List.of(
+        return alternationC(List.of(
                 doubleQuoteStringRegexCombinator,
-                cf.createRegexTerminal(singleQuotedString)));
+                regex(singleQuotedString)));
     }
 
     /**
@@ -247,17 +243,17 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Pattern doubleQuotedRegex =
                 regexDoc("#\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted regexp");
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinatorDistinct(
-                        List.of(cf.createRegexTerminal(singleQuotedRegex),
-                                cf.createRegexTerminal(doubleQuotedRegex)));
+                alternationGuaranteeDistinct(
+                        List.of(regex(singleQuotedRegex),
+                                regex(doubleQuotedRegex)));
         return rulesRule;
     }
 
     private @NotNull Combinator makeCfgRulesOrParserRhs() {
         final @NotNull Combinator rulesRule =
-                cf.choiceCombinatorDistinct(
-                                List.of(cf.makeNonTerminal(Sym.sym("rules")), /// {@link #makeCfgRulesRhs}
-                                        cf.makeNonTerminal(Sym.sym("alt-or-ord")) /// {@link #makeCfgAltOrOrdRhs}
+                alternationGuaranteeDistinct(
+                                List.of(nt(Sym.sym("rules")), /// {@link #makeCfgRulesRhs}
+                                        nt(Sym.sym("alt-or-ord")) /// {@link #makeCfgAltOrOrdRhs}
                                 ))
                         .hideTag();
         return rulesRule;
@@ -273,7 +269,7 @@ final class CfgGrammar extends GrammarBuilder {
                 ? Pattern.compile("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*")
                 : Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*");
 
-        return cf.specialSequence(
+        return specialSequence(
                 "matches " + regex + " but is not reserved for other purposes",
                 text -> {
                     final @NotNull Matcher matcher = regex.matcher(text);
@@ -297,16 +293,16 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Combinator repRegexChoice;
         if (!rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR)) {
             repRegexChoice =
-                    cf.createRegexTerminal(Pattern.compile("\\d*\\*?\\d*"));
+                    regex(Pattern.compile("\\d*\\*?\\d*"));
         } else {
             repRegexChoice =
-                    cf.createRegexTerminal(Pattern.compile("\\d+(?:\\*\\d*)?|\\*\\d+"));
+                    regex(Pattern.compile("\\d+(?:\\*\\d*)?|\\*\\d+"));
         }
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(List.of(
+                concat(List.of(
                         repRegexChoice,
                         optWhitespace,
-                        cf.makeNonTerminal(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
+                        nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
                 ));
         return rulesRule;
     }
@@ -318,10 +314,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgLookRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("&").enableHideTag(),
+                concat(
+                        List.of(string("&").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
+                                nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
                         ));
         return rulesRule;
     }
@@ -333,10 +329,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgNegRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("!").enableHideTag(),
+                concat(
+                        List.of(string("!").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
+                                nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
                         ));
         return rulesRule;
     }
@@ -348,12 +344,12 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgZeroOrMoreStdRhs() {
         final @NotNull Combinator rule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("{").enableHideTag(),
+                concat(
+                        List.of(string("{").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                cf.stringTerminal("}").enableHideTag()));
+                                string("}").enableHideTag()));
         return rule;
     }
 
@@ -364,10 +360,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgZeroOrMoreStarRhs() {
         final @NotNull Combinator rule =
-                cf.catCombinator(
-                        List.of(cf.makeNonTerminal(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
+                concat(
+                        List.of(nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
-                                cf.stringTerminal("*").enableHideTag()));
+                                string("*").enableHideTag()));
         return rule;
     }
 
@@ -378,12 +374,12 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgOptRhs() {
         final @NotNull Combinator rule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("[").enableHideTag(),
+                concat(
+                        List.of(string("[").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                cf.stringTerminal("]").enableHideTag()));
+                                string("]").enableHideTag()));
         return rule;
     }
 
@@ -394,10 +390,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Combinator makeCfgOptQueryRhs() {
         final @NotNull Combinator rule =
-                cf.catCombinator(
-                        List.of(cf.makeNonTerminal(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
+                concat(
+                        List.of(nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
-                                cf.stringTerminal("?").enableHideTag()));
+                                string("?").enableHideTag()));
         return rule;
     }
 
@@ -406,48 +402,48 @@ final class CfgGrammar extends GrammarBuilder {
         Combinator[] l = new Combinator[2];
 
         if (options.usableRules().contains(RulesAvailable.ALTERNATION))
-            l[i++] = (cf.makeNonTerminal(Sym.sym("alt"))); /// {@link #makeCfgAltRhs}
+            l[i++] = (nt(Sym.sym("alt"))); /// {@link #makeCfgAltRhs}
         if (options.usableRules().contains(RulesAvailable.ORDERED_CHOICE))
-            l[i++] = (cf.makeNonTerminal(Sym.sym("ord"))); /// {@link #makeCfgOrdRhs}
+            l[i++] = (nt(Sym.sym("ord"))); /// {@link #makeCfgOrdRhs}
 
-        if (i == 0) return (cf.plusCombinator(cf.makeNonTerminal(Sym.sym("cat")))).hideTag(); /// {@link #makeCfgCatRhs}
+        if (i == 0) return onceOrMore(nt(Sym.sym("cat"))).hideTag(); /// {@link #makeCfgCatRhs}
 
         if (i == 1) return l[0].hideTag();
 
-        final @NotNull Combinator rulesRule = cf.choiceCombinatorDistinct(List.of(l)).hideTag();
+        final @NotNull Combinator rulesRule = alternationGuaranteeDistinct(List.of(l)).hideTag();
         return rulesRule;
     }
 
     private @NotNull Combinator makeCfgHideNtRhs() {
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.stringTerminal("<").enableHideTag(),
+                concat(
+                        List.of(string("<").enableHideTag(),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
+                                nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
                                 optWhitespace,
-                                cf.stringTerminal(">").enableHideTag()));
+                                string(">").enableHideTag()));
         return rulesRule;
     }
 
     private @NotNull Combinator makeCfgRuleRhs() {
-        final @NotNull Combinator optWs = cf.makeNonTerminal(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
+        final @NotNull Combinator optWs = nt(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
-                        List.of(cf.choiceCombinatorDistinct(
-                                        List.of(cf.makeNonTerminal(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
-                                                cf.makeNonTerminal(Sym.sym("hide-nt")) /// {@link #makeCfgHideNtRhs}
+                concat(
+                        List.of(alternationGuaranteeDistinct(
+                                        List.of(nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
+                                                nt(Sym.sym("hide-nt")) /// {@link #makeCfgHideNtRhs}
                                         )),
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("rule-separator")).enableHideTag(), /// {@link #makeCfgRuleSeparatorRhs}
+                                nt(Sym.sym("rule-separator")).enableHideTag(), /// {@link #makeCfgRuleSeparatorRhs}
                                 optWhitespace,
-                                cf.makeNonTerminal(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
-                                cf.choiceCombinatorDistinct(
+                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                alternationGuaranteeDistinct(
                                                 List.of(optWs,
-                                                        cf.catCombinator(
+                                                        concat(
                                                                 List.of(optWs,
-                                                                        cf.choiceCombinatorDistinct(
-                                                                                List.of(cf.stringTerminal(";"),
-                                                                                        cf.stringTerminal("."))),
+                                                                        alternationGuaranteeDistinct(
+                                                                                List.of(string(";"),
+                                                                                        string("."))),
                                                                         optWs))))
                                         .enableHideTag()));
         return rulesRule;
@@ -459,14 +455,14 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Combinator}.
      */
     private @NotNull Combinator makeCfgOrdRhs() {
-        final @NotNull Combinator catNt = cf.makeNonTerminal(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
+        final @NotNull Combinator catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
+                concat(
                         List.of(catNt,
-                                cf.starCombinator(
-                                        cf.catCombinator(
+                                zeroOrMore(
+                                        concat(
                                                 List.of(optWhitespace,
-                                                        cf.stringTerminal("/").enableHideTag(),
+                                                        string("/").enableHideTag(),
                                                         optWhitespace,
                                                         catNt)))));
         return rulesRule;
@@ -478,13 +474,13 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Combinator}.
      */
     private @NotNull Combinator makeCfgAltRhs() {
-        final @NotNull Combinator catNt = cf.makeNonTerminal(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
+        final @NotNull Combinator catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
+                concat(
                         List.of(catNt,
-                                cf.starCombinator(cf.catCombinator(
+                                zeroOrMore(concat(
                                         List.of(optWhitespace,
-                                                cf.stringTerminal("|").enableHideTag(),
+                                                string("|").enableHideTag(),
                                                 optWhitespace,
                                                 catNt)))));
         return rulesRule;
@@ -496,15 +492,15 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Combinator}.
      */
     private @NotNull Combinator makeCfgCatRhs() {
-        final @NotNull Combinator factorLookNeg = cf.choiceCombinatorDistinct(cListOf(
-                cf.makeNonTerminal(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
+        final @NotNull Combinator factorLookNeg = alternationGuaranteeDistinct(cListOf(
+                nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                 makeNT("look", RulesAvailable.LOOKAHEAD), /// {@link #makeCfgLookRhs}
                 makeNT("neg", RulesAvailable.NEGATIVE_LOOKAHEAD), /// {@link #makeCfgNegRhs}
                 makeNT("exclude", RulesAvailable.EXCLUSION) /// {@link #makeCfgExclude}
         ));
         final @NotNull Combinator rulesRule =
-                cf.plusCombinator(
-                        cf.catCombinator(
+                onceOrMore(
+                        concat(
                                 List.of(optWhitespace,
                                         factorLookNeg,
                                         optWhitespace)));
@@ -517,15 +513,15 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Combinator}.
      */
     private @NotNull Combinator makeCfgExclude() {
-        final @NotNull Combinator factorLookNeg = cf.choiceCombinatorDistinct(cListOf(
-                cf.makeNonTerminal(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
+        final @NotNull Combinator factorLookNeg = alternationGuaranteeDistinct(cListOf(
+                nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
         ));
         final @NotNull Combinator rulesRule =
-                cf.catCombinator(
+                concat(
                         List.of(factorLookNeg, optWhitespace,
-                                cf.stringTerminal("-").enableHideTag(),
+                                string("-").enableHideTag(),
                                 optWhitespace,
-                                cf.choiceCombinatorDistinct(List.of(factorLookNeg, cf.makeNonTerminal(Sym.sym("exclude"))))));
+                                alternationGuaranteeDistinct(List.of(factorLookNeg, nt(Sym.sym("exclude"))))));
         return rulesRule;
     }
 
@@ -535,7 +531,7 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Combinator}.
      */
     private @NotNull Combinator makeEofRhs() {
-        return cf.stringTerminal("EOF");
+        return string("EOF");
     }
 
     /**
@@ -548,7 +544,7 @@ final class CfgGrammar extends GrammarBuilder {
                 "%b[01]+(\\-[01]+)?|%d[0-9]+(\\-[0-9]+)?|%x[0-9a-fA-F]+(\\-[0-9a-fA-F]+)?",
                 "ABNF Value Range"
         );
-        return cf.createRegexTerminal(regex);
+        return regex(regex);
     }
 
     @Override

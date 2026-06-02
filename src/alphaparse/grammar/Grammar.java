@@ -2,7 +2,6 @@ package alphaparse.grammar;
 
 import alphaparse.Sym;
 import alphaparse.parsing.*;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,14 +81,13 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
     /**
      * Replaces all combinators that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with combinators with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#TAGGED_PARSE_TREE}.
      *
-     * @param cf Used to buffer any created combinators.
      * @return A new grammar.
      */
-    public @NotNull Grammar applyStandardReductions(final @NotNull CombinatorFactory cf) {
+    public @NotNull Grammar applyStandardReductions() {
         final LinkedHashMap<Sym, Combinator> m = new LinkedHashMap<>();
         this.forEach((prodKey, pars) -> {
             if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
-                pars = cf.buffer(pars.withReduction(ReductionType.defaultNonRawReduction(prodKey)));
+                pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
             }
             m.put(prodKey, pars);
         });

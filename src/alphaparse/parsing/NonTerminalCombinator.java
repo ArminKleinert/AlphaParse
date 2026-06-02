@@ -3,7 +3,6 @@ package alphaparse.parsing;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.Sym;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,15 +21,16 @@ public final class NonTerminalCombinator extends SimpleCombinator {
     }
 
     /**
-     * Creates a new instance from a name. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance from a name.
      *
      * @param keyword The name.
-     * @see CombinatorFactory#makeNonTerminal(Sym)
-     * @see CombinatorFactory#staticMakeNonTerminal(Sym)
      */
     public NonTerminalCombinator(final @NotNull Sym keyword) {
         super();
         this.keyword = keyword;
+    }
+    public static @NotNull NonTerminalCombinator create(final @NotNull Sym keyword) {
+        return new NonTerminalCombinator(keyword);
     }
 
     /**

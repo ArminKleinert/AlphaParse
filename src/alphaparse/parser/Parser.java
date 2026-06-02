@@ -3,7 +3,6 @@ package alphaparse.parser;
 import alphaparse.*;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
@@ -100,22 +99,6 @@ public record Parser(@NotNull Grammar grammar,
      */
     public @NotNull Parser withStartProduction(final @NotNull Sym startProduction) {
         return new Parser(grammar, startProduction);
-    }
-
-    /**
-     * Creates a new parser with a whitespace-parser added.
-     *
-     * @param whitespaceParser The parser for whitespace.
-     * @return The new Parser.
-     * @see CombinatorFactory#autoWhitespace(Grammar, Sym, Grammar, Sym)
-     */
-    public @NotNull Parser withWhitespaceParser(final @NotNull Parser whitespaceParser) {
-        return withGrammar((new CombinatorFactory()).autoWhitespace(
-                grammar(),
-                startProduction(),
-                whitespaceParser.grammar(),
-                whitespaceParser.startProduction()
-        ));
     }
 
     /**

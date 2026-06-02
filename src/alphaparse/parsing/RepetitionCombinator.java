@@ -4,7 +4,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.collections.FlatSeq;
 import alphaparse.functions.Listener;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -35,13 +34,12 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param parser The inner element.
      * @param min    Minimum repetitions.
      * @param max    Maximum repetitions.
      * @throws IllegalArgumentException if minimum or maximum is invalid.
-     * @see CombinatorFactory#repetitionCombinator(int, int, Combinator)
      */
     public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
         super(parser);

@@ -2,10 +2,8 @@ package alphaparse.parsing;
 
 import alphaparse.Sym;
 import alphaparse.grammar.Grammar;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.AlphaParseResult;
-import alphaparse.result.ParseTree;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
@@ -113,9 +111,9 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
             var tempG = new LinkedHashMap<>(oldGrammar);
             tempG.put(
                     startSymbol,
-                    (new CombinatorFactory()).catCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
+                    new ConcatCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
 
-            grammar = new Grammar(tempG).applyStandardReductions(new CombinatorFactory());
+            grammar = new Grammar(tempG).applyStandardReductions();
         }
         return Gll.parse(grammar, startSymbol, subs, false, false);
     }

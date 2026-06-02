@@ -2,7 +2,6 @@ package alphaparse.parsing;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import alphaparse.trampoline.TrampolineListenerNode;
@@ -25,13 +24,11 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance..
      *
      * @param lo The lowest codepoint.
      * @param hi The highest codepoint.
      * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
-     * @see CombinatorFactory#unicodeChar(int)
-     * @see CombinatorFactory#unicodeChar(int, int)
      */
     public TerminalUnicodeCharCombinator(final int lo, final int hi) {
         super();

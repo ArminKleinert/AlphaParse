@@ -4,7 +4,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.collections.FlatSeq;
 import alphaparse.functions.Listener;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +18,9 @@ public final class PlusCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param parser The inner element.
-     * @see CombinatorFactory#plusCombinator(Combinator)
      */
     public PlusCombinator(final @NotNull Combinator parser) {
         super(defaultHidden, ReductionType.standardInitialReduction(), parser);

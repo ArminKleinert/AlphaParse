@@ -1,6 +1,5 @@
 package alphaparse.parsing;
 
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -31,11 +30,10 @@ public final class TerminalSpecialSequenceCombinator extends SimpleCombinator {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param description The description of the special sequence.
      * @param function    The function which does what the description says.
-     * @see CombinatorFactory#specialSequence(String, Function)
      */
     public TerminalSpecialSequenceCombinator(
             final @NotNull String description,

@@ -3,7 +3,6 @@ package alphaparse.parsing;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -32,10 +31,9 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param regexp The regex.
-     * @see CombinatorFactory#createRegexTerminal(Pattern)
      */
     public TerminalRegexpCombinator(final @NotNull Pattern regexp) {
         super();

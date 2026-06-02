@@ -1,6 +1,5 @@
 package alphaparse.parsing;
 
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 
@@ -29,12 +28,10 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance..
      *
      * @param string          The string to match.
      * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
-     * @see CombinatorFactory#stringTerminal(String)
-     * @see CombinatorFactory#stringTerminal(String, boolean)
      */
     public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
         super();

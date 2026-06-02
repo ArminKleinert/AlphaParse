@@ -1,7 +1,6 @@
 package alphaparse.parser_options;
 
 import alphaparse.parsing.*;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 
 /**
  * Rules that can be used when building parsers. Some appear only in EBNF, some only in ABNF.
@@ -223,8 +222,6 @@ public enum RulesAvailable {
      * {@code S = %s"..."} is already implicit in EBNF, but needs to be explicit in ABNF.
      * <p>
      * Possible replacements through other rule types: None.
-     *
-     * @see CombinatorFactory#stringTerminal(String, boolean)
      */
     STRING_CASE_SENSITIVITY_PREFIX,
 

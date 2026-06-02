@@ -1,6 +1,5 @@
 package alphaparse.parsing;
 
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +15,9 @@ public final class LookaheadCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance.  Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param parser The inner parser.
-     * @see CombinatorFactory#makeLookahead(Combinator)
      */
     public LookaheadCombinator(final @NotNull Combinator parser) {
         super(parser);

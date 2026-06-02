@@ -1,6 +1,5 @@
 package alphaparse.parsing;
 
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -20,10 +19,9 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param parser The thing to avoid.
-     * @see CombinatorFactory#negateRule(Combinator)
      */
     public NegativeLookaheadCombinator(final @NotNull Combinator parser) {
         super(parser);

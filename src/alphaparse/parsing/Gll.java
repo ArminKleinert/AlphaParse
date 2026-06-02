@@ -9,7 +9,6 @@ import alphaparse.Sym;
 import alphaparse.functions.Listener;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.*;
 import alphaparse.result.failure.FailureUtil;
@@ -301,7 +300,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, 0);
-        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
+        final @NotNull var parser = NonTerminalCombinator.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -332,7 +331,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
+        final @NotNull var parser = NonTerminalCombinator.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -357,7 +356,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
+        final @NotNull var parser = NonTerminalCombinator.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -390,7 +389,7 @@ public final class Gll {
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
         var gll = new Gll(tramp, iterativeDeepening);
-        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
+        final @NotNull var parser = NonTerminalCombinator.create(start);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
         if (allParses.isEmpty()) {
@@ -432,7 +431,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, failIndex);
-        final @NotNull var parser = CombinatorFactory.staticMakeNonTerminal(start);
+        final @NotNull var parser = NonTerminalCombinator.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);

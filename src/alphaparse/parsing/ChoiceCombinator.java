@@ -1,7 +1,6 @@
 package alphaparse.parsing;
 
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -49,10 +48,9 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance.
      *
      * @param parsers The different parsers in the choice.
-     * @see CombinatorFactory#choiceCombinator(List)
      */
     public ChoiceCombinator(@NotNull List<Combinator> parsers) {
         super(parsers);

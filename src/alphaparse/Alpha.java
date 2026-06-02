@@ -4,7 +4,7 @@ import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
+import alphaparse.parser_options.Unhide;
 import alphaparse.parsing.Gll;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
@@ -33,12 +33,10 @@ public final class Alpha {
         if (unhide == UnhideOptions.NONE)
             return parser;
 
-        final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory();
-
         return switch (unhide) {
-            case CONTENT -> parser.withGrammar(combinatorFactory.unhideAllContent(parser.grammar()));
-            case TAGS -> parser.withGrammar(combinatorFactory.unhideTags(parser.grammar()));
-            case ALL -> parser.withGrammar(combinatorFactory.unhideAll(parser.grammar()));
+            case CONTENT -> parser.withGrammar(Unhide.unhideAllContent(parser.grammar()));
+            case TAGS -> parser.withGrammar(Unhide.unhideTags(parser.grammar()));
+            case ALL -> parser.withGrammar(Unhide.unhideAll(parser.grammar()));
             default -> throw new IllegalStateException("Unexpected value: " + unhide);
         };
     }

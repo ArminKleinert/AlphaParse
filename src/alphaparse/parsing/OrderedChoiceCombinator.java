@@ -1,7 +1,6 @@
 package alphaparse.parsing;
 
 import alphaparse.functions.Listener;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -43,10 +42,9 @@ public final class OrderedChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     /**
-     * Creates a new instance from a list of {@link Combinator} objects. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance from a list of {@link Combinator} objects.
      *
      * @param parsers The choices.
-     * @see CombinatorFactory#orderedChoiceCombinator(List)
      */
     public OrderedChoiceCombinator(final @NotNull List<Combinator> parsers) {
         this(setupParsers(parsers).parser1, setupParsers(parsers).parser2);

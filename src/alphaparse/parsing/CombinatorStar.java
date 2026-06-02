@@ -3,7 +3,6 @@ package alphaparse.parsing;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.collections.FlatSeq;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +18,9 @@ public final class CombinatorStar extends CombinatorWithParser {
     }
 
     /**
-     * Creates a new instance. Instead of using this directly, use methods from {@link CombinatorFactory}.
+     * Creates a new instance..
      *
      * @param parser The {@link Combinator} to match repeatedly.
-     * @see CombinatorFactory#starCombinator(Combinator)
      */
     public CombinatorStar(final @NotNull Combinator parser) {
         super(parser);
