@@ -451,7 +451,7 @@ public final class CombinatorFactory {
         return new Grammar(res);
     }
 
-    private @NotNull Combinator autoWhitespaceHelper(
+    public @NotNull Combinator autoWhitespaceHelper(
             final @NotNull Combinator parser,
             final @NotNull Combinator wsParser) {
         return switch (parser) {
@@ -525,8 +525,8 @@ public final class CombinatorFactory {
 
         finalGrammar.put(start, newStartComb);
         finalGrammar.putAll(grammarWS);
-        finalGrammar.put(startWS, hideTag(
-                Objects.requireNonNull(grammarWS.getProduction(startWS))));
+        finalGrammar.put(startWS,
+                Objects.requireNonNull(grammarWS.getProduction(startWS)).hideTag());
         return new Grammar(finalGrammar);
     }
 }

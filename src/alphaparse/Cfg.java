@@ -254,7 +254,7 @@ final class Cfg {
             throw new ParserCreationFailure("No start production provided.");
         try {
             var validatedGrammar = options.checkCorrectness()
-                    ? checkGrammarValidity(grammar)
+                    ? grammar.checkGrammarValidity()
                     : grammar;
             return new Parser(
                     validatedGrammar.applyStandardReductions(combinatorFactory),
@@ -298,7 +298,7 @@ final class Cfg {
             var tempGrammar = Grammar.fromProductions(
                     productions, options.redefinitionOption());
             if (options.checkCorrectness()) {
-                checkGrammarValidity(tempGrammar);
+                tempGrammar.checkGrammarValidity();
             }
             grammar = tempGrammar.applyStandardReductions(combinatorFactory);
         } catch (IllegalGrammarException exception) {

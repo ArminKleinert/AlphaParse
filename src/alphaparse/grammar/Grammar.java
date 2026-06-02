@@ -1,6 +1,7 @@
 package alphaparse.grammar;
 
 import alphaparse.Sym;
+import alphaparse.error.IllegalGrammarException;
 import alphaparse.parsing.*;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
@@ -198,6 +199,18 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      */
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(this);
+    }
+
+    public @NotNull Grammar checkGrammarValidity() {
+        final @NotNull var analysisResult = this.analyze();
+        if (!analysisResult.isValid())
+            throw new IllegalGrammarException(
+                    "The keys "
+                            + analysisResult.getUndefinedUsedNTs()
+                            + " appear on the right-hand side of the"
+                            + " grammar, but not on the left.");
+
+        return this;
     }
 
     /**

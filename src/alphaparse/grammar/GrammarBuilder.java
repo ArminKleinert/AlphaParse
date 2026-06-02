@@ -3,6 +3,7 @@ package alphaparse.grammar;
 import alphaparse.Sym;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
+import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,11 +24,15 @@ public abstract class GrammarBuilder {
     public abstract void make();
 
     public final @NotNull Grammar build() {
+        return build(false);
+    }
+
+    public final @NotNull Grammar build(boolean ignoreWhitespace) {
         make();
         compress();
         applyStandardReductions();
 
-        if (options.whitespaceParser() != null) {
+        if (!ignoreWhitespace && options.whitespaceParser() != null) {
             autoWhitespace(
                     options.startProduction() == null ? productions.firstEntry().getKey() : options.startProduction(),
                     options.whitespaceParser().grammar(),
@@ -35,7 +40,12 @@ public abstract class GrammarBuilder {
             );
         }
 
-        return new Grammar(productions);
+        var g = new Grammar(productions);
+
+        if (options.checkCorrectness()) {
+            g.checkGrammarValidity();
+        }
+        return g;
     }
 
     public final void addProduction(
@@ -91,8 +101,13 @@ public abstract class GrammarBuilder {
         };
     }
 
-    public static @NotNull Combinator nt(final @NotNull Sym name) {return new NonTerminalCombinator(name);}
-    public static @NotNull Combinator nt(final @NotNull String name){return nt(Sym.sym(name));}
+    public static @NotNull Combinator nt(final @NotNull Sym name) {
+        return new NonTerminalCombinator(name);
+    }
+
+    public static @NotNull Combinator nt(final @NotNull String name) {
+        return nt(Sym.sym(name));
+    }
 
     public static @NotNull Combinator string(
             final @NotNull String s, final boolean explicitCasing) {
@@ -140,24 +155,24 @@ public abstract class GrammarBuilder {
     private @NotNull Combinator concat(
             final @NotNull Stream<Combinator> ruleStream) {
         final @NotNull List<@NotNull Combinator> result = ruleStream
-                        .filter(it -> it == EpsilonCombinator.getDefault())
-                        .toList();
+                .filter(it -> it != EpsilonCombinator.getDefault())
+                .toList();
         if (result.isEmpty())
             return epsilon();
         if (result.size() == 1)
             return result.getFirst();
         var compressedResult = new ArrayList<Combinator>();
         for (Combinator combinator : result) {
-            if (combinator instanceof ConcatCombinator cc)
-                compressedResult.addAll(cc.getParsers());
-            else
-                compressedResult.add(combinator);
+//            if (combinator instanceof ConcatCombinator cc)
+//                compressedResult.addAll(cc.getParsers());
+//            else
+            compressedResult.add(combinator);
         }
         return new ConcatCombinator(compressedResult);
     }
 
     public final @NotNull Combinator alternation(
-            final @NotNull Combinator rule, final @NotNull Combinator... rules) {
+            final @NotNull Object rule, final @NotNull Object... rules) {
         List<@NotNull Combinator> result = Stream.concat(
                         Stream.of(rule),
                         Arrays.stream(rules))
@@ -165,6 +180,7 @@ public abstract class GrammarBuilder {
                 .map(this::of)
                 .distinct()
                 .toList();
+        System.out.println(result);
         if (result.isEmpty())
             return epsilon();
         if (result.size() == 1)
@@ -232,15 +248,18 @@ public abstract class GrammarBuilder {
     }
 
     public final @NotNull Combinator zeroOrMore(final @NotNull Combinator rule) {
-        return repeat(rule, 0, Integer.MAX_VALUE);
+        //return repeat(rule, 0, Integer.MAX_VALUE);
+        return new CombinatorStar(rule);
     }
 
     public final @NotNull Combinator onceOrMore(final @NotNull Combinator rule) {
-        return repeat(rule, 1, Integer.MAX_VALUE);
+        //return repeat(rule, 1, Integer.MAX_VALUE);
+        return new PlusCombinator(rule);
     }
 
     public final @NotNull Combinator optional(final @NotNull Combinator rule) {
-        return repeat(rule, 0, 1);
+        //return repeat(rule, 0, 1);
+        return new OptionalCombinator(rule);
     }
 
     private void compress() {
@@ -262,14 +281,14 @@ public abstract class GrammarBuilder {
                 final var max = repetitionCombinator.getMax();
                 final @NotNull var parser = compressCombinator(repetitionCombinator.getParser());
 
-                if (min > 1) {
-                    yield repetitionCombinator;
-                } else if (min == 1 && max == Integer.MAX_VALUE) {
+                if (min == 1 && max == Integer.MAX_VALUE) {
                     yield new PlusCombinator(parser);
                 } else if (min == 0 && max == 1) {
                     yield new OptionalCombinator(parser);
                 } else if (min == 0 && max == Integer.MAX_VALUE) {
                     yield new CombinatorStar(parser);
+                } else if (min > 1) {
+                    yield repetitionCombinator;
                 } else {
                     yield repetitionCombinator;
                 }
@@ -339,24 +358,31 @@ public abstract class GrammarBuilder {
     private void autoWhitespace(final @NotNull Sym start,
                                 final @NotNull Grammar grammarWS,
                                 final @NotNull Sym startWS) {
+        // System.out.println("LOOK 2: " + productions);
         final @NotNull Combinator wsParser =
                 optional(nt(startWS)).enableHideTag();
 
-        for (var keywordCombinatorEntry : productions.sequencedEntrySet()) {
+        final @NotNull SequencedMap<@NotNull Sym, @NotNull Combinator> finalGrammar =
+                new LinkedHashMap<>(productions);
+        for (var keywordCombinatorEntry : finalGrammar.sequencedEntrySet()) {
             keywordCombinatorEntry.setValue(autoWhitespaceHelper(
                     keywordCombinatorEntry.getValue(), wsParser));
         }
 
-        final @NotNull Combinator startWithoutReduction = (
-                productions.get(start)
-                        .withReduction(ReductionType.standardInitialReduction()));
+        System.out.println(start);
+        final @NotNull Combinator startWithoutReduction =
+                finalGrammar.get(start)
+                        .withReduction(ReductionType.standardInitialReduction());
         final @NotNull Combinator newStartComb =
-                concat(startWithoutReduction, wsParser)
-                        .withReduction(productions.get(start).getReduction());
+                concat(List.of(startWithoutReduction, wsParser))
+                        .withReduction(finalGrammar.get(start).getReduction());
 
-        productions.put(start, newStartComb);
-        productions.putAll(grammarWS);
-        productions.put(startWS, (
-                Objects.requireNonNull(grammarWS.getProduction(startWS)).hideTag()));
+        finalGrammar.put(start, newStartComb);
+        finalGrammar.putAll(grammarWS);
+        finalGrammar.put(startWS,
+                Objects.requireNonNull(grammarWS.getProduction(startWS)).hideTag());
+
+        productions.clear();
+        productions.putAll(finalGrammar);
     }
 }

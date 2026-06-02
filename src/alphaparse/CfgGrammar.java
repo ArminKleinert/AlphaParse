@@ -1,6 +1,7 @@
 package alphaparse;
 
 import alphaparse.grammar.Grammar;
+import alphaparse.grammar.GrammarBuilder;
 import alphaparse.parsing.*;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parser_options.ParserCreationOptions;
@@ -12,12 +13,13 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class CfgGrammar {
+final class CfgGrammar extends GrammarBuilder {
     final @NotNull CombinatorFactory cf;
     final @NotNull Set<RulesAvailable> rulesAvailable;
     final @NotNull ParserCreationOptions options;
 
     private CfgGrammar(final @NotNull ParserCreationOptions options) {
+        super(options);
         this.options = options;
         this.rulesAvailable = options.usableRules();
         this.cf = new CombinatorFactory();
@@ -614,9 +616,72 @@ final class CfgGrammar {
         return new Grammar(grammarMap).applyStandardReductions(cs);
     }
 
+    @Override
+    public void make() {
+        addProduction(Sym.sym("rules"), makeCfgRulesRhs());
+        addProduction(Sym.sym("comment"), makeCfgCommentRhs());
+        //addProduction(Sym.sym("inside-comment"), g.makeCfgInsideCommentRhs());
+        addProduction(Sym.sym("opt-whitespace"), makeCfgOptWhitespaceRhs());
+        addProduction(Sym.sym("rule-separator"), makeCfgRuleSeparatorRhs());
+        addProduction(Sym.sym("rule"), makeCfgRuleRhs());
+        addProduction(Sym.sym("nt"), makeCfgNtRhs());
+        addProduction(Sym.sym("hide-nt"), makeCfgHideNtRhs());
+        addProduction(Sym.sym("paren"), makeCfgParenRhs());
+        addProduction(Sym.sym("hide"), makeCfgHideRhs());
+        addProduction(Sym.sym("cat"), makeCfgCatRhs());
+        addProduction(Sym.sym("string"), makeCfgStringRhs());
+        addProduction(Sym.sym("epsilon"), makeCfgEpsilonRhs());
+        addProduction(Sym.sym("factor"), makeCfgFactorRhs());
+        addProduction(Sym.sym("rules-or-parser"), makeCfgRulesOrParserRhs());
+        addProduction(Sym.sym("alt-or-ord"), makeCfgAltOrOrdRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.ALTERNATION))
+            addProduction(Sym.sym("alt"), makeCfgAltRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
+            addProduction(Sym.sym("ord"), makeCfgOrdRhs()); // Technically ABNF, but should be included without it as a PAKRAT extension.
+
+        if (rulesAvailable.contains(RulesAvailable.VARIABLE_REPEAT))
+            addProduction(Sym.sym("rep"), makeCfgRepRhs()); // ABNF
+
+        if (rulesAvailable.contains(RulesAvailable.REGEX))
+            addProduction(Sym.sym("regexp"), makeCfgRegexRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL))
+            addProduction(Sym.sym("opt"), makeCfgOptRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_QUERY))
+            addProduction(Sym.sym("opt_query"), makeCfgOptQueryRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR))
+            addProduction(Sym.sym("star"), makeCfgZeroOrMoreStarRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION))
+            addProduction(Sym.sym("opt_rep"), makeCfgZeroOrMoreStdRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.PLUS))
+            addProduction(Sym.sym("plus"), makeCfgPlusRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.LOOKAHEAD))
+            addProduction(Sym.sym("look"), makeCfgLookRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.NEGATIVE_LOOKAHEAD))
+            addProduction(Sym.sym("neg"), makeCfgNegRhs());
+
+        if (rulesAvailable.contains(RulesAvailable.VALUE_RANGE))
+            addProduction(Sym.sym("abnf-range"), makeABNFValueRange()); // ABNF
+
+        if (rulesAvailable.contains(RulesAvailable.EXCLUSION))
+            addProduction(Sym.sym("exclude"), makeCfgExclude());
+
+        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF))
+            addProduction(Sym.sym("eof"), makeEofRhs());
+    }
+
     @NotNull
     static Grammar makeCfg(final @NotNull ParserCreationOptions options) {
-        final @NotNull CfgGrammar g = new CfgGrammar(options);
-        return g.makeCfg();
+//        final @NotNull CfgGrammar g = new CfgGrammar(options);
+//        return g.makeCfg();
+        return new CfgGrammar(options).build(true);
     }
 }

@@ -32,16 +32,14 @@ public final class Print {
     }
 
     private static @NotNull String escape(final @NotNull String s) {
-        return '"' + s
-                .replace("\\", "\\\\")
+        return s.replace("\\", "\\\\")
                 .replace("\t", "\\t")
                 .replace("\b", "\\b")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\f", "\\f")
                 .replace("'", "\\'")      // <== not necessary
-                .replace("\"", "\\\"")
-                + '"';
+                .replace("\"", "\\\"");
     }
 
     /**
