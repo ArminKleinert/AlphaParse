@@ -2,42 +2,50 @@ package alphaparse.tests;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
+import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
-import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parsing.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Stream;
 
 class GrammarBuilderTest {
     @Test
-    void simpleTest() {
-        var p = Alpha.parser("S = S S | 'abc' | ('def' | 'ghi') S | '1'?", ParserCreationOptions
-                .newWithStandardWhitespace()
-                .withRedefinitionOption(RedefinitionOption.CHOICE)
-                .withStartProduction(Sym.sym("S")));
+    void equivalentToStringGrammar() {
+        var pFromString = Alpha.parser(
+                        """
+                                S = NUMBER NUMBER*
+                                NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+                                """)
+                .grammar();
+        var pFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {
+            @Override
+            public void make() {
+                addProduction("S", concat(Sym.sym("NUMBER"), repeatMin(nt(Sym.sym("NUMBER")), 0)));
+                addProduction("NUMBER", alternation("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+            }
+        }.build();
+        Assertions.assertEquals(pFromString, pFromGB);
+    }
+    @Test
+    void equivalentToMoreExplicitGrammar() {
+        var pGrammarList = new LinkedHashMap<Sym, Combinator>();
+        pGrammarList.put(Sym.sym("S"),
+                new ConcatCombinator(List.of(new NonTerminalCombinator(Sym.sym("NUMBER")), new CombinatorStar(new NonTerminalCombinator(Sym.sym("NUMBER"))))));
+        pGrammarList.put(Sym.sym("NUMBER"), new ChoiceCombinator(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map (it -> (Combinator)new TerminalStringCombinator(it, false)).toList()));
+        var finalGrammar = Alpha.parser(new Grammar(pGrammarList), ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))).grammar();
 
-        var opts = ParserCreationOptions
-                .newWithStandardWhitespace()
-                .withRedefinitionOption(RedefinitionOption.CHOICE)
-                .withStartProduction(Sym.sym("S"));
-//        var gb = new GrammarBuilder(opts) {
-//            @Override
-//            public void make() {
-//                addProduction("S",
-//                        alternation(
-//                                concat(nt(Sym.sym("S")), nt(Sym.sym("S"))),
-//                                of("abc"),
-//                                concat(alternation("def", "ghi"), of(Sym.sym("S"))),
-//                                optional(string("1"))));
-//            }
-//        }.build();
-
-        System.out.println(p.grammar());
-        //System.out.println(Alpha.parser(gb, opts).grammar());
-        System.out.println();
-        System.out.println(p.parse("defghi1"));
-        //System.out.println(Alpha.parser(gb, opts).parse("ghidef1"));
+        var pFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {
+            @Override
+            public void make() {
+                addProduction("S", concat(Sym.sym("NUMBER"), zeroOrMore(nt(Sym.sym("NUMBER")))));
+                addProduction("NUMBER", alternation("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+            }
+        }.build();
+        Assertions.assertEquals(finalGrammar, pFromGB);
     }
 }

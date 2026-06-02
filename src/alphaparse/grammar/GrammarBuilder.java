@@ -12,6 +12,21 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the {@link #make()} method overridden.
+ *
+ * <pre>
+ * {@code
+ * var pGrammarList = new LinkedHashMap<Sym, Combinator>();
+ *         pGrammarList.put(Sym.sym("S"),
+ *                 new ConcatCombinator(List.of(new NonTerminalCombinator(Sym.sym("NUMBER")), new PlusCombinator(new NonTerminalCombinator(Sym.sym("NUMBER"))))));
+ *         pGrammarList.put(Sym.sym("NUMBER"), new ChoiceCombinator(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map (it -> new TerminalStringCombinator(it, false)).toList()));
+ *         var pFromGrammar = new Grammar(pGrammarList);
+ * }
+ * </pre>
+ *
+ * The {@link #addProduction(Sym, Combinator)} method can be used to add new productions.
+ */
 public abstract class GrammarBuilder {
     public final @NotNull LinkedHashMap<Sym, Combinator> productions;
     public final @NotNull ParserCreationOptions options;
@@ -24,21 +39,9 @@ public abstract class GrammarBuilder {
     public abstract void make();
 
     public final @NotNull Grammar build() {
-        return build(false);
-    }
-
-    public final @NotNull Grammar build(boolean ignoreWhitespace) {
         make();
         compress();
         applyStandardReductions();
-
-        if (!ignoreWhitespace && options.whitespaceParser() != null) {
-            autoWhitespace(
-                    options.startProduction() == null ? productions.firstEntry().getKey() : options.startProduction(),
-                    options.whitespaceParser().grammar(),
-                    options.whitespaceParser().startProduction()
-            );
-        }
 
         var g = new Grammar(productions);
 
@@ -116,6 +119,16 @@ public abstract class GrammarBuilder {
         return new TerminalStringCombinator(s, explicitCasing);
     }
 
+    public final @NotNull Combinator stringCS(final @NotNull String s) {
+        if (s.isEmpty())
+            return EpsilonCombinator.getDefault();return string(s, false);
+    }
+
+    public final @NotNull Combinator stringCI(final @NotNull String s) {
+        if (s.isEmpty())
+            return EpsilonCombinator.getDefault();return string(s, true);
+    }
+
     public final @NotNull Combinator string(final @NotNull String s) {
         if (s.isEmpty())
             return EpsilonCombinator.getDefault();
@@ -138,17 +151,23 @@ public abstract class GrammarBuilder {
         return EOFCombinator.getDefault();
     }
 
-    public final @NotNull Combinator concat(
-            final @Nullable Combinator rule, final @Nullable Combinator... rules) {
+    @SafeVarargs
+    public final<T> @NotNull Combinator concat(
+            final @Nullable T rule, final @Nullable T... rules) {
         return concat(Stream.concat(
                         Stream.of(rule),
                         Arrays.stream(rules))
-                .filter(Objects::nonNull) // remove epsilons
+                .filter(Objects::nonNull)
                 .map(this::of));
     }
 
     public final @NotNull Combinator concat(
-            final @NotNull List<Combinator> rules) {
+            final @NotNull Combinator rule, final @NotNull Combinator... rules) {
+        return concat(Stream.concat(Stream.of(rule), Arrays.stream(rules)));
+    }
+
+    public final @NotNull Combinator concat(
+            final @NotNull List<@NotNull Combinator> rules) {
         return concat(rules.stream());
     }
 
@@ -163,10 +182,10 @@ public abstract class GrammarBuilder {
             return result.getFirst();
         var compressedResult = new ArrayList<Combinator>();
         for (Combinator combinator : result) {
-//            if (combinator instanceof ConcatCombinator cc)
-//                compressedResult.addAll(cc.getParsers());
-//            else
-            compressedResult.add(combinator);
+            if (combinator instanceof ConcatCombinator cc)
+                compressedResult.addAll(cc.getParsers());
+            else
+                compressedResult.add(combinator);
         }
         return new ConcatCombinator(compressedResult);
     }
@@ -180,7 +199,6 @@ public abstract class GrammarBuilder {
                 .map(this::of)
                 .distinct()
                 .toList();
-        System.out.println(result);
         if (result.isEmpty())
             return epsilon();
         if (result.size() == 1)

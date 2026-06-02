@@ -551,71 +551,6 @@ final class CfgGrammar extends GrammarBuilder {
         return cf.createRegexTerminal(regex);
     }
 
-    @NotNull Grammar makeCfg() {
-        final @NotNull SequencedMap<Sym, Combinator> grammarMap = new LinkedHashMap<>();
-        final @NotNull CombinatorFactory cs = new CombinatorFactory();
-        grammarMap.put(Sym.sym("rules"), makeCfgRulesRhs());
-        grammarMap.put(Sym.sym("comment"), makeCfgCommentRhs());
-        //grammarMap.put(Sym.sym("inside-comment"), g.makeCfgInsideCommentRhs());
-        grammarMap.put(Sym.sym("opt-whitespace"), makeCfgOptWhitespaceRhs());
-        grammarMap.put(Sym.sym("rule-separator"), makeCfgRuleSeparatorRhs());
-        grammarMap.put(Sym.sym("rule"), makeCfgRuleRhs());
-        grammarMap.put(Sym.sym("nt"), makeCfgNtRhs());
-        grammarMap.put(Sym.sym("hide-nt"), makeCfgHideNtRhs());
-        grammarMap.put(Sym.sym("paren"), makeCfgParenRhs());
-        grammarMap.put(Sym.sym("hide"), makeCfgHideRhs());
-        grammarMap.put(Sym.sym("cat"), makeCfgCatRhs());
-        grammarMap.put(Sym.sym("string"), makeCfgStringRhs());
-        grammarMap.put(Sym.sym("epsilon"), makeCfgEpsilonRhs());
-        grammarMap.put(Sym.sym("factor"), makeCfgFactorRhs());
-        grammarMap.put(Sym.sym("rules-or-parser"), makeCfgRulesOrParserRhs());
-        grammarMap.put(Sym.sym("alt-or-ord"), makeCfgAltOrOrdRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.ALTERNATION))
-            grammarMap.put(Sym.sym("alt"), makeCfgAltRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
-            grammarMap.put(Sym.sym("ord"), makeCfgOrdRhs()); // Technically ABNF, but should be included without it as a PAKRAT extension.
-
-        if (rulesAvailable.contains(RulesAvailable.VARIABLE_REPEAT))
-            grammarMap.put(Sym.sym("rep"), makeCfgRepRhs()); // ABNF
-
-        if (rulesAvailable.contains(RulesAvailable.REGEX))
-            grammarMap.put(Sym.sym("regexp"), makeCfgRegexRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.OPTIONAL))
-            grammarMap.put(Sym.sym("opt"), makeCfgOptRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_QUERY))
-            grammarMap.put(Sym.sym("opt_query"), makeCfgOptQueryRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR))
-            grammarMap.put(Sym.sym("star"), makeCfgZeroOrMoreStarRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION))
-            grammarMap.put(Sym.sym("opt_rep"), makeCfgZeroOrMoreStdRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.PLUS))
-            grammarMap.put(Sym.sym("plus"), makeCfgPlusRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.LOOKAHEAD))
-            grammarMap.put(Sym.sym("look"), makeCfgLookRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.NEGATIVE_LOOKAHEAD))
-            grammarMap.put(Sym.sym("neg"), makeCfgNegRhs());
-
-        if (rulesAvailable.contains(RulesAvailable.VALUE_RANGE))
-            grammarMap.put(Sym.sym("abnf-range"), makeABNFValueRange()); // ABNF
-
-        if (rulesAvailable.contains(RulesAvailable.EXCLUSION))
-            grammarMap.put(Sym.sym("exclude"), makeCfgExclude());
-
-        if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF))
-            grammarMap.put(Sym.sym("eof"), makeEofRhs());
-
-        return new Grammar(grammarMap).applyStandardReductions(cs);
-    }
-
     @Override
     public void make() {
         addProduction(Sym.sym("rules"), makeCfgRulesRhs());
@@ -680,8 +615,6 @@ final class CfgGrammar extends GrammarBuilder {
 
     @NotNull
     static Grammar makeCfg(final @NotNull ParserCreationOptions options) {
-//        final @NotNull CfgGrammar g = new CfgGrammar(options);
-//        return g.makeCfg();
-        return new CfgGrammar(options).build(true);
+        return new CfgGrammar(options).build();
     }
 }
