@@ -18,13 +18,28 @@ import java.util.stream.Collectors;
  * A type representing a Grammar.
  */
 public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
+    private final @Nullable Sym startSym;
+
+    public Grammar(final @Nullable Sym startSym, final @NotNull Map<? extends Sym, ? extends Combinator> m) {
+        super(m);
+        this.startSym = startSym;
+    }
+
     /**
      * Creates a new instance from a {@link Map}.
      *
      * @param m The map.
      */
     public Grammar(final @NotNull Map<? extends Sym, ? extends Combinator> m) {
-        super(m);
+        this(m.isEmpty() ? null : m.entrySet().stream().findFirst().get().getKey(), m);
+    }
+
+    public Grammar(final @NotNull SequencedMap<? extends Sym, ? extends Combinator> m) {
+        this(m.firstEntry().getKey(), m);
+    }
+
+    public @Nullable Sym getStartSym() {
+        return startSym;
     }
 
     @Override
@@ -45,87 +60,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
         return true;
     }
 
-    private static void addProductionWithRedefinitionOptionChoice(
-            final @NotNull SequencedMap<Sym, Combinator> m,
-            final @NotNull List<Map.Entry<Sym, Combinator>> kvs
-    ) {
-        for (Map.Entry<Sym, Combinator> kv : kvs) {
-            var existing = m.get(kv.getKey()); // Fetch existing production
-
-            // There was no production previously -> Just add
-            if (existing == null) {
-                m.put(kv.getKey(), kv.getValue());
-                continue;
-            }
-
-            // Production already existed.
-
-            // Buffer the old one
-            var newValue = kv.getValue();
-
-            // The existing and the new production are the same -> no point in creating a choice combinator
-            if (Objects.equals(existing, newValue))
-                continue;
-
-            // Make a new choice combinator
-            final @NotNull ChoiceCombinator choice;
-
-            if (existing instanceof ChoiceCombinator) {
-                // The existing production was not a choice combinator -> Combine old and new
-                final @NotNull var combs = new ArrayList<>(((ChoiceCombinator) existing).getParsers());
-                combs.add(newValue);
-                choice = new ChoiceCombinator(combs);
-            } else {
-                // The existing production was not a choice combinator
-                choice = new ChoiceCombinator(List.of(existing, newValue));
-            }
-
-            // Add new to grammar.
-            m.put(kv.getKey(), choice);
-        }
-    }
-
-    /**
-     * Creates a new Grammar from productions. The productions are represented as a list of {@link Map.Entry} instances or any other pair-like type. The keys are the left-hand sides, the values are the right-hand sides.
-     *
-     * @param kvs                The productions.
-     * @param redefinitionOption Option for what to do if a production appears more than once.
-     * @return A new Grammar.
-     * @see RedefinitionOption
-     */
-    public static @NotNull Grammar fromProductions(
-            final @NotNull List<Map.Entry<Sym, Combinator>> kvs,
-            @NotNull RedefinitionOption redefinitionOption) {
-        final @NotNull SequencedMap<Sym, Combinator> m = new LinkedHashMap<>();
-
-        // Using an assignment here is not strictly necessary. I use it to force the switch to be exhaustive by default.
-        @SuppressWarnings("unused")
-        var usedOpt = switch (redefinitionOption) {
-            case RedefinitionOption.OVERRIDE -> { // Ignore existing
-                for (Map.Entry<Sym, Combinator> kv : kvs)
-                    m.put(kv.getKey(), kv.getValue());
-                yield RedefinitionOption.OVERRIDE;
-            }
-            case RedefinitionOption.ERROR -> { // Throw if any production exists with this name
-                for (Map.Entry<Sym, Combinator> kv : kvs)
-                    if (m.putIfAbsent(kv.getKey(), kv.getValue()) != null)
-                        throw new IllegalArgumentException("Duplicate production: " + kv.getKey());
-                yield RedefinitionOption.ERROR;
-            }
-            case RedefinitionOption.CHOICE -> { // Make a choice combinator if exists
-                addProductionWithRedefinitionOptionChoice(m, kvs);
-                yield RedefinitionOption.CHOICE;
-            }
-            case RedefinitionOption.KEEP -> {
-                for (Map.Entry<Sym, Combinator> kv : kvs)
-                    m.putIfAbsent(kv.getKey(), kv.getValue());
-                yield RedefinitionOption.KEEP;
-            }
-        };
-
-        return new Grammar(m);
-    }
-
     /**
      * Gets the right-hand side of the production associated with the key.
      *
@@ -144,34 +78,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
     @Override
     public String toString() {
         return super.toString();
-    }
-
-    private @NotNull Set<NonTerminalCombinator> listNonTerminals() {
-        final @NotNull Set<NonTerminalCombinator> result = new HashSet<>();
-        final @NotNull Set<Combinator> analyzedCombinators = new HashSet<>();
-        final @NotNull ArrayList<@NotNull Combinator> combinatorStack = new ArrayList<>(values());
-        @NotNull Combinator parser;
-
-        while (!combinatorStack.isEmpty()) {
-            parser = combinatorStack.removeLast();
-            if (analyzedCombinators.contains(parser)) {
-                continue;
-            }
-            analyzedCombinators.add(parser);
-
-            switch (parser) {
-                case NonTerminalCombinator nonTerminalCombinator -> result.add(nonTerminalCombinator);
-                case CombinatorTerminal ignored -> {
-                }
-                case SimpleCombinator ignored -> {
-                }
-                case CombinatorWithManyParsers combinatorWithManyParsers ->
-                        combinatorStack.addAll(combinatorWithManyParsers.getParsers());
-                case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -235,7 +141,31 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
          */
         public @NotNull Collection<@NotNull Sym> usedNTs() {
-            return grammar.listNonTerminals().stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet());
+            final @NotNull Set<NonTerminalCombinator> result = new HashSet<>();
+            final @NotNull Set<Combinator> analyzedCombinators = new HashSet<>();
+            final @NotNull ArrayList<@NotNull Combinator> combinatorStack = new ArrayList<>(grammar.values());
+            @NotNull Combinator parser;
+
+            while (!combinatorStack.isEmpty()) {
+                parser = combinatorStack.removeLast();
+                if (analyzedCombinators.contains(parser)) {
+                    continue;
+                }
+                analyzedCombinators.add(parser);
+
+                switch (parser) {
+                    case NonTerminalCombinator nonTerminalCombinator -> result.add(nonTerminalCombinator);
+                    case CombinatorTerminal ignored -> {
+                    }
+                    case SimpleCombinator ignored -> {
+                    }
+                    case CombinatorWithManyParsers combinatorWithManyParsers ->
+                            combinatorStack.addAll(combinatorWithManyParsers.getParsers());
+                    case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
+                }
+            }
+
+            return result.stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet());
         }
 
         /**

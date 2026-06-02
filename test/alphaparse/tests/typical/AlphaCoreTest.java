@@ -974,6 +974,13 @@ class AlphaCoreTest {
         var text = "foo 123";
 
         Assertions.assertEquals(tree, auto_whitespace_example.parse(text));
+    }
+
+    @Test
+    void testAutoWhitespaceExample2() {
+        var tree = ParseTree.create("S", "foo", "123");
+        var text = "foo 123";
+
         Assertions.assertEquals(tree, auto_whitespace_example2.parse(text));
     }
 

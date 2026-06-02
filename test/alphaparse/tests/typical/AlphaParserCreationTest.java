@@ -2,6 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
+import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.parsing.EpsilonCombinator;
@@ -100,7 +101,7 @@ class AlphaParserCreationTest {
             // Error: Illegal grammar
             final @NotNull var grammar = "S := A";
             Assertions.assertThrows(
-                    ParserCreationFailure.class,
+                    IllegalGrammarException.class,
                     () -> Alpha.parser(grammar));
         }
         {
@@ -170,7 +171,7 @@ class AlphaParserCreationTest {
 
         // Using an epsilon that can't be used leads to an error.
         Assertions.assertThrows(
-                ParserCreationFailure.class,
+                IllegalGrammarException.class,
                 () -> Alpha.parser("S = Epsilon", dOpts.withEpsilonNames(List.of("ε"))));
 
         // Using an epsilon that is okay is valid.

@@ -28,13 +28,16 @@ public final class Alpha {
 
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull UnhideOptions unhide) {
+        if (unhide == UnhideOptions.NONE)
+            return parser;
+
         final @NotNull CombinatorFactory combinatorFactory = new CombinatorFactory();
 
         return switch (unhide) {
-            case NONE -> parser;
             case CONTENT -> parser.withGrammar(combinatorFactory.unhideAllContent(parser.grammar()));
             case TAGS -> parser.withGrammar(combinatorFactory.unhideTags(parser.grammar()));
             case ALL -> parser.withGrammar(combinatorFactory.unhideAll(parser.grammar()));
+            default -> throw new IllegalStateException("Unexpected value: " + unhide);
         };
     }
 
@@ -69,9 +72,7 @@ public final class Alpha {
                                                   final @NotNull ParsingOptions options) {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options, parser);
-        //var useOptimization = options.getOrDefault(Keyword.intern("optimize"), false);
-        final @NotNull var doUnhide = options.unhide();
-        final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
+        final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
         final @NotNull AlphaParseResult parsingResult;
         if (options.isTotal()) {
@@ -121,8 +122,7 @@ public final class Alpha {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options, parser);
         final var usePartial = options.usePartial();
-        final @NotNull var doUnhide = options.unhide();
-        final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
+        final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
         final var useParseTotal = options.isTotal();
         if (useParseTotal) {
@@ -169,8 +169,7 @@ public final class Alpha {
         final @NotNull var startProduction =
                 getStartProductionFromParserOrOptionsAndCheck(options, parser);
         final var usePartial = options.usePartial();
-        final @NotNull var doUnhide = options.unhide();
-        final @NotNull var unhiddenParser = unhideParser(parser, doUnhide);
+        final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
         final var useParseTotal = options.isTotal();
         if (useParseTotal) {

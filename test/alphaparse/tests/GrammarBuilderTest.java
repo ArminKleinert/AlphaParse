@@ -14,6 +14,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 class GrammarBuilderTest {
+    @Test void withWS () {
+        var pFromGB = Alpha.parser("""
+                S = A B
+                <A> = 'foo'
+                <B> = #'\\d+'
+                """, ParserCreationOptions.newWithStandardWhitespace());
+
+    }
     @Test
     void equivalentToStringGrammar() {
         var pFromString = Alpha.parser(

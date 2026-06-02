@@ -3,7 +3,7 @@ package alphaparse.grammar;
 import java.util.List;
 
 /**
- * Options for deciding what to do when a production is added that already exists. This enum is specifically used in {@link Grammar#fromProductions(List, RedefinitionOption)}.
+ * Options for deciding what to do when a production is added that already exists.
  * <p>
  * Consider the following grammar:
  * <pre>

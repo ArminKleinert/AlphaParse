@@ -1,6 +1,7 @@
 package alphaparse.tests.typical.rules_available;
 
 import alphaparse.Alpha;
+import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
@@ -483,7 +484,7 @@ class RulesAvailableGeneralizedTests {
     private static void abnfCoreUnavailable(ParserCreationOptions opts, boolean run) {
         if (!run) return;
 
-        Assertions.assertThrows(ParserCreationFailure.class, () -> AlphaParser(
+        Assertions.assertThrows(IllegalGrammarException.class, () -> AlphaParser(
                 "S = ALPHA BIT CHAR CR CRLF CTL DIGIT DQUOTE HEXDIG HTAB LF LWSP OCTET SP VCHAR WSP",
                 opts));
     }

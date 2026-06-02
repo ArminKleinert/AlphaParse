@@ -1,9 +1,9 @@
 package alphaparse.grammar;
 
 import alphaparse.Sym;
+import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 /**
  * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the {@link #make()} method overridden.
- *
+ * <p>
  * <pre>
  * {@code
  * var pGrammarList = new LinkedHashMap<Sym, Combinator>();
@@ -24,31 +24,60 @@ import java.util.stream.Stream;
  *         var pFromGrammar = new Grammar(pGrammarList);
  * }
  * </pre>
- *
+ * <p>
  * The {@link #addProduction(Sym, Combinator)} method can be used to add new productions.
  */
 public abstract class GrammarBuilder {
-    public final @NotNull LinkedHashMap<Sym, Combinator> productions;
-    public final @NotNull ParserCreationOptions options;
+    protected @NotNull LinkedHashMap<Sym, Combinator> productions;
+    protected final @NotNull ParserCreationOptions options;
+    protected boolean builtAlready = false;
 
     protected GrammarBuilder(final @NotNull ParserCreationOptions options) {
         productions = new LinkedHashMap<>();
         this.options = options;
     }
 
+    public boolean isBuiltAlready() {
+        return builtAlready;
+    }
+
     public abstract void make();
 
     public final @NotNull Grammar build() {
-        make();
-        compress();
-        applyStandardReductions();
+        return buildWithWhitespace(null);
+    }
 
-        var g = new Grammar(productions);
+    public final @NotNull Grammar buildWithWhitespace(Parser wsParser) {
+        if (builtAlready)
+            throw new IllegalStateException("Build has been finished already.");
+
+        make();
+
+        var start = options.startProduction() != null
+                ? options.startProduction()
+                : productions.sequencedKeySet().getFirst();
+
+        compress();
+
+        applyStandardReductions();
+        if (wsParser != null) {
+            autoWhitespace(start, wsParser.grammar(), wsParser.startProduction());
+        }
+
+        var g = new Grammar(start, productions);
+        builtAlready = true;
 
         if (options.checkCorrectness()) {
             g.checkGrammarValidity();
         }
         return g;
+    }
+
+    public final void addAllProductions(
+            final @NotNull Collection<Map.Entry<Sym, Combinator>> entries) {
+        for (Map.Entry<Sym, Combinator> entry : entries) {
+            addProduction(entry.getKey(), entry.getValue());
+        }
     }
 
     public final void addProduction(
@@ -104,6 +133,61 @@ public abstract class GrammarBuilder {
         };
     }
 
+    public final @NotNull Combinator lookahead(final @NotNull Object c) {
+        return new LookaheadCombinator(of(c));
+    }
+
+    public final @NotNull Combinator negate(final @NotNull Object c) {
+        return new NegativeLookaheadCombinator(of(c));
+    }
+
+    public @NotNull Combinator unicodeChar(final int lo, final int hi) {
+        if (lo > hi)
+            throw new IllegalArgumentException();
+
+        if (lo == hi)
+            return unicodeChar(lo);
+
+        final @NotNull var result = new TerminalUnicodeCharCombinator(lo, hi);
+        return result;
+    }
+
+    public @NotNull Combinator unicodeChar(final int lohi) {
+        final @NotNull var result = new TerminalUnicodeCharCombinator(lohi, lohi);
+        return result;
+    }
+
+
+    public final @NotNull Combinator orderedChoice(final @NotNull List<Object> cl) {
+        var parsers = cl.stream().map(this::of).toList();
+
+        if (parsers.isEmpty())
+            return epsilon();
+
+        if (parsers.size() == 1) return parsers.getFirst();
+
+        List<@Nullable Combinator> newParserList = null;
+        for (int i = 0; i < parsers.size(); i++) {
+            if (parsers.get(i).equals(epsilon())) {
+                if (newParserList == null) newParserList = new ArrayList<>(parsers);
+                else newParserList.set(i, null); // mark for removal
+            }
+        }
+
+        if (newParserList == null) {
+            newParserList = parsers;
+        } else {
+            newParserList = newParserList
+                    .stream()
+                    .filter(Objects::nonNull).toList();
+        }
+
+        if (newParserList.size() == 1)
+            return Objects.requireNonNull(newParserList.getFirst());
+        final @NotNull var result = new OrderedChoiceCombinator(newParserList);
+        return result;
+    }
+
     public static @NotNull Combinator nt(final @NotNull Sym name) {
         return new NonTerminalCombinator(name);
     }
@@ -121,12 +205,14 @@ public abstract class GrammarBuilder {
 
     public final @NotNull Combinator stringCS(final @NotNull String s) {
         if (s.isEmpty())
-            return EpsilonCombinator.getDefault();return string(s, false);
+            return EpsilonCombinator.getDefault();
+        return string(s, false);
     }
 
     public final @NotNull Combinator stringCI(final @NotNull String s) {
         if (s.isEmpty())
-            return EpsilonCombinator.getDefault();return string(s, true);
+            return EpsilonCombinator.getDefault();
+        return string(s, true);
     }
 
     public final @NotNull Combinator string(final @NotNull String s) {
@@ -152,7 +238,7 @@ public abstract class GrammarBuilder {
     }
 
     @SafeVarargs
-    public final<T> @NotNull Combinator concat(
+    public final <T> @NotNull Combinator concat(
             final @Nullable T rule, final @Nullable T... rules) {
         return concat(Stream.concat(
                         Stream.of(rule),
@@ -199,12 +285,17 @@ public abstract class GrammarBuilder {
                 .map(this::of)
                 .distinct()
                 .toList();
-        if (result.isEmpty())
+        return alternationC(result);
+    }
+
+    public final @NotNull Combinator alternationC(
+            final @NotNull List<Combinator> rules) {
+        if (rules.isEmpty())
             return epsilon();
-        if (result.size() == 1)
-            return result.getFirst();
+        if (rules.size() == 1)
+            return rules.getFirst();
         var compressedResult = new ArrayList<Combinator>();
-        for (Combinator combinator : result) {
+        for (Combinator combinator : rules) {
             if (combinator instanceof ChoiceCombinator cc)
                 compressedResult.addAll(cc.getParsers());
             else
@@ -376,21 +467,19 @@ public abstract class GrammarBuilder {
     private void autoWhitespace(final @NotNull Sym start,
                                 final @NotNull Grammar grammarWS,
                                 final @NotNull Sym startWS) {
-        // System.out.println("LOOK 2: " + productions);
         final @NotNull Combinator wsParser =
                 optional(nt(startWS)).enableHideTag();
 
-        final @NotNull SequencedMap<@NotNull Sym, @NotNull Combinator> finalGrammar =
+        final @NotNull LinkedHashMap<@NotNull Sym, @NotNull Combinator> finalGrammar =
                 new LinkedHashMap<>(productions);
         for (var keywordCombinatorEntry : finalGrammar.sequencedEntrySet()) {
             keywordCombinatorEntry.setValue(autoWhitespaceHelper(
                     keywordCombinatorEntry.getValue(), wsParser));
         }
 
-        System.out.println(start);
-        final @NotNull Combinator startWithoutReduction =
+        final @NotNull Combinator startWithoutReduction = (
                 finalGrammar.get(start)
-                        .withReduction(ReductionType.standardInitialReduction());
+                        .withReduction(ReductionType.standardInitialReduction()));
         final @NotNull Combinator newStartComb =
                 concat(List.of(startWithoutReduction, wsParser))
                         .withReduction(finalGrammar.get(start).getReduction());
@@ -400,7 +489,6 @@ public abstract class GrammarBuilder {
         finalGrammar.put(startWS,
                 Objects.requireNonNull(grammarWS.getProduction(startWS)).hideTag());
 
-        productions.clear();
-        productions.putAll(finalGrammar);
+        productions = finalGrammar;
     }
 }

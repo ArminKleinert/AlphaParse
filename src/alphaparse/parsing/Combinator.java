@@ -122,6 +122,6 @@ public abstract sealed class Combinator
 
     @Override
     public String toString() {
-        return alphaparse.Print.combinatorToString(this);
+        return alphaparse.Print.combinatorToString(this) + "(" + hide + ", " + red + ")";
     }
 }
