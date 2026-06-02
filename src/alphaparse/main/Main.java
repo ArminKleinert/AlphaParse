@@ -63,8 +63,6 @@ final class Main {
 //
 //        System.exit(0);
 
-        Alpha.bufferEbnfGrammar(true);
-
         /**/
         {
             final var p = Alpha.parser("S := <'a'>");
@@ -277,11 +275,6 @@ final class Main {
             final var startTime = System.nanoTime();
             final @NotNull var c = Alpha.parse(p, text).castToParseSuccess();
             final var endTime = System.nanoTime();
-            try (FileWriter fw = new FileWriter("bigoutput2.edn")) {
-                fw.append(c.toString());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
             println("Time taken (ms): " + (endTime - startTime) / 1000000.0 + " (Consider 75.000ms good)");
         }
 

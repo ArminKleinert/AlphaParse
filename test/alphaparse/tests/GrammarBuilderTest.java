@@ -18,7 +18,7 @@ class GrammarBuilderTest {
             public void make() {
                 addProduction("S", of("abc"));
                 addProduction("S", of(Set.of("def", "ghi", Sym.sym("S"))));
-                addProduction("S", repeat("1", 0, 1));
+                addProduction("S", repeat(string("1"), 0, 1));
             }
         };
         System.out.println(gb.build());

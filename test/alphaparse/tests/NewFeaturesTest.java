@@ -1,14 +1,33 @@
 package alphaparse.tests;
 
 import alphaparse.Alpha;
+import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
 import alphaparse.result.ParseTree;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class NewFeaturesTest {
+    @Test void wsExample1() {
+        final @NotNull Parser whitespace = Alpha.parser(
+                """
+                        whitespace = #'\\s+'
+                        """);
+        final @NotNull Parser auto_whitespace_example = Alpha.parser(
+                """
+                        S = A B
+                        <A> = 'foo'
+                        <B> = #'\\d+'
+                        """,
+                ParserCreationOptions.newWithStandardWhitespace());
+
+        var tree = ParseTree.create("S", "foo", "123");
+
+        Assertions.assertEquals(tree, auto_whitespace_example.parse("foo 123"));
+    }
     @Test void simple() {
         var g = """
                 Expression = Term , { ( '+' | '-' ) , Term } ;

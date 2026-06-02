@@ -3,6 +3,7 @@ package alphaparse.grammar;
 import alphaparse.Sym;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
+import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,16 @@ public abstract class GrammarBuilder {
     public final @NotNull Grammar build() {
         make();
         compress();
+        applyStandardReductions();
+
+        if (options.whitespaceParser() != null) {
+            autoWhitespace(
+                    options.startProduction() == null ? productions.firstEntry().getKey() : options.startProduction(),
+                    options.whitespaceParser().grammar(),
+                    options.whitespaceParser().startProduction()
+            );
+        }
+
         return new Grammar(productions);
     }
 
@@ -80,6 +91,9 @@ public abstract class GrammarBuilder {
         };
     }
 
+    public static @NotNull Combinator nt(final @NotNull Sym name) {return new NonTerminalCombinator(name);}
+    public static @NotNull Combinator nt(final @NotNull String name){return nt(Sym.sym(name));}
+
     public static @NotNull Combinator string(
             final @NotNull String s, final boolean explicitCasing) {
         if (s.isEmpty())
@@ -97,7 +111,7 @@ public abstract class GrammarBuilder {
         };
     }
 
-    public final @NotNull Combinator hide(final @Nullable Object o) {
+    public final @NotNull Combinator hide(final @NotNull Combinator o) {
         return of(o).enableHideTag();
     }
 
@@ -110,13 +124,24 @@ public abstract class GrammarBuilder {
     }
 
     public final @NotNull Combinator concat(
-            final @Nullable Object rule, final @Nullable Object... rules) {
-        List<@NotNull Combinator> result = Stream.concat(
+            final @Nullable Combinator rule, final @Nullable Combinator... rules) {
+        return concat(Stream.concat(
                         Stream.of(rule),
                         Arrays.stream(rules))
                 .filter(Objects::nonNull) // remove epsilons
-                .map(this::of)
-                .toList();
+                .map(this::of));
+    }
+
+    public final @NotNull Combinator concat(
+            final @NotNull List<Combinator> rules) {
+        return concat(rules.stream());
+    }
+
+    private @NotNull Combinator concat(
+            final @NotNull Stream<Combinator> ruleStream) {
+        final @NotNull List<@NotNull Combinator> result = ruleStream
+                        .filter(it -> it == EpsilonCombinator.getDefault())
+                        .toList();
         if (result.isEmpty())
             return epsilon();
         if (result.size() == 1)
@@ -132,7 +157,7 @@ public abstract class GrammarBuilder {
     }
 
     public final @NotNull Combinator alternation(
-            final @Nullable Object rule, final @Nullable Object... rules) {
+            final @NotNull Combinator rule, final @NotNull Combinator... rules) {
         List<@NotNull Combinator> result = Stream.concat(
                         Stream.of(rule),
                         Arrays.stream(rules))
@@ -155,7 +180,7 @@ public abstract class GrammarBuilder {
     }
 
     public final @NotNull Combinator repeat(
-            final @Nullable Object obj, final int min, final int max) {
+            final @NotNull Combinator obj, final int min, final int max) {
         if (min < 0 || max < min)
             throw new IllegalArgumentException(
                     "Illegal repetition (min=" + min + ", max=" + max + ")");
@@ -169,10 +194,10 @@ public abstract class GrammarBuilder {
 
         if (r instanceof RepetitionCombinator rc) {
             if (rc.getMin() <= 1 && min <= 1) {
-                int newMin = (int) Long.min(
+                final int newMin = (int) Long.min(
                         Integer.MAX_VALUE,
                         ((long) rc.getMin()) * min);
-                int newMax = (int) Long.min(
+                final int newMax = (int) Long.min(
                         Integer.MAX_VALUE,
                         ((long) rc.getMax()) * max);
                 return new RepetitionCombinator(rc.getParser(), newMin, newMax);
@@ -183,48 +208,47 @@ public abstract class GrammarBuilder {
     }
 
     public final @NotNull Combinator exclude(
-            final @Nullable Object o1, final @Nullable Object o2) {
+            final @NotNull Combinator o1, final @NotNull Combinator o2) {
         if (o1 == o2) return epsilon();
-        var r1 = of(o1);
-        var r2 = of(o2);
+        final @NotNull var r1 = of(o1);
+        final @NotNull var r2 = of(o2);
         if (Objects.equals(r1, r2)) return epsilon();
         return new ExclusionCombinator(r1, r2);
     }
 
     public final @NotNull Combinator repeat(
-            final @Nullable Object rule, final int exact) {
+            final @NotNull Combinator rule, final int exact) {
         return repeat(rule, exact, exact);
     }
 
     public final @NotNull Combinator repeatMin(
-            final @Nullable Object rule, final int min) {
+            final @NotNull Combinator rule, final int min) {
         return repeat(rule, min, Integer.MAX_VALUE);
     }
 
     public final @NotNull Combinator repeatMax(
-            final @Nullable Object rule, final int max) {
+            final @NotNull Combinator rule, final int max) {
         return repeat(rule, 0, max);
     }
 
-    public final @NotNull Combinator zeroOrMore(final @Nullable Object rule) {
+    public final @NotNull Combinator zeroOrMore(final @NotNull Combinator rule) {
         return repeat(rule, 0, Integer.MAX_VALUE);
     }
 
-    public final @NotNull Combinator onceOrMore(final @Nullable Object rule) {
+    public final @NotNull Combinator onceOrMore(final @NotNull Combinator rule) {
         return repeat(rule, 1, Integer.MAX_VALUE);
     }
 
-    public final @NotNull Combinator optional(final @Nullable Object rule) {
+    public final @NotNull Combinator optional(final @NotNull Combinator rule) {
         return repeat(rule, 0, 1);
     }
 
     private void compress() {
         var buffer = new HashMap<Combinator, Combinator>();
 
-        for (Map.Entry<Sym, Combinator> symCombinatorEntry
-                : productions.entrySet()) {
-            var value = symCombinatorEntry.getValue();
-            var compressedCombinator = compressCombinator(value);
+        for (var symCombinatorEntry : productions.entrySet()) {
+            final @NotNull var value = symCombinatorEntry.getValue();
+            final @NotNull var compressedCombinator = compressCombinator(value);
             if (compressedCombinator != value) // Yes, I need a reference equality check here.
                 symCombinatorEntry.setValue(compressedCombinator);
         }
@@ -234,9 +258,9 @@ public abstract class GrammarBuilder {
             final @NotNull Combinator combinator) {
         return switch (combinator) {
             case RepetitionCombinator repetitionCombinator -> {
-                var min = repetitionCombinator.getMin();
-                var max = repetitionCombinator.getMax();
-                var parser = compressCombinator(repetitionCombinator.getParser());
+                final var min = repetitionCombinator.getMin();
+                final var max = repetitionCombinator.getMax();
+                final @NotNull var parser = compressCombinator(repetitionCombinator.getParser());
 
                 if (min > 1) {
                     yield repetitionCombinator;
@@ -262,5 +286,77 @@ public abstract class GrammarBuilder {
             case CombinatorTerminal combinatorTerminal -> combinatorTerminal;
             case SimpleCombinator simpleCombinator -> simpleCombinator;
         };
+    }
+
+    private void applyStandardReductions() {
+        for (var prod : productions.entrySet()) {
+            final @NotNull var key = prod.getKey();
+            @NotNull var value = prod.getValue();
+            if (value.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
+                value = value.withReduction(ReductionType.defaultNonRawReduction(key));
+            }
+            prod.setValue(value);
+        }
+    }
+
+    private @NotNull Combinator autoWhitespaceHelper(
+            final @NotNull Combinator parser,
+            final @NotNull Combinator wsParser) {
+        return switch (parser) {
+            case NonTerminalCombinator ignored -> parser;
+            case EpsilonCombinator ignored2 -> parser;
+            case CombinatorWithParser parser1 -> (parser1.withParser(autoWhitespaceHelper(
+                    parser1.getParser(), wsParser)));
+            case CombinatorWithManyParsers combWithParsers -> {
+                final @NotNull List<@NotNull Combinator> parsers = combWithParsers
+                        .getParsers()
+                        .stream()
+                        .map(p -> autoWhitespaceHelper(p, wsParser))
+                        .toList();
+                yield (combWithParsers.withParsers(parsers));
+            }
+            case CombinatorTerminal ignored -> {
+                final @NotNull List<Combinator> parsers = new ArrayList<>();
+                parsers.add(wsParser);
+                final @NotNull Combinator result;
+                if (!parser.getReduction().isHiddenOrRaw()) {
+                    // Hide the terminal in the output.
+                    // It still appears in the tree, but is flattened into the concatenation.
+                    parsers.add(parser.withReduction(ReductionType.
+                            standardIntermediateReduction()));
+                    result = concat(parsers).withReduction(
+                            parser.getReduction());
+                } else {
+                    parsers.add(parser);
+                    result = concat(parsers);
+                }
+                yield result;
+            }
+            case SimpleCombinator ignored -> parser;
+        };
+    }
+
+    private void autoWhitespace(final @NotNull Sym start,
+                                final @NotNull Grammar grammarWS,
+                                final @NotNull Sym startWS) {
+        final @NotNull Combinator wsParser =
+                optional(nt(startWS)).enableHideTag();
+
+        for (var keywordCombinatorEntry : productions.sequencedEntrySet()) {
+            keywordCombinatorEntry.setValue(autoWhitespaceHelper(
+                    keywordCombinatorEntry.getValue(), wsParser));
+        }
+
+        final @NotNull Combinator startWithoutReduction = (
+                productions.get(start)
+                        .withReduction(ReductionType.standardInitialReduction()));
+        final @NotNull Combinator newStartComb =
+                concat(startWithoutReduction, wsParser)
+                        .withReduction(productions.get(start).getReduction());
+
+        productions.put(start, newStartComb);
+        productions.putAll(grammarWS);
+        productions.put(startWS, (
+                Objects.requireNonNull(grammarWS.getProduction(startWS)).hideTag()));
     }
 }

@@ -23,21 +23,6 @@ import java.util.Map;
  * The main interface for interacting with the library.
  */
 public final class Alpha {
-    private static Grammar bufferedDefaultGrammar = null;
-
-    /**
-     * Use this to keep the EBNF grammar in memory. Useful if many parsers are instantiated in a short time.
-     *
-     * @param setting Whether to keep the grammar in memory.
-     */
-    public static void bufferEbnfGrammar(final boolean setting) {
-        if (!setting) {
-            bufferedDefaultGrammar = null;
-        } else if (bufferedDefaultGrammar == null) {
-            bufferedDefaultGrammar = CfgGrammar.makeCfg(ParserCreationOptions.getDefault());
-        }
-    }
-
     private Alpha() {
     }
 
@@ -237,10 +222,7 @@ public final class Alpha {
      */
     public static @NotNull Parser parser(final @NotNull String grammar,
                                          final @NotNull ParserCreationOptions options) {
-        var grammarForParsingGrammar =
-                bufferedDefaultGrammar == null || options != ParserCreationOptions.getDefault()
-                        ? CfgGrammar.makeCfg(options)
-                        : bufferedDefaultGrammar;
+        var grammarForParsingGrammar = CfgGrammar.makeCfg(options);
         return Cfg.make(options).buildParser(grammar, grammarForParsingGrammar);
     }
 
