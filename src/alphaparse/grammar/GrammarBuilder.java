@@ -1,6 +1,7 @@
 package alphaparse.grammar;
 
 import alphaparse.Sym;
+import alphaparse.error.IllegalGrammarException;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
@@ -37,19 +38,28 @@ public abstract class GrammarBuilder {
         this.options = options;
     }
 
-    public boolean isBuiltAlready() {
-        return builtAlready;
-    }
-
     public abstract void make();
 
     public final @NotNull Grammar build() {
         return buildWithWhitespace(null);
     }
 
-    public final @NotNull Grammar buildWithWhitespace(Parser wsParser) {
+    public final @NotNull Grammar buildWithWhitespace(
+            final @Nullable Parser wsParser) {
+        return buildWithWhitespace(null, wsParser);
+    }
+
+    public final @NotNull Grammar buildWithWhitespace(
+            final @Nullable SequencedMap<Sym, Combinator> initialProductions,
+            final @Nullable Parser wsParser) {
         if (builtAlready)
             throw new IllegalStateException("Build has been finished already.");
+
+        if (initialProductions != null) {
+            for (Map.Entry<Sym, Combinator> entry : initialProductions.sequencedEntrySet()) {
+                addProduction(entry.getKey(), entry.getValue());
+            }
+        }
 
         make();
 
@@ -68,8 +78,15 @@ public abstract class GrammarBuilder {
         builtAlready = true;
 
         if (options.checkCorrectness()) {
-            g.checkGrammarValidity();
+            final @NotNull var analysisResult = g.analyze();
+            if (!analysisResult.isValid())
+                throw new IllegalGrammarException(
+                        "The keys "
+                                + analysisResult.getUndefinedUsedNTs()
+                                + " appear on the right-hand side of the"
+                                + " grammar, but not on the left.");
         }
+
         return g;
     }
 

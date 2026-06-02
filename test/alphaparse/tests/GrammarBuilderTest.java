@@ -14,14 +14,16 @@ import java.util.List;
 import java.util.stream.Stream;
 
 class GrammarBuilderTest {
-    @Test void withWS () {
+    @Test
+    void withWS() {
         var pFromGB = Alpha.parser("""
                 S = A B
                 <A> = 'foo'
                 <B> = #'\\d+'
                 """, ParserCreationOptions.newWithStandardWhitespace());
-
+        System.out.println(pFromGB.parse("foo12"));
     }
+
     @Test
     void equivalentToStringGrammar() {
         var pFromString = Alpha.parser(
@@ -39,12 +41,13 @@ class GrammarBuilderTest {
         }.build();
         Assertions.assertEquals(pFromString, pFromGB);
     }
+
     @Test
     void equivalentToMoreExplicitGrammar() {
         var pGrammarList = new LinkedHashMap<Sym, Combinator>();
         pGrammarList.put(Sym.sym("S"),
                 new ConcatCombinator(List.of(new NonTerminalCombinator(Sym.sym("NUMBER")), new CombinatorStar(new NonTerminalCombinator(Sym.sym("NUMBER"))))));
-        pGrammarList.put(Sym.sym("NUMBER"), new ChoiceCombinator(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map (it -> (Combinator)new TerminalStringCombinator(it, false)).toList()));
+        pGrammarList.put(Sym.sym("NUMBER"), new ChoiceCombinator(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map(it -> (Combinator) new TerminalStringCombinator(it, false)).toList()));
         var finalGrammar = Alpha.parser(new Grammar(pGrammarList), ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))).grammar();
 
         var pFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {

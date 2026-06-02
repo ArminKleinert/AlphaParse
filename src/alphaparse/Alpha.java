@@ -1,7 +1,9 @@
 package alphaparse;
 
+import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
+import alphaparse.grammar.GrammarBuilder;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.parsing.Gll;
 import alphaparse.parser.Parser;
@@ -256,18 +258,19 @@ public final class Alpha {
         if (!grammar.containsKey(options.startProduction()))
             throw new ParserCreationFailure("The start production " + options.startProduction() + " is not in the grammar.");
 
-        if (options.whitespaceParser() != null) {
-            var whitespaceParser = options.whitespaceParser();
-            grammar = (new CombinatorFactory()).autoWhitespace(
-                    grammar,
-                    options.startProduction(),
-                    whitespaceParser.grammar(),
-                    whitespaceParser.startProduction()
-            );
-        }
+        try {
+            var builder = new GrammarBuilder(options) {
+                @Override
+                public void make() {
+                }
+            };
 
-        final @NotNull var parser = Cfg.make(options).buildParserFromCombinators(grammar);
-        return parser;
+            var g = builder.buildWithWhitespace(grammar, options.whitespaceParser());
+
+            return new Parser(g, options.startProduction());
+        } catch (IllegalGrammarException exception) {
+            throw new ParserCreationFailure(exception);
+        }
     }
 
     /**

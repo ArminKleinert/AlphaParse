@@ -1,7 +1,6 @@
 package alphaparse.grammar;
 
 import alphaparse.Sym;
-import alphaparse.error.IllegalGrammarException;
 import alphaparse.parsing.*;
 import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.reduction.ReductionType;
@@ -105,18 +104,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      */
     public @NotNull GrammarInfo analyze() {
         return new GrammarInfo(this);
-    }
-
-    public @NotNull Grammar checkGrammarValidity() {
-        final @NotNull var analysisResult = this.analyze();
-        if (!analysisResult.isValid())
-            throw new IllegalGrammarException(
-                    "The keys "
-                            + analysisResult.getUndefinedUsedNTs()
-                            + " appear on the right-hand side of the"
-                            + " grammar, but not on the left.");
-
-        return this;
     }
 
     /**
@@ -238,19 +225,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
 
             return result;
         }
-
-//        public Collection<Map.Entry<Sym, Combinator>> productionsWithLookaheadProblems() {
-//            List<Map.Entry<Sym,Combinator>> result = new ArrayList<>();
-//            for (Map.Entry<@NotNull Sym, Combinator> symCombinatorEntry : grammar.entrySet()) {
-//                var rhsCE = symCombinatorEntry.getValue();
-//                if (!(rhsCE instanceof ConcatCombinator rhs)) continue;
-//                for (int i = 0; i < ((ConcatCombinator) rhs).getParsers().size()-1; i++) {
-//                    var current = ((ConcatCombinator) rhs).getParsers().get(i);
-//                    if (current instanceof )
-//                }
-//            }
-//            return result;
-//        }
 
         @Override
         public @NotNull String toString() {

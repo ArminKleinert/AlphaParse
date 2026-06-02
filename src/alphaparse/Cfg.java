@@ -1,6 +1,5 @@
 package alphaparse;
 
-import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
@@ -8,7 +7,6 @@ import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
-import alphaparse.parsing.combinator_factory.CombinatorFactory;
 import alphaparse.result.*;
 import alphaparse.util.StrParser;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 final class Cfg {
-    private final @NotNull CombinatorFactory combinatorFactory;
     private final @NotNull ParserCreationOptions options;
 
     private Cfg(final @NotNull ParserCreationOptions options) {
-        this.combinatorFactory = new CombinatorFactory();
         this.options = options;
     }
 
@@ -90,7 +86,7 @@ final class Cfg {
             if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
                 content = ((ParseTree) content.content()).getContent().getFirst();
                 key = Sym.sym(content.content().toString());
-                rule = new CombinatorFactory().hideTag((Combinator) buildRule(altOrOrd));
+                rule = ((Combinator) buildRule(altOrOrd)).hideTag();
             } else {
                 key = Sym.sym((String) content.content());
                 rule = (Combinator) buildRule(altOrOrd);
@@ -263,21 +259,6 @@ final class Cfg {
                 var abnfCore = CfgGrammar.makeAbnfCoreRules();
                 addAllProductions(abnfCore);
             }
-        }
-    }
-
-    @NotNull Parser buildParserFromCombinators(final @NotNull Grammar grammar) {
-        if (options.startProduction() == null)
-            throw new ParserCreationFailure("No start production provided.");
-        try {
-            var validatedGrammar = options.checkCorrectness()
-                    ? grammar.checkGrammarValidity()
-                    : grammar;
-            return new Parser(
-                    validatedGrammar.applyStandardReductions(combinatorFactory),
-                    options.startProduction());
-        } catch (IllegalGrammarException exception) {
-            throw new ParserCreationFailure(exception);
         }
     }
 
