@@ -28,7 +28,7 @@ final class Cfg {
         String spec;
         Grammar grammarGrammar;
 
-        public GrammarBuild(@NotNull ParserCreationOptions options, String spec, Grammar grammarGrammar) {
+        GrammarBuild(@NotNull ParserCreationOptions options, String spec, Grammar grammarGrammar) {
             super(options);
             this.spec = spec;
             this.grammarGrammar = grammarGrammar;
