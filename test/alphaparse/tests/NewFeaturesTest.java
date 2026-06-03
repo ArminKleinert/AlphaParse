@@ -3,6 +3,7 @@ package alphaparse.tests;
 import alphaparse.Alpha;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
 import alphaparse.result.ParseTree;
@@ -11,6 +12,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class NewFeaturesTest {
+    @Test void ttest () {
+                   var p = Alpha.parser("S := #'a'+");
+        var opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
+           // A normal parse results in a failure.
+        System.out.println(p.parse("ab", opts));
+    }
     @Test void wsExample1() {
         final @NotNull Parser whitespace = Alpha.parser(
                 """

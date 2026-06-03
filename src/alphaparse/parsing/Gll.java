@@ -189,7 +189,7 @@ public final class Gll {
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             @NotNull AlphaParseMessage result) {
         final @NotNull TrampolineListenerNode node = getOrCreateListenerNode(nodeKey);
-        final @NotNull Combinator parser = nodeKey.parser();
+        final @NotNull Rule parser = nodeKey.parser();
         if (parser.isHidden()) {
             result = result.reset();
         }
@@ -224,7 +224,7 @@ public final class Gll {
 
     private void startParser(
             final @NotNull Tramp tramp,
-            final @NotNull Combinator parser,
+            final @NotNull Rule parser,
             final boolean partial) {
         if (partial) {
             pushListener(new TrampolineListenerKey(0, parser), tramp::setSuccess);
@@ -300,7 +300,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, 0);
-        final @NotNull var parser = NonTerminalCombinator.create(start);
+        final @NotNull var parser = NonTerminal.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -319,7 +319,7 @@ public final class Gll {
      * @param start              The name of the start production.
      * @param text               The text.
      * @param partial            Whether to include partial results.
-     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String)
      * @see Alpha#parse(Parser, String, ParsingOptions)
@@ -331,7 +331,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = NonTerminalCombinator.create(start);
+        final @NotNull var parser = NonTerminal.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -345,7 +345,7 @@ public final class Gll {
      * @param start              The name of the start production.
      * @param text               The text.
      * @param partial            Whether to include partial results.
-     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @return The parse forest or failure.
      * @see Alpha#parsesOrFailure(Parser, String, ParsingOptions)
      */
@@ -356,7 +356,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = NonTerminalCombinator.create(start);
+        final @NotNull var parser = NonTerminal.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
@@ -376,7 +376,7 @@ public final class Gll {
      * @param start              The name of the start production.
      * @param text               The text.
      * @param partial            Whether to include partial results.
-     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String)
      * @see Alpha#parse(Parser, String, ParsingOptions)
@@ -389,7 +389,7 @@ public final class Gll {
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
         var gll = new Gll(tramp, iterativeDeepening);
-        final @NotNull var parser = NonTerminalCombinator.create(start);
+        final @NotNull var parser = NonTerminal.create(start);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
         if (allParses.isEmpty()) {
@@ -401,16 +401,16 @@ public final class Gll {
     }
 
     /**
-     * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, ParsingOptions)} with {@link ParsingOptions#isTotal()} set to true instead.
+     * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, ParsingOptions)} with {@link ParsingOptions#embedFailureInParseTree()} set to true instead.
      *
      * @param grammar            The grammar.
      * @param start              The name of the start production.
      * @param text               The text.
      * @param partial            Whether to include partial results.
-     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String, ParsingOptions)
-     * @see ParsingOptions#isTotal()
+     * @see ParsingOptions#embedFailureInParseTree()
      */
     public static @NotNull AlphaParsesResult parsesTotal(
             final @NotNull Grammar grammar,
@@ -431,7 +431,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, failIndex);
-        final @NotNull var parser = NonTerminalCombinator.create(start);
+        final @NotNull var parser = NonTerminal.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
@@ -441,16 +441,16 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parse(Parser, String, ParsingOptions)} with {@link ParsingOptions#isTotal()} set to true instead.
+     * This method should not be called directly. Use {@link Alpha#parse(Parser, String, ParsingOptions)} with {@link ParsingOptions#embedFailureInParseTree()} set to true instead.
      *
      * @param grammar            The grammar.
      * @param start              The name of the start production.
      * @param text               The text.
      * @param partial            Whether to include partial results.
-     * @param iterativeDeepening Iteratively deepens the evaluation of {@link TerminalRegexpCombinator#parse}.
+     * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @return The parse tree or failure.
      * @see Alpha#parse(Parser, String, ParsingOptions)
-     * @see ParsingOptions#isTotal()
+     * @see ParsingOptions#embedFailureInParseTree()
      */
     public static @NotNull AlphaParseResult parseTotal(
             final @NotNull Grammar grammar,

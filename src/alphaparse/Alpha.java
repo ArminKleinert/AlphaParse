@@ -57,7 +57,7 @@ public final class Alpha {
      * <p>
      * The options apply as follows:
      * <ul>
-     *     <li>{@link ParsingOptions#isTotal()}: Return a {@link ParseTree} on failure, with the information included in the tree.</li>
+     *     <li>{@link ParsingOptions#embedFailureInParseTree()}: Return a {@link ParseTree} on failure, with the information included in the tree.</li>
      *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
      * </ul>
@@ -75,7 +75,7 @@ public final class Alpha {
         final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
         final @NotNull AlphaParseResult parsingResult;
-        if (options.isTotal()) {
+        if (options.embedFailureInParseTree()) {
             parsingResult = AlphaParseResult.make(
                     Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
         } else {
@@ -106,7 +106,7 @@ public final class Alpha {
      * The following options apply:
      * <ul>
      *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
-     *     <li>{@link ParsingOptions#isTotal()}: Include failure information in parse trees.</li>
+     *     <li>{@link ParsingOptions#embedFailureInParseTree()}: Include failure information in parse trees.</li>
      *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
      * </ul>
@@ -124,7 +124,7 @@ public final class Alpha {
         final var usePartial = options.usePartial();
         final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
-        final var useParseTotal = options.isTotal();
+        final var useParseTotal = options.embedFailureInParseTree();
         if (useParseTotal) {
             return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         } else {
@@ -153,7 +153,7 @@ public final class Alpha {
      * The following options apply:
      * <ul>
      *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
-     *     <li>{@link ParsingOptions#isTotal()}: Include failure information in parse trees.</li>
+     *     <li>{@link ParsingOptions#embedFailureInParseTree()}: Include failure information in parse trees.</li>
      *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
      *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
      * </ul>
@@ -171,7 +171,7 @@ public final class Alpha {
         final var usePartial = options.usePartial();
         final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
-        final var useParseTotal = options.isTotal();
+        final var useParseTotal = options.embedFailureInParseTree();
         if (useParseTotal) {
             return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         } else {

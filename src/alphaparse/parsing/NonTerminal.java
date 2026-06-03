@@ -12,10 +12,10 @@ import java.util.Objects;
 /**
  * This type represents non-terminals.
  */
-public final class NonTerminalCombinator extends SimpleCombinator {
+public final class NonTerminal extends SimpleRule {
     private final @NotNull Sym keyword;
 
-    private NonTerminalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Sym keyword) {
+    private NonTerminal(final boolean hide, final @NotNull ReductionType red, final @NotNull Sym keyword) {
         super(hide, red);
         this.keyword = keyword;
     }
@@ -25,12 +25,12 @@ public final class NonTerminalCombinator extends SimpleCombinator {
      *
      * @param keyword The name.
      */
-    public NonTerminalCombinator(final @NotNull Sym keyword) {
+    public NonTerminal(final @NotNull Sym keyword) {
         super();
         this.keyword = keyword;
     }
-    public static @NotNull NonTerminalCombinator create(final @NotNull Sym keyword) {
-        return new NonTerminalCombinator(keyword);
+    public static @NotNull NonTerminal create(final @NotNull Sym keyword) {
+        return new NonTerminal(keyword);
     }
 
     /**
@@ -44,38 +44,38 @@ public final class NonTerminalCombinator extends SimpleCombinator {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @Nullable Combinator combinator = runner.tramp().getGrammar().getProduction(this.getKeyword());
-        if (combinator == null)
+        final @Nullable Rule rule = runner.tramp().getGrammar().getProduction(this.getKeyword());
+        if (rule == null)
             throw new IllegalStateException("Cannot use non terminal "+this.getKeyword()+ " Availability should be checked when initializing parser.");
         runner.pushListener(
-                new TrampolineListenerKey(index, combinator),
+                new TrampolineListenerKey(index, rule),
                 runner.nodeListener(new TrampolineListenerKey(index, this))
         );
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @Nullable Combinator combinator = runner.tramp().getGrammar().getProduction(this.getKeyword());
-        if (combinator == null)
+        final @Nullable Rule rule = runner.tramp().getGrammar().getProduction(this.getKeyword());
+        if (rule == null)
             throw new IllegalStateException("Cannot use non terminal "+this.getKeyword()+ " Availability should be checked when initializing parser.");
         runner.pushFullListener(
-                new TrampolineListenerKey(index, combinator),
+                new TrampolineListenerKey(index, rule),
                 runner.nodeListener(new TrampolineListenerKey(index, this)));
     }
 
     @Override
-    public @NotNull NonTerminalCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new NonTerminalCombinator(hide, red, keyword);
+    public @NotNull NonTerminal withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new NonTerminal(hide, red, keyword);
     }
 
     @Override
-    public @NotNull NonTerminalCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new NonTerminalCombinator(hide, red, keyword);
+    public @NotNull NonTerminal withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new NonTerminal(hide, red, keyword);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NonTerminalCombinator that)) return false;
+        if (!(o instanceof NonTerminal that)) return false;
         if (this == that) return true;
         return hide == that.hide && Objects.equals(red, that.red) && Objects.equals(keyword, that.keyword);
     }

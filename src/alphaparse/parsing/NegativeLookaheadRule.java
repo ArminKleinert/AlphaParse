@@ -13,8 +13,8 @@ import alphaparse.trampoline.TrampolineListenerNode;
  * <p>
  * Example: The production {@code S := !'a' ('a'|'b')+} matches any string of 'a' and 'b' which does NOT start with 'a'.
  */
-public final class NegativeLookaheadCombinator extends CombinatorWithParser {
-    private NegativeLookaheadCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+public final class NegativeLookaheadRule extends RuleWithChild {
+    private NegativeLookaheadRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 
@@ -23,7 +23,7 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
      *
      * @param parser The thing to avoid.
      */
-    public NegativeLookaheadCombinator(final @NotNull Combinator parser) {
+    public NegativeLookaheadRule(final @NotNull Rule parser) {
         super(parser);
     }
 
@@ -40,8 +40,8 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = getParser();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, combinator);
+        final @NotNull Rule rule = getParser();
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, rule);
 
         if (resultExists_Q(runner, nodeKey)) {
             runner.fail(new TrampolineListenerKey(index, this), index, ParseFailureReason.ofNegated(this, false));
@@ -52,7 +52,7 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
                 new TrampolineListenerKey(index, this), index,
                 ParseFailureReason.ofNegated(this, false)));
 
-        final @NotNull Combinator p = this;
+        final @NotNull Rule p = this;
         runner.pushNegativeListener(nodeKey, () -> {
             if (!resultExists_Q(runner, nodeKey)) {
                 runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, p), index);
@@ -66,17 +66,17 @@ public final class NegativeLookaheadCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public @NotNull NegativeLookaheadCombinator withParser(final @NotNull Combinator parser) {
-        return new NegativeLookaheadCombinator(hide, red, parser);
+    public @NotNull NegativeLookaheadRule withParser(final @NotNull Rule parser) {
+        return new NegativeLookaheadRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull NegativeLookaheadCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new NegativeLookaheadCombinator(hide, red, parser);
+    public @NotNull NegativeLookaheadRule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new NegativeLookaheadRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull NegativeLookaheadCombinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new NegativeLookaheadCombinator(hide, red, parser);
+    public @NotNull NegativeLookaheadRule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new NegativeLookaheadRule(hide, red, parser);
     }
 }

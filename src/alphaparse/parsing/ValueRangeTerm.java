@@ -12,11 +12,11 @@ import java.util.Objects;
 /**
  * Represents an ABNF value range.
  */
-public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
+public final class ValueRangeTerm extends Terminal {
     private final int lo;
     private final int hi;
 
-    private TerminalUnicodeCharCombinator(final boolean hide, final @NotNull ReductionType red, final int lo, final int hi) {
+    private ValueRangeTerm(final boolean hide, final @NotNull ReductionType red, final int lo, final int hi) {
         super(hide, red);
         if (lo > hi) throw new IllegalArgumentException();
         this.lo = lo;
@@ -30,7 +30,7 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
      * @param hi The highest codepoint.
      * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
      */
-    public TerminalUnicodeCharCombinator(final int lo, final int hi) {
+    public ValueRangeTerm(final int lo, final int hi) {
         super();
         if (lo > hi) throw new IllegalArgumentException();
         this.lo = lo;
@@ -82,10 +82,9 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
         }
 
         if (hi <= 0xFFFF) {
-            final char c = text.charAt(index);
-            final var code = (int) c;
+            final var code = (int) text.charAt(index);
             if (index + 1 == end && lo <= code && code <= hi) {
-                runner.pushSuccessMessage(nodeKeyForThis, Character.toString(c), end);
+                runner.pushSuccessMessage(nodeKeyForThis, Character.toString(code), end);
             } else {
                 runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
             }
@@ -121,18 +120,18 @@ public final class TerminalUnicodeCharCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public @NotNull TerminalUnicodeCharCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
+    public @NotNull ValueRangeTerm withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new ValueRangeTerm(hide, red, lo, hi);
     }
 
     @Override
-    public @NotNull TerminalUnicodeCharCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new TerminalUnicodeCharCombinator(hide, red, lo, hi);
+    public @NotNull ValueRangeTerm withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new ValueRangeTerm(hide, red, lo, hi);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TerminalUnicodeCharCombinator that)) return false;
+        if (!(o instanceof ValueRangeTerm that)) return false;
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)

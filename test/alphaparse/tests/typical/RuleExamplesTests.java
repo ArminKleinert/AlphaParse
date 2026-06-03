@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.stream.Stream;
 
-class CombinatorExamplesTests {
+class RuleExamplesTests {
     @Test
     void testChoiceExample1() {
         {

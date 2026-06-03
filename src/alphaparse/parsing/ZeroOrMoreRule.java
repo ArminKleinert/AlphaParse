@@ -12,56 +12,56 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Notation: {@code {rule}} or {@code rule*}
  */
-public final class CombinatorStar extends CombinatorWithParser {
-    private CombinatorStar(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+public final class ZeroOrMoreRule extends RuleWithChild {
+    private ZeroOrMoreRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 
     /**
      * Creates a new instance..
      *
-     * @param parser The {@link Combinator} to match repeatedly.
+     * @param parser The {@link Rule} to match repeatedly.
      */
-    public CombinatorStar(final @NotNull Combinator parser) {
+    public ZeroOrMoreRule(final @NotNull Rule parser) {
         super(parser);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = getParser();
+        final @NotNull Rule rule = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         runner.pushListener(
-                new TrampolineListenerKey(index, combinator),
-                PlusCombinator.plusListener(FlatSeq.make(), combinator, index, nodeKeyForStar, runner)
+                new TrampolineListenerKey(index, rule),
+                OnceOrMoreRule.plusListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner)
         );
         runner.pushSuccessMessageWithoutValue(nodeKeyForStar, index);
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = getParser();
+        final @NotNull Rule rule = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         if (index == runner.tramp().getText().length()) {
             runner.pushSuccessMessageWithoutValue(nodeKeyForStar, index);
         } else {
             runner.pushListener(
-                    new TrampolineListenerKey(index, combinator),
-                    PlusCombinator.plusFullListener(FlatSeq.make(), combinator, index, nodeKeyForStar, runner));
+                    new TrampolineListenerKey(index, rule),
+                    OnceOrMoreRule.plusFullListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner));
         }
     }
 
     @Override
-    public @NotNull CombinatorStar withParser(final @NotNull Combinator parser) {
-        return new CombinatorStar(hide, red, parser);
+    public @NotNull ZeroOrMoreRule withParser(final @NotNull Rule parser) {
+        return new ZeroOrMoreRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorStar withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new CombinatorStar(hide, red, parser);
+    public @NotNull ZeroOrMoreRule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new ZeroOrMoreRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull CombinatorStar withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new CombinatorStar(hide, red, parser);
+    public @NotNull ZeroOrMoreRule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new ZeroOrMoreRule(hide, red, parser);
     }
 }

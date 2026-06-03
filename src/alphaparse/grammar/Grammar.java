@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 /**
  * A type representing a Grammar.
  */
-public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
+public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
     private final @Nullable Sym startSym;
 
-    public Grammar(final @Nullable Sym startSym, final @NotNull Map<? extends Sym, ? extends Combinator> m) {
+    public Grammar(final @Nullable Sym startSym, final @NotNull Map<? extends Sym, ? extends Rule> m) {
         super(m);
         this.startSym = startSym;
     }
@@ -28,11 +28,11 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      *
      * @param m The map.
      */
-    public Grammar(final @NotNull Map<? extends Sym, ? extends Combinator> m) {
+    public Grammar(final @NotNull Map<? extends Sym, ? extends Rule> m) {
         this(m.isEmpty() ? null : m.entrySet().stream().findFirst().get().getKey(), m);
     }
 
-    public Grammar(final @NotNull SequencedMap<? extends Sym, ? extends Combinator> m) {
+    public Grammar(final @NotNull SequencedMap<? extends Sym, ? extends Rule> m) {
         this(m.firstEntry().getKey(), m);
     }
 
@@ -47,10 +47,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
         if (g.size() != size())
             return false;
 
-        for (Map.Entry<@NotNull Sym, Combinator> keywordCombinatorEntry : sequencedEntrySet()) {
+        for (Map.Entry<@NotNull Sym, Rule> symRuleEntry : sequencedEntrySet()) {
             if (!Objects.equals(
-                    g.getProduction(keywordCombinatorEntry.getKey()),
-                    keywordCombinatorEntry.getValue())) {
+                    g.getProduction(symRuleEntry.getKey()),
+                    symRuleEntry.getValue())) {
                 return false;
             }
         }
@@ -64,12 +64,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
      * @param key The right-hand side of the production.
      * @return The production or null if not found.
      */
-    public @Nullable Combinator getProduction(final @NotNull Sym key) {
+    public @Nullable Rule getProduction(final @NotNull Sym key) {
         return getOrDefault(key, null);
     }
 
     @Override
-    public Combinator get(Object key) {
+    public Rule get(Object key) {
         throw new UnsupportedOperationException("Please use getProduction(key) instead of get(key).");
     }
 
@@ -79,12 +79,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
     }
 
     /**
-     * Replaces all combinators that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with combinators with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#TAGGED_PARSE_TREE}.
+     * Replaces all rules that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with rules with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#TAGGED_PARSE_TREE}.
      *
      * @return A new grammar.
      */
     public @NotNull Grammar applyStandardReductions() {
-        final LinkedHashMap<Sym, Combinator> m = new LinkedHashMap<>();
+        final LinkedHashMap<Sym, Rule> m = new LinkedHashMap<>();
         this.forEach((prodKey, pars) -> {
             if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
                 pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
@@ -126,31 +126,31 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
          */
         public @NotNull Collection<@NotNull Sym> usedNTs() {
-            final @NotNull Set<NonTerminalCombinator> result = new HashSet<>();
-            final @NotNull Set<Combinator> analyzedCombinators = new HashSet<>();
-            final @NotNull ArrayList<@NotNull Combinator> combinatorStack = new ArrayList<>(grammar.values());
-            @NotNull Combinator parser;
+            final @NotNull Set<NonTerminal> result = new HashSet<>();
+            final @NotNull Set<Rule> analyzedRules = new HashSet<>();
+            final @NotNull ArrayList<@NotNull Rule> ruleStack = new ArrayList<>(grammar.values());
+            @NotNull Rule parser;
 
-            while (!combinatorStack.isEmpty()) {
-                parser = combinatorStack.removeLast();
-                if (analyzedCombinators.contains(parser)) {
+            while (!ruleStack.isEmpty()) {
+                parser = ruleStack.removeLast();
+                if (analyzedRules.contains(parser)) {
                     continue;
                 }
-                analyzedCombinators.add(parser);
+                analyzedRules.add(parser);
 
                 switch (parser) {
-                    case NonTerminalCombinator nonTerminalCombinator -> result.add(nonTerminalCombinator);
-                    case CombinatorTerminal ignored -> {
+                    case NonTerminal nonTerminal -> result.add(nonTerminal);
+                    case Terminal ignored -> {
                     }
-                    case SimpleCombinator ignored -> {
+                    case SimpleRule ignored -> {
                     }
-                    case CombinatorWithManyParsers combinatorWithManyParsers ->
-                            combinatorStack.addAll(combinatorWithManyParsers.getParsers());
-                    case CombinatorWithParser combinatorWithParser -> combinatorStack.add(combinatorWithParser.getParser());
+                    case RuleWithManyChildren ruleWithManyChildren ->
+                            ruleStack.addAll(ruleWithManyChildren.getParsers());
+                    case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getParser());
                 }
             }
 
-            return result.stream().map(NonTerminalCombinator::getKeyword).collect(Collectors.toSet());
+            return result.stream().map(NonTerminal::getKeyword).collect(Collectors.toSet());
         }
 
         /**
@@ -208,15 +208,15 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
          * @param predicate A predicate which can be used to collect only rules which match it.
          * @return A collection of all rules contained in the grammar.
          */
-        public @NotNull Collection<Combinator> collectRules(@Nullable Predicate<Combinator> predicate) {
+        public @NotNull Collection<Rule> collectRules(@Nullable Predicate<Rule> predicate) {
             if (predicate == null) predicate = (it) -> true;
-            var result = new LinkedHashSet<Combinator>();
+            var result = new LinkedHashSet<Rule>();
 
-            List<Combinator> stack = new ArrayList<>(grammar.values());
+            List<Rule> stack = new ArrayList<>(grammar.values());
             while (!stack.isEmpty()) {
-                @NotNull Combinator top = stack.removeLast();
-                if (top instanceof CombinatorWithParser topC) stack.add((topC).getParser());
-                else if (top instanceof CombinatorWithManyParsers topC) stack.addAll(topC.getParsers());
+                @NotNull Rule top = stack.removeLast();
+                if (top instanceof RuleWithChild topC) stack.add((topC).getParser());
+                else if (top instanceof RuleWithManyChildren topC) stack.addAll(topC.getParsers());
 
                 if (predicate.test(top)) result.add(top);
             }
@@ -242,37 +242,37 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
     }
 
     @Override
-    public Map.Entry<Sym, Combinator> pollFirstEntry() {
+    public Map.Entry<Sym, Rule> pollFirstEntry() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Map.Entry<Sym, Combinator> pollLastEntry() {
+    public Map.Entry<Sym, Rule> pollLastEntry() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator putFirst(Sym k, Combinator v) {
+    public Rule putFirst(Sym k, Rule v) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator putLast(Sym k, Combinator v) {
+    public Rule putLast(Sym k, Rule v) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator put(Sym key, Combinator value) {
+    public Rule put(Sym key, Rule value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator remove(Object key) {
+    public Rule remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void putAll(Map<? extends @NotNull Sym, ? extends Combinator> m) {
+    public void putAll(Map<? extends @NotNull Sym, ? extends Rule> m) {
         throw new UnsupportedOperationException();
     }
 
@@ -282,12 +282,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
     }
 
     @Override
-    public void replaceAll(BiFunction<? super @NotNull Sym, ? super Combinator, ? extends Combinator> function) {
+    public void replaceAll(BiFunction<? super @NotNull Sym, ? super Rule, ? extends Rule> function) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator putIfAbsent(Sym key, Combinator value) {
+    public Rule putIfAbsent(Sym key, Rule value) {
         throw new UnsupportedOperationException();
     }
 
@@ -297,32 +297,32 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Combinator> {
     }
 
     @Override
-    public boolean replace(Sym key, Combinator oldValue, Combinator newValue) {
+    public boolean replace(Sym key, Rule oldValue, Rule newValue) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator replace(Sym key, Combinator value) {
+    public Rule replace(Sym key, Rule value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator computeIfAbsent(@NotNull Sym key, Function<? super @NotNull Sym, ? extends Combinator> mappingFunction) {
+    public Rule computeIfAbsent(@NotNull Sym key, Function<? super @NotNull Sym, ? extends Rule> mappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator computeIfPresent(Sym key, BiFunction<? super Sym, ? super Combinator, ? extends Combinator> remappingFunction) {
+    public Rule computeIfPresent(Sym key, BiFunction<? super Sym, ? super Rule, ? extends Rule> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator compute(Sym key, BiFunction<? super Sym, ? super Combinator, ? extends Combinator> remappingFunction) {
+    public Rule compute(Sym key, BiFunction<? super Sym, ? super Rule, ? extends Rule> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Combinator merge(Sym key, Combinator value, BiFunction<? super Combinator, ? super Combinator, ? extends Combinator> remappingFunction) {
+    public Rule merge(Sym key, Rule value, BiFunction<? super Rule, ? super Rule, ? extends Rule> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 }

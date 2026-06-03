@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a "once or more" parse. That is the {@code p+} operator (where p is an instance of {@link Combinator}).
+ * Represents a "once or more" parse. That is the {@code p+} operator (where p is an instance of {@link Rule}).
  */
-public final class PlusCombinator extends CombinatorWithParser {
-    private PlusCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+public final class OnceOrMoreRule extends RuleWithChild {
+    private OnceOrMoreRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 
@@ -22,13 +22,13 @@ public final class PlusCombinator extends CombinatorWithParser {
      *
      * @param parser The inner element.
      */
-    public PlusCombinator(final @NotNull Combinator parser) {
+    public OnceOrMoreRule(final @NotNull Rule parser) {
         super(defaultHidden, ReductionType.standardInitialReduction(), parser);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator parser = getParser();
+        final @NotNull Rule parser = getParser();
         runner.pushListener(
                 new TrampolineListenerKey(index, parser),
                 plusListener(FlatSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
@@ -37,7 +37,7 @@ public final class PlusCombinator extends CombinatorWithParser {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator parser = getParser();
+        final @NotNull Rule parser = getParser();
         runner.pushListener(
                 new TrampolineListenerKey(index, parser),
                 plusFullListener(FlatSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
@@ -46,7 +46,7 @@ public final class PlusCombinator extends CombinatorWithParser {
 
     @NotNull
     static Listener plusListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                 final @NotNull Combinator parser,
+                                 final @NotNull Rule parser,
                                  final int prevIndex,
                                  final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                  final @NotNull Gll runner) {
@@ -72,7 +72,7 @@ public final class PlusCombinator extends CombinatorWithParser {
 
     @NotNull
     static Listener plusFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                     final @NotNull Combinator parser,
+                                     final @NotNull Rule parser,
                                      final int prevIndex,
                                      final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                      final @NotNull Gll runner) {
@@ -98,17 +98,17 @@ public final class PlusCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public @NotNull PlusCombinator withParser(final @NotNull Combinator parser) {
-        return new PlusCombinator(hide, red, parser);
+    public @NotNull OnceOrMoreRule withParser(final @NotNull Rule parser) {
+        return new OnceOrMoreRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull PlusCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new PlusCombinator(hide, red, parser);
+    public @NotNull OnceOrMoreRule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new OnceOrMoreRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull PlusCombinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new PlusCombinator(hide, red, parser);
+    public @NotNull OnceOrMoreRule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new OnceOrMoreRule(hide, red, parser);
     }
 }

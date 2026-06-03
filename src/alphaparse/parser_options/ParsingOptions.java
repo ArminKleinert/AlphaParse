@@ -3,7 +3,7 @@ package alphaparse.parser_options;
 import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser.Parser;
-import alphaparse.parsing.TerminalRegexpCombinator;
+import alphaparse.parsing.RegexTerm;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
@@ -18,11 +18,11 @@ import java.util.Objects;
  * @param usePartial              Whether to return partial (incomplete) parses.
  * @param unhide                  What (if anything) to "unhide" in the results.
  * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
- * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link TerminalRegexpCombinator#parse}.
+ * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link RegexTerm#parse}.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE
- * @see ParsingOptions#DEFAULT_TOTAL
+ * @see ParsingOptions#DEFAULT_EMBED_FAILURES
  */
 public record ParsingOptions(
         @Nullable Sym start,
@@ -46,7 +46,7 @@ public record ParsingOptions(
     /**
      * By default, do not include failure nodes in parse trees. ({@code false})
      */
-    public static final boolean DEFAULT_TOTAL = false;
+    public static final boolean DEFAULT_EMBED_FAILURES = false;
     /**
 * By default, do not iteratively deepen search when parsing with a regex. ({@code false})<br/>
      * The reason is that it is much slower to do.
@@ -60,11 +60,11 @@ public record ParsingOptions(
      * @see ParsingOptions#DEFAULT_START
      * @see ParsingOptions#DEFAULT_PARTIAL
      * @see ParsingOptions#DEFAULT_UNHIDE
-     * @see ParsingOptions#DEFAULT_TOTAL
+     * @see ParsingOptions#DEFAULT_EMBED_FAILURES
      * @see ParsingOptions#DEFAULT_ITERATIVE_DEEPENING
      */
     public static @NotNull ParsingOptions getDefault() {
-        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_TOTAL, DEFAULT_ITERATIVE_DEEPENING);
+        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_EMBED_FAILURES, DEFAULT_ITERATIVE_DEEPENING);
     }
 
     /**
@@ -174,20 +174,20 @@ public record ParsingOptions(
      *
      *      // A normal parse results in a failure.
      *      println(p.parse("ab").castToParseFailure().contentsToString());
-     *      // => [1, [ParseFailureReason[combinator=#"a", reasonString=null, untilEndOfInput=false, tag=regex]], 1, 2, ab]
+     *      // => [1, [ParseFailureReason[rule=#"a", reasonString=null, untilEndOfInput=false, tag=regex]], 1, 2, ab]
      *
      *      // With the total option, a parsetree is returned, potentially providing more information about the failure.
      *      var opts = Alpha.ParsingOptions.getDefault().withTotal(true);
      *      println(p.parse("ab", opts));
-     *      // => [:S, a, [:failure, could not parse "b" at 1..2]]
+     *      // => [:S, "a", [:failure, could not parse "b" at 1..2]]
      * }
      * </pre>
      *
      * @return true or false
-     * @see ParsingOptions#DEFAULT_TOTAL
+     * @see ParsingOptions#DEFAULT_EMBED_FAILURES
      * @see ParsingOptions#getDefault()
      */
-    public boolean isTotal() {
+    public boolean embedFailureInParseTree() {
         return embedFailureInParseTree;
     }
 

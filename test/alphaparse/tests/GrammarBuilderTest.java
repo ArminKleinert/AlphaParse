@@ -44,10 +44,10 @@ class GrammarBuilderTest {
 
     @Test
     void equivalentToMoreExplicitGrammar() {
-        var pGrammarList = new LinkedHashMap<Sym, Combinator>();
+        var pGrammarList = new LinkedHashMap<Sym, Rule>();
         pGrammarList.put(Sym.sym("S"),
-                new ConcatCombinator(List.of(new NonTerminalCombinator(Sym.sym("NUMBER")), new CombinatorStar(new NonTerminalCombinator(Sym.sym("NUMBER"))))));
-        pGrammarList.put(Sym.sym("NUMBER"), new ChoiceCombinator(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map(it -> (Combinator) new TerminalStringCombinator(it, false)).toList()));
+                new ConcatRule(List.of(new NonTerminal(Sym.sym("NUMBER")), new ZeroOrMoreRule(new NonTerminal(Sym.sym("NUMBER"))))));
+        pGrammarList.put(Sym.sym("NUMBER"), new AlternationRule(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map(it -> (Rule) new StringTerm(it, false)).toList()));
         var finalGrammar = Alpha.parser(new Grammar(pGrammarList), ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))).grammar();
 
         var pFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {

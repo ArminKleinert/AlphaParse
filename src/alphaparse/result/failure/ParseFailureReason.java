@@ -11,13 +11,13 @@ import java.util.stream.IntStream;
 /**
  * A failure lists reasons for the failure. This class represents the possible reasons.
  *
- * @param combinator      The combinator was parsed when the failure appeared.
+ * @param rule            The rule was parsed when the failure appeared.
  * @param reasonString    A string describing the failure. Please prefer {@link ParseFailureReason#failureReasonString}.
  * @param untilEndOfInput Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
  * @param tag             A symbol or string indicating the type of reason. E.g. lookahead, string terminal, regex terminal, etc.
  */
 public record ParseFailureReason(
-        @NotNull Combinator combinator,
+        @NotNull Rule rule,
         @Nullable String reasonString,
         boolean untilEndOfInput,
         @NotNull String tag) {
@@ -28,7 +28,7 @@ public record ParseFailureReason(
      */
     public String failureReasonString() {
         if (reasonString != null) return reasonString;
-        return Print.combinatorToString(combinator);
+        return Print.ruleToString(rule);
     }
 
     /**
@@ -50,118 +50,118 @@ public record ParseFailureReason(
     }
 
     /**
-     * Builds an instance based on a {@link TerminalUnicodeCharCombinator}.
+     * Builds an instance based on a {@link ValueRangeTerm}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofUnicodeChar(final TerminalUnicodeCharCombinator combinator, final boolean untilEndOfInput) {
+    public static @NotNull ParseFailureReason ofUnicodeChar(final @NotNull ValueRangeTerm rule, final boolean untilEndOfInput) {
 
         return new ParseFailureReason(
-                combinator,
-                Arrays.toString(IntStream.range(combinator.getLo(), combinator.getHi() + 1).mapToObj(it -> (char) it).toArray()),
+                rule,
+                Arrays.toString(IntStream.range(rule.getLo(), rule.getHi() + 1).mapToObj(it -> (char) it).toArray()),
                 untilEndOfInput, "char");
     }
 
     /**
-     * Builds an instance based on a {@link EpsilonCombinator}.
+     * Builds an instance based on a {@link EpsilonTerm}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofEpsilon(final EpsilonCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, "end-of-string", untilEndOfInput, "epsilon");
+    public static @NotNull ParseFailureReason ofEpsilon(final @NotNull EpsilonTerm rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, "end-of-string", untilEndOfInput, "epsilon");
     }
 
     /**
-     * Builds an instance based on a {@link RepetitionCombinator}.
+     * Builds an instance based on a {@link VariableRepetitionRule}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofRepetition(final RepetitionCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, null, untilEndOfInput, "rep");
+    public static @NotNull ParseFailureReason ofRepetition(final @NotNull VariableRepetitionRule rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, null, untilEndOfInput, "rep");
     }
 
     /**
-     * Builds an instance based on a {@link LookaheadCombinator}.
+     * Builds an instance based on a {@link LookaheadRule}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofLookahead(final LookaheadCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, untilEndOfInput ? "end-of-string" : null, untilEndOfInput, "look");
+    public static @NotNull ParseFailureReason ofLookahead(final @NotNull LookaheadRule rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, untilEndOfInput ? "end-of-string" : null, untilEndOfInput, "look");
     }
 
     /**
-     * Builds an instance based on a {@link NegativeLookaheadCombinator}.
+     * Builds an instance based on a {@link NegativeLookaheadRule}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofNegated(final NegativeLookaheadCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, "NOT " + Print.combinatorToString(combinator.getParser()), untilEndOfInput, "neg");
+    public static @NotNull ParseFailureReason ofNegated(final @NotNull NegativeLookaheadRule rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, "NOT " + Print.ruleToString(rule.getParser()), untilEndOfInput, "neg");
     }
 
     /**
-     * Builds an instance based on a {@link ExclusionCombinator}.
+     * Builds an instance based on a {@link ExclusionRule}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofExclusion(final ExclusionCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator,
-                Print.combinatorToString(combinator.getParserExpected())+" but NOT " + Print.combinatorToString(combinator.getParserExcluded()),
+    public static @NotNull ParseFailureReason ofExclusion(final @NotNull ExclusionRule rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule,
+                Print.ruleToString(rule.getParserExpected()) + " but NOT " + Print.ruleToString(rule.getParserExcluded()),
                 untilEndOfInput, "exclude");
     }
 
     /**
-     * Builds an instance based on a {@link OptionalCombinator}.
+     * Builds an instance based on a {@link OptionalRule}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofOptional(final OptionalCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, null, untilEndOfInput, "optional");
+    public static @NotNull ParseFailureReason ofOptional(final @NotNull OptionalRule rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, null, untilEndOfInput, "optional");
     }
 
     /**
-     * Builds an instance based on a {@link TerminalRegexpCombinator}.
+     * Builds an instance based on a {@link RegexTerm}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofRegexTerminal(final TerminalRegexpCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, null, untilEndOfInput, "regex");
+    public static @NotNull ParseFailureReason ofRegexTerminal(final @NotNull RegexTerm rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, null, untilEndOfInput, "regex");
     }
 
     /**
-     * Builds an instance based on a {@link TerminalStringCombinator}.
+     * Builds an instance based on a {@link StringTerm}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofStringTerminal(final TerminalStringCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, null, untilEndOfInput, "string");
+    public static @NotNull ParseFailureReason ofStringTerminal(final @NotNull StringTerm rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, null, untilEndOfInput, "string");
     }
 
     /**
-     * Builds an instance based on a {@link TerminalSpecialSequenceCombinator}.
+     * Builds an instance based on a {@link SpecialSequenceRule}.
      *
-     * @param combinator      The combinator.
-     * @param untilEndOfInput Whether the combinator is followed by end-of-string.
+     * @param rule            The rule.
+     * @param untilEndOfInput Whether the rule is followed by end-of-string.
      * @return A failure-reason based on the parameters.
      */
-    public static @NotNull ParseFailureReason ofSpecialSequence(final TerminalSpecialSequenceCombinator combinator, final boolean untilEndOfInput) {
-        return new ParseFailureReason(combinator, null, untilEndOfInput, "function");
+    public static @NotNull ParseFailureReason ofSpecialSequence(final @NotNull SpecialSequenceRule rule, final boolean untilEndOfInput) {
+        return new ParseFailureReason(rule, null, untilEndOfInput, "function");
     }
 }

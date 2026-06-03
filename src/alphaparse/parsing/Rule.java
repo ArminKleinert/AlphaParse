@@ -1,37 +1,39 @@
 package alphaparse.parsing;
 
+import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
+
+import alphaparse.Print;
 import alphaparse.collections.FlatSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
-import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A class representing the right-hand sides of productions.
  */
-public abstract sealed class Combinator
-        permits CombinatorWithManyParsers, CombinatorWithParser, SimpleCombinator {
+public abstract sealed class Rule
+        permits RuleWithManyChildren, RuleWithChild, SimpleRule {
     /**
-     * Default value for {@link Combinator#isHidden()}.
+     * Default value for {@link Rule#isHidden()}.
      */
     protected static final boolean defaultHidden = false;
 
     protected final boolean hide;
     protected final @NotNull ReductionType red;
 
-    protected Combinator(final boolean hide, final @NotNull ReductionType red) {
+    protected Rule(final boolean hide, final @NotNull ReductionType red) {
         this.hide = hide;
         this.red = red;
     }
 
-    protected Combinator() {
+    protected Rule() {
         this(defaultHidden, ReductionType.standardInitialReduction());
     }
 
     /**
      * Runs the parser from the provided index. The text is in the arguments.
      * <p>
-     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerNode.TrampolineListenerKey, FlatSeq, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
+     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerKey, FlatSeq, int)} or {@link Gll#fail(TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
      * @param index  The start index.
      * @param runner Helper structure.
@@ -39,9 +41,9 @@ public abstract sealed class Combinator
     public abstract void parse(final int index, final @NotNull Gll runner);
 
     /**
-     * Runs the parser from the provided index. The text is in the arguments. Unlike {@link Combinator#parse(int, Gll)}, this method tries to parse the text from the index until the end. If the string can't be matched to the end, results in a failure.
+     * Runs the parser from the provided index. The text is in the arguments. Unlike {@link Rule#parse(int, Gll)}, this method tries to parse the text from the index until the end. If the string can't be matched to the end, results in a failure.
      * <p>
-     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerNode.TrampolineListenerKey, String, int)} or {@link Gll#fail(TrampolineListenerNode.TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
+     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerKey, String, int)} or {@link Gll#fail(TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
      * @param index  The start index.
      * @param runner Helper structure.
@@ -54,7 +56,7 @@ public abstract sealed class Combinator
      * @param hide Whether to hide the content.
      * @return An instance of the same class with the hide tag set to the parameter.
      */
-    public abstract @NotNull Combinator withHideTag(final boolean hide);
+    public abstract @NotNull Rule withHideTag(final boolean hide);
 
     /**
      * Creates an instance of this class with the reduction type set.
@@ -62,7 +64,7 @@ public abstract sealed class Combinator
      * @param red The reduction type.
      * @return An instance of the same class with the reduction type set to the parameter.
      */
-    public abstract @NotNull Combinator withReduction(final @NotNull ReductionType red);
+    public abstract @NotNull Rule withReduction(final @NotNull ReductionType red);
 
     /**
      * Check whether the content is hidden in the output.
@@ -88,7 +90,7 @@ public abstract sealed class Combinator
      * @return An instance of the same class with the hide tag set to true.
      * @see #withHideTag(boolean)
      */
-    public @NotNull Combinator enableHideTag() {
+    public @NotNull Rule enableHideTag() {
         return withHideTag(true);
     }
 
@@ -98,17 +100,17 @@ public abstract sealed class Combinator
      * @return An instance of the same class with the hide tag set to false.
      * @see #withHideTag(boolean)
      */
-    public @NotNull Combinator unhideContent() {
+    public @NotNull Rule unhideContent() {
         return withHideTag(false);
     }
 
     /**
      * Hide the tag associated with this rule.
-     * Wrap this combinator around the entire right-hand side.
+     * Wrap this rule around the entire right-hand side.
      *
      * @return A new instance of the same class.
      */
-    public @NotNull Combinator hideTag() {
+    public @NotNull Rule hideTag() {
         return withReduction(ReductionType.standardIntermediateReduction());
     }
 
@@ -122,6 +124,6 @@ public abstract sealed class Combinator
 
     @Override
     public String toString() {
-        return alphaparse.Print.combinatorToString(this) + "(" + hide + ", " + red + ")";
+        return Print.ruleToString(this);
     }
 }

@@ -329,7 +329,7 @@ class AlphaTest {
             final @NotNull var res = Alpha.parses(p, "ABA");
             final var possibleResults = new HashSet<>(sabssPossibleResults());
 
-            // Using Sets because the order of results is implementation-dependent when using choice combinators.
+            // Using Sets because the order of results is implementation-dependent when using alternation rules.
             Assertions.assertEquals(possibleResults, new HashSet<>(res));
         }
     }

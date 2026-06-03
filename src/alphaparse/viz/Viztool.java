@@ -16,8 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@code
  *   String text = "...";
  *   var p = Alpha.parser("...");
- *   var c = Alpha.parse(p, text).castToParseSuccess();
- *   println(Viztool.dumpParseTree("vizoutput", c));
+ *   var rule = Alpha.parse(p, text).castToParseSuccess();
+ *   println(Viztool.dumpParseTree("vizoutput", rule));
  * }
  * </pre>
  * The tool <b>dot</b> must be installed.
@@ -65,8 +65,8 @@ public final class Viztool {
      * {@code
      *   String text = "abc";
      *   var p = Alpha.parser("S : A 'bc'\nA : 'a'");
-     *   var c = Alpha.parse(p, text).castToParseSuccess(); // Parse tree [:S, [:A, 'a'], 'bc']
-     *   println(Viztool.dumpParseTree("vizoutput", c));
+     *   var rule = Alpha.parse(p, text).castToParseSuccess(); // Parse tree [:S, [:A, 'a'], 'bc']
+     *   println(Viztool.dumpParseTree("vizoutput", rule));
      * }
      * </pre>
      *

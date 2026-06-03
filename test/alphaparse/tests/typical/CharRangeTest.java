@@ -86,7 +86,7 @@ ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
     }
 
     @Test
-    void unicodeCodepointCombinatorPrecedence() {
+    void unicodeCodepointRulePrecedence() {
         var text = "🎁🎁🎁";
         var tree = ParseTree.create("S", "🎁", "🎁", "🎁");
         Assertions.assertEquals(

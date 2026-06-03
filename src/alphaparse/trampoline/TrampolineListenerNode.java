@@ -1,7 +1,7 @@
 package alphaparse.trampoline;
 
 import alphaparse.functions.Listener;
-import alphaparse.parsing.Combinator;
+import alphaparse.parsing.Rule;
 import alphaparse.result.success.AlphaParseMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +32,6 @@ public record TrampolineListenerNode(@NotNull List<Listener> listeners,
      * @param index  The index.
      * @param parser The production.
      */
-    public record TrampolineListenerKey(int index, @NotNull Combinator parser) {
+    public record TrampolineListenerKey(int index, @NotNull Rule parser) {
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * Describes the "Syntactic exception" or "except" operator. That is the {@code (p1 - p2)} operator in EBNF (where p1 and p2 are instances of {@link Combinator}).
+ * Describes the "Syntactic exception" or "except" operator. That is the {@code (p1 - p2)} operator in EBNF (where p1 and p2 are instances of {@link Rule}).
  * <p>
  * Notation: {@code rule1 - rule2}  (match rule1 except if it also matches rule2)
  * <p>
@@ -28,13 +28,13 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * </pre>
  * See also: <a href="https://www.iso.org/standard/26153.html">ISO/IEC 14977:1996</a> and <a href="https://stackoverflow.com/a/35138946">an explanation on StackOverflow</a>.
  */
-public final class ExclusionCombinator extends CombinatorWithManyParsers {
-    private final @NotNull Combinator parserExpected;
-    private final @NotNull Combinator parserExcluded;
+public final class ExclusionRule extends RuleWithManyChildren {
+    private final @NotNull Rule parserExpected;
+    private final @NotNull Rule parserExcluded;
 
-    private ExclusionCombinator(final boolean hide, final @NotNull ReductionType red,
-                                final @NotNull Combinator parserExpected,
-                                final @NotNull Combinator parserExcluded) {
+    private ExclusionRule(final boolean hide, final @NotNull ReductionType red,
+                          final @NotNull Rule parserExpected,
+                          final @NotNull Rule parserExcluded) {
         super(hide, red, List.of(parserExpected, parserExcluded));
         this.parserExpected = parserExpected;
         this.parserExcluded = parserExcluded;
@@ -46,8 +46,8 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
      * @param parserExpected The rule that must be matched.
      * @param parserExcluded The rule that must not be matched.
      */
-    public ExclusionCombinator(final @NotNull Combinator parserExpected,
-                               final @NotNull Combinator parserExcluded) {
+    public ExclusionRule(final @NotNull Rule parserExpected,
+                         final @NotNull Rule parserExcluded) {
         this(defaultHidden, ReductionType.standardInitialReduction(), parserExpected, parserExcluded);
     }
 
@@ -94,9 +94,9 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
         final @NotNull Sym startSymbol;
         final @NotNull Grammar grammar;
 
-        if (parserExcluded instanceof NonTerminalCombinator) {
+        if (parserExcluded instanceof NonTerminal) {
             // The rule was already a non-terminal. Simply change starting production.
-            startSymbol = ((NonTerminalCombinator) parserExcluded).getKeyword();
+            startSymbol = ((NonTerminal) parserExcluded).getKeyword();
             grammar = oldGrammar;
         } else {
             // Find a new start production name which is not in the grammar yet.
@@ -111,7 +111,7 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
             var tempG = new LinkedHashMap<>(oldGrammar);
             tempG.put(
                     startSymbol,
-                    new ConcatCombinator(List.of(parserExcluded, EOFCombinator.getDefault())));
+                    new ConcatRule(List.of(parserExcluded, EOFTerm.getDefault())));
 
             grammar = new Grammar(tempG).applyStandardReductions();
         }
@@ -123,7 +123,7 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
      *
      * @return The expected rule.
      */
-    public @NotNull Combinator getParserExpected() {
+    public @NotNull Rule getParserExpected() {
         return parserExpected;
     }
 
@@ -132,24 +132,24 @@ public final class ExclusionCombinator extends CombinatorWithManyParsers {
      *
      * @return The excluded rule.
      */
-    public @NotNull Combinator getParserExcluded() {
+    public @NotNull Rule getParserExcluded() {
         return parserExcluded;
     }
 
     @Override
-    public @NotNull ExclusionCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new ExclusionCombinator(hide, this.getReduction(), parserExpected, parserExcluded);
+    public @NotNull ExclusionRule withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new ExclusionRule(hide, this.getReduction(), parserExpected, parserExcluded);
     }
 
     @Override
-    public @NotNull ExclusionCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new ExclusionCombinator(isHidden(), red, parserExpected, parserExcluded);
+    public @NotNull ExclusionRule withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new ExclusionRule(isHidden(), red, parserExpected, parserExcluded);
     }
 
     @Override
-    public @NotNull ExclusionCombinator withParsers(final @NotNull List<@NotNull Combinator> parsers) {
+    public @NotNull ExclusionRule withParsers(final @NotNull List<@NotNull Rule> parsers) {
         if (parsers.size() != 2)
             throw new IllegalArgumentException("Must pass exactly 2 arguments.");
-        return new ExclusionCombinator(isHidden(), getReduction(), parsers.getFirst(), parsers.getLast());
+        return new ExclusionRule(isHidden(), getReduction(), parsers.getFirst(), parsers.getLast());
     }
 }

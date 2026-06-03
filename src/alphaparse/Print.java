@@ -18,16 +18,16 @@ public final class Print {
     }
 
     private static @NotNull String parenForTags(
-            final @NotNull Predicate<@NotNull Combinator> tags,
+            final @NotNull Predicate<@NotNull Rule> tags,
             final boolean hidden,
-            final @NotNull Combinator parser) {
-        if (!hidden && tags.test(parser)) return "(" + combinatorToString(parser, false) + ")";
-        return combinatorToString(parser, false);
+            final @NotNull Rule parser) {
+        if (!hidden && tags.test(parser)) return "(" + ruleToString(parser, false) + ")";
+        return ruleToString(parser, false);
     }
 
-    private static @NotNull String parenForCompound(final boolean hidden, final @NotNull Combinator parser) {
+    private static @NotNull String parenForCompound(final boolean hidden, final @NotNull Rule parser) {
         return parenForTags(
-                (c) -> c instanceof CombinatorWithManyParsers,
+                (rule) -> rule instanceof RuleWithManyChildren,
                 hidden, parser);
     }
 
@@ -48,28 +48,28 @@ public final class Print {
      * @param parser The argument.
      * @return A string.
      */
-    public static @NotNull String combinatorToString(final @NotNull Combinator parser) {
-        return combinatorToString(parser, false);
+    public static @NotNull String ruleToString(final @NotNull Rule parser) {
+        return ruleToString(parser, false);
     }
 
-    private static @NotNull String combinatorToString(final @NotNull Combinator parser, final boolean hidden) {
+    private static @NotNull String ruleToString(final @NotNull Rule parser, final boolean hidden) {
         if (!hidden && parser.isHidden())
-            return "<" + combinatorToString(parser, true) + ">";
+            return "<" + ruleToString(parser, true) + ">";
 
         switch (parser) {
-            case EpsilonCombinator ignored -> {
+            case EpsilonTerm ignored -> {
                 return "ε";
             }
-            case OptionalCombinator optionalCombinator -> {
-                return parenForCompound(hidden, optionalCombinator.getParser()) + "?";
+            case OptionalRule optionalRule -> {
+                return parenForCompound(hidden, optionalRule.getParser()) + "?";
             }
-            case PlusCombinator plusCombinator -> {
-                return parenForCompound(hidden, plusCombinator.getParser()) + "+";
+            case OnceOrMoreRule onceOrMoreRule -> {
+                return parenForCompound(hidden, onceOrMoreRule.getParser()) + "+";
             }
-            case CombinatorStar combinatorStar -> {
-                return parenForCompound(hidden, combinatorStar.getParser()) + "*";
+            case ZeroOrMoreRule zeroOrMoreRule -> {
+                return parenForCompound(hidden, zeroOrMoreRule.getParser()) + "*";
             }
-            case RepetitionCombinator repParser -> {
+            case VariableRepetitionRule repParser -> {
                 final int min = repParser.getMin();
                 final int max = repParser.getMax();
                 return ""
@@ -78,70 +78,70 @@ public final class Print {
                         + max
                         + parenForCompound(hidden, repParser.getParser());
             }
-            case ChoiceCombinator choiceCombinator -> {
+            case AlternationRule alternationRule -> {
                 final @NotNull List<String> parserStrings =
-                        choiceCombinator.getParsers().stream()
-                                .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
+                        alternationRule.getParsers().stream()
+                                .map(p -> parenForTags((rule) -> rule instanceof RuleWithManyChildren, hidden, p))
                                 .toList();
                 return String.join(" | ", parserStrings);
             }
-            case OrderedChoiceCombinator orderedChoiceCombinator -> {
+            case OrderedChoiceRule orderedChoiceRule -> {
                 final @NotNull List<String> parserStrings =
-                        orderedChoiceCombinator.getParsers().stream()
-                                .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
+                        orderedChoiceRule.getParsers().stream()
+                                .map(p -> parenForTags((rule) -> rule instanceof RuleWithManyChildren, hidden, p))
                                 .toList();
                 return String.join(" / ", parserStrings);
             }
-            case ConcatCombinator concatCombinator -> {
-                final @NotNull List<Combinator> parsers = concatCombinator.getParsers();
-                final @NotNull Predicate<Combinator> ks = (c) -> c instanceof CombinatorWithManyParsers;
+            case ConcatRule concatRule -> {
+                final @NotNull List<Rule> parsers = concatRule.getParsers();
+                final @NotNull Predicate<Rule> ks = (rule) -> rule instanceof RuleWithManyChildren;
                 final @NotNull Iterable<String> parserStrings =
                         parsers.stream().map(p -> parenForTags(ks, hidden, p)).toList();
                 return String.join(" ", parserStrings);
             }
-            case TerminalStringCombinator terminalStringCombinator -> {
-                return escape(terminalStringCombinator.getString());
+            case StringTerm stringTerm -> {
+                return escape(stringTerm.getString());
             }
-            case TerminalUnicodeCharCombinator terminalUnicodeCharCombinator -> {
-                final int lo = terminalUnicodeCharCombinator.getLo();
-                final int hi = terminalUnicodeCharCombinator.getHi();
+            case ValueRangeTerm valueRangeTerm -> {
+                final int lo = valueRangeTerm.getLo();
+                final int hi = valueRangeTerm.getHi();
                 //return lo == hi ? String.format("%%x%04x", lo) : String.format("%%x%04x-%04x", lo, hi);
                 return new StringBuilder().appendCodePoint(lo).append('-').appendCodePoint(hi).toString();
             }
-            case TerminalRegexpCombinator terminalRegexpCombinator -> {
-                return "#\"" + terminalRegexpCombinator.getRegexp().pattern() + '"';
+            case RegexTerm regexTerm -> {
+                return "#\"" + regexTerm.getRegexp().pattern() + '"';
             }
-            case NonTerminalCombinator nonTerminalCombinator -> {
-                return nonTerminalCombinator.getKeyword().name();
+            case NonTerminal nonTerminal -> {
+                return nonTerminal.getKeyword().name();
             }
-            case LookaheadCombinator lookaheadCombinator -> {
-                return "&" + parenForCompound(hidden, lookaheadCombinator.getParser());
+            case LookaheadRule lookaheadRule -> {
+                return "&" + parenForCompound(hidden, lookaheadRule.getParser());
             }
-            case NegativeLookaheadCombinator negativeLookaheadCombinator -> {
-                return "!" + parenForCompound(hidden, negativeLookaheadCombinator.getParser());
+            case NegativeLookaheadRule negativeLookaheadRule -> {
+                return "!" + parenForCompound(hidden, negativeLookaheadRule.getParser());
             }
-            case TerminalSpecialSequenceCombinator specialSequenceCombinator -> {
-                return "?" + specialSequenceCombinator + "?";
+            case SpecialSequenceRule specialSequenceRule -> {
+                return "?" + specialSequenceRule + "?";
             }
-            case ExclusionCombinator exclusionCombinator -> {
+            case ExclusionRule exclusionRule -> {
                 final @NotNull List<String> parserStrings =
-                        exclusionCombinator.getParsers().stream()
-                                .map(p -> parenForTags((c) -> c instanceof CombinatorWithManyParsers, hidden, p))
+                        exclusionRule.getParsers().stream()
+                                .map(rule -> parenForTags((rule1) -> rule1 instanceof RuleWithManyChildren, hidden, rule))
                                 .toList();
                 return String.join(" - ", parserStrings);
             }
-            case EOFCombinator ignored -> {
+            case EOFTerm ignored -> {
                 return "eof";
             }
         }
     }
 
-    private static @NotNull String ruleToString(final @NotNull Sym startProd, final @NotNull Combinator parser) {
+    private static @NotNull String ruleToString(final @NotNull Sym startProd, final @NotNull Rule parser) {
         final ReductionType red = parser.getReduction();
         if (red.isHiddenOrRaw())
-            return "<" + startProd.name() + '>' + " = " + combinatorToString(parser);
+            return "<" + startProd.name() + '>' + " = " + ruleToString(parser);
         else
-            return startProd.name() + " = " + combinatorToString(parser);
+            return startProd.name() + " = " + ruleToString(parser);
     }
 
     /**

@@ -19,18 +19,13 @@ import java.util.stream.Stream;
  * <p>
  * <pre>
  * {@code
- * var pGrammarList = new LinkedHashMap<Sym, Combinator>();
- *         pGrammarList.put(Sym.sym("S"),
- *                 new ConcatCombinator(List.of(new NonTerminalCombinator(Sym.sym("NUMBER")), new PlusCombinator(new NonTerminalCombinator(Sym.sym("NUMBER"))))));
- *         pGrammarList.put(Sym.sym("NUMBER"), new ChoiceCombinator(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map (it -> new TerminalStringCombinator(it, false)).toList()));
- *         var pFromGrammar = new Grammar(pGrammarList);
  * }
  * </pre>
  * <p>
- * The {@link #addProduction(Sym, Combinator)} method can be used to add new productions.
+ * The {@link #addProduction(Sym, Rule)} method can be used to add new productions.
  */
 public abstract class GrammarBuilder {
-    protected @NotNull LinkedHashMap<Sym, Combinator> productions;
+    protected @NotNull LinkedHashMap<Sym, Rule> productions;
     protected final @NotNull ParserCreationOptions options;
     protected boolean builtAlready = false;
 
@@ -51,13 +46,13 @@ public abstract class GrammarBuilder {
     }
 
     public final @NotNull Grammar buildWithWhitespace(
-            final @Nullable SequencedMap<Sym, Combinator> initialProductions,
+            final @Nullable SequencedMap<Sym, Rule> initialProductions,
             final @Nullable Parser wsParser) {
         if (builtAlready)
             throw new IllegalStateException("Build has been finished already.");
 
         if (initialProductions != null) {
-            for (Map.Entry<Sym, Combinator> entry : initialProductions.sequencedEntrySet()) {
+            for (Map.Entry<Sym, Rule> entry : initialProductions.sequencedEntrySet()) {
                 addProduction(entry.getKey(), entry.getValue());
             }
         }
@@ -92,14 +87,14 @@ public abstract class GrammarBuilder {
     }
 
     public final void addAllProductions(
-            final @NotNull Collection<Map.Entry<Sym, Combinator>> entries) {
-        for (Map.Entry<Sym, Combinator> entry : entries) {
+            final @NotNull Collection<Map.Entry<Sym, Rule>> entries) {
+        for (Map.Entry<Sym, Rule> entry : entries) {
             addProduction(entry.getKey(), entry.getValue());
         }
     }
 
     public final void addProduction(
-            final @NotNull Sym lhs, final @NotNull Combinator rhs) {
+            final @NotNull Sym lhs, final @NotNull Rule rhs) {
         var existing = productions.putIfAbsent(lhs, rhs);
         if (existing == null)
             return;
@@ -115,117 +110,117 @@ public abstract class GrammarBuilder {
     }
 
     public final void addProduction(
-            final @NotNull String lhs, final @NotNull Combinator rhs) {
+            final @NotNull String lhs, final @NotNull Rule rhs) {
         addProduction(Sym.sym(lhs), rhs);
     }
 
-    public static @NotNull Combinator staticOf(final @Nullable Object c) {
+    public static @NotNull Rule staticOf(final @Nullable Object c) {
         return switch (c) {
-            case null -> EpsilonCombinator.getDefault();
-            case Combinator r -> r;
+            case null -> EpsilonTerm.getDefault();
+            case Rule r -> r;
             case String s -> string(s, false);
-            case Pattern p -> new TerminalRegexpCombinator(p);
-            case Sym s -> new NonTerminalCombinator(s);
-            case List<?> l -> new ConcatCombinator(
+            case Pattern p -> new RegexTerm(p);
+            case Sym s -> new NonTerminal(s);
+            case List<?> l -> new ConcatRule(
                     l.stream().map(GrammarBuilder::staticOf).toList());
-            case Set<?> s -> new ChoiceCombinator(
+            case Set<?> s -> new AlternationRule(
                     s.stream().distinct().map(GrammarBuilder::staticOf).toList());
             default -> throw new IllegalArgumentException(
                     String.valueOf(c.getClass()));
         };
     }
 
-    public final @NotNull Combinator of(final @Nullable Object c) {
+    public final @NotNull Rule of(final @Nullable Object c) {
         return switch (c) {
-            case null -> EpsilonCombinator.getDefault();
-            case Combinator r -> r;
+            case null -> EpsilonTerm.getDefault();
+            case Rule r -> r;
             case String s -> string(s);
-            case Pattern p -> new TerminalRegexpCombinator(p);
-            case Sym s -> new NonTerminalCombinator(s);
-            case List<?> l -> new ConcatCombinator(
+            case Pattern p -> new RegexTerm(p);
+            case Sym s -> new NonTerminal(s);
+            case List<?> l -> new ConcatRule(
                     l.stream().map(this::of).toList());
-            case Set<?> s -> new ChoiceCombinator(
+            case Set<?> s -> new AlternationRule(
                     s.stream().distinct().map(this::of).toList());
             default -> throw new IllegalArgumentException(
                     String.valueOf(c.getClass()));
         };
     }
 
-    public final @NotNull Combinator regex(final @NotNull Pattern c) {
-        return new TerminalRegexpCombinator(c);
+    public final @NotNull Rule regex(final @NotNull Pattern c) {
+        return new RegexTerm(c);
     }
 
     /**
-     * Creates a lookahead combinator.
-     * The output can be a {@link EpsilonCombinator} if the input is epsilon.
+     * Creates a {@link LookaheadRule}.
+     * The output can be a {@link EpsilonTerm} if the input is epsilon.
      *
-     * @param c The rule to look for.
-     * @return The new combinator.
+     * @param input The rule to look for.
+     * @return The new rule.
      */
-    public final @NotNull Combinator lookahead(final @NotNull Object c) {
-        var combinator = of(c);
-        if (combinator instanceof EpsilonCombinator)
-            return combinator;
-        return new LookaheadCombinator(combinator);
+    public final @NotNull Rule lookahead(final @NotNull Object input) {
+        var rule = of(input);
+        if (rule instanceof EpsilonTerm)
+            return rule;
+        return new LookaheadRule(rule);
     }
 
     /**
-     * Creates a negative lookahead combinator.
-     * The output can be a {@link EpsilonCombinator} if the input is epsilon.
+     * Creates a {@link NegativeLookaheadRule}.
+     * The output can be a {@link EpsilonTerm} if the input is epsilon.
      *
-     * @param c The combinator to avoid.
-     * @return The new combinator.
+     * @param input The rule to avoid.
+     * @return The new rule.
      */
-    public final @NotNull Combinator negate(final @NotNull Object c) {
-        var combinator = of(c);
-        if (combinator instanceof EpsilonCombinator)
-            return combinator;
-        return new NegativeLookaheadCombinator(combinator);
+    public final @NotNull Rule negate(final @NotNull Object input) {
+        var rule = of(input);
+        if (rule instanceof EpsilonTerm)
+            return rule;
+        return new NegativeLookaheadRule(rule);
     }
 
     /**
-     * Creates a {@link Combinator} to match the codepoint range.
-     * This can be any kind of {@link Combinator} capable of accomplishing that task.
+     * Creates a {@link Rule} to match the codepoint range.
+     * This can be any kind of {@link Rule} capable of accomplishing that task.
      *
      * @param lo The minimum codepoint.
      * @param hi The maximum codepoint.
      * @return The new parser.
      */
-    public @NotNull Combinator unicodeChar(final int lo, final int hi) {
+    public @NotNull Rule unicodeChar(final int lo, final int hi) {
         if (lo > hi)
             throw new IllegalArgumentException();
 
         if (lo == hi)
             return unicodeChar(lo);
 
-        final @NotNull var result = new TerminalUnicodeCharCombinator(lo, hi);
+        final @NotNull var result = new ValueRangeTerm(lo, hi);
         return result;
     }
 
     /**
-     * Creates a {@link Combinator} to match the codepoint.
-     * This can be any kind of {@link Combinator} capable of accomplishing that task.
+     * Creates a {@link Rule} to match the codepoint.
+     * This can be any kind of {@link Rule} capable of accomplishing that task.
      *
      * @param lohi The codepoint.
      * @return The new parser.
      */
-    public @NotNull Combinator unicodeChar(final int lohi) {
-        final @NotNull var result = new TerminalUnicodeCharCombinator(lohi, lohi);
+    public @NotNull Rule unicodeChar(final int lohi) {
+        final @NotNull var result = new ValueRangeTerm(lohi, lohi);
         return result;
     }
 
     /**
-     * Creates a {@link OrderedChoiceCombinator}.
+     * Creates a {@link OrderedChoiceRule}.
      * <ul>
-     * <li>If the argument List is empty, a {@link EpsilonCombinator} is returned instead.</li>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
      * <li>If there is only one element in the list, it is returned.</li>
-     * <li>Otherwise, returns a {@link OrderedChoiceCombinator}, as expected.</li>
+     * <li>Otherwise, returns a {@link OrderedChoiceRule}, as expected.</li>
      * </ul>
      *
      * @param rules The parsers for the output.
-     * @return A combinator.
+     * @return A rule.
      */
-    public final @NotNull Combinator orderedChoice(final @NotNull List<Object> rules) {
+    public final @NotNull Rule orderedChoice(final @NotNull List<Object> rules) {
         var parsers = rules.stream().map(this::of).toList();
 
         if (parsers.isEmpty())
@@ -233,7 +228,7 @@ public abstract class GrammarBuilder {
 
         if (parsers.size() == 1) return parsers.getFirst();
 
-        List<@Nullable Combinator> newParserList = null;
+        List<@Nullable Rule> newParserList = null;
         for (int i = 0; i < parsers.size(); i++) {
             if (parsers.get(i).equals(epsilon())) {
                 if (newParserList == null) newParserList = new ArrayList<>(parsers);
@@ -251,91 +246,91 @@ public abstract class GrammarBuilder {
 
         if (newParserList.size() == 1)
             return Objects.requireNonNull(newParserList.getFirst());
-        final @NotNull var result = new OrderedChoiceCombinator(newParserList);
+        final @NotNull var result = new OrderedChoiceRule(newParserList);
         return result;
     }
 
-    public static @NotNull NonTerminalCombinator nt(final @NotNull Sym name) {
-        return new NonTerminalCombinator(name);
+    public static @NotNull NonTerminal nt(final @NotNull Sym name) {
+        return new NonTerminal(name);
     }
 
-    public static @NotNull NonTerminalCombinator nt(final @NotNull String name) {
+    public static @NotNull NonTerminal nt(final @NotNull String name) {
         return nt(Sym.sym(name));
     }
 
     /**
-     * Creates a {@link TerminalStringCombinator}
-     * or {@link EpsilonCombinator} if the string is empty.
+     * Creates a {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty.
      *
      * @param string         The string to match.
      * @param explicitCasing Whether the Terminal will match without caring about casing.
      * @return The new parser.
      */
-    public static @NotNull Combinator string(
+    public static @NotNull Rule string(
             final @NotNull String string, final boolean explicitCasing) {
         if (string.isEmpty())
-            return EpsilonCombinator.getDefault();
-        return new TerminalStringCombinator(string, explicitCasing);
+            return EpsilonTerm.getDefault();
+        return new StringTerm(string, explicitCasing);
     }
 
     /**
-     * Creates a case-sensitive {@link TerminalStringCombinator}
-     * or {@link EpsilonCombinator} if the string is empty.
+     * Creates a case-sensitive {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty.
      *
      * @param string The string to match.
      * @return The new parser.
      */
-    public final @NotNull Combinator stringCS(final @NotNull String string) {
+    public final @NotNull Rule stringCS(final @NotNull String string) {
         if (string.isEmpty())
-            return EpsilonCombinator.getDefault();
+            return EpsilonTerm.getDefault();
         return string(string, false);
     }
 
     /**
-     * Creates a case-insensitive {@link TerminalStringCombinator}
-     * or {@link EpsilonCombinator} if the string is empty.
+     * Creates a case-insensitive {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty.
      *
      * @param string The string to match.
      * @return The new parser.
      */
-    public final @NotNull Combinator stringCI(final @NotNull String string) {
+    public final @NotNull Rule stringCI(final @NotNull String string) {
         if (string.isEmpty())
-            return EpsilonCombinator.getDefault();
+            return EpsilonTerm.getDefault();
         return string(string, true);
     }
 
     /**
-     * Creates a {@link TerminalStringCombinator}
-     * or {@link EpsilonCombinator} if the string is empty
+     * Creates a {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty
      * . The case-sensitivity depends on the options used for this {@link GrammarBuilder}.
      *
      * @param string The string to match.
      * @return The new parser.
      */
-    public final @NotNull Combinator string(final @NotNull String string) {
+    public final @NotNull Rule string(final @NotNull String string) {
         if (string.isEmpty())
-            return EpsilonCombinator.getDefault();
+            return EpsilonTerm.getDefault();
 
         return switch (options.stringCaseInsensitive()) {
-            case TRUE -> new TerminalStringCombinator(string, true);
-            case FALSE, DEFAULT -> new TerminalStringCombinator(string, false);
+            case TRUE -> new StringTerm(string, true);
+            case FALSE, DEFAULT -> new StringTerm(string, false);
         };
     }
 
-    public final @NotNull Combinator hide(final @NotNull Combinator o) {
+    public final @NotNull Rule hide(final @NotNull Rule o) {
         return of(o).enableHideTag();
     }
 
-    public final @NotNull Combinator epsilon() {
-        return EpsilonCombinator.getDefault();
+    public final @NotNull Rule epsilon() {
+        return EpsilonTerm.getDefault();
     }
 
-    public final @NotNull Combinator eof() {
-        return EOFCombinator.getDefault();
+    public final @NotNull Rule eof() {
+        return EOFTerm.getDefault();
     }
 
     @SafeVarargs
-    public final <T> @NotNull Combinator concat(
+    public final <T> @NotNull Rule concat(
             final @Nullable T rule, final @Nullable T... rules) {
         return concat(Stream.concat(
                         Stream.of(rule),
@@ -344,61 +339,61 @@ public abstract class GrammarBuilder {
                 .map(this::of));
     }
 
-    public final @NotNull Combinator concat(
-            final @NotNull Combinator rule, final @NotNull Combinator... rules) {
+    public final @NotNull Rule concat(
+            final @NotNull Rule rule, final @NotNull Rule... rules) {
         return concat(Stream.concat(Stream.of(rule), Arrays.stream(rules)));
     }
 
     /**
-     * Creates a {@link ConcatCombinator}.
+     * Creates a {@link ConcatRule}.
      * <ul>
-     * <li>If the argument List is empty, a {@link EpsilonCombinator} is returned instead.</li>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
      * <li>If there is only one element in the list, it is returned.</li>
-     * <li>Otherwise, returns a {@link ConcatCombinator}, as expected.</li>
+     * <li>Otherwise, returns a {@link ConcatRule}, as expected.</li>
      * </ul>
      *
      * @param rules The parsers for the output.
-     * @return A combinator.
+     * @return A rule.
      */
-    public final @NotNull Combinator concat(
-            final @NotNull List<@NotNull Combinator> rules) {
+    public final @NotNull Rule concat(
+            final @NotNull List<@NotNull Rule> rules) {
         return concat(rules.stream());
     }
 
-    private @NotNull Combinator concat(
-            final @NotNull Stream<Combinator> ruleStream) {
-        final @NotNull List<@NotNull Combinator> result = ruleStream
-                .filter(it -> it != EpsilonCombinator.getDefault())
+    private @NotNull Rule concat(
+            final @NotNull Stream<Rule> ruleStream) {
+        final @NotNull List<@NotNull Rule> result = ruleStream
+                .filter(it -> it != EpsilonTerm.getDefault())
                 .toList();
         if (result.isEmpty())
             return epsilon();
         if (result.size() == 1)
             return result.getFirst();
-        var compressedResult = new ArrayList<Combinator>();
-        for (Combinator combinator : result) {
-            if (combinator instanceof ConcatCombinator cc)
+        var compressedResult = new ArrayList<Rule>();
+        for (Rule rule : result) {
+            if (rule instanceof ConcatRule cc)
                 compressedResult.addAll(cc.getParsers());
             else
-                compressedResult.add(combinator);
+                compressedResult.add(rule);
         }
-        return new ConcatCombinator(compressedResult);
+        return new ConcatRule(compressedResult);
     }
 
     /**
-     * Creates a {@link ChoiceCombinator}.
+     * Creates a {@link AlternationRule}.
      * <ul>
-     * <li>If the argument List is empty, a {@link EpsilonCombinator} is returned instead.</li>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
      * <li>If there is only one element in the list, it is returned.</li>
-     * <li>Otherwise, returns a {@link ChoiceCombinator}, as expected.</li>
+     * <li>Otherwise, returns a {@link AlternationRule}, as expected.</li>
      * </ul>
      *
      * @param rule  The first element for the output.
      * @param rules More elements.
-     * @return A combinator.
+     * @return A rule.
      */
-    public final @NotNull Combinator alternation(
+    public final @NotNull Rule alternation(
             final @NotNull Object rule, final @NotNull Object... rules) {
-        List<@NotNull Combinator> result = Stream.concat(
+        List<@NotNull Rule> result = Stream.concat(
                         Stream.of(rule),
                         Arrays.stream(rules))
                 .distinct()
@@ -409,30 +404,30 @@ public abstract class GrammarBuilder {
     }
 
     /**
-     * Creates a {@link ChoiceCombinator}.
+     * Creates a {@link AlternationRule}.
      * <ul>
-     * <li>If the argument List is empty, a {@link EpsilonCombinator} is returned instead.</li>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
      * <li>If there is only one element in the list, it is returned.</li>
-     * <li>Otherwise, returns a {@link ChoiceCombinator}, as expected.</li>
+     * <li>Otherwise, returns a {@link AlternationRule}, as expected.</li>
      * </ul>
      *
      * @param rules The rules for the output.
-     * @return A combinator.
+     * @return A rule.
      */
-    public final @NotNull Combinator alternationC(
-            final @NotNull List<Combinator> rules) {
+    public final @NotNull Rule alternationC(
+            final @NotNull List<Rule> rules) {
         if (rules.isEmpty())
             return epsilon();
         if (rules.size() == 1)
             return rules.getFirst();
-        var compressedResult = new ArrayList<Combinator>();
-        for (Combinator combinator : rules) {
-            if (combinator instanceof ChoiceCombinator cc)
+        var compressedResult = new ArrayList<Rule>();
+        for (Rule rule : rules) {
+            if (rule instanceof AlternationRule cc)
                 compressedResult.addAll(cc.getParsers());
             else
-                compressedResult.add(combinator);
+                compressedResult.add(rule);
         }
-        return new ChoiceCombinator(compressedResult);
+        return new AlternationRule(compressedResult);
     }
 
     /**
@@ -441,22 +436,22 @@ public abstract class GrammarBuilder {
      * Use this method only if you are sure that the rules are distinct.
      *
      * @param rules The rules.
-     * @return A combinator.
+     * @return A rule.
      */
-    public final @NotNull Combinator alternationGuaranteeDistinct(
-            final @NotNull List<Combinator> rules) {
+    public final @NotNull Rule alternationGuaranteeDistinct(
+            final @NotNull List<Rule> rules) {
         if (rules.isEmpty())
             return epsilon();
         if (rules.size() == 1)
             return rules.getFirst();
-        var compressedResult = new ArrayList<Combinator>();
-        for (Combinator combinator : rules) {
-            if (combinator instanceof ChoiceCombinator cc)
+        var compressedResult = new ArrayList<Rule>();
+        for (Rule rule : rules) {
+            if (rule instanceof AlternationRule cc)
                 compressedResult.addAll(cc.getParsers());
             else
-                compressedResult.add(combinator);
+                compressedResult.add(rule);
         }
-        return new ChoiceCombinator(compressedResult);
+        return new AlternationRule(compressedResult);
     }
 
     /**
@@ -468,31 +463,30 @@ public abstract class GrammarBuilder {
      *
      * @param description The description of the special sequence.
      * @param function    The function which does what the description says.
-     * @return A {@link TerminalSpecialSequenceCombinator}.
+     * @return A {@link SpecialSequenceRule}.
      */
-    public @NotNull TerminalSpecialSequenceCombinator specialSequence(
+    public @NotNull SpecialSequenceRule specialSequence(
             final @NotNull String description,
             final @NotNull Function<@NotNull String, Optional<String>> function) {
-        var result = new TerminalSpecialSequenceCombinator(description, function);
-        return result;
+        return new SpecialSequenceRule(description, function);
     }
 
     /**
-     * Creates a {@link CombinatorStar} or an {@link EpsilonCombinator} if the input is epsilon.
+     * Creates a {@link ZeroOrMoreRule} or an {@link EpsilonTerm} if the input is epsilon.
      * <ul>
-     * <li>If minimum and maximum amount of repetitions is set to 0, return an {@link EpsilonCombinator}.</li>
+     * <li>If minimum and maximum amount of repetitions is set to 0, return an {@link EpsilonTerm}.</li>
      * <li>If minimum and maximum amount of repetitions is set to 1, may return the input parser.</li>
-     * <li>If minimum and maximum amount of repetitions are equal, a {@link ConcatCombinator} might be returned instead.</li>
+     * <li>If minimum and maximum amount of repetitions are equal, a {@link ConcatRule} might be returned instead.</li>
      * <li>Otherwise, does as normally expected.</li>
      * </ul>
      *
      * @param min  The minimum amount of repetitions.
      * @param max  The maximum amount of repetitions.
      * @param rule The parser.
-     * @return A combinator, as described.
+     * @return A rule, as described.
      */
-    public final @NotNull Combinator repeat(
-            final @NotNull Combinator rule, final int min, final int max) {
+    public final @NotNull Rule repeat(
+            final @NotNull Rule rule, final int min, final int max) {
         if (min < 0 || max < min)
             throw new IllegalArgumentException(
                     "Illegal repetition (min=" + min + ", max=" + max + ")");
@@ -501,10 +495,10 @@ public abstract class GrammarBuilder {
 
         var r = of(rule);
 
-        if (r instanceof EpsilonCombinator || (min == 1 && max == 1))
+        if (r instanceof EpsilonTerm || (min == 1 && max == 1))
             return r;
 
-        if (r instanceof RepetitionCombinator rc) {
+        if (r instanceof VariableRepetitionRule rc) {
             if (rc.getMin() <= 1 && min <= 1) {
                 final int newMin = (int) Long.min(
                         Integer.MAX_VALUE,
@@ -512,124 +506,129 @@ public abstract class GrammarBuilder {
                 final int newMax = (int) Long.min(
                         Integer.MAX_VALUE,
                         ((long) rc.getMax()) * max);
-                return new RepetitionCombinator(rc.getParser(), newMin, newMax);
+                return new VariableRepetitionRule(rc.getParser(), newMin, newMax);
             }
         }
 
-        return new RepetitionCombinator(r, min, max);
+        return new VariableRepetitionRule(r, min, max);
     }
 
     /**
-     * Creates a {@link ExclusionCombinator}.
+     * Creates a {@link ExclusionRule}.
      *
      * @param parserExpected The rule that must be matched.
      * @param parserExcluded The rule that must not be matched.
-     * @return A {@link ExclusionCombinator}.
+     * @return A {@link ExclusionRule}.
      */
-    public final @NotNull Combinator exclude(
-            final @NotNull Combinator parserExpected, final @NotNull Combinator parserExcluded) {
+    public final @NotNull Rule exclude(
+            final @NotNull Rule parserExpected, final @NotNull Rule parserExcluded) {
         if (parserExpected == parserExcluded) return epsilon();
         final @NotNull var r1 = of(parserExpected);
         final @NotNull var r2 = of(parserExcluded);
         if (Objects.equals(r1, r2)) return epsilon();
-        return new ExclusionCombinator(r1, r2);
+        return new ExclusionRule(r1, r2);
     }
 
-    public final @NotNull Combinator repeat(
-            final @NotNull Combinator rule, final int exact) {
+    public final @NotNull Rule repeat(
+            final @NotNull Rule rule, final int exact) {
         return repeat(rule, exact, exact);
     }
 
-    public final @NotNull Combinator repeatMin(
-            final @NotNull Combinator rule, final int min) {
+    public final @NotNull Rule repeatMin(
+            final @NotNull Rule rule, final int min) {
         return repeat(rule, min, Integer.MAX_VALUE);
     }
 
-    public final @NotNull Combinator repeatMax(
-            final @NotNull Combinator rule, final int max) {
+    public final @NotNull Rule repeatMax(
+            final @NotNull Rule rule, final int max) {
         return repeat(rule, 0, max);
     }
 
     /**
-     * Creates a {@link CombinatorStar} or an {@link EpsilonCombinator} if the input is epsilon.
+     * Creates a {@link ZeroOrMoreRule} or an {@link EpsilonTerm} if the input is epsilon.
      *
-     * @param rule The combinator to match repeatedly.
-     * @return A combinator.
+     * @param rule The rule to match repeatedly.
+     * @return A rule.
      */
-    public final @NotNull Combinator zeroOrMore(final @NotNull Combinator rule) {
-        if (rule instanceof EpsilonCombinator)
+    public final @NotNull Rule zeroOrMore(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
             return rule;
-        //return repeat(rule, 0, Integer.MAX_VALUE);
-        return new CombinatorStar(rule);
+        return repeat(rule, 0, Integer.MAX_VALUE);
+        //return new ZeroOrMoreRule(rule);
     }
 
     /**
-     * Creates a {@link PlusCombinator} or an {@link EpsilonCombinator} if the input is epsilon.
+     * Creates a {@link OnceOrMoreRule} or an {@link EpsilonTerm} if the input is epsilon.
      *
-     * @param rule The combinator to match repeatedly.
-     * @return A combinator.
+     * @param rule The rule to match repeatedly.
+     * @return A rule.
      */
-    public final @NotNull Combinator onceOrMore(final @NotNull Combinator rule) {
-        if (rule instanceof EpsilonCombinator)
+    public final @NotNull Rule onceOrMore(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
             return rule;
         //return repeat(rule, 1, Integer.MAX_VALUE);
-        return new PlusCombinator(rule);
+        return new OnceOrMoreRule(rule);
     }
 
     /**
-     * Creates a {@link OptionalCombinator} or an {@link EpsilonCombinator} if the input is epsilon.
+     * Creates a {@link OptionalRule} or an {@link EpsilonTerm} if the input is epsilon.
      *
-     * @param rule The combinator to maybe match.
-     * @return A combinator.
+     * @param rule The rule to maybe match.
+     * @return A rule.
      */
-    public final @NotNull Combinator optional(final @NotNull Combinator rule) {
-        if (rule instanceof EpsilonCombinator)
+    public final @NotNull Rule optional(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
             return rule;
-        return new OptionalCombinator(rule);
+        return new OptionalRule(rule);
     }
 
     private void compress() {
-        var buffer = new HashMap<Combinator, Combinator>();
+        var buffer = new HashMap<Rule, Rule>();
 
-        for (var symCombinatorEntry : productions.entrySet()) {
-            final @NotNull var value = symCombinatorEntry.getValue();
-            final @NotNull var compressedCombinator = compressCombinator(value);
-            if (compressedCombinator != value) // Yes, I need a reference equality check here.
-                symCombinatorEntry.setValue(compressedCombinator);
+        for (var symRuleEntry : productions.entrySet()) {
+            final @NotNull var value = symRuleEntry.getValue();
+            final @NotNull var compressedRule = compressRule(value);
+            if (compressedRule != value) // Yes, I need a reference equality check here.
+                symRuleEntry.setValue(compressedRule);
         }
     }
 
-    private @NotNull Combinator compressCombinator(
-            final @NotNull Combinator combinator) {
-        return switch (combinator) {
-            case RepetitionCombinator repetitionCombinator -> {
-                final var min = repetitionCombinator.getMin();
-                final var max = repetitionCombinator.getMax();
-                final @NotNull var parser = compressCombinator(repetitionCombinator.getParser());
+    private @NotNull Rule compressRule(
+            final @NotNull Rule rule) {
+        var red = rule.getReduction();
+        var hide = rule.isHidden();
+        return switch (rule) {
+            case VariableRepetitionRule variableRepetitionRule -> {
+                final var min = variableRepetitionRule.getMin();
+                final var max = variableRepetitionRule.getMax();
+                final @NotNull var parser = compressRule(variableRepetitionRule.getParser());
 
+                final RuleWithChild newRule;
                 if (min == 1 && max == Integer.MAX_VALUE) {
-                    yield new PlusCombinator(parser);
+                    newRule = new OnceOrMoreRule(parser);
                 } else if (min == 0 && max == 1) {
-                    yield new OptionalCombinator(parser);
+                    newRule = new OptionalRule(parser);
                 } else if (min == 0 && max == Integer.MAX_VALUE) {
-                    yield new CombinatorStar(parser);
+                    newRule = new ZeroOrMoreRule(parser);
                 } else if (min > 1) {
-                    yield repetitionCombinator;
+                    newRule = variableRepetitionRule;
                 } else {
-                    yield repetitionCombinator;
+                    newRule = variableRepetitionRule;
                 }
+                yield newRule
+                        .withHideTag(variableRepetitionRule.isHidden())
+                        .withReduction(variableRepetitionRule.getReduction());
             }
-            case CombinatorWithManyParsers combinatorWithManyParsers ->
-                    combinatorWithManyParsers.withParsers(combinatorWithManyParsers
-                            .getParsers()
-                            .stream()
-                            .map(this::compressCombinator)
-                            .toList());
-            case CombinatorWithParser combinatorWithParser -> combinatorWithParser.withParser(
-                    compressCombinator(combinatorWithParser.getParser()));
-            case NonTerminalCombinator nonTerminalCombinator -> nonTerminalCombinator;
-            case CombinatorTerminal combinatorTerminal -> combinatorTerminal;
-            case SimpleCombinator simpleCombinator -> simpleCombinator;
+            case RuleWithManyChildren ruleWithManyChildren -> ruleWithManyChildren.withParsers(ruleWithManyChildren
+                    .getParsers()
+                    .stream()
+                    .map(this::compressRule)
+                    .toList());
+            case RuleWithChild ruleWithChild -> ruleWithChild.withParser(
+                    compressRule(ruleWithChild.getParser()));
+            case NonTerminal nonTerminal -> nonTerminal;
+            case Terminal terminal -> terminal;
+            case SimpleRule simpleRule -> simpleRule;
         };
     }
 
@@ -644,26 +643,26 @@ public abstract class GrammarBuilder {
         }
     }
 
-    private @NotNull Combinator autoWhitespaceHelper(
-            final @NotNull Combinator parser,
-            final @NotNull Combinator wsParser) {
+    private @NotNull Rule autoWhitespaceHelper(
+            final @NotNull Rule parser,
+            final @NotNull Rule wsParser) {
         return switch (parser) {
-            case NonTerminalCombinator ignored -> parser;
-            case EpsilonCombinator ignored2 -> parser;
-            case CombinatorWithParser parser1 -> (parser1.withParser(autoWhitespaceHelper(
+            case NonTerminal ignored -> parser;
+            case EpsilonTerm ignored2 -> parser;
+            case RuleWithChild parser1 -> (parser1.withParser(autoWhitespaceHelper(
                     parser1.getParser(), wsParser)));
-            case CombinatorWithManyParsers combWithParsers -> {
-                final @NotNull List<@NotNull Combinator> parsers = combWithParsers
+            case RuleWithManyChildren combWithParsers -> {
+                final @NotNull List<@NotNull Rule> parsers = combWithParsers
                         .getParsers()
                         .stream()
                         .map(p -> autoWhitespaceHelper(p, wsParser))
                         .toList();
                 yield (combWithParsers.withParsers(parsers));
             }
-            case CombinatorTerminal ignored -> {
-                final @NotNull List<Combinator> parsers = new ArrayList<>();
+            case Terminal ignored -> {
+                final @NotNull List<Rule> parsers = new ArrayList<>();
                 parsers.add(wsParser);
-                final @NotNull Combinator result;
+                final @NotNull Rule result;
                 if (!parser.getReduction().isHiddenOrRaw()) {
                     // Hide the terminal in the output.
                     // It still appears in the tree, but is flattened into the concatenation.
@@ -677,27 +676,27 @@ public abstract class GrammarBuilder {
                 }
                 yield result;
             }
-            case SimpleCombinator ignored -> parser;
+            case SimpleRule ignored -> parser;
         };
     }
 
     private void autoWhitespace(final @NotNull Sym start,
                                 final @NotNull Grammar grammarWS,
                                 final @NotNull Sym startWS) {
-        final @NotNull Combinator wsParser =
+        final @NotNull Rule wsParser =
                 optional(nt(startWS)).enableHideTag();
 
-        final @NotNull LinkedHashMap<@NotNull Sym, @NotNull Combinator> finalGrammar =
+        final @NotNull LinkedHashMap<@NotNull Sym, @NotNull Rule> finalGrammar =
                 new LinkedHashMap<>(productions);
-        for (var keywordCombinatorEntry : finalGrammar.sequencedEntrySet()) {
-            keywordCombinatorEntry.setValue(autoWhitespaceHelper(
-                    keywordCombinatorEntry.getValue(), wsParser));
+        for (var symRuleEntry : finalGrammar.sequencedEntrySet()) {
+            symRuleEntry.setValue(autoWhitespaceHelper(
+                    symRuleEntry.getValue(), wsParser));
         }
 
-        final @NotNull Combinator startWithoutReduction = (
+        final @NotNull Rule startWithoutReduction = (
                 finalGrammar.get(start)
                         .withReduction(ReductionType.standardInitialReduction()));
-        final @NotNull Combinator newStartComb =
+        final @NotNull Rule newStartComb =
                 concat(List.of(startWithoutReduction, wsParser))
                         .withReduction(finalGrammar.get(start).getReduction());
 

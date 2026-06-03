@@ -35,7 +35,7 @@ final class Cfg {
         }
 
 
-        private @NotNull Combinator stringOrStringCaseInsensitiveCombinator(
+        private @NotNull Rule stringOrStringCaseInsensitiveRule(
                 final @NotNull String s) {
             return switch (options.stringCaseInsensitive()) {
                 case TRUE -> string(s, true);
@@ -43,7 +43,7 @@ final class Cfg {
             };
         }
 
-        private @NotNull Combinator buildRepRule(final @NotNull ParseTree tree) {
+        private @NotNull Rule buildRepRule(final @NotNull ParseTree tree) {
             final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
             @NotNull var parts = partsUncut.split("\\*");
             if (parts.length == 1) {
@@ -69,11 +69,11 @@ final class Cfg {
             final int min = parts[0].isBlank() ? 0 : Integer.parseInt(parts[0]);
             final int max = parts[1].isBlank() ? Integer.MAX_VALUE : Integer.parseInt(parts[1]);
             final @NotNull var repeatedRule =
-                    (Combinator) buildRule((ParseTree) tree.getContent().get(1).content());
+                    (Rule) buildRule((ParseTree) tree.getContent().get(1).content());
             return repeat(repeatedRule, min, max);
         }
 
-        private @NotNull Map.Entry<@NotNull Sym, @NotNull Combinator> buildRuleRule(
+        private @NotNull Map.Entry<@NotNull Sym, @NotNull Rule> buildRuleRule(
                 final @NotNull ParseTree tree) {
             final @NotNull var allContents = tree.getContent();
             final @NotNull var nt = (ParseTree) allContents.getFirst().content();
@@ -81,15 +81,15 @@ final class Cfg {
             @NotNull var content = nt.getContent().getFirst();
 
             final @NotNull Sym key;
-            final @NotNull Combinator rule;
+            final @NotNull Rule rule;
 
             if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
                 content = ((ParseTree) content.content()).getContent().getFirst();
                 key = Sym.sym(content.content().toString());
-                rule = ((Combinator) buildRule(altOrOrd)).hideTag();
+                rule = ((Rule) buildRule(altOrOrd)).hideTag();
             } else {
                 key = Sym.sym((String) content.content());
-                rule = (Combinator) buildRule(altOrOrd);
+                rule = (Rule) buildRule(altOrOrd);
             }
 
             return Map.entry(key, rule);
@@ -123,7 +123,7 @@ final class Cfg {
                         return alternationC(tree
                                 .getContent()
                                 .stream()
-                                .map((c) -> (Combinator) buildRule(
+                                .map((c) -> (Rule) buildRule(
                                         (ParseTree) c.content()))
                                 .map(this::of)
                                 .toList());
@@ -137,14 +137,14 @@ final class Cfg {
                                 .toList());
                     }
                     case "hide" -> {
-                        return ((Combinator) buildRule(
+                        return ((Rule) buildRule(
                                 ((Node.NodeParseTree) tree.getContent().getFirst()).content())).enableHideTag();
                     }
                     case "cat" -> {
                         return concat(tree
                                 .getContent()
                                 .stream()
-                                .map((c) -> (Combinator) buildRule(
+                                .map((c) -> (Rule) buildRule(
                                         (ParseTree) c.content()))
                                 .toList());
                     }
@@ -159,7 +159,7 @@ final class Cfg {
                             return string(
                                     strParser.processString(s.substring(2)), caseInsensitive);
                         }
-                        return stringOrStringCaseInsensitiveCombinator(
+                        return stringOrStringCaseInsensitiveRule(
                                 strParser.processString(s));
                     }
                     case "string-cs" -> {
@@ -181,15 +181,15 @@ final class Cfg {
                                 (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "opt", "opt_query" -> {
-                        return optional((Combinator) buildRule(
+                        return optional((Rule) buildRule(
                                 (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "star", "opt_rep" -> {
-                        return zeroOrMore((Combinator) buildRule(
+                        return zeroOrMore((Rule) buildRule(
                                 (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "plus" -> {
-                        return onceOrMore((Combinator) buildRule(
+                        return onceOrMore((Rule) buildRule(
                                 (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "look" -> {
@@ -222,17 +222,17 @@ final class Cfg {
                         return unicodeChar(rangeFirst, rangeLast);
                     }
                     case "epsilon" -> {
-                        return EpsilonCombinator.getDefault();
+                        return EpsilonTerm.getDefault();
                     }
                     case "exclude" -> {
-                        var rule1 = (Combinator) buildRule((ParseTree)
+                        var rule1 = (Rule) buildRule((ParseTree)
                                 tree.getContent().get(0).content());
-                        var rule2 = (Combinator) buildRule((ParseTree)
+                        var rule2 = (Rule) buildRule((ParseTree)
                                 tree.getContent().get(1).content());
                         return exclude(rule1, rule2);
                     }
                     case "eof" -> {
-                        return EOFCombinator.getDefault();
+                        return EOFTerm.getDefault();
                     }
                 }
                 throw new UnsupportedOperationException(tag);

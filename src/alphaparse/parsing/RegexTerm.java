@@ -22,10 +22,10 @@ import java.util.regex.Pattern;
  * <br/>
  * Syntax: A string literal prefixed with a hash-symbol: {@code #"..."} and {@code #'...'} are equivalent.
  */
-public final class TerminalRegexpCombinator extends CombinatorTerminal {
+public final class RegexTerm extends Terminal {
     private final @NotNull Pattern regexp;
 
-    private TerminalRegexpCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Pattern regexp) {
+    private RegexTerm(final boolean hide, final @NotNull ReductionType red, final @NotNull Pattern regexp) {
         super(hide, red);
         this.regexp = regexp;
     }
@@ -35,7 +35,7 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
      *
      * @param regexp The regex.
      */
-    public TerminalRegexpCombinator(final @NotNull Pattern regexp) {
+    public RegexTerm(final @NotNull Pattern regexp) {
         super();
         this.regexp = regexp;
     }
@@ -120,18 +120,18 @@ public final class TerminalRegexpCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public @NotNull TerminalRegexpCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new TerminalRegexpCombinator(hide, red, regexp);
+    public @NotNull RegexTerm withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new RegexTerm(hide, red, regexp);
     }
 
     @Override
-    public @NotNull TerminalRegexpCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new TerminalRegexpCombinator(hide, red, regexp);
+    public @NotNull RegexTerm withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new RegexTerm(hide, red, regexp);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TerminalRegexpCombinator that)) return false;
+        if (!(o instanceof RegexTerm that)) return false;
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)

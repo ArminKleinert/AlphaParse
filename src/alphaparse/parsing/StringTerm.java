@@ -14,14 +14,14 @@ import java.util.Objects;
  * <br/>
  * Syntax: can be written with double quotes or single quotes, so {@code "..."} and {@code '...'} are equivalent.
  */
-public final class TerminalStringCombinator extends CombinatorTerminal {
+public final class StringTerm extends Terminal {
     private final @NotNull String string;
     private final boolean caseInsensitive;
 
-    private TerminalStringCombinator(final boolean hide,
-                                     final @NotNull ReductionType red,
-                                     final @NotNull String string,
-                                     final boolean caseInsensitive) {
+    private StringTerm(final boolean hide,
+                       final @NotNull ReductionType red,
+                       final @NotNull String string,
+                       final boolean caseInsensitive) {
         super(hide, red);
         this.string = string;
         this.caseInsensitive = caseInsensitive;
@@ -33,7 +33,7 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
      * @param string          The string to match.
      * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
      */
-    public TerminalStringCombinator(final @NotNull String string, final boolean caseInsensitive) {
+    public StringTerm(final @NotNull String string, final boolean caseInsensitive) {
         super();
         this.string = string;
         this.caseInsensitive = caseInsensitive;
@@ -87,18 +87,18 @@ public final class TerminalStringCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public @NotNull TerminalStringCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
+    public @NotNull StringTerm withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new StringTerm(hide, red, string, caseInsensitive);
     }
 
     @Override
-    public @NotNull TerminalStringCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new TerminalStringCombinator(hide, red, string, caseInsensitive);
+    public @NotNull StringTerm withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new StringTerm(hide, red, string, caseInsensitive);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TerminalStringCombinator that)) return false;
+        if (!(o instanceof StringTerm that)) return false;
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)

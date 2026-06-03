@@ -2,7 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
-import alphaparse.parsing.TerminalStringCombinator;
+import alphaparse.parsing.StringTerm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +21,8 @@ class GrammarTest {
         Assertions.assertEquals(Set.of(Sym.sym("S")), new HashSet<>(ga.definedNTs()));
 
         Assertions.assertEquals(
-                Set.of(new TerminalStringCombinator("1", false),
-                        new TerminalStringCombinator("2", false)),
-                new HashSet<>(ga.collectRules(it -> it instanceof TerminalStringCombinator)));
+                Set.of(new StringTerm("1", false),
+                        new StringTerm("2", false)),
+                new HashSet<>(ga.collectRules(it -> it instanceof StringTerm)));
     }
 }

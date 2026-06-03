@@ -12,11 +12,11 @@ import java.util.List;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 /**
- * This class represents a concatenation of productions, written as {@code p1 p2 p3 ...} (where p1, p2, etc. are instances of {@link Combinator}).
+ * This class represents a concatenation of productions, written as {@code p1 p2 p3 ...} (where p1, p2, etc. are instances of {@link Rule}).
  * When parsing, it tries to match p1, then p2, then p3 and so on.
  */
-public final class ConcatCombinator extends CombinatorWithManyParsers {
-    private ConcatCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {
+public final class ConcatRule extends RuleWithManyChildren {
+    private ConcatRule(boolean hide, @NotNull ReductionType red, @NotNull List<Rule> parsers) {
         super(hide, red, parsers);
     }
 
@@ -25,13 +25,13 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
      *
      * @param parsers The parsers.
      */
-    public ConcatCombinator(@NotNull List<Combinator> parsers) {
+    public ConcatRule(@NotNull List<Rule> parsers) {
         super(parsers);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull List<@NotNull Combinator> parsers = getParsers();
+        final @NotNull List<@NotNull Rule> parsers = getParsers();
         runner.pushListener(
                 new TrampolineListenerKey(index, parsers.getFirst()),
                 catListener(FlatSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
@@ -39,14 +39,14 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull List<@NotNull Combinator> parsers = getParsers();
+        final @NotNull List<@NotNull Rule> parsers = getParsers();
         runner.pushListener(
                 new TrampolineListenerKey(index, parsers.getFirst()),
                 catFullListener(FlatSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
     }
 
     private @NotNull Listener catListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                          final @NotNull List<Combinator> parserSequence,
+                                          final @NotNull List<Rule> parserSequence,
                                           final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                           final @NotNull Gll runner) {
         return result -> {
@@ -72,7 +72,7 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
     }
 
     private @NotNull Listener catFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                              final @NotNull List<Combinator> parserSequence,
+                                              final @NotNull List<Rule> parserSequence,
                                               final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                               final @NotNull Gll runner) {
         return result -> {
@@ -97,17 +97,17 @@ public final class ConcatCombinator extends CombinatorWithManyParsers {
     }
 
     @Override
-    public @NotNull Combinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new ConcatCombinator(hide, getReduction(), getParsers());
+    public @NotNull Rule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new ConcatRule(hide, getReduction(), getParsers());
     }
 
     @Override
-    public @NotNull Combinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new ConcatCombinator(isHidden(), red, getParsers());
+    public @NotNull Rule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new ConcatRule(isHidden(), red, getParsers());
     }
 
     @Override
-    public @NotNull ConcatCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
-        return new ConcatCombinator(isHidden(), getReduction(), parsers);
+    public @NotNull ConcatRule withParsers(@NotNull List<@NotNull Rule> parsers) {
+        return new ConcatRule(isHidden(), getReduction(), parsers);
     }
 }

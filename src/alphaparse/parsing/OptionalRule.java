@@ -8,11 +8,11 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class represents the {@code [p]} or {@code p?} operator (where p is an instance of {@link Combinator}).
+ * This class represents the {@code [p]} or {@code p?} operator (where p is an instance of {@link Rule}).
  * When parsing, the parser contained herein is optional (run zero times or once).
  */
-public final class OptionalCombinator extends CombinatorWithParser {
-    private OptionalCombinator(final boolean hide, final @NotNull ReductionType red, final @NotNull Combinator parser) {
+public final class OptionalRule extends RuleWithChild {
+    private OptionalRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 
@@ -21,16 +21,16 @@ public final class OptionalCombinator extends CombinatorWithParser {
      *
      * @param parser The parser.
      */
-    public OptionalCombinator(final @NotNull Combinator parser) {
+    public OptionalRule(final @NotNull Rule parser) {
         super(parser);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = getParser();
+        final @NotNull Rule rule = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt = new TrampolineListenerKey(index, this);
         runner.pushListener(
-                new TrampolineListenerKey(index, combinator),
+                new TrampolineListenerKey(index, rule),
                 runner.nodeListener(nodeKeyForOpt)
         );
         runner.pushSuccessMessageWithoutValue(nodeKeyForOpt, index);
@@ -38,7 +38,7 @@ public final class OptionalCombinator extends CombinatorWithParser {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator parser = getParser();
+        final @NotNull Rule parser = getParser();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey thisNodeKey = new TrampolineListenerKey(index, this);
         runner.pushFullListener(new TrampolineListenerKey(index, parser), runner.nodeListener(thisNodeKey));
         if (index == runner.tramp().getText().length()) {
@@ -49,17 +49,17 @@ public final class OptionalCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public @NotNull OptionalCombinator withParser(final @NotNull Combinator parser) {
-        return new OptionalCombinator(hide, red, parser);
+    public @NotNull OptionalRule withParser(final @NotNull Rule parser) {
+        return new OptionalRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull OptionalCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new OptionalCombinator(hide, red, parser);
+    public @NotNull OptionalRule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new OptionalRule(hide, red, parser);
     }
 
     @Override
-    public @NotNull OptionalCombinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new OptionalCombinator(hide, red, parser);
+    public @NotNull OptionalRule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new OptionalRule(hide, red, parser);
     }
 }

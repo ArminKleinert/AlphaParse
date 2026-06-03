@@ -4,7 +4,7 @@ import alphaparse.collections.IntMap;
 import alphaparse.grammar.Grammar;
 import alphaparse.functions.NegativeListener;
 import alphaparse.functions.Procedure;
-import alphaparse.parsing.TerminalStringCombinator;
+import alphaparse.parsing.StringTerm;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.success.AlphaParseMessage;
 import org.jetbrains.annotations.NotNull;
@@ -210,7 +210,7 @@ public final class Tramp {
     }
 
     /**
-     * Sets the last detected parsing success. This is usually a String for a parsed {@link TerminalStringCombinator} or a finished {@link alphaparse.result.ParseTree}.
+     * Sets the last detected parsing success. This is usually a String for a parsed {@link StringTerm} or a finished {@link alphaparse.result.ParseTree}.
      *
      * @param success The new success or null.
      */

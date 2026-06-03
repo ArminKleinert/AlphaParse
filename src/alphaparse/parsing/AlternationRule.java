@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Combinator}).
+ * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Rule}).
  * <p>
  * Notation: {@code rule1 | rule2}
  *
@@ -42,8 +42,8 @@ import java.util.List;
  * }
  * </pre>
  */
-public final class ChoiceCombinator extends CombinatorWithManyParsers {
-    private ChoiceCombinator(boolean hide, @NotNull ReductionType red, @NotNull List<Combinator> parsers) {
+public final class AlternationRule extends RuleWithManyChildren {
+    private AlternationRule(boolean hide, @NotNull ReductionType red, @NotNull List<Rule> parsers) {
         super(hide, red, parsers);
     }
 
@@ -52,15 +52,15 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
      *
      * @param parsers The different parsers in the choice.
      */
-    public ChoiceCombinator(@NotNull List<Combinator> parsers) {
+    public AlternationRule(@NotNull List<Rule> parsers) {
         super(parsers);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        for (final @NotNull Combinator combinator : getParsers()) {
+        for (final @NotNull Rule rule : getParsers()) {
             runner.pushListener(
-                    new TrampolineListenerKey(index, combinator),
+                    new TrampolineListenerKey(index, rule),
                     runner.nodeListener(new TrampolineListenerKey(index, this))
             );
         }
@@ -68,7 +68,7 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        for (final @NotNull Combinator parser : getParsers()) {
+        for (final @NotNull Rule parser : getParsers()) {
             runner.pushFullListener(
                     new TrampolineListenerKey(index, parser),
                     runner.nodeListener(new TrampolineListenerKey(index, this))
@@ -77,17 +77,17 @@ public final class ChoiceCombinator extends CombinatorWithManyParsers {
     }
 
     @Override
-    public @NotNull ChoiceCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new ChoiceCombinator(hide, getReduction(), getParsers());
+    public @NotNull AlternationRule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new AlternationRule(hide, getReduction(), getParsers());
     }
 
     @Override
-    public @NotNull ChoiceCombinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new ChoiceCombinator(isHidden(), red, getParsers());
+    public @NotNull AlternationRule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new AlternationRule(isHidden(), red, getParsers());
     }
 
     @Override
-    public @NotNull ChoiceCombinator withParsers(@NotNull List<@NotNull Combinator> parsers) {
-        return new ChoiceCombinator(isHidden(), getReduction(), parsers);
+    public @NotNull AlternationRule withParsers(@NotNull List<@NotNull Rule> parsers) {
+        return new AlternationRule(isHidden(), getReduction(), parsers);
     }
 }

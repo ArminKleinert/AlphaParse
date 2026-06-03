@@ -5,7 +5,7 @@ import alphaparse.Sym;
 import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
-import alphaparse.parsing.EpsilonCombinator;
+import alphaparse.parsing.EpsilonTerm;
 import alphaparse.parser_options.GlobalCaseInsensitivity;
 import alphaparse.parser_options.ParserCreationOptions;
 import org.jetbrains.annotations.NotNull;
@@ -122,8 +122,8 @@ class AlphaParserCreationTest {
         {
             // Error: No start symbol provided
             final @NotNull var grammar = new Grammar(Map.of(
-                    Sym.sym("S"), EpsilonCombinator.getDefault(),
-                    Sym.sym("A"), EpsilonCombinator.getDefault()
+                    Sym.sym("S"), EpsilonTerm.getDefault(),
+                    Sym.sym("A"), EpsilonTerm.getDefault()
             ));
             Assertions.assertThrows(
                     ParserCreationFailure.class,

@@ -22,14 +22,14 @@ final class CfgGrammar extends GrammarBuilder {
         this.rulesAvailable = options.usableRules();
     }
 
-    private final @NotNull Combinator optWhitespace =
-            NonTerminalCombinator.create(Sym.sym("opt-whitespace")).enableHideTag();
+    private final @NotNull Rule optWhitespace =
+            NonTerminal.create(Sym.sym("opt-whitespace")).enableHideTag();
 
-    private @NotNull List<@NotNull Combinator> cListOf(Combinator... elements) {
+    private @NotNull List<@NotNull Rule> cListOf(Rule... elements) {
         return Arrays.stream(elements).filter(Objects::nonNull).toList();
     }
 
-    private @Nullable NonTerminalCombinator makeNT(
+    private @Nullable NonTerminal makeNT(
             final @NotNull String symString, final @NotNull RulesAvailable ra) {
         return rulesAvailable.contains(ra) ? nt(Sym.sym(symString)) : null;
     }
@@ -37,26 +37,26 @@ final class CfgGrammar extends GrammarBuilder {
     /*
      * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
      */
-     static @NotNull List<Map.Entry<Sym, Combinator>> makeAbnfCoreRules() {
-         var CRLF = new TerminalStringCombinator("\r\n", false);
-        var WSP = new TerminalRegexpCombinator(Pattern.compile("[\\u0020\\u0009]"));
+    static @NotNull List<Map.Entry<Sym, Rule>> makeAbnfCoreRules() {
+        var CRLF = new StringTerm("\r\n", false);
+        var WSP = new RegexTerm(Pattern.compile("[\\u0020\\u0009]"));
 
-        final @NotNull List<Map.Entry<Sym, Combinator>> m = List.of(
-                Map.entry(Sym.sym("ALPHA"), new TerminalRegexpCombinator(Pattern.compile("[a-zA-Z]"))),
-                Map.entry(Sym.sym("BIT"), new TerminalRegexpCombinator(Pattern.compile("[01]"))),
-                Map.entry(Sym.sym("CHAR"), new TerminalRegexpCombinator(Pattern.compile("[\\u0001-\\u007F]"))),
-                Map.entry(Sym.sym("CR"), new TerminalStringCombinator("\r", false)),
+        final @NotNull List<Map.Entry<Sym, Rule>> m = List.of(
+                Map.entry(Sym.sym("ALPHA"), new RegexTerm(Pattern.compile("[a-zA-Z]"))),
+                Map.entry(Sym.sym("BIT"), new RegexTerm(Pattern.compile("[01]"))),
+                Map.entry(Sym.sym("CHAR"), new RegexTerm(Pattern.compile("[\\u0001-\\u007F]"))),
+                Map.entry(Sym.sym("CR"), new StringTerm("\r", false)),
                 Map.entry(Sym.sym("CRLF"), CRLF),
-                Map.entry(Sym.sym("CTL"), new TerminalRegexpCombinator(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
-                Map.entry(Sym.sym("DIGIT"), new TerminalRegexpCombinator(Pattern.compile("[0-9]"))),
-                Map.entry(Sym.sym("DQUOTE"), new TerminalStringCombinator("\"", false)),
-                Map.entry(Sym.sym("HEXDIG"), new TerminalRegexpCombinator(Pattern.compile("[0-9a-fA-F]"))),
-                Map.entry(Sym.sym("HTAB"), new TerminalRegexpCombinator(Pattern.compile("\t"))),
-                Map.entry(Sym.sym("LF"), new TerminalRegexpCombinator(Pattern.compile("\n"))),
-                Map.entry(Sym.sym("LWSP"), new CombinatorStar(new ChoiceCombinator(List.of(WSP, new ConcatCombinator(List.of(CRLF, WSP)))))),
-                Map.entry(Sym.sym("OCTET"), new TerminalRegexpCombinator(Pattern.compile("[\\u0000-\\u00FF]"))),
-                Map.entry(Sym.sym("SP"), new TerminalStringCombinator(" ", false)),
-                Map.entry(Sym.sym("VCHAR"), new TerminalRegexpCombinator(Pattern.compile("[\\u0021-\\u007E]"))),
+                Map.entry(Sym.sym("CTL"), new RegexTerm(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
+                Map.entry(Sym.sym("DIGIT"), new RegexTerm(Pattern.compile("[0-9]"))),
+                Map.entry(Sym.sym("DQUOTE"), new StringTerm("\"", false)),
+                Map.entry(Sym.sym("HEXDIG"), new RegexTerm(Pattern.compile("[0-9a-fA-F]"))),
+                Map.entry(Sym.sym("HTAB"), new RegexTerm(Pattern.compile("\t"))),
+                Map.entry(Sym.sym("LF"), new RegexTerm(Pattern.compile("\n"))),
+                Map.entry(Sym.sym("LWSP"), new ZeroOrMoreRule(new AlternationRule(List.of(WSP, new ConcatRule(List.of(CRLF, WSP)))))),
+                Map.entry(Sym.sym("OCTET"), new RegexTerm(Pattern.compile("[\\u0000-\\u00FF]"))),
+                Map.entry(Sym.sym("SP"), new StringTerm(" ", false)),
+                Map.entry(Sym.sym("VCHAR"), new RegexTerm(Pattern.compile("[\\u0021-\\u007E]"))),
                 Map.entry(Sym.sym("WSP"), WSP)
         );
         return m;
@@ -66,18 +66,18 @@ final class CfgGrammar extends GrammarBuilder {
         return Pattern.compile(patternString + "(?x) #" + comment);
     }
 
-    private @NotNull Combinator makeCfgRulesRhs() {
-        final @NotNull Combinator rulesRule = concat(
-                        List.of(optWhitespace,
-                                onceOrMore(
-                                        nt(Sym.sym("rule")) /// {@link #makeCfgRuleRhs}
-                                )))
+    private @NotNull Rule makeCfgRulesRhs() {
+        final @NotNull Rule rulesRule = concat(
+                List.of(optWhitespace,
+                        onceOrMore(
+                                nt(Sym.sym("rule")) /// {@link #makeCfgRuleRhs}
+                        )))
                 .hideTag();
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgCommentRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgCommentRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(string("(*"),
                                 makeCfgInsideCommentRhs(),
@@ -85,9 +85,9 @@ final class CfgGrammar extends GrammarBuilder {
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgInsideCommentRhs() {
+    private @NotNull Rule makeCfgInsideCommentRhs() {
         final @NotNull Pattern insideComment = Pattern.compile("(?s)(?:(?!\\(\\*|\\*\\)).)* (?x) # Comment text");
-        final @NotNull Combinator rulesRule =
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(regex(insideComment),
                                 zeroOrMore(
@@ -97,9 +97,9 @@ final class CfgGrammar extends GrammarBuilder {
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgOptWhitespaceRhs() {
+    private @NotNull Rule makeCfgOptWhitespaceRhs() {
         final @NotNull Pattern ws = regexDoc("[,\\s]*", "optional whitespace");
-        final @NotNull Combinator rulesRule =
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(regex(ws),
                                 zeroOrMore(
@@ -110,11 +110,11 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link EpsilonCombinator}.
+     * Recognition of {@link EpsilonTerm}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private Combinator makeCfgEpsilonRhs() {
+    private Rule makeCfgEpsilonRhs() {
         var epsilonNames = options.epsilonNames();
 
         // If no epsilon names are provided, use string terminal which matches the empty string `""`.
@@ -128,36 +128,36 @@ final class CfgGrammar extends GrammarBuilder {
         );
     }
 
-    private @NotNull Combinator makeCfgFactorRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgFactorRhs() {
+        final @NotNull Rule rulesRule =
                 alternationGuaranteeDistinct(
-                                cListOf(
-                                        nt(Sym.sym("string")), /// {@link #makeCfgStringRhs}
-                                        makeNT("regexp", RulesAvailable.REGEX), /// {@link #makeCfgRegexRhs}
-                                        makeNT("opt", RulesAvailable.OPTIONAL), /// {@link #makeCfgOptRhs}
-                                        makeNT("opt_query", RulesAvailable.OPTIONAL_QUERY), /// {@link #makeCfgOptQueryRhs}
-                                        makeNT("star", RulesAvailable.OPTIONAL_REPETITION_STAR), /// {@link #makeCfgZeroOrMoreStarRhs}
-                                        makeNT("opt_rep", RulesAvailable.OPTIONAL_REPETITION), /// {@link #makeCfgZeroOrMoreStdRhs}
-                                        makeNT("plus", RulesAvailable.PLUS), /// {@link #makeCfgPlusRhs}
-                                        nt(Sym.sym("paren")), /// {@link #makeCfgParenRhs}
-                                        nt(Sym.sym("hide")), /// {@link #makeCfgHideRhs}
-                                        nt(Sym.sym("epsilon")), /// {@link #makeCfgEpsilonRhs}
-                                        makeNT("rep", RulesAvailable.VARIABLE_REPEAT), /// ABNF feature {@link #makeCfgRepRhs}
-                                        makeNT("abnf-range", RulesAvailable.VALUE_RANGE), /// ABNF feature {@link #makeABNFValueRange}
-                                        nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
-                                        null
-                                ))
+                        cListOf(
+                                nt(Sym.sym("string")), /// {@link #makeCfgStringRhs}
+                                makeNT("regexp", RulesAvailable.REGEX), /// {@link #makeCfgRegexRhs}
+                                makeNT("opt", RulesAvailable.OPTIONAL), /// {@link #makeCfgOptRhs}
+                                makeNT("opt_query", RulesAvailable.OPTIONAL_QUERY), /// {@link #makeCfgOptQueryRhs}
+                                makeNT("star", RulesAvailable.OPTIONAL_REPETITION_STAR), /// {@link #makeCfgZeroOrMoreStarRhs}
+                                makeNT("opt_rep", RulesAvailable.OPTIONAL_REPETITION), /// {@link #makeCfgZeroOrMoreStdRhs}
+                                makeNT("plus", RulesAvailable.PLUS), /// {@link #makeCfgPlusRhs}
+                                nt(Sym.sym("paren")), /// {@link #makeCfgParenRhs}
+                                nt(Sym.sym("hide")), /// {@link #makeCfgHideRhs}
+                                nt(Sym.sym("epsilon")), /// {@link #makeCfgEpsilonRhs}
+                                makeNT("rep", RulesAvailable.VARIABLE_REPEAT), /// ABNF feature {@link #makeCfgRepRhs}
+                                makeNT("abnf-range", RulesAvailable.VALUE_RANGE), /// ABNF feature {@link #makeABNFValueRange}
+                                nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
+                                null
+                        ))
                         .hideTag();
         return rulesRule;
     }
 
     /**
-     * Recognition of {@link PlusCombinator}.
+     * Recognition of {@link OnceOrMoreRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgPlusRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgPlusRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
@@ -168,9 +168,9 @@ final class CfgGrammar extends GrammarBuilder {
     /**
      * Recognition of dividers. For example, that is "=" in "S = ...".
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgRuleSeparatorRhs() {
+    private @NotNull Rule makeCfgRuleSeparatorRhs() {
         return alternationC(
                 options.ruleDefinitionOps()
                         .stream()
@@ -178,8 +178,8 @@ final class CfgGrammar extends GrammarBuilder {
                         .toList());
     }
 
-    private @NotNull Combinator makeCfgParenRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgParenRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(string("(").enableHideTag(),
                                 optWhitespace,
@@ -189,8 +189,8 @@ final class CfgGrammar extends GrammarBuilder {
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgHideRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgHideRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(string("<").enableHideTag(),
                                 optWhitespace,
@@ -202,11 +202,11 @@ final class CfgGrammar extends GrammarBuilder {
 
 
     /**
-     * Recognition of {@link TerminalStringCombinator}.
+     * Recognition of {@link StringTerm}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgStringRhs() {
+    private @NotNull Rule makeCfgStringRhs() {
         final boolean hasCiPrefixAvailable =
                 options.usableRules().contains(RulesAvailable.STRING_CASE_SENSITIVITY_PREFIX);
 
@@ -218,53 +218,53 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Pattern doubleQuotedString = hasCiPrefixAvailable
                 ? regexDoc(doubleQuoteStringPrefixed, "Prefixed double-quoted string")
                 : regexDoc(doubleQuoteString, "Double-quoted string");
-        var doubleQuoteStringRegexCombinator = regex(doubleQuotedString);
+        var doubleQuoteStringRegexRule = regex(doubleQuotedString);
 
         if (!options.usableRules().contains(RulesAvailable.SINGLY_QUOTED))
-            return doubleQuoteStringRegexCombinator;
+            return doubleQuoteStringRegexRule;
 
         final @NotNull Pattern singleQuotedString = hasCiPrefixAvailable
                 ? regexDoc(singleQuoteStringPrefixed, "Prefixed single-quoted string")
                 : regexDoc(singleQuoteString, "Single-quoted string");
 
         return alternationC(List.of(
-                doubleQuoteStringRegexCombinator,
+                doubleQuoteStringRegexRule,
                 regex(singleQuotedString)));
     }
 
     /**
-     * Recognition of {@link TerminalRegexpCombinator}.
+     * Recognition of {@link RegexTerm}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgRegexRhs() {
+    private @NotNull Rule makeCfgRegexRhs() {
         final @NotNull Pattern singleQuotedRegex =
                 regexDoc("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'", "Single-quoted regexp");
         final @NotNull Pattern doubleQuotedRegex =
                 regexDoc("#\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted regexp");
-        final @NotNull Combinator rulesRule =
+        final @NotNull Rule rulesRule =
                 alternationGuaranteeDistinct(
                         List.of(regex(singleQuotedRegex),
                                 regex(doubleQuotedRegex)));
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgRulesOrParserRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgRulesOrParserRhs() {
+        final @NotNull Rule rulesRule =
                 alternationGuaranteeDistinct(
-                                List.of(nt(Sym.sym("rules")), /// {@link #makeCfgRulesRhs}
-                                        nt(Sym.sym("alt-or-ord")) /// {@link #makeCfgAltOrOrdRhs}
-                                ))
+                        List.of(nt(Sym.sym("rules")), /// {@link #makeCfgRulesRhs}
+                                nt(Sym.sym("alt-or-ord")) /// {@link #makeCfgAltOrOrdRhs}
+                        ))
                         .hideTag();
         return rulesRule;
     }
 
     /**
-     * Recognition of {@link NonTerminalCombinator}.
+     * Recognition of {@link NonTerminal}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgNtRhs() {
+    private @NotNull Rule makeCfgNtRhs() {
         final var regex = rulesAvailable.contains(RulesAvailable.EXTENDED_IDENTIFIERS)
                 ? Pattern.compile("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*")
                 : Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*");
@@ -285,12 +285,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link RepetitionCombinator}.
+     * Recognition of {@link VariableRepetitionRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgRepRhs() {
-        final @NotNull Combinator repRegexChoice;
+    private @NotNull Rule makeCfgRepRhs() {
+        final @NotNull Rule repRegexChoice;
         if (!rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR)) {
             repRegexChoice =
                     regex(Pattern.compile("\\d*\\*?\\d*"));
@@ -298,7 +298,7 @@ final class CfgGrammar extends GrammarBuilder {
             repRegexChoice =
                     regex(Pattern.compile("\\d+(?:\\*\\d*)?|\\*\\d+"));
         }
-        final @NotNull Combinator rulesRule =
+        final @NotNull Rule rulesRule =
                 concat(List.of(
                         repRegexChoice,
                         optWhitespace,
@@ -308,12 +308,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link LookaheadCombinator}.
+     * Recognition of {@link LookaheadRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgLookRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgLookRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(string("&").enableHideTag(),
                                 optWhitespace,
@@ -323,12 +323,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link NegativeLookaheadCombinator}.
+     * Recognition of {@link NegativeLookaheadRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgNegRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgNegRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(string("!").enableHideTag(),
                                 optWhitespace,
@@ -338,12 +338,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link CombinatorStar} with the pattern {@code {rule}}.
+     * Recognition of {@link ZeroOrMoreRule} with the pattern {@code {rule}}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgZeroOrMoreStdRhs() {
-        final @NotNull Combinator rule =
+    private @NotNull Rule makeCfgZeroOrMoreStdRhs() {
+        final @NotNull Rule rule =
                 concat(
                         List.of(string("{").enableHideTag(),
                                 optWhitespace,
@@ -354,12 +354,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link CombinatorStar} with the pattern {@code rule*}.
+     * Recognition of {@link ZeroOrMoreRule} with the pattern {@code rule*}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgZeroOrMoreStarRhs() {
-        final @NotNull Combinator rule =
+    private @NotNull Rule makeCfgZeroOrMoreStarRhs() {
+        final @NotNull Rule rule =
                 concat(
                         List.of(nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
@@ -368,12 +368,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link OptionalCombinator} with the pattern {@code [rule]}.
+     * Recognition of {@link OptionalRule} with the pattern {@code [rule]}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgOptRhs() {
-        final @NotNull Combinator rule =
+    private @NotNull Rule makeCfgOptRhs() {
+        final @NotNull Rule rule =
                 concat(
                         List.of(string("[").enableHideTag(),
                                 optWhitespace,
@@ -384,12 +384,12 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link OptionalCombinator} with the pattern {@code rule*}.
+     * Recognition of {@link OptionalRule} with the pattern {@code rule*}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgOptQueryRhs() {
-        final @NotNull Combinator rule =
+    private @NotNull Rule makeCfgOptQueryRhs() {
+        final @NotNull Rule rule =
                 concat(
                         List.of(nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
@@ -397,9 +397,9 @@ final class CfgGrammar extends GrammarBuilder {
         return rule;
     }
 
-    private @NotNull Combinator makeCfgAltOrOrdRhs() {
+    private @NotNull Rule makeCfgAltOrOrdRhs() {
         int i = 0;
-        Combinator[] l = new Combinator[2];
+        Rule[] l = new Rule[2];
 
         if (options.usableRules().contains(RulesAvailable.ALTERNATION))
             l[i++] = (nt(Sym.sym("alt"))); /// {@link #makeCfgAltRhs}
@@ -410,12 +410,12 @@ final class CfgGrammar extends GrammarBuilder {
 
         if (i == 1) return l[0].hideTag();
 
-        final @NotNull Combinator rulesRule = alternationGuaranteeDistinct(List.of(l)).hideTag();
+        final @NotNull Rule rulesRule = alternationGuaranteeDistinct(List.of(l)).hideTag();
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgHideNtRhs() {
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgHideNtRhs() {
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(string("<").enableHideTag(),
                                 optWhitespace,
@@ -425,9 +425,9 @@ final class CfgGrammar extends GrammarBuilder {
         return rulesRule;
     }
 
-    private @NotNull Combinator makeCfgRuleRhs() {
-        final @NotNull Combinator optWs = nt(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgRuleRhs() {
+        final @NotNull Rule optWs = nt(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(alternationGuaranteeDistinct(
                                         List.of(nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
@@ -438,25 +438,25 @@ final class CfgGrammar extends GrammarBuilder {
                                 optWhitespace,
                                 nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 alternationGuaranteeDistinct(
-                                                List.of(optWs,
-                                                        concat(
-                                                                List.of(optWs,
-                                                                        alternationGuaranteeDistinct(
-                                                                                List.of(string(";"),
-                                                                                        string("."))),
-                                                                        optWs))))
+                                        List.of(optWs,
+                                                concat(
+                                                        List.of(optWs,
+                                                                alternationGuaranteeDistinct(
+                                                                        List.of(string(";"),
+                                                                                string("."))),
+                                                                optWs))))
                                         .enableHideTag()));
         return rulesRule;
     }
 
     /**
-     * Recognition of {@link OrderedChoiceCombinator}.
+     * Recognition of {@link OrderedChoiceRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgOrdRhs() {
-        final @NotNull Combinator catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgOrdRhs() {
+        final @NotNull Rule catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(catNt,
                                 zeroOrMore(
@@ -469,13 +469,13 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link ChoiceCombinator}.
+     * Recognition of {@link AlternationRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgAltRhs() {
-        final @NotNull Combinator catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
-        final @NotNull Combinator rulesRule =
+    private @NotNull Rule makeCfgAltRhs() {
+        final @NotNull Rule catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(catNt,
                                 zeroOrMore(concat(
@@ -487,18 +487,18 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link ConcatCombinator}.
+     * Recognition of {@link ConcatRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgCatRhs() {
-        final @NotNull Combinator factorLookNeg = alternationGuaranteeDistinct(cListOf(
+    private @NotNull Rule makeCfgCatRhs() {
+        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinct(cListOf(
                 nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                 makeNT("look", RulesAvailable.LOOKAHEAD), /// {@link #makeCfgLookRhs}
                 makeNT("neg", RulesAvailable.NEGATIVE_LOOKAHEAD), /// {@link #makeCfgNegRhs}
                 makeNT("exclude", RulesAvailable.EXCLUSION) /// {@link #makeCfgExclude}
         ));
-        final @NotNull Combinator rulesRule =
+        final @NotNull Rule rulesRule =
                 onceOrMore(
                         concat(
                                 List.of(optWhitespace,
@@ -508,15 +508,15 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link ExclusionCombinator}.
+     * Recognition of {@link ExclusionRule}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeCfgExclude() {
-        final @NotNull Combinator factorLookNeg = alternationGuaranteeDistinct(cListOf(
+    private @NotNull Rule makeCfgExclude() {
+        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinct(cListOf(
                 nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
         ));
-        final @NotNull Combinator rulesRule =
+        final @NotNull Rule rulesRule =
                 concat(
                         List.of(factorLookNeg, optWhitespace,
                                 string("-").enableHideTag(),
@@ -526,20 +526,20 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     /**
-     * Recognition of {@link EOFCombinator}.
+     * Recognition of {@link EOFTerm}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeEofRhs() {
+    private @NotNull Rule makeEofRhs() {
         return string("EOF");
     }
 
     /**
-     * Recognition of {@link TerminalUnicodeCharCombinator}.
+     * Recognition of {@link ValueRangeTerm}.
      *
-     * @return A {@link Combinator}.
+     * @return A {@link Rule}.
      */
-    private @NotNull Combinator makeABNFValueRange() {
+    private @NotNull Rule makeABNFValueRange() {
         final Pattern regex = regexDoc(
                 "%b[01]+(\\-[01]+)?|%d[0-9]+(\\-[0-9]+)?|%x[0-9a-fA-F]+(\\-[0-9a-fA-F]+)?",
                 "ABNF Value Range"

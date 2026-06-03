@@ -44,7 +44,7 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements through other rule types: None.
      *
-     * @see ChoiceCombinator
+     * @see AlternationRule
      */
     ALTERNATION,
 
@@ -55,18 +55,18 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements through other rule types: None, but {@link #NEGATIVE_LOOKAHEAD} comes close.
      *
-     * @see ExclusionCombinator
+     * @see ExclusionRule
      */
     EXCLUSION,
 
     /**
      * Explicit EOF (end-of-file) rule. This can be useful in *very* specific circumstances, for example a negative lookahead which contains an EOF.
      * <p>
-     * Notation: See {@link EOFCombinator}
+     * Notation: See {@link EOFTerm}
      * <p>
      * Possible replacements through other rule types: None.
      *
-     * @see EOFCombinator
+     * @see EOFTerm
      */
     EXPLICIT_EOF,
 
@@ -91,7 +91,7 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements through other rule types: None.
      *
-     * @see LookaheadCombinator
+     * @see LookaheadRule
      */
     LOOKAHEAD,
 
@@ -104,7 +104,7 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements through other rule types: None.
      *
-     * @see NegativeLookaheadCombinator
+     * @see NegativeLookaheadRule
      */
     NEGATIVE_LOOKAHEAD,
 
@@ -117,7 +117,7 @@ public enum RulesAvailable {
      * {@code S = [rule]} can be replaced by {@code S = rule | epsilon}
      *
      * @see RulesAvailable#OPTIONAL_QUERY
-     * @see OptionalCombinator
+     * @see OptionalRule
      */
     OPTIONAL,
 
@@ -129,7 +129,7 @@ public enum RulesAvailable {
      * Possible replacements through other rule types: Equivalent to {@link #OPTIONAL}.
      *
      * @see RulesAvailable#OPTIONAL
-     * @see OptionalCombinator
+     * @see OptionalRule
      */
     OPTIONAL_QUERY,
 
@@ -142,7 +142,7 @@ public enum RulesAvailable {
      * Can be replaced by using {@link #ALTERNATION} and more productions.
      *
      * @see RulesAvailable#OPTIONAL_REPETITION_STAR
-     * @see CombinatorStar
+     * @see ZeroOrMoreRule
      */
     OPTIONAL_REPETITION,
 
@@ -154,18 +154,18 @@ public enum RulesAvailable {
      * Possible replacements through other rule types: Equivalent to {@link #OPTIONAL_REPETITION}.
      *
      * @see RulesAvailable#OPTIONAL_REPETITION
-     * @see CombinatorStar
+     * @see ZeroOrMoreRule
      */
     OPTIONAL_REPETITION_STAR,
 
     /**
-     * ABNF-style choice combinator '/' with the extension that the output should be ordered and deterministic.
+     * ABNF-style {@link OrderedChoiceRule} '/' with the extension that the output should be ordered and deterministic.
      * <p>
      * Notation: {@code rule1 / rule2}
      * <p>
      * Possible replacements through other rule types: None, but {@link #ALTERNATION} is close enough.
      *
-     * @see OrderedChoiceCombinator
+     * @see OrderedChoiceRule
      */
     ORDERED_CHOICE,
 
@@ -177,7 +177,7 @@ public enum RulesAvailable {
      * Possible replacements through other rule types:
      * Can be replaced by using {@link #OPTIONAL_REPETITION}.
      *
-     * @see PlusCombinator
+     * @see OnceOrMoreRule
      */
     PLUS,
 
@@ -189,7 +189,7 @@ public enum RulesAvailable {
      * Possible replacements through other rule types:
      * Can be replaced by using combinations of all other kinds of rules, mainly Strings.
      *
-     * @see TerminalRegexpCombinator
+     * @see RegexTerm
      */
     REGEX,
 
@@ -199,7 +199,7 @@ public enum RulesAvailable {
      * Possible replacements through other rule types:
      * {@code S = 'a'} can be safely replaced by {@code S = "a"}, but this requires escaping the quotation-marks in code.
      *
-     * @see TerminalStringCombinator
+     * @see StringTerm
      */
     SINGLY_QUOTED,
 
@@ -210,7 +210,7 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements: None.
      *
-     * @see TerminalSpecialSequenceCombinator
+     * @see SpecialSequenceRule
      */
     SPECIAL_SEQUENCE,
 
@@ -234,7 +234,7 @@ public enum RulesAvailable {
      * A value range can be replaced by a regex or an alternation of string terminals.
      * If you need multiple characters outside the range of 16-bit characters, value ranges become useful.
      *
-     * @see TerminalUnicodeCharCombinator
+     * @see ValueRangeTerm
      */
     VALUE_RANGE,
 
@@ -252,7 +252,7 @@ public enum RulesAvailable {
      *     <li>{@code * rule} is equivalent to {@link #OPTIONAL_REPETITION}</li>
      * </ul>
      *
-     * @see RepetitionCombinator
+     * @see VariableRepetitionRule
      */
     VARIABLE_REPEAT,
 }

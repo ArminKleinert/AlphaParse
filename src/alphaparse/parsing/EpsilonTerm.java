@@ -17,15 +17,15 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * When parsing, the process depends on whether a full parse is being done (matching to the end of the input):
  * If yes, success if the end of input has been reached, fail otherwise. If no, always success.
  */
-public final class EpsilonCombinator extends CombinatorTerminal {
+public final class EpsilonTerm extends Terminal {
 
-    private static final @NotNull EpsilonCombinator epsilon = new EpsilonCombinator();
+    private static final @NotNull EpsilonTerm epsilon = new EpsilonTerm();
 
-    private EpsilonCombinator(final boolean hide, final @NotNull ReductionType red) {
+    private EpsilonTerm(final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
     }
 
-    private EpsilonCombinator() {
+    private EpsilonTerm() {
         super();
     }
 
@@ -34,7 +34,7 @@ public final class EpsilonCombinator extends CombinatorTerminal {
      *
      * @return The canonical instance of Epsilon.
      */
-    public static @NotNull EpsilonCombinator getDefault() {
+    public static @NotNull EpsilonTerm getDefault() {
         return epsilon;
     }
 
@@ -53,18 +53,18 @@ public final class EpsilonCombinator extends CombinatorTerminal {
     }
 
     @Override
-    public @NotNull EpsilonCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new EpsilonCombinator(hide, red);
+    public @NotNull EpsilonTerm withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new EpsilonTerm(hide, red);
     }
 
     @Override
-    public @NotNull EpsilonCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new EpsilonCombinator(hide, red);
+    public @NotNull EpsilonTerm withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new EpsilonTerm(hide, red);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof EpsilonCombinator that)) return false;
+        if (!(o instanceof EpsilonTerm that)) return false;
         if (this == that) return true;
         return hide == that.hide && Objects.equals(red, that.red);
     }

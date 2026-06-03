@@ -16,14 +16,14 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * <p>
  * You should not use this class unless it is very important!
  */
-public final class TerminalSpecialSequenceCombinator extends SimpleCombinator {
+public final class SpecialSequenceRule extends SimpleRule {
     private final @NotNull String description;
     private final @NotNull Function<@NotNull String, Optional<String>> function;
 
-    private TerminalSpecialSequenceCombinator(final boolean hide,
-                                              final @NotNull ReductionType red,
-                                              final @NotNull String description,
-                                              final @NotNull Function<@NotNull String, Optional<String>> function) {
+    private SpecialSequenceRule(final boolean hide,
+                                final @NotNull ReductionType red,
+                                final @NotNull String description,
+                                final @NotNull Function<@NotNull String, Optional<String>> function) {
         super(hide, red);
         this.function = function;
         this.description = description;
@@ -35,7 +35,7 @@ public final class TerminalSpecialSequenceCombinator extends SimpleCombinator {
      * @param description The description of the special sequence.
      * @param function    The function which does what the description says.
      */
-    public TerminalSpecialSequenceCombinator(
+    public SpecialSequenceRule(
             final @NotNull String description,
             final @NotNull Function<@NotNull String, Optional<String>> function) {
         super();
@@ -72,18 +72,18 @@ public final class TerminalSpecialSequenceCombinator extends SimpleCombinator {
     }
 
     @Override
-    public @NotNull TerminalSpecialSequenceCombinator withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new TerminalSpecialSequenceCombinator(hide, red, description, function);
+    public @NotNull SpecialSequenceRule withHideTag(final boolean hide) {
+        return isHidden() == hide ? this : new SpecialSequenceRule(hide, red, description, function);
     }
 
     @Override
-    public @NotNull TerminalSpecialSequenceCombinator withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new TerminalSpecialSequenceCombinator(hide, red, description, function);
+    public @NotNull SpecialSequenceRule withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new SpecialSequenceRule(hide, red, description, function);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TerminalSpecialSequenceCombinator that)) return false;
+        if (!(o instanceof SpecialSequenceRule that)) return false;
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)

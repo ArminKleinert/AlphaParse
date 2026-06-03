@@ -6,7 +6,6 @@ import alphaparse.collections.FlatSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
-import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +13,7 @@ import java.util.Objects;
 
 /**
  * A class representing the ABNF counted repetition operator.
- * There are multiple variants, depending on the syntax (where n1 and n2 are integers, and p is an instance of {@link Combinator}):
+ * There are multiple variants, depending on the syntax (where n1 and n2 are integers, and p is an instance of {@link Rule}):
  * <ul>
  *     <li>Repeat a minimum of {@code n1} times and a maximum of {@code n2} times: {@code n1*n2 p}</li>
  *     <li>Repeat a minimum of {@code n1} times: {@code n1* p}</li>
@@ -22,12 +21,12 @@ import java.util.Objects;
  *     <li>Repeat exactly of {@code n1} times: {@code n1 p}</li>
  * </ul>
  */
-public final class RepetitionCombinator extends CombinatorWithParser {
+public final class VariableRepetitionRule extends RuleWithChild {
     private final int min;
     private final int max;
 
-    private RepetitionCombinator(final boolean hide, final @NotNull ReductionType red,
-                                 final @NotNull Combinator parser, final int min, final int max) {
+    private VariableRepetitionRule(final boolean hide, final @NotNull ReductionType red,
+                                   final @NotNull Rule parser, final int min, final int max) {
         super(hide, red, parser);
         this.min = min;
         this.max = max;
@@ -41,7 +40,7 @@ public final class RepetitionCombinator extends CombinatorWithParser {
      * @param max    Maximum repetitions.
      * @throws IllegalArgumentException if minimum or maximum is invalid.
      */
-    public RepetitionCombinator(final @NotNull Combinator parser, final int min, final int max) {
+    public VariableRepetitionRule(final @NotNull Rule parser, final int min, final int max) {
         super(parser);
         if (min < 0 || min > max)
             throw new IllegalArgumentException();
@@ -51,48 +50,48 @@ public final class RepetitionCombinator extends CombinatorWithParser {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator combinator = getParser();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey parserNodeKey = new TrampolineListenerKey(index, this);
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey combinatorNodeKey = new TrampolineListenerKey(index, combinator);
+        final @NotNull Rule rule = getParser();
+        final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForInnerRule = new TrampolineListenerKey(index, rule);
         if (getMin() == 0) {
-            runner.pushSuccessMessageWithoutValue(combinatorNodeKey, index);
+            runner.pushSuccessMessageWithoutValue(nodeKeyForInnerRule, index);
             if (getMax() >= 1) {
-                runner.pushListener(combinatorNodeKey,
-                        repListener(FlatSeq.make(), 0, this, parserNodeKey, runner));
+                runner.pushListener(nodeKeyForInnerRule,
+                        repListener(FlatSeq.make(), 0, this, nodeKeyForThis, runner));
             }
         } else {
             runner.pushListener(
-                    combinatorNodeKey,
-                    repListener(FlatSeq.make(), 0, this, parserNodeKey, runner));
+                    nodeKeyForInnerRule,
+                    repListener(FlatSeq.make(), 0, this, nodeKeyForThis, runner));
         }
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Combinator parser = getParser();
+        final @NotNull Rule parser = getParser();
         final int minimum = getMin();
         final int maximum = getMax();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForParser = new TrampolineListenerKey(index, parser);
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForInnerRule = new TrampolineListenerKey(index, parser);
         final @NotNull var emptyResults = FlatSeq.make();
         if (minimum == 0) {
             runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, this), index);
             if (maximum >= 1) {
                 runner.pushListener(
-                        nodeKeyForParser,
+                        nodeKeyForInnerRule,
                         repFullListener(emptyResults, 0, parser, 1, maximum, nodeKeyForThis, runner));
             }
         } else {
             runner.pushListener(
-                    nodeKeyForParser,
+                    nodeKeyForInnerRule,
                     repFullListener(emptyResults, 0, parser, minimum, maximum, nodeKeyForThis, runner));
         }
     }
 
     private @NotNull Listener repListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                           final int nResultsSoFar,
-                                          final @NotNull RepetitionCombinator parser,
-                                          final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+                                          final @NotNull VariableRepetitionRule parser,
+                                          final @NotNull TrampolineListenerKey nodeKey,
                                           final @NotNull Gll runner) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
@@ -117,10 +116,10 @@ public final class RepetitionCombinator extends CombinatorWithParser {
 
     private @NotNull Listener repFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                               final int nResultsSoFar,
-                                              final @NotNull Combinator parser,
+                                              final @NotNull Rule parser,
                                               final int minimum,
                                               final int maximum,
-                                              final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
+                                              final @NotNull TrampolineListenerKey nodeKey,
                                               final @NotNull Gll runner) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
@@ -169,23 +168,23 @@ public final class RepetitionCombinator extends CombinatorWithParser {
     }
 
     @Override
-    public @NotNull RepetitionCombinator withParser(final @NotNull Combinator parser) {
-        return new RepetitionCombinator(hide, red, parser, min, max);
+    public @NotNull VariableRepetitionRule withParser(final @NotNull Rule parser) {
+        return new VariableRepetitionRule(hide, red, parser, min, max);
     }
 
     @Override
-    public @NotNull RepetitionCombinator withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new RepetitionCombinator(hide, red, parser, min, max);
+    public @NotNull VariableRepetitionRule withHideTag(boolean hide) {
+        return isHidden() == hide ? this : new VariableRepetitionRule(hide, red, parser, min, max);
     }
 
     @Override
-    public @NotNull RepetitionCombinator withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new RepetitionCombinator(hide, red, parser, min, max);
+    public @NotNull VariableRepetitionRule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new VariableRepetitionRule(hide, red, parser, min, max);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof RepetitionCombinator that)) return false;
+        if (!(o instanceof VariableRepetitionRule that)) return false;
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)
