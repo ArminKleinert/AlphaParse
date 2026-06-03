@@ -41,6 +41,9 @@ public final class RegexTerm extends Terminal {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull Pattern regexp) {
+        var s = regexp.pattern();
+        if (s.chars().allMatch(Character::isLetterOrDigit))
+            return StringTerm.create(s, false);
         return new RegexTerm(defaultHidden, defaultReductionType, regexp);
     }
 

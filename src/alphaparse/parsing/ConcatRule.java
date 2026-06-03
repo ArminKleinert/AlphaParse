@@ -7,6 +7,8 @@ import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -29,7 +31,29 @@ public final class ConcatRule extends RuleWithManyChildren {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull List<Rule> rules) {
-        return new ConcatRule(defaultHidden, defaultReductionType, rules);
+        if (rules.isEmpty())
+            return EpsilonTerm.getDefault();
+        if (rules.size() == 1)
+            return rules.getFirst();
+
+        var compressedResult = new ArrayList<Rule>();
+        var simpleBuffered = new HashMap<SimpleRule, SimpleRule>();
+
+        for (@NotNull Rule rule : rules) {
+            if (rule instanceof ConcatRule cc) {
+                compressedResult.addAll(cc.getRules());
+            } else {
+                if (rule instanceof SimpleRule sr) {
+                    var temp = simpleBuffered.get(sr);
+
+                    if (temp == null) simpleBuffered.put(sr, sr);
+                    else rule = temp;
+                }
+                compressedResult.add(rule);
+            }
+        }
+
+        return new ConcatRule(defaultHidden, defaultReductionType, compressedResult);
     }
 
     @Override
@@ -110,7 +134,7 @@ public final class ConcatRule extends RuleWithManyChildren {
     }
 
     @Override
-    public @NotNull ConcatRule withParsers(@NotNull List<@NotNull Rule> parsers) {
-        return new ConcatRule(isHidden(), getReduction(), parsers);
+    public @NotNull ConcatRule withRules(@NotNull List<@NotNull Rule> rules) {
+        return new ConcatRule(isHidden(), getReduction(), rules);
     }
 }

@@ -13,11 +13,11 @@ public sealed abstract class RuleWithManyChildren
         extends Rule
         permits AlternationRule, ConcatRule, ExclusionRule, OrderedChoiceRule {
     private long bufferedHashCode = Long.MIN_VALUE;
-    protected final @NotNull List<Rule> rules;
+    protected final @NotNull List<@NotNull Rule> rules;
 
     protected RuleWithManyChildren(final boolean hide,
                                    final @NotNull ReductionType red,
-                                   final @NotNull List<Rule> rules) {
+                                   final @NotNull List<@NotNull Rule> rules) {
         super(hide, red);
         this.rules = rules;
     }
@@ -33,7 +33,7 @@ public sealed abstract class RuleWithManyChildren
 
     @NotNull
     public RuleWithManyChildren unhideContent() {
-        return ((RuleWithManyChildren) withHideTag(false)).withParsers(
+        return ((RuleWithManyChildren) withHideTag(false)).withRules(
                 getRules()
                         .stream()
                         .map(Rule::unhideContent)
@@ -43,10 +43,10 @@ public sealed abstract class RuleWithManyChildren
     /**
      * Set the inner {@link Rule} list used for parsing and returns an instance of the same class.
      *
-     * @param parsers The new inner {@link Rule}.
+     * @param rules The new inner {@link Rule}.
      * @return A new instance.
      */
-    public abstract @NotNull RuleWithManyChildren withParsers(final @NotNull List<@NotNull Rule> parsers);
+    public abstract @NotNull RuleWithManyChildren withRules(final @NotNull List<@NotNull Rule> rules);
 
     @Override
     public boolean equals(Object o) {

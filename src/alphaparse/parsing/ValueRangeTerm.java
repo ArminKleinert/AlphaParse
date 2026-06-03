@@ -34,6 +34,9 @@ public final class ValueRangeTerm extends Terminal {
      * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
      */
     public static @NotNull Rule create(final int lo, final int hi) {
+        if (lo > hi)
+            throw new IllegalArgumentException();
+
         return new ValueRangeTerm(defaultHidden, defaultReductionType, lo, hi);
     }
 

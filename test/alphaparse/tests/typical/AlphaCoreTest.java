@@ -104,10 +104,6 @@ class AlphaCoreTest {
                     A = #'a*'
                     """);
 
-    final @NotNull Parser repeated_a = Alpha.parser(
-            """
-                    S = 'a'+
-                    """);
 
     final @NotNull Parser lookahead_example = Alpha.parser(
             """
@@ -555,6 +551,10 @@ class AlphaCoreTest {
 
     @Test
     void testRepeatedA() {
+        var repeated_a = Alpha.parser("""
+                S = 'a'+
+                """);
+
         var text = "aaaaaa";
         var trees = List.of(
                 ParseTree.create("S", "a", "a", "a", "a", "a", "a")

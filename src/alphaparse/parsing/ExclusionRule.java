@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
@@ -41,16 +42,18 @@ public final class ExclusionRule extends RuleWithManyChildren {
     }
 
     /**
-     * Create a new instance. Represents {@code (parserExpected - parserExcluded)}.
+     * Create a new instance. Represents {@code (ruleExpected - ruleExcluded)}.
      * Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parserExpected The rule that must be matched.
-     * @param parserExcluded The rule that must not be matched.
+     * @param ruleExpected The rule that must be matched.
+     * @param ruleExcluded The rule that must not be matched.
      * @return A rule.
      */
-    public static @NotNull Rule create(final @NotNull Rule parserExpected,
-                                       final @NotNull Rule parserExcluded) {
-        return new ExclusionRule(defaultHidden, defaultReductionType, parserExpected, parserExcluded);
+    public static @NotNull Rule create(final @NotNull Rule ruleExpected,
+                                       final @NotNull Rule ruleExcluded) {
+        if (Objects.equals(ruleExpected, ruleExcluded))
+            return EpsilonTerm.getDefault();
+        return new ExclusionRule(defaultHidden, defaultReductionType, ruleExpected, ruleExcluded);
     }
 
     @Override
@@ -149,9 +152,9 @@ public final class ExclusionRule extends RuleWithManyChildren {
     }
 
     @Override
-    public @NotNull ExclusionRule withParsers(final @NotNull List<@NotNull Rule> parsers) {
-        if (parsers.size() != 2)
+    public @NotNull ExclusionRule withRules(final @NotNull List<@NotNull Rule> rules) {
+        if (rules.size() != 2)
             throw new IllegalArgumentException("Must pass exactly 2 arguments.");
-        return new ExclusionRule(isHidden(), getReduction(), parsers.getFirst(), parsers.getLast());
+        return new ExclusionRule(isHidden(), getReduction(), rules.getFirst(), rules.getLast());
     }
 }

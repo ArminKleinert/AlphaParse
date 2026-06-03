@@ -25,6 +25,8 @@ public final class OptionalRule extends RuleWithChild {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
+            return rule;
         return new OptionalRule(defaultHidden, defaultReductionType, rule);
     }
 
@@ -53,7 +55,7 @@ public final class OptionalRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull OptionalRule withParser(final @NotNull Rule rule) {
+    public @NotNull OptionalRule withInner(final @NotNull Rule rule) {
         return new OptionalRule(hide, red, rule);
     }
 

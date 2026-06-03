@@ -2,12 +2,17 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
+import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
+import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class CountedRepetitionTest {
+import java.util.List;
+
+class VariableRepetitionTest {
     @Test
     void parseRepetitionMinimumOnly() {
         {
@@ -74,6 +79,28 @@ class CountedRepetitionTest {
             Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
             Assertions.assertTrue(p.parse("aaa").isFailure());
             Assertions.assertTrue(p.parse("aaaa").isFailure());
+        }
+    }
+    @Test void parseWithPartial() {
+        var text = "aaaaaa";
+        var treesPartial = List.of(
+                ParseTree.create("S", "a"),
+                ParseTree.create("S", "a", "a"),
+                ParseTree.create("S", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+        );
+        var partialOpts = ParsingOptions.getDefault().withPartial(true);
+        {
+            var creationOpts = ParserCreationOptions
+                    .getDefault()
+                    .addAvailableRule(RulesAvailable.VARIABLE_REPEAT);
+            var repeated_a = Alpha.parser("""
+                            S = 'a' 0*5 'a'
+                            """,
+                    creationOpts);
+            Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
         }
     }
 

@@ -33,14 +33,14 @@ public sealed abstract class RuleWithChild
     /**
      * Set the inner {@link Rule} used for parsing and returns an instance of the same class.
      *
-     * @param parser The new inner {@link Rule}.
+     * @param rule The new inner {@link Rule}.
      * @return A new instance.
      */
-    public abstract @NotNull RuleWithChild withParser(final @NotNull Rule parser);
+    public abstract @NotNull RuleWithChild withInner(final @NotNull Rule rule);
 
     @Override
     public @NotNull Rule unhideContent() {
-        return ((RuleWithChild) withHideTag(false)).withParser(rule.unhideContent());
+        return ((RuleWithChild) withHideTag(false)).withInner(rule.unhideContent());
     }
 
     @Override

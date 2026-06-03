@@ -20,12 +20,15 @@ public final class OnceOrMoreRule extends RuleWithChild {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parser The inner element.
+     * @param rule The {@link Rule} to match repeatedly.
+     * @return A rule.
      */
-    public OnceOrMoreRule(final @NotNull Rule parser) {
-        super(defaultHidden, ReductionType.standardInitialReduction(), parser);
+    public static @NotNull Rule create(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
+            return rule;
+        return new OnceOrMoreRule(defaultHidden, defaultReductionType, rule);
     }
 
     @Override
@@ -48,7 +51,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
     @NotNull
     static Listener plusListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                 final @NotNull Rule parser,
+                                 final @NotNull Rule rule,
                                  final int prevIndex,
                                  final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                  final @NotNull Gll runner) {
@@ -65,8 +68,8 @@ public final class OnceOrMoreRule extends RuleWithChild {
                     ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             runner.pushListener(
-                    new TrampolineListenerKey(continueIndex, parser),
-                    plusListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
+                    new TrampolineListenerKey(continueIndex, rule),
+                    plusListener(newResultsSoFar, rule, continueIndex, nodeKey, runner));
             runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
         };
     }
@@ -74,7 +77,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
     @NotNull
     static Listener plusFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                     final @NotNull Rule parser,
+                                     final @NotNull Rule rule,
                                      final int prevIndex,
                                      final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
                                      final @NotNull Gll runner) {
@@ -92,16 +95,16 @@ public final class OnceOrMoreRule extends RuleWithChild {
                     runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
                 } else {
                     runner.pushListener(
-                            new TrampolineListenerKey(continueIndex, parser),
-                            plusFullListener(newResultsSoFar, parser, continueIndex, nodeKey, runner));
+                            new TrampolineListenerKey(continueIndex, rule),
+                            plusFullListener(newResultsSoFar, rule, continueIndex, nodeKey, runner));
                 }
             }
         };
     }
 
     @Override
-    public @NotNull OnceOrMoreRule withParser(final @NotNull Rule parser) {
-        return new OnceOrMoreRule(hide, red, parser);
+    public @NotNull OnceOrMoreRule withInner(final @NotNull Rule rule) {
+        return new OnceOrMoreRule(hide, red, rule);
     }
 
     @Override

@@ -8,7 +8,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Represents string terminals (both case-sensitive or case-insensitive).
@@ -36,6 +35,8 @@ public final class StringTerm extends Terminal {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull String string, final boolean caseInsensitive) {
+        if (string.isEmpty())
+            return EpsilonTerm.getDefault();
         return new StringTerm(defaultHidden, defaultReductionType, string, caseInsensitive);
     }
 

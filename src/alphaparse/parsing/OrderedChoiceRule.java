@@ -7,6 +7,8 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -60,8 +62,18 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull List<Rule> rules) {
-        var setup = setupParsers(rules);
-        return new OrderedChoiceRule(defaultHidden, defaultReductionType, setup.rule1, setup.rule2);
+        if (rules.isEmpty())
+            return EpsilonTerm.getDefault();
+
+        var distinctRules = rules.stream().distinct().toList();
+
+        if (distinctRules.size() == 1)
+            return distinctRules.getFirst();
+        var setup = setupParsers(distinctRules);
+
+        return new OrderedChoiceRule(
+                defaultHidden, defaultReductionType,
+                setup.rule1, setup.rule2);
     }
 
     @Override
@@ -103,7 +115,7 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
     }
 
     @Override
-    public @NotNull OrderedChoiceRule withParsers(final @NotNull List<@NotNull Rule> parsers) {
-        return new OrderedChoiceRule(parsers, isHidden(), getReduction());
+    public @NotNull OrderedChoiceRule withRules(final @NotNull List<@NotNull Rule> rules) {
+        return new OrderedChoiceRule(rules, isHidden(), getReduction());
     }
 }

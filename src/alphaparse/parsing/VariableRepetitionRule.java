@@ -44,7 +44,21 @@ public final class VariableRepetitionRule extends RuleWithChild {
      */
     public static @NotNull Rule create(final @NotNull Rule rule, final int min, final int max) {
         if (min < 0 || min > max)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                    "Illegal repetition (min=" + min + ", max=" + max + ")");
+        if (min == 0 && max == 0)
+            return EpsilonTerm.getDefault();
+        if (rule instanceof EpsilonTerm || (min == 1 && max == 1))
+            return rule;
+        if ((rule instanceof VariableRepetitionRule rc) && rc.getMin() <= 1 && min <= 1) {
+            final int newMin = (int) Long.min(
+                    Integer.MAX_VALUE,
+                    ((long) rc.getMin()) * min);
+            final int newMax = (int) Long.min(
+                    Integer.MAX_VALUE,
+                    ((long) rc.getMax()) * max);
+            return VariableRepetitionRule.create(rc.getRule(), newMin, newMax);
+        }
         return new VariableRepetitionRule(defaultHidden, defaultReductionType, rule, min, max);
     }
 
@@ -90,7 +104,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
 
     private @NotNull Listener repListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                           final int nResultsSoFar,
-                                          final @NotNull VariableRepetitionRule parser,
+                                          final @NotNull VariableRepetitionRule rule,
                                           final @NotNull TrampolineListenerKey nodeKey,
                                           final @NotNull Gll runner) {
         return result -> {
@@ -103,20 +117,20 @@ public final class VariableRepetitionRule extends RuleWithChild {
 
             final int newNResultsSoFar = nResultsSoFar + 1;
 
-            if (Integer.max(parser.getMin(), 0) <= newNResultsSoFar && newNResultsSoFar <= parser.getMax())
+            if (Integer.max(rule.getMin(), 0) <= newNResultsSoFar && newNResultsSoFar <= rule.getMax())
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
 
-            if (newNResultsSoFar < parser.getMax())
+            if (newNResultsSoFar < rule.getMax())
                 runner.pushListener(
-                        new TrampolineListenerKey(continueIndex, parser.getRule()),
-                        repListener(newResultsSoFar, newNResultsSoFar, parser, nodeKey, runner)
+                        new TrampolineListenerKey(continueIndex, rule.getRule()),
+                        repListener(newResultsSoFar, newNResultsSoFar, rule, nodeKey, runner)
                 );
         };
     }
 
     private @NotNull Listener repFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
                                               final int nResultsSoFar,
-                                              final @NotNull Rule parser,
+                                              final @NotNull Rule rule,
                                               final int minimum,
                                               final int maximum,
                                               final @NotNull TrampolineListenerKey nodeKey,
@@ -139,8 +153,8 @@ public final class VariableRepetitionRule extends RuleWithChild {
                 if (newNResultsSoFar < maximum) {
                     final @NotNull var listener = repFullListener(
                             newResultsSoFar, newNResultsSoFar,
-                            parser, minimum, maximum, nodeKey, runner);
-                    runner.pushListener(new TrampolineListenerKey(continueIndex, parser), listener);
+                            rule, minimum, maximum, nodeKey, runner);
+                    runner.pushListener(new TrampolineListenerKey(continueIndex, rule), listener);
                 } else {
                     runner.fail(nodeKey, continueIndex,
                             ParseFailureReason.ofRepetition(this, false));
@@ -168,8 +182,8 @@ public final class VariableRepetitionRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull VariableRepetitionRule withParser(final @NotNull Rule parser) {
-        return new VariableRepetitionRule(hide, red, parser, min, max);
+    public @NotNull VariableRepetitionRule withInner(final @NotNull Rule rule) {
+        return new VariableRepetitionRule(hide, red, rule, min, max);
     }
 
     @Override

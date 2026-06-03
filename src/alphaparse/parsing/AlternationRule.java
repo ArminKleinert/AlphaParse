@@ -7,6 +7,9 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -56,6 +59,35 @@ public final class AlternationRule extends RuleWithManyChildren {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull List<Rule> rules) {
+        if (rules.isEmpty())
+            return EpsilonTerm.getDefault();
+        if (rules.size() == 1)
+            return rules.getFirst();
+
+        var compressedRules = new ArrayList<Rule>();
+
+        for (@NotNull Rule rule : rules) {
+            if (rule instanceof AlternationRule cc) {
+                compressedRules.addAll(cc.getRules());
+            } else {
+                compressedRules.add(rule);
+            }
+        }
+
+        return new AlternationRule(
+                defaultHidden, defaultReductionType,
+                compressedRules.stream().distinct().toList());
+    }
+
+    /**
+     * Like {@link #create(List)} except the input
+     * list is distinct (each rule in the list occurs exactly once).
+     * Use this method only if you are sure that the rules are distinct.
+     *
+     * @param rules The wrapped rules.
+     * @return A rule.
+     */
+    public static @NotNull Rule createGuaranteeDistinctAndNotEmpty(final @NotNull List<Rule> rules) {
         return new AlternationRule(defaultHidden, defaultReductionType, rules);
     }
 
@@ -90,7 +122,7 @@ public final class AlternationRule extends RuleWithManyChildren {
     }
 
     @Override
-    public @NotNull AlternationRule withParsers(@NotNull List<@NotNull Rule> parsers) {
-        return new AlternationRule(isHidden(), getReduction(), parsers);
+    public @NotNull AlternationRule withRules(@NotNull List<@NotNull Rule> rules) {
+        return new AlternationRule(isHidden(), getReduction(), rules);
     }
 }

@@ -130,7 +130,7 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Rule makeCfgFactorRhs() {
         final @NotNull Rule rulesRule =
-                alternationGuaranteeDistinct(
+                alternationGuaranteeDistinctAndNotEmpty(
                         cListOf(
                                 nt(Sym.sym("string")), /// {@link #makeCfgStringRhs}
                                 makeNT("regexp", RulesAvailable.REGEX), /// {@link #makeCfgRegexRhs}
@@ -243,7 +243,7 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Pattern doubleQuotedRegex =
                 regexDoc("#\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"", "Double-quoted regexp");
         final @NotNull Rule rulesRule =
-                alternationGuaranteeDistinct(
+                alternationGuaranteeDistinctAndNotEmpty(
                         List.of(regex(singleQuotedRegex),
                                 regex(doubleQuotedRegex)));
         return rulesRule;
@@ -251,7 +251,7 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Rule makeCfgRulesOrParserRhs() {
         final @NotNull Rule rulesRule =
-                alternationGuaranteeDistinct(
+                alternationGuaranteeDistinctAndNotEmpty(
                         List.of(nt(Sym.sym("rules")), /// {@link #makeCfgRulesRhs}
                                 nt(Sym.sym("alt-or-ord")) /// {@link #makeCfgAltOrOrdRhs}
                         ))
@@ -410,7 +410,7 @@ final class CfgGrammar extends GrammarBuilder {
 
         if (i == 1) return buffer(l[0].hideTag());
 
-        final @NotNull Rule rulesRule = alternationGuaranteeDistinct(List.of(l)).hideTag();
+        final @NotNull Rule rulesRule = alternationGuaranteeDistinctAndNotEmpty(Arrays.asList(l)).hideTag();
         return rulesRule;
     }
 
@@ -429,7 +429,7 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Rule optWs = nt(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
         final @NotNull Rule rulesRule =
                 concat(
-                        List.of(alternationGuaranteeDistinct(
+                        List.of(alternationGuaranteeDistinctAndNotEmpty(
                                         List.of(nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
                                                 nt(Sym.sym("hide-nt")) /// {@link #makeCfgHideNtRhs}
                                         )),
@@ -437,11 +437,11 @@ final class CfgGrammar extends GrammarBuilder {
                                 nt(Sym.sym("rule-separator")).enableHideTag(), /// {@link #makeCfgRuleSeparatorRhs}
                                 optWhitespace,
                                 nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
-                                alternationGuaranteeDistinct(
+                                alternationGuaranteeDistinctAndNotEmpty(
                                         List.of(optWs,
                                                 concat(
                                                         List.of(optWs,
-                                                                alternationGuaranteeDistinct(
+                                                                alternationGuaranteeDistinctAndNotEmpty(
                                                                         List.of(string(";"),
                                                                                 string("."))),
                                                                 optWs))))
@@ -492,7 +492,7 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Rule}.
      */
     private @NotNull Rule makeCfgCatRhs() {
-        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinct(cListOf(
+        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinctAndNotEmpty(cListOf(
                 nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                 makeNT("look", RulesAvailable.LOOKAHEAD), /// {@link #makeCfgLookRhs}
                 makeNT("neg", RulesAvailable.NEGATIVE_LOOKAHEAD), /// {@link #makeCfgNegRhs}
@@ -513,15 +513,17 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Rule}.
      */
     private @NotNull Rule makeCfgExclude() {
-        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinct(cListOf(
-                nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
-        ));
+//        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinct(cListOf(
+//                nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
+//        ));
+        final @NotNull Rule factorLookNeg =
+                nt(Sym.sym("factor")); /// {@link #makeCfgFactorRhs}
         final @NotNull Rule rulesRule =
                 concat(
                         List.of(factorLookNeg, optWhitespace,
                                 string("-").enableHideTag(),
                                 optWhitespace,
-                                alternationGuaranteeDistinct(List.of(factorLookNeg, nt(Sym.sym("exclude"))))));
+                                alternationGuaranteeDistinctAndNotEmpty(List.of(factorLookNeg, nt(Sym.sym("exclude"))))));
         return rulesRule;
     }
 

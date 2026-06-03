@@ -26,6 +26,8 @@ public final class ZeroOrMoreRule extends RuleWithChild {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
+            return rule;
         return new ZeroOrMoreRule(defaultHidden, defaultReductionType, rule);
     }
 
@@ -55,8 +57,8 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull ZeroOrMoreRule withParser(final @NotNull Rule parser) {
-        return new ZeroOrMoreRule(hide, red, parser);
+    public @NotNull ZeroOrMoreRule withInner(final @NotNull Rule rule) {
+        return new ZeroOrMoreRule(hide, red, rule);
     }
 
     @Override

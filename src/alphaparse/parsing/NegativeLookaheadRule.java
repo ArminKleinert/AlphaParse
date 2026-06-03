@@ -27,6 +27,8 @@ public final class NegativeLookaheadRule extends RuleWithChild {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
+            return rule;
         return new NegativeLookaheadRule(defaultHidden, defaultReductionType, rule);
     }
 
@@ -69,8 +71,8 @@ public final class NegativeLookaheadRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull NegativeLookaheadRule withParser(final @NotNull Rule parser) {
-        return new NegativeLookaheadRule(hide, red, parser);
+    public @NotNull NegativeLookaheadRule withInner(final @NotNull Rule rule) {
+        return new NegativeLookaheadRule(hide, red, rule);
     }
 
     @Override

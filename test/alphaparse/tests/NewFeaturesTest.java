@@ -11,13 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.regex.Pattern;
+
 class NewFeaturesTest {
-    @Test void ttest () {
-                   var p = Alpha.parser("S := #'a'+");
-        var opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true);
-           // A normal parse results in a failure.
-        System.out.println(p.parse("ab", opts));
-    }
     @Test void wsExample1() {
         final @NotNull Parser whitespace = Alpha.parser(
                 """

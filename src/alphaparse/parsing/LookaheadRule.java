@@ -23,6 +23,8 @@ public final class LookaheadRule extends RuleWithChild {
      * @return A rule.
      */
     public static @NotNull Rule create(final @NotNull Rule rule) {
+        if (rule instanceof EpsilonTerm)
+            return rule;
         return new LookaheadRule(defaultHidden, defaultReductionType, rule);
     }
 
@@ -57,7 +59,7 @@ public final class LookaheadRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull LookaheadRule withParser(final @NotNull Rule parser) {
-        return new LookaheadRule(hide, red, parser);
+    public @NotNull LookaheadRule withInner(final @NotNull Rule rule) {
+        return new LookaheadRule(hide, red, rule);
     }
 }
