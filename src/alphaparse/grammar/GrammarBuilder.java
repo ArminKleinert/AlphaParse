@@ -64,6 +64,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Use this to construct the grammar.
+     *
      * @return The grammar.
      */
     public final @NotNull Grammar build() {
@@ -72,6 +73,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Use this to construct the grammar.
+     *
      * @param wsParser Whitespace parser to include.
      * @return The grammar.
      */
@@ -82,8 +84,9 @@ public abstract class GrammarBuilder {
 
     /**
      * Use this to construct the grammar. Productions can be added before starting the builder.
+     *
      * @param initialProductions Productions to add in the beginning.
-     * @param wsParser Whitespace parser to include.
+     * @param wsParser           Whitespace parser to include.
      * @return The grammar.
      */
     public final @NotNull Grammar buildWithWhitespace(
@@ -129,6 +132,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Add multiple entries.
+     *
      * @param entries The entries.
      * @see #addProduction(Sym, Rule)
      */
@@ -140,7 +144,8 @@ public abstract class GrammarBuilder {
     }
 
     /**
-     *Adds a production to the output. The specific behavior depends on the {@link ParserCreationOptions#redefinitionOption()} used.
+     * Adds a production to the output. The specific behavior depends on the {@link ParserCreationOptions#redefinitionOption()} used.
+     *
      * @param lhs The production's key. (left-hand-side)
      * @param rhs The production's right-hand-side.
      */
@@ -161,7 +166,8 @@ public abstract class GrammarBuilder {
     }
 
     /**
-     *Adds a production to the output.
+     * Adds a production to the output.
+     *
      * @param lhs The production's key. (left-hand-side)
      * @param rhs The production's right-hand-side.
      * @see #addProduction(Sym, Rule)
@@ -182,6 +188,7 @@ public abstract class GrammarBuilder {
      * <li>For {@code List}, use {@link #concat(List)}.</li>
      * <li>For {@code Set}, use {@link #alternation(Object, Object...)}.</li>
      * </ul>
+     *
      * @param c Input object.
      * @return A rule depending on the input's type.
      */
@@ -212,6 +219,7 @@ public abstract class GrammarBuilder {
      * <li>For {@code List}, use {@link #concat(List)}.</li>
      * <li>For {@code Set}, use {@link #alternation(Object, Object...)}.</li>
      * </ul>
+     *
      * @param c Input object.
      * @return A rule depending on the input's type.
      */
@@ -232,22 +240,33 @@ public abstract class GrammarBuilder {
     /**
      * Create a {@link RegexTerm}. The rule might be buffered.
      * If the regex can only ever match a single string, a {@link StringTerm} might be returned instead.
+     *
      * @param p The input regex.
      * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
      */
     public final @NotNull Rule regex(final @NotNull Pattern p) {
+
+        if (allCharsAreAlphaNumeric(p.pattern()))
+            return stringCI(p.pattern());
         return buffer.getOrAddRegex(p);
     }
 
     /**
      * See {@link #regex(Pattern)}.
+     *
      * @param s The input regex.
      * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
      */
     public final @NotNull Rule regex(final @NotNull String s) {
         if (s.isEmpty())
             return EpsilonTerm.getDefault();
-        return regex(Pattern.compile(s));
+        if (allCharsAreAlphaNumeric(s))
+            return stringCI(s);
+        return buffer.getOrAddRegex(Pattern.compile(s));
+    }
+
+    public static boolean allCharsAreAlphaNumeric(final @NotNull String s) {
+        return s.chars().allMatch(Character::isLetterOrDigit);
     }
 
     /**
@@ -349,8 +368,10 @@ public abstract class GrammarBuilder {
         final @NotNull var result = new OrderedChoiceRule(newParserList);
         return result;
     }
+
     /**
      * Create a {@link NonTerminal} from the input symbol. The output might be buffered.
+     *
      * @param name The name symbol of the output rule.
      * @return A {@link NonTerminal}.
      */
@@ -360,6 +381,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Equivalent to {@link #nt(Sym)} with the symbol creates from the input string.
+     *
      * @param name The name symbol of the output rule.
      * @return A {@link NonTerminal}.
      */
@@ -427,6 +449,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Create a copy of the input for which {@link Rule#isHidden} returns true.
+     *
      * @param o The input.
      * @return A copy of the input for which {@link Rule#isHidden} returns true.
      */
@@ -436,6 +459,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Get an epsilon rule.
+     *
      * @return An {@link EpsilonTerm}.
      */
     public final @NotNull Rule epsilon() {
@@ -444,6 +468,7 @@ public abstract class GrammarBuilder {
 
     /**
      * Create a rule which matches end of input.
+     *
      * @return A rule.
      */
     public final @NotNull Rule eof() {
@@ -458,10 +483,10 @@ public abstract class GrammarBuilder {
      * <li>Otherwise, returns a {@link ConcatRule}, as expected.</li>
      * </ul>
      *
-     * @param rule First rule for the output.
+     * @param rule  First rule for the output.
      * @param rules More rules for the output.
+     * @param <T>   Type for the rules.
      * @return A rule.
-     * @param <T> Type for the rules.
      */
     @SafeVarargs
     public final <T> @NotNull Rule concat(
@@ -661,7 +686,8 @@ public abstract class GrammarBuilder {
 
     /**
      * Equivalent to {@code repeat(rule, exact, exact)}.
-     * @param rule The rule.
+     *
+     * @param rule  The rule.
      * @param exact Minimum and maximum number of repetitions.
      * @return A repetition rule.
      * @see #repeat(Rule, int, int)
@@ -673,8 +699,9 @@ public abstract class GrammarBuilder {
 
     /**
      * Equivalent to {@code repeat(rule, min, Integer.MAX_VALUE)}.
+     *
      * @param rule The rule.
-     * @param min Minimum number of repetitions.
+     * @param min  Minimum number of repetitions.
      * @return A repetition rule.
      * @see #repeat(Rule, int, int)
      */
@@ -685,8 +712,9 @@ public abstract class GrammarBuilder {
 
     /**
      * Equivalent to {@code repeat(rule, 0, max)}.
+     *
      * @param rule The rule.
-     * @param max Maximum number of repetitions.
+     * @param max  Maximum number of repetitions.
      * @return A repetition rule.
      * @see #repeat(Rule, int, int)
      */

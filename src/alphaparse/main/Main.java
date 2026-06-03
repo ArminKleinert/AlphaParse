@@ -29,7 +29,7 @@ final class Main {
         System.out.println();
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
         final @NotNull String c99GrammarText = readFile("testres/grammars/c99.g");
 
         int i = 0;
