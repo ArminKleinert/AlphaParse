@@ -1,5 +1,6 @@
 package alphaparse.parsing;
 
+import static alphaparse.parsing.OnceOrMoreRule.plusFullListener;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.collections.FlatSeq;
@@ -67,99 +68,86 @@ public final class VariableRepetitionRule extends RuleWithChild {
         final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerKey nodeKeyForInnerRule = new TrampolineListenerKey(index, rule);
+        runner.pushListener(
+                nodeKeyForInnerRule,
+                repListener(FlatSeq.make(), this, index, nodeKeyForThis, runner, 1));
         if (getMin() == 0) {
             runner.pushSuccessMessageWithoutValue(nodeKeyForInnerRule, index);
-            if (getMax() >= 1) {
-                runner.pushListener(nodeKeyForInnerRule,
-                        repListener(FlatSeq.make(), 0, this, nodeKeyForThis, runner));
-            }
-        } else {
-            runner.pushListener(
-                    nodeKeyForInnerRule,
-                    repListener(FlatSeq.make(), 0, this, nodeKeyForThis, runner));
         }
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule parser = getRule();
-        final int minimum = getMin();
-        final int maximum = getMax();
         final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
-        final @NotNull TrampolineListenerKey nodeKeyForInnerRule = new TrampolineListenerKey(index, parser);
-        final @NotNull var emptyResults = FlatSeq.make();
-        if (minimum == 0) {
-            runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, this), index);
-            if (maximum >= 1) {
-                runner.pushListener(
-                        nodeKeyForInnerRule,
-                        repFullListener(emptyResults, 0, parser, 1, maximum, nodeKeyForThis, runner));
-            }
-        } else {
-            runner.pushListener(
-                    nodeKeyForInnerRule,
-                    repFullListener(emptyResults, 0, parser, minimum, maximum, nodeKeyForThis, runner));
+        if (getMin() == 0 && index == runner.tramp().getText().length()) {
+            runner.pushSuccessMessageWithoutValue(nodeKeyForThis, index);
+            return;
         }
+        runner.pushListener(
+                new TrampolineListenerKey(index, getRule()),
+                repFullListener(FlatSeq.make(), this, index, nodeKeyForThis, runner, 0));
+
     }
 
     private @NotNull Listener repListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                          final int nResultsSoFar,
                                           final @NotNull VariableRepetitionRule rule,
+                                          final int prevIndex,
                                           final @NotNull TrampolineListenerKey nodeKey,
-                                          final @NotNull Gll runner) {
+                                          final @NotNull Gll runner,
+                                          final int nResultsSoFar) {
         return result -> {
             final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.index();
-
-            final @NotNull FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
+            if (continueIndex == prevIndex) {
+                if (resultsSoFar.isEmpty()) {
+                    runner.pushSuccessMessageWithoutValue(nodeKey, continueIndex);
+                }
+                return;
+            }
+            final FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
                     ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
 
-            final int newNResultsSoFar = nResultsSoFar + 1;
+            if (nResultsSoFar > rule.getMax())
+                return;
 
-            if (Integer.max(rule.getMin(), 0) <= newNResultsSoFar && newNResultsSoFar <= rule.getMax())
+            runner.pushListener(
+                    new TrampolineListenerKey(continueIndex, rule),
+                    repListener(newResultsSoFar, rule, continueIndex, nodeKey, runner, nResultsSoFar + 1));
+
+            if (nResultsSoFar > rule.getMin())
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
-
-            if (newNResultsSoFar < rule.getMax())
-                runner.pushListener(
-                        new TrampolineListenerKey(continueIndex, rule.getRule()),
-                        repListener(newResultsSoFar, newNResultsSoFar, rule, nodeKey, runner)
-                );
         };
     }
 
     private @NotNull Listener repFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
-                                              final int nResultsSoFar,
-                                              final @NotNull Rule rule,
-                                              final int minimum,
-                                              final int maximum,
+                                              final @NotNull VariableRepetitionRule rule,
+                                              final int prevIndex,
                                               final @NotNull TrampolineListenerKey nodeKey,
-                                              final @NotNull Gll runner) {
+                                              final @NotNull Gll runner,
+                                              final int nResultsSoFar) {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
-            final int continueIndex = result.index();
-            final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
+            final var continueIndex = result.index();
+
+            final var newResultsSoFar = parsedResult instanceof FlatSeq<?>
                     ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
-            final int newNResultsSoFar = nResultsSoFar + 1;
+            var newNResultsSoFar = nResultsSoFar + 1;
+
             if (continueIndex == runner.tramp().getText().length()) {
-                if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum) {
+                if (rule.getMin() >= newNResultsSoFar && newNResultsSoFar >= rule.getMax()) {
                     runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
-                } else {
-                    runner.fail(nodeKey, continueIndex,
-                            ParseFailureReason.ofRepetition(this, false));
                 }
-            } else {
-                if (newNResultsSoFar < maximum) {
-                    final @NotNull var listener = repFullListener(
-                            newResultsSoFar, newNResultsSoFar,
-                            rule, minimum, maximum, nodeKey, runner);
-                    runner.pushListener(new TrampolineListenerKey(continueIndex, rule), listener);
-                } else {
-                    runner.fail(nodeKey, continueIndex,
-                            ParseFailureReason.ofRepetition(this, false));
-                }
+                return;
             }
+
+            if (nResultsSoFar >= rule.getMax())
+                return;
+
+            runner.pushListener(
+                    new TrampolineListenerKey(continueIndex, rule.getRule()),
+                    repFullListener(newResultsSoFar, rule, continueIndex, nodeKey, runner, newNResultsSoFar));
         };
     }
 

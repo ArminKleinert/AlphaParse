@@ -4,7 +4,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 
 import alphaparse.collections.FlatSeq;
 import alphaparse.reduction.ReductionType;
-import alphaparse.trampoline.TrampolineListenerNode;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,7 +33,7 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Rule rule = getRule();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar =
+        final @NotNull TrampolineListenerKey nodeKeyForStar =
                 new TrampolineListenerKey(index, this);
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
@@ -46,14 +45,14 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Rule rule = getRule();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         if (index == runner.tramp().getText().length()) {
             runner.pushSuccessMessageWithoutValue(nodeKeyForStar, index);
-        } else {
-            runner.pushListener(
-                    new TrampolineListenerKey(index, rule),
-                    OnceOrMoreRule.plusFullListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner));
+            return;
         }
+        runner.pushListener(
+                new TrampolineListenerKey(index, rule),
+                OnceOrMoreRule.plusFullListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner));
     }
 
     @Override

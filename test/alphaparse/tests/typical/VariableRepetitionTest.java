@@ -97,7 +97,56 @@ class VariableRepetitionTest {
                     .getDefault()
                     .addAvailableRule(RulesAvailable.VARIABLE_REPEAT);
             var repeated_a = Alpha.parser("""
-                            S = 'a' 0*5 'a'
+                            S = 'a' 0*6 'a'
+                            """,
+                    creationOpts);
+            Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
+        }
+    }
+    @Test void parseFullWithPartial() {
+        var text = "aaaaaa";
+        var treesPartial = List.of(
+                ParseTree.create("S", "a"),
+                ParseTree.create("S", "a", "a"),
+                ParseTree.create("S", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a", "a"),
+                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+        );
+        var partialOpts = ParsingOptions.getDefault().withPartial(true);
+        {
+            var treesPartial1 = List.of(
+                    ParseTree.create("S"),
+                    ParseTree.create("S", "a"),
+                    ParseTree.create("S", "a", "a"),
+                    ParseTree.create("S", "a", "a", "a"),
+                    ParseTree.create("S", "a", "a", "a", "a"),
+                    ParseTree.create("S", "a", "a", "a", "a", "a"),
+                    ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+            );
+            var creationOpts = ParserCreationOptions
+                    .getDefault()
+                    .addAvailableRule(RulesAvailable.VARIABLE_REPEAT);
+            var repeated_a = Alpha.parser("""
+                            S = 'a'*
+                            """,
+                    creationOpts);
+            Assertions.assertEquals(treesPartial1, Alpha.parses(repeated_a, text, partialOpts));
+        }{
+            var creationOpts = ParserCreationOptions
+                    .getDefault()
+                    .addAvailableRule(RulesAvailable.VARIABLE_REPEAT);
+            var repeated_a = Alpha.parser("""
+                            S = 'a'+
+                            """,
+                    creationOpts);
+            Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
+        }{
+            var creationOpts = ParserCreationOptions
+                    .getDefault()
+                    .addAvailableRule(RulesAvailable.VARIABLE_REPEAT);
+            var repeated_a = Alpha.parser("""
+                            S = 1*6 'a'
                             """,
                     creationOpts);
             Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));

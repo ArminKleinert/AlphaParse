@@ -14,6 +14,10 @@ import org.junit.jupiter.api.Test;
 import java.util.regex.Pattern;
 
 class NewFeaturesTest {
+    @Test void plusTest() {
+        var p = Alpha.parser("S = 'a'+");
+        System.out.println(p.parse("aaa", ParsingOptions.getDefault().withPartial(true)));
+    }
     @Test void wsExample1() {
         final @NotNull Parser whitespace = Alpha.parser(
                 """
