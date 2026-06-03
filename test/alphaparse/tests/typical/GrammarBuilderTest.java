@@ -42,8 +42,8 @@ class GrammarBuilderTest {
     void equivalentToMoreExplicitGrammar() {
         var pGrammarList = new LinkedHashMap<Sym, Rule>();
         pGrammarList.put(Sym.sym("S"),
-                new ConcatRule(List.of(NonTerminal.create(Sym.sym("NUMBER")), new ZeroOrMoreRule(NonTerminal.create(Sym.sym("NUMBER"))))));
-        pGrammarList.put(Sym.sym("NUMBER"), new AlternationRule(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map(it -> (Rule) new StringTerm(it, false)).toList()));
+                ConcatRule.create(List.of(NonTerminal.create(Sym.sym("NUMBER")), ZeroOrMoreRule.create(NonTerminal.create(Sym.sym("NUMBER"))))));
+        pGrammarList.put(Sym.sym("NUMBER"), AlternationRule.create(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map(it -> StringTerm.create(it, false)).toList()));
         var pFromGrammar = Alpha.parser(new Grammar(pGrammarList), ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))).grammar();
 
         var pFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {

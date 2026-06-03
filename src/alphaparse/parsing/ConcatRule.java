@@ -23,17 +23,18 @@ public final class ConcatRule extends RuleWithManyChildren {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parsers The parsers.
+     * @param rules The wrapped rules.
+     * @return A rule.
      */
-    public ConcatRule(final @NotNull List<Rule> parsers) {
-        super(parsers);
+    public static @NotNull Rule create(final @NotNull List<Rule> rules) {
+        return new ConcatRule(defaultHidden, defaultReductionType, rules);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull List<@NotNull Rule> parsers = getParsers();
+        final @NotNull List<@NotNull Rule> parsers = getRules();
         runner.pushListener(
                 new TrampolineListenerKey(index, parsers.getFirst()),
                 catListener(FlatSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
@@ -41,7 +42,7 @@ public final class ConcatRule extends RuleWithManyChildren {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull List<@NotNull Rule> parsers = getParsers();
+        final @NotNull List<@NotNull Rule> parsers = getRules();
         runner.pushListener(
                 new TrampolineListenerKey(index, parsers.getFirst()),
                 catFullListener(FlatSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
@@ -100,12 +101,12 @@ public final class ConcatRule extends RuleWithManyChildren {
 
     @Override
     public @NotNull Rule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new ConcatRule(hide, getReduction(), getParsers());
+        return isHidden() == hide ? this : new ConcatRule(hide, getReduction(), getRules());
     }
 
     @Override
     public @NotNull Rule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new ConcatRule(isHidden(), red, getParsers());
+        return getReduction() == red ? this : new ConcatRule(isHidden(), red, getRules());
     }
 
     @Override

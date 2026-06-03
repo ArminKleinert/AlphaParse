@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,13 +35,13 @@ public final class RegexTerm extends Terminal {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param regexp The regex.
+     * @param regexp The pattern.
+     * @return A rule.
      */
-    public RegexTerm(final @NotNull Pattern regexp) {
-        super();
-        this.regexp = regexp;
+    public static @NotNull Rule create(final @NotNull Pattern regexp) {
+        return new RegexTerm(defaultHidden, defaultReductionType, regexp);
     }
 
     private static @Nullable String reMatchAtFront(final @NotNull Pattern regexp,

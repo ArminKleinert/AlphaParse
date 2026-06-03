@@ -26,17 +26,15 @@ public final class ValueRangeTerm extends Terminal {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
      * @param lo The lowest codepoint.
      * @param hi The highest codepoint.
+     * @return A rule.
      * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
      */
-    public ValueRangeTerm(final int lo, final int hi) {
-        super();
-        if (lo > hi) throw new IllegalArgumentException();
-        this.lo = lo;
-        this.hi = hi;
+    public static @NotNull Rule create(final int lo, final int hi) {
+        return new ValueRangeTerm(defaultHidden, defaultReductionType, lo, hi);
     }
 
     @Override

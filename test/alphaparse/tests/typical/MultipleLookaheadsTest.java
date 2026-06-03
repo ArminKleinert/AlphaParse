@@ -28,8 +28,8 @@ class MultipleLookaheadsTest {
     @Test
     void lookaheads1() {
         var p = Alpha.parser(new Grammar(Map.of(
-                        Sym.sym("S"), new ConcatRule(List.of(new LookaheadRule(new LookaheadRule(new StringTerm("a", false))),
-                                new RegexTerm(Pattern.compile("[abc]"))))
+                        Sym.sym("S"), ConcatRule.create(List.of(LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
+                                RegexTerm.create(Pattern.compile("[abc]"))))
                 )),
                 ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
         Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));

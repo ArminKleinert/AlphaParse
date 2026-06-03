@@ -41,14 +41,16 @@ public final class ExclusionRule extends RuleWithManyChildren {
     }
 
     /**
-     * Standard constructor. Represents {@code (parserExpected - parserExcluded)}.
+     * Create a new instance. Represents {@code (parserExpected - parserExcluded)}.
+     * Depending on the implementation, allows for buffering or create a different type of rule.
      *
      * @param parserExpected The rule that must be matched.
      * @param parserExcluded The rule that must not be matched.
+     * @return A rule.
      */
-    public ExclusionRule(final @NotNull Rule parserExpected,
-                         final @NotNull Rule parserExcluded) {
-        this(defaultHidden, ReductionType.standardInitialReduction(), parserExpected, parserExcluded);
+    public static @NotNull Rule create(final @NotNull Rule parserExpected,
+                                       final @NotNull Rule parserExcluded) {
+        return new ExclusionRule(defaultHidden, defaultReductionType, parserExpected, parserExcluded);
     }
 
     @Override
@@ -111,7 +113,7 @@ public final class ExclusionRule extends RuleWithManyChildren {
             var tempG = new LinkedHashMap<>(oldGrammar);
             tempG.put(
                     startSymbol,
-                    new ConcatRule(List.of(parserExcluded, EOFTerm.getDefault())));
+                    ConcatRule.create(List.of(parserExcluded, EOFTerm.getDefault())));
 
             grammar = new Grammar(tempG).applyStandardReductions();
         }

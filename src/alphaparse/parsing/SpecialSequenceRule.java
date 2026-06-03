@@ -30,17 +30,15 @@ public final class SpecialSequenceRule extends SimpleRule {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
      * @param description The description of the special sequence.
      * @param function    The function which does what the description says.
+     * @return A rule.
      */
-    public SpecialSequenceRule(
-            final @NotNull String description,
-            final @NotNull Function<@NotNull String, Optional<String>> function) {
-        super();
-        this.function = function;
-        this.description = description;
+    public static @NotNull Rule create(final @NotNull String description,
+                                       final @NotNull Function<@NotNull String, Optional<String>> function) {
+        return new SpecialSequenceRule(defaultHidden, defaultReductionType, description, function);
     }
 
     @Override

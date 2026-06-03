@@ -160,8 +160,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                     case Terminal ignored -> {
                     }
                     case RuleWithManyChildren ruleWithManyChildren ->
-                            ruleStack.addAll(ruleWithManyChildren.getParsers());
-                    case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getParser());
+                            ruleStack.addAll(ruleWithManyChildren.getRules());
+                    case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getRule());
                     case SpecialSequenceRule ignored -> {
                     }
                 }
@@ -232,8 +232,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
             List<Rule> stack = new ArrayList<>(grammar.values());
             while (!stack.isEmpty()) {
                 @NotNull Rule top = stack.removeLast();
-                if (top instanceof RuleWithChild topC) stack.add((topC).getParser());
-                else if (top instanceof RuleWithManyChildren topC) stack.addAll(topC.getParsers());
+                if (top instanceof RuleWithChild topC) stack.add((topC).getRule());
+                else if (top instanceof RuleWithManyChildren topC) stack.addAll(topC.getRules());
 
                 if (predicate.test(top)) result.add(top);
             }

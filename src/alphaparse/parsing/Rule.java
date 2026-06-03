@@ -18,16 +18,17 @@ public abstract sealed class Rule
      */
     protected static final boolean defaultHidden = false;
 
+    /**
+     * Default value for {@link Rule#getReduction()}.
+     */
+    protected static final ReductionType defaultReductionType = ReductionType.standardInitialReduction();
+
     protected final boolean hide;
     protected final @NotNull ReductionType red;
 
     protected Rule(final boolean hide, final @NotNull ReductionType red) {
         this.hide = hide;
         this.red = red;
-    }
-
-    protected Rule() {
-        this(defaultHidden, ReductionType.standardInitialReduction());
     }
 
     /**

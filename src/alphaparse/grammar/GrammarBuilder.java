@@ -196,12 +196,12 @@ public abstract class GrammarBuilder {
         return switch (c) {
             case null -> EpsilonTerm.getDefault();
             case Rule r -> r;
-            case String s -> new StringTerm(s, false);
-            case Pattern p -> new RegexTerm(p);
+            case String s -> StringTerm.create(s, false);
+            case Pattern p -> RegexTerm.create(p);
             case Sym s -> NonTerminal.create(s);
-            case List<?> l -> new ConcatRule(
+            case List<?> l -> ConcatRule.create(
                     l.stream().map(GrammarBuilder::staticOf).toList());
-            case Set<?> s -> new AlternationRule(
+            case Set<?> s -> AlternationRule.create(
                     s.stream().distinct().map(GrammarBuilder::staticOf).toList());
             default -> throw new IllegalArgumentException(
                     String.valueOf(c.getClass()));
@@ -264,7 +264,7 @@ public abstract class GrammarBuilder {
         return buffer.getOrAddRegex(Pattern.compile(s));
     }
 
-    public static boolean allCharsAreAlphaNumeric(final @NotNull String s) {
+    private static boolean allCharsAreAlphaNumeric(final @NotNull String s) {
         return s.chars().allMatch(Character::isLetterOrDigit);
     }
 
@@ -279,7 +279,7 @@ public abstract class GrammarBuilder {
         var rule = of(input);
         if (rule instanceof EpsilonTerm)
             return rule;
-        return new LookaheadRule(rule);
+        return LookaheadRule.create(rule);
     }
 
     /**
@@ -293,7 +293,7 @@ public abstract class GrammarBuilder {
         var rule = of(input);
         if (rule instanceof EpsilonTerm)
             return rule;
-        return new NegativeLookaheadRule(rule);
+        return NegativeLookaheadRule.create(rule);
     }
 
     /**
@@ -311,7 +311,7 @@ public abstract class GrammarBuilder {
         if (lo == hi)
             return unicodeChar(lo);
 
-        final @NotNull var result = new ValueRangeTerm(lo, hi);
+        final @NotNull var result = ValueRangeTerm.create(lo, hi);
         return result;
     }
 
@@ -323,7 +323,7 @@ public abstract class GrammarBuilder {
      * @return The new parser.
      */
     public @NotNull Rule unicodeChar(final int lohi) {
-        final @NotNull var result = new ValueRangeTerm(lohi, lohi);
+        final @NotNull var result = ValueRangeTerm.create(lohi, lohi);
         return result;
     }
 
@@ -364,7 +364,7 @@ public abstract class GrammarBuilder {
 
         if (newParserList.size() == 1)
             return Objects.requireNonNull(newParserList.getFirst());
-        final @NotNull var result = new OrderedChoiceRule(newParserList);
+        final @NotNull var result = OrderedChoiceRule.create(newParserList);
         return result;
     }
 
@@ -392,7 +392,7 @@ public abstract class GrammarBuilder {
      * Creates a {@link StringTerm}
      * or {@link EpsilonTerm} if the string is empty.
      *
-     * @param string         The string to match.
+     * @param string          The string to match.
      * @param caseInsensitive Whether the Terminal will match case insensitive.
      * @return The new parser.
      */
@@ -524,12 +524,12 @@ public abstract class GrammarBuilder {
         var compressedResult = new ArrayList<Rule>();
         for (final @NotNull Rule rule : result) {
             if (rule instanceof ConcatRule cc) {
-                compressedResult.addAll(cc.getParsers());
+                compressedResult.addAll(cc.getRules());
             } else {
                 compressedResult.add(rule);
             }
         }
-        return new ConcatRule(compressedResult);
+        return ConcatRule.create(compressedResult);
     }
 
     /**
@@ -576,11 +576,11 @@ public abstract class GrammarBuilder {
         var compressedResult = new ArrayList<Rule>();
         for (final @NotNull Rule rule : rules) {
             if (rule instanceof AlternationRule cc)
-                compressedResult.addAll(cc.getParsers());
+                compressedResult.addAll(cc.getRules());
             else
                 compressedResult.add(rule);
         }
-        return new AlternationRule(compressedResult);
+        return AlternationRule.create(compressedResult);
     }
 
     /**
@@ -600,11 +600,11 @@ public abstract class GrammarBuilder {
         var compressedResult = new ArrayList<Rule>();
         for (final @NotNull Rule rule : rules) {
             if (rule instanceof AlternationRule cc)
-                compressedResult.addAll(cc.getParsers());
+                compressedResult.addAll(cc.getRules());
             else
                 compressedResult.add(rule);
         }
-        return new AlternationRule(compressedResult);
+        return AlternationRule.create(compressedResult);
     }
 
     /**
@@ -618,10 +618,10 @@ public abstract class GrammarBuilder {
      * @param function    The function which does what the description says.
      * @return A {@link SpecialSequenceRule}.
      */
-    public @NotNull SpecialSequenceRule specialSequence(
+    public @NotNull Rule specialSequence(
             final @NotNull String description,
             final @NotNull Function<@NotNull String, Optional<String>> function) {
-        return new SpecialSequenceRule(description, function);
+        return SpecialSequenceRule.create(description, function);
     }
 
     /**
@@ -659,11 +659,11 @@ public abstract class GrammarBuilder {
                 final int newMax = (int) Long.min(
                         Integer.MAX_VALUE,
                         ((long) rc.getMax()) * max);
-                return new VariableRepetitionRule(rc.getParser(), newMin, newMax);
+                return VariableRepetitionRule.create(rc.getRule(), newMin, newMax);
             }
         }
 
-        return new VariableRepetitionRule(r, min, max);
+        return VariableRepetitionRule.create(r, min, max);
     }
 
     /**
@@ -679,7 +679,7 @@ public abstract class GrammarBuilder {
         final @NotNull var r1 = of(parserExpected);
         final @NotNull var r2 = of(parserExcluded);
         if (Objects.equals(r1, r2)) return epsilon();
-        return new ExclusionRule(r1, r2);
+        return ExclusionRule.create(r1, r2);
     }
 
     /**
@@ -756,7 +756,7 @@ public abstract class GrammarBuilder {
     public final @NotNull Rule optional(final @NotNull Rule rule) {
         if (rule instanceof EpsilonTerm)
             return rule;
-        return new OptionalRule(rule);
+        return OptionalRule.create(rule);
     }
 
     private void compress() {
@@ -773,15 +773,15 @@ public abstract class GrammarBuilder {
             case VariableRepetitionRule variableRepetitionRule -> {
                 final var min = variableRepetitionRule.getMin();
                 final var max = variableRepetitionRule.getMax();
-                final @NotNull var parser = compressRule(variableRepetitionRule.getParser());
+                final @NotNull var parser = compressRule(variableRepetitionRule.getRule());
 
-                final RuleWithChild newRule;
+                final Rule newRule;
                 if (min == 1 && max == Integer.MAX_VALUE) {
                     newRule = new OnceOrMoreRule(parser);
                 } else if (min == 0 && max == 1) {
-                    newRule = new OptionalRule(parser);
+                    newRule = OptionalRule.create(parser);
                 } else if (min == 0 && max == Integer.MAX_VALUE) {
-                    newRule = new ZeroOrMoreRule(parser);
+                    newRule = ZeroOrMoreRule.create(parser);
                 } else if (min > 1) {
                     newRule = variableRepetitionRule;
                 } else {
@@ -793,12 +793,12 @@ public abstract class GrammarBuilder {
             }
             case RuleWithManyChildren ruleWithManyChildren -> ruleWithManyChildren
                     .withParsers(ruleWithManyChildren
-                            .getParsers()
+                            .getRules()
                             .stream()
                             .map(this::compressRule)
                             .toList());
             case RuleWithChild ruleWithChild -> ruleWithChild
-                    .withParser(compressRule(ruleWithChild.getParser()));
+                    .withParser(compressRule(ruleWithChild.getRule()));
             case NonTerminal nonTerminal -> nonTerminal;
             case Terminal terminal -> terminal;
             case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
@@ -823,10 +823,10 @@ public abstract class GrammarBuilder {
             case NonTerminal ignored -> parser;
             case EpsilonTerm ignored2 -> parser;
             case RuleWithChild parser1 -> (parser1.withParser(autoWhitespaceHelper(
-                    parser1.getParser(), wsParser)));
+                    parser1.getRule(), wsParser)));
             case RuleWithManyChildren combWithParsers -> {
                 final @NotNull List<@NotNull Rule> parsers = combWithParsers
-                        .getParsers()
+                        .getRules()
                         .stream()
                         .map(p -> autoWhitespaceHelper(p, wsParser))
                         .toList();

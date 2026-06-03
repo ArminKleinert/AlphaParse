@@ -13,16 +13,13 @@ public sealed abstract class RuleWithManyChildren
         extends Rule
         permits AlternationRule, ConcatRule, ExclusionRule, OrderedChoiceRule {
     private long bufferedHashCode = Long.MIN_VALUE;
-    protected final @NotNull List<Rule> parsers;
+    protected final @NotNull List<Rule> rules;
 
-    protected RuleWithManyChildren(final boolean hide, final @NotNull ReductionType red, final @NotNull List<Rule> parsers) {
+    protected RuleWithManyChildren(final boolean hide,
+                                   final @NotNull ReductionType red,
+                                   final @NotNull List<Rule> rules) {
         super(hide, red);
-        this.parsers = parsers;
-    }
-
-    protected RuleWithManyChildren(final @NotNull List<Rule> parsers) {
-        super();
-        this.parsers = parsers;
+        this.rules = rules;
     }
 
     /**
@@ -30,13 +27,17 @@ public sealed abstract class RuleWithManyChildren
      *
      * @return The inner {@link Rule} list.
      */
-    public @NotNull List<Rule> getParsers() {
-        return parsers;
+    public @NotNull List<Rule> getRules() {
+        return rules;
     }
 
     @NotNull
     public RuleWithManyChildren unhideContent() {
-        return ((RuleWithManyChildren) withHideTag(false)).withParsers(getParsers().stream().map(Rule::unhideContent).toList());
+        return ((RuleWithManyChildren) withHideTag(false)).withParsers(
+                getRules()
+                        .stream()
+                        .map(Rule::unhideContent)
+                        .toList());
     }
 
     /**
@@ -54,13 +55,13 @@ public sealed abstract class RuleWithManyChildren
         final @NotNull var that = (RuleWithManyChildren) o;
         if (!Objects.equals(getReduction(), that.getReduction())) return false;
         if (!Objects.equals(isHidden(), that.isHidden())) return false;
-        return Objects.equals(getParsers(), that.getParsers());
+        return Objects.equals(getRules(), that.getRules());
     }
 
     @Override
     public int hashCode() {
         if (bufferedHashCode == Long.MIN_VALUE)
-            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), getParsers());
+            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), getRules());
         return (int) bufferedHashCode;
     }
 }

@@ -105,7 +105,7 @@ public record ParseFailureReason(
      * @return A failure-reason based on the parameters.
      */
     public static @NotNull ParseFailureReason ofNegated(final @NotNull NegativeLookaheadRule rule, final boolean untilEndOfInput) {
-        return new ParseFailureReason(rule, "NOT " + Print.ruleToString(rule.getParser()), untilEndOfInput, "neg");
+        return new ParseFailureReason(rule, "NOT " + Print.ruleToString(rule.getRule()), untilEndOfInput, "neg");
     }
 
     /**

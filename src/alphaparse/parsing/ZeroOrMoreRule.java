@@ -20,17 +20,18 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parser The {@link Rule} to match repeatedly.
+     * @param rule The {@link Rule} to match repeatedly.
+     * @return A rule.
      */
-    public ZeroOrMoreRule(final @NotNull Rule parser) {
-        super(parser);
+    public static @NotNull Rule create(final @NotNull Rule rule) {
+        return new ZeroOrMoreRule(defaultHidden, defaultReductionType, rule);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar =
                 new TrampolineListenerKey(index, this);
         runner.pushListener(
@@ -42,7 +43,7 @@ public final class ZeroOrMoreRule extends RuleWithChild {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
         if (index == runner.tramp().getText().length()) {
             runner.pushSuccessMessageWithoutValue(nodeKeyForStar, index);
@@ -60,11 +61,11 @@ public final class ZeroOrMoreRule extends RuleWithChild {
 
     @Override
     public @NotNull ZeroOrMoreRule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new ZeroOrMoreRule(hide, red, parser);
+        return isHidden() == hide ? this : new ZeroOrMoreRule(hide, red, rule);
     }
 
     @Override
     public @NotNull ZeroOrMoreRule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new ZeroOrMoreRule(hide, red, parser);
+        return getReduction() == red ? this : new ZeroOrMoreRule(hide, red, rule);
     }
 }

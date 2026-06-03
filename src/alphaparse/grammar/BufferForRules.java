@@ -47,23 +47,23 @@ final class BufferForRules {
         return symToNtSet.computeIfAbsent(keyword, NonTerminal::create);
     }
 
-    private final @NotNull Map<@NotNull String, @NotNull StringTerm>
+    private final @NotNull Map<@NotNull String, @NotNull Rule>
             stringCsTerms = new HashMap<>();
-    private final @NotNull Map<@NotNull String, @NotNull StringTerm>
+    private final @NotNull Map<@NotNull String, @NotNull Rule>
             stringCiTerms = new HashMap<>();
 
-    @NotNull StringTerm getOrAddString(final @NotNull String string, final boolean caseInsensitive) {
+    @NotNull Rule getOrAddString(final @NotNull String string, final boolean caseInsensitive) {
         if (caseInsensitive) {
-            return stringCiTerms.computeIfAbsent(string, s -> new StringTerm(s, true));
+            return stringCiTerms.computeIfAbsent(string, s -> StringTerm.create(s, true));
         } else {
-            return stringCsTerms.computeIfAbsent(string, s -> new StringTerm(s, false));
+            return stringCsTerms.computeIfAbsent(string, s -> StringTerm.create(s, false));
         }
     }
 
-    private final @NotNull Map<@NotNull Pattern, @NotNull RegexTerm>
+    private final @NotNull Map<@NotNull Pattern, @NotNull Rule>
             regexTermMap1 = new HashMap<>();
 
-    @NotNull RegexTerm getOrAddRegex(final @NotNull Pattern pattern) {
-        return regexTermMap1.computeIfAbsent(pattern, RegexTerm::new);
+    @NotNull Rule getOrAddRegex(final @NotNull Pattern pattern) {
+        return regexTermMap1.computeIfAbsent(pattern, RegexTerm::create);
     }
 }

@@ -23,22 +23,12 @@ public final class NonTerminal extends SimpleRule {
     }
 
     /**
-     * Creates a new instance from a name.
-     *
-     * @param keyword The name.
-     */
-    public NonTerminal(final @NotNull Sym keyword) {
-        super();
-        this.keyword = keyword;
-    }
-
-    /**
      * Create a new instance. Depending on the implementation, allows for buffering.
      * @param keyword The wrapped symbol.
      * @return A non-terminal.
      */
     public static @NotNull NonTerminal create(final @NotNull Sym keyword) {
-        return new NonTerminal(keyword);
+        return new NonTerminal(defaultHidden, defaultReductionType, keyword);
     }
 
     /**

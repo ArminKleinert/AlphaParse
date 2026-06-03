@@ -8,6 +8,7 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Represents string terminals (both case-sensitive or case-insensitive).
@@ -28,15 +29,14 @@ public final class StringTerm extends Terminal {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
      * @param string          The string to match.
      * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
+     * @return A rule.
      */
-    public StringTerm(final @NotNull String string, final boolean caseInsensitive) {
-        super();
-        this.string = string;
-        this.caseInsensitive = caseInsensitive;
+    public static @NotNull Rule create(final @NotNull String string, final boolean caseInsensitive) {
+        return new StringTerm(defaultHidden, defaultReductionType, string, caseInsensitive);
     }
 
     @Override

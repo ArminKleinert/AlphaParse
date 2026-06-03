@@ -12,16 +12,13 @@ public sealed abstract class RuleWithChild
         extends Rule
         permits LookaheadRule, NegativeLookaheadRule, OptionalRule, OnceOrMoreRule, VariableRepetitionRule, ZeroOrMoreRule {
     private long bufferedHashCode = Long.MIN_VALUE;
-    protected final @NotNull Rule parser;
+    protected final @NotNull Rule rule;
 
-    RuleWithChild(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
+    RuleWithChild(final boolean hide,
+                  final @NotNull ReductionType red,
+                  final @NotNull Rule rule) {
         super(hide, red);
-        this.parser = parser;
-    }
-
-    RuleWithChild(final @NotNull Rule parser) {
-        super();
-        this.parser = parser;
+        this.rule = rule;
     }
 
     /**
@@ -29,8 +26,8 @@ public sealed abstract class RuleWithChild
      *
      * @return The inner {@link Rule}.
      */
-    public @NotNull Rule getParser() {
-        return parser;
+    public @NotNull Rule getRule() {
+        return rule;
     }
 
     /**
@@ -43,7 +40,7 @@ public sealed abstract class RuleWithChild
 
     @Override
     public @NotNull Rule unhideContent() {
-        return ((RuleWithChild) withHideTag(false)).withParser(parser.unhideContent());
+        return ((RuleWithChild) withHideTag(false)).withParser(rule.unhideContent());
     }
 
     @Override
@@ -53,13 +50,13 @@ public sealed abstract class RuleWithChild
         final @NotNull var that = (RuleWithChild) o;
         if (!Objects.equals(getReduction(), that.getReduction())) return false;
         if (!Objects.equals(isHidden(), that.isHidden())) return false;
-        return Objects.equals(getParser(), that.getParser());
+        return Objects.equals(getRule(), that.getRule());
     }
 
     @Override
     public int hashCode() {
         if (bufferedHashCode == Long.MIN_VALUE)
-            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), getParser());
+            bufferedHashCode = Objects.hash(getClass(), getReduction(), isHidden(), getRule());
         return (int) bufferedHashCode;
     }
 }

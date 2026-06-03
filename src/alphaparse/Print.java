@@ -61,13 +61,13 @@ public final class Print {
                 return "ε";
             }
             case OptionalRule optionalRule -> {
-                return parenForCompound(hidden, optionalRule.getParser()) + "?";
+                return parenForCompound(hidden, optionalRule.getRule()) + "?";
             }
             case OnceOrMoreRule onceOrMoreRule -> {
-                return parenForCompound(hidden, onceOrMoreRule.getParser()) + "+";
+                return parenForCompound(hidden, onceOrMoreRule.getRule()) + "+";
             }
             case ZeroOrMoreRule zeroOrMoreRule -> {
-                return parenForCompound(hidden, zeroOrMoreRule.getParser()) + "*";
+                return parenForCompound(hidden, zeroOrMoreRule.getRule()) + "*";
             }
             case VariableRepetitionRule repParser -> {
                 final int min = repParser.getMin();
@@ -76,24 +76,24 @@ public final class Print {
                         + min
                         + '*'
                         + max
-                        + parenForCompound(hidden, repParser.getParser());
+                        + parenForCompound(hidden, repParser.getRule());
             }
             case AlternationRule alternationRule -> {
                 final @NotNull List<String> parserStrings =
-                        alternationRule.getParsers().stream()
+                        alternationRule.getRules().stream()
                                 .map(p -> parenForTags((rule) -> rule instanceof RuleWithManyChildren, hidden, p))
                                 .toList();
                 return String.join(" | ", parserStrings);
             }
             case OrderedChoiceRule orderedChoiceRule -> {
                 final @NotNull List<String> parserStrings =
-                        orderedChoiceRule.getParsers().stream()
+                        orderedChoiceRule.getRules().stream()
                                 .map(p -> parenForTags((rule) -> rule instanceof RuleWithManyChildren, hidden, p))
                                 .toList();
                 return String.join(" / ", parserStrings);
             }
             case ConcatRule concatRule -> {
-                final @NotNull List<Rule> parsers = concatRule.getParsers();
+                final @NotNull List<Rule> parsers = concatRule.getRules();
                 final @NotNull Predicate<Rule> ks = (rule) -> rule instanceof RuleWithManyChildren;
                 final @NotNull Iterable<String> parserStrings =
                         parsers.stream().map(p -> parenForTags(ks, hidden, p)).toList();
@@ -115,17 +115,17 @@ public final class Print {
                 return nonTerminal.getKeyword().name();
             }
             case LookaheadRule lookaheadRule -> {
-                return "&" + parenForCompound(hidden, lookaheadRule.getParser());
+                return "&" + parenForCompound(hidden, lookaheadRule.getRule());
             }
             case NegativeLookaheadRule negativeLookaheadRule -> {
-                return "!" + parenForCompound(hidden, negativeLookaheadRule.getParser());
+                return "!" + parenForCompound(hidden, negativeLookaheadRule.getRule());
             }
             case SpecialSequenceRule specialSequenceRule -> {
                 return "?" + specialSequenceRule + "?";
             }
             case ExclusionRule exclusionRule -> {
                 final @NotNull List<String> parserStrings =
-                        exclusionRule.getParsers().stream()
+                        exclusionRule.getRules().stream()
                                 .map(rule -> parenForTags((rule1) -> rule1 instanceof RuleWithManyChildren, hidden, rule))
                                 .toList();
                 return String.join(" - ", parserStrings);

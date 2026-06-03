@@ -12,8 +12,4 @@ public abstract sealed class Terminal
     protected Terminal(final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
     }
-
-    protected Terminal() {
-        super();
-    }
 }

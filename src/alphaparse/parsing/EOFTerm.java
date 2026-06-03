@@ -17,17 +17,13 @@ public final class EOFTerm extends Terminal {
         super(hide, red);
     }
 
-    private EOFTerm() {
-        super();
-    }
-
     /**
      * Default EOF rule. Can be buffered.
      *
      * @return Default EOF rule. Can be buffered.
      */
     public static @NotNull EOFTerm getDefault() {
-        return new EOFTerm();
+        return new EOFTerm(defaultHidden, defaultReductionType);
     }
 
     @Override

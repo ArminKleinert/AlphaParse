@@ -17,17 +17,18 @@ public final class LookaheadRule extends RuleWithChild {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parser The inner parser.
+     * @param rule The inner parser.
+     * @return A rule.
      */
-    public LookaheadRule(final @NotNull Rule parser) {
-        super(parser);
+    public static @NotNull Rule create(final @NotNull Rule rule) {
+        return new LookaheadRule(defaultHidden, defaultReductionType, rule);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull var nodeKey = new TrampolineListenerKey(index, this);
         runner.pushListener(new TrampolineListenerKey(index, rule),
                 ignored -> runner.pushSuccessMessageWithoutValue(nodeKey, index));
@@ -47,12 +48,12 @@ public final class LookaheadRule extends RuleWithChild {
 
     @Override
     public @NotNull LookaheadRule withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new LookaheadRule(hide, red, parser);
+        return isHidden() == hide ? this : new LookaheadRule(hide, red, rule);
     }
 
     @Override
     public @NotNull LookaheadRule withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new LookaheadRule(hide, red, parser);
+        return getReduction() == red ? this : new LookaheadRule(hide, red, rule);
     }
 
     @Override

@@ -9,8 +9,4 @@ abstract sealed class SimpleRule
     protected SimpleRule(final boolean hide, final @NotNull ReductionType red) {
         super(hide, red);
     }
-
-    protected SimpleRule() {
-        super();
-    }
 }

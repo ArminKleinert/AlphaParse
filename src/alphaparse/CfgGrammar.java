@@ -38,25 +38,25 @@ final class CfgGrammar extends GrammarBuilder {
      * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
      */
     static @NotNull List<Map.Entry<Sym, Rule>> makeAbnfCoreRules() {
-        var CRLF = new StringTerm("\r\n", false);
-        var WSP = new RegexTerm(Pattern.compile("[\\u0020\\u0009]"));
+        var CRLF = StringTerm.create("\r\n", false);
+        var WSP = RegexTerm.create(Pattern.compile("[\\u0020\\u0009]"));
 
         final @NotNull List<Map.Entry<Sym, Rule>> m = List.of(
-                Map.entry(Sym.sym("ALPHA"), new RegexTerm(Pattern.compile("[a-zA-Z]"))),
-                Map.entry(Sym.sym("BIT"), new RegexTerm(Pattern.compile("[01]"))),
-                Map.entry(Sym.sym("CHAR"), new RegexTerm(Pattern.compile("[\\u0001-\\u007F]"))),
-                Map.entry(Sym.sym("CR"), new StringTerm("\r", false)),
+                Map.entry(Sym.sym("ALPHA"), RegexTerm.create(Pattern.compile("[a-zA-Z]"))),
+                Map.entry(Sym.sym("BIT"), RegexTerm.create(Pattern.compile("[01]"))),
+                Map.entry(Sym.sym("CHAR"), RegexTerm.create(Pattern.compile("[\\u0001-\\u007F]"))),
+                Map.entry(Sym.sym("CR"), StringTerm.create("\r", false)),
                 Map.entry(Sym.sym("CRLF"), CRLF),
-                Map.entry(Sym.sym("CTL"), new RegexTerm(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
-                Map.entry(Sym.sym("DIGIT"), new RegexTerm(Pattern.compile("[0-9]"))),
-                Map.entry(Sym.sym("DQUOTE"), new StringTerm("\"", false)),
-                Map.entry(Sym.sym("HEXDIG"), new RegexTerm(Pattern.compile("[0-9a-fA-F]"))),
-                Map.entry(Sym.sym("HTAB"), new RegexTerm(Pattern.compile("\t"))),
-                Map.entry(Sym.sym("LF"), new RegexTerm(Pattern.compile("\n"))),
-                Map.entry(Sym.sym("LWSP"), new ZeroOrMoreRule(new AlternationRule(List.of(WSP, new ConcatRule(List.of(CRLF, WSP)))))),
-                Map.entry(Sym.sym("OCTET"), new RegexTerm(Pattern.compile("[\\u0000-\\u00FF]"))),
-                Map.entry(Sym.sym("SP"), new StringTerm(" ", false)),
-                Map.entry(Sym.sym("VCHAR"), new RegexTerm(Pattern.compile("[\\u0021-\\u007E]"))),
+                Map.entry(Sym.sym("CTL"), RegexTerm.create(Pattern.compile("[\\u0000-\\u001F|\\u007F]"))),
+                Map.entry(Sym.sym("DIGIT"), RegexTerm.create(Pattern.compile("[0-9]"))),
+                Map.entry(Sym.sym("DQUOTE"), StringTerm.create("\"", false)),
+                Map.entry(Sym.sym("HEXDIG"), RegexTerm.create(Pattern.compile("[0-9a-fA-F]"))),
+                Map.entry(Sym.sym("HTAB"), RegexTerm.create(Pattern.compile("\t"))),
+                Map.entry(Sym.sym("LF"), RegexTerm.create(Pattern.compile("\n"))),
+                Map.entry(Sym.sym("LWSP"), ZeroOrMoreRule.create( AlternationRule.create(List.of(WSP,  ConcatRule.create(List.of(CRLF, WSP)))))),
+                Map.entry(Sym.sym("OCTET"), RegexTerm.create(Pattern.compile("[\\u0000-\\u00FF]"))),
+                Map.entry(Sym.sym("SP"), StringTerm.create(" ", false)),
+                Map.entry(Sym.sym("VCHAR"), RegexTerm.create(Pattern.compile("[\\u0021-\\u007E]"))),
                 Map.entry(Sym.sym("WSP"), WSP)
         );
         return m;

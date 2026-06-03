@@ -35,24 +35,22 @@ public final class VariableRepetitionRule extends RuleWithChild {
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parser The inner element.
-     * @param min    Minimum repetitions.
-     * @param max    Maximum repetitions.
-     * @throws IllegalArgumentException if minimum or maximum is invalid.
+     * @param rule The inner element.
+     * @param min  Minimum repetitions.
+     * @param max  Maximum repetitions.
+     * @return A rule.
      */
-    public VariableRepetitionRule(final @NotNull Rule parser, final int min, final int max) {
-        super(parser);
+    public static @NotNull Rule create(final @NotNull Rule rule, final int min, final int max) {
         if (min < 0 || min > max)
             throw new IllegalArgumentException();
-        this.min = min;
-        this.max = max;
+        return new VariableRepetitionRule(defaultHidden, defaultReductionType, rule, min, max);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerKey nodeKeyForInnerRule = new TrampolineListenerKey(index, rule);
         if (getMin() == 0) {
@@ -70,7 +68,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule parser = getParser();
+        final @NotNull Rule parser = getRule();
         final int minimum = getMin();
         final int maximum = getMax();
         final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
@@ -110,7 +108,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
 
             if (newNResultsSoFar < parser.getMax())
                 runner.pushListener(
-                        new TrampolineListenerKey(continueIndex, parser.getParser()),
+                        new TrampolineListenerKey(continueIndex, parser.getRule()),
                         repListener(newResultsSoFar, newNResultsSoFar, parser, nodeKey, runner)
                 );
         };
@@ -176,12 +174,12 @@ public final class VariableRepetitionRule extends RuleWithChild {
 
     @Override
     public @NotNull VariableRepetitionRule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new VariableRepetitionRule(hide, red, parser, min, max);
+        return isHidden() == hide ? this : new VariableRepetitionRule(hide, red, rule, min, max);
     }
 
     @Override
     public @NotNull VariableRepetitionRule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new VariableRepetitionRule(hide, red, parser, min, max);
+        return getReduction() == red ? this : new VariableRepetitionRule(hide, red, rule, min, max);
     }
 
     @Override
@@ -190,13 +188,13 @@ public final class VariableRepetitionRule extends RuleWithChild {
         if (this == that) return true;
         return hide == that.hide
                 && Objects.equals(red, that.red)
-                && Objects.equals(parser, that.parser)
+                && Objects.equals(rule, that.rule)
                 && Objects.equals(min, that.min)
                 && Objects.equals(max, that.max);
     }
 
     @Override
     public int hashCode() {
-        return min * 31 + max * 31 + Objects.hash(hide, red, parser);
+        return min * 31 + max * 31 + Objects.hash(hide, red, rule);
     }
 }

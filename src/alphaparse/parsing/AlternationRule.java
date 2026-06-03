@@ -45,22 +45,23 @@ import java.util.List;
 public final class AlternationRule extends RuleWithManyChildren {
     private AlternationRule(final boolean hide,
                             final @NotNull ReductionType red,
-                            final @NotNull List<Rule> parsers) {
-        super(hide, red, parsers);
+                            final @NotNull List<Rule> rules) {
+        super(hide, red, rules);
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parsers The different parsers in the choice.
+     * @param rules The wrapped rules.
+     * @return A rule.
      */
-    public AlternationRule(final @NotNull List<Rule> parsers) {
-        super(parsers);
+    public static @NotNull Rule create(final @NotNull List<Rule> rules) {
+        return new AlternationRule(defaultHidden, defaultReductionType, rules);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        for (final @NotNull Rule rule : getParsers()) {
+        for (final @NotNull Rule rule : getRules()) {
             runner.pushListener(
                     new TrampolineListenerKey(index, rule),
                     runner.nodeListener(new TrampolineListenerKey(index, this))
@@ -70,7 +71,7 @@ public final class AlternationRule extends RuleWithManyChildren {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        for (final @NotNull Rule parser : getParsers()) {
+        for (final @NotNull Rule parser : getRules()) {
             runner.pushFullListener(
                     new TrampolineListenerKey(index, parser),
                     runner.nodeListener(new TrampolineListenerKey(index, this))
@@ -80,12 +81,12 @@ public final class AlternationRule extends RuleWithManyChildren {
 
     @Override
     public @NotNull AlternationRule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new AlternationRule(hide, getReduction(), getParsers());
+        return isHidden() == hide ? this : new AlternationRule(hide, getReduction(), getRules());
     }
 
     @Override
     public @NotNull AlternationRule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new AlternationRule(isHidden(), red, getParsers());
+        return getReduction() == red ? this : new AlternationRule(isHidden(), red, getRules());
     }
 
     @Override

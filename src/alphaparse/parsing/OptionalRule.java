@@ -9,27 +9,28 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This class represents the {@code [p]} or {@code p?} operator (where p is an instance of {@link Rule}).
- * When parsing, the parser contained herein is optional (run zero times or once).
+ * When parsing, the rule contained herein is optional (run zero times or once).
  */
 public final class OptionalRule extends RuleWithChild {
     private OptionalRule(final boolean hide,
                          final @NotNull ReductionType red,
-                         final @NotNull Rule parser) {
-        super(hide, red, parser);
+                         final @NotNull Rule rule) {
+        super(hide, red, rule);
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parser The parser.
+     * @param rule The rule.
+     * @return A rule.
      */
-    public OptionalRule(final @NotNull Rule parser) {
-        super(parser);
+    public static @NotNull Rule create(final @NotNull Rule rule) {
+        return new OptionalRule(defaultHidden, defaultReductionType, rule);
     }
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt =
                 new TrampolineListenerKey(index, this);
         runner.pushListener(
@@ -41,9 +42,9 @@ public final class OptionalRule extends RuleWithChild {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule parser = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey thisNodeKey = new TrampolineListenerKey(index, this);
-        runner.pushFullListener(new TrampolineListenerKey(index, parser), runner.nodeListener(thisNodeKey));
+        runner.pushFullListener(new TrampolineListenerKey(index, rule), runner.nodeListener(thisNodeKey));
         if (index == runner.tramp().getText().length()) {
             runner.pushSuccessMessageWithoutValue(thisNodeKey, index);
         } else {
@@ -52,17 +53,17 @@ public final class OptionalRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull OptionalRule withParser(final @NotNull Rule parser) {
-        return new OptionalRule(hide, red, parser);
+    public @NotNull OptionalRule withParser(final @NotNull Rule rule) {
+        return new OptionalRule(hide, red, rule);
     }
 
     @Override
     public @NotNull OptionalRule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new OptionalRule(hide, red, parser);
+        return isHidden() == hide ? this : new OptionalRule(hide, red, rule);
     }
 
     @Override
     public @NotNull OptionalRule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new OptionalRule(hide, red, parser);
+        return getReduction() == red ? this : new OptionalRule(hide, red, rule);
     }
 }

@@ -19,35 +19,26 @@ import java.util.List;
  * so it can be considered a worse alternative to the {@link AlternationRule}.
  */
 public final class OrderedChoiceRule extends RuleWithManyChildren {
-    private final @NotNull Rule parser1;
-    private final @NotNull Rule parser2;
+    private final @NotNull Rule rule1;
+    private final @NotNull Rule rule2;
 
     private OrderedChoiceRule(final boolean hide, final @NotNull ReductionType red,
-                              final @NotNull Rule parser1,
-                              final @NotNull Rule parser2) {
-        super(hide, red, List.of(parser1, parser2));
-        this.parser1 = parser1;
-        this.parser2 = parser2;
+                              final @NotNull Rule rule1,
+                              final @NotNull Rule rule2) {
+        super(hide, red, List.of(rule1, rule2));
+        this.rule1 = rule1;
+        this.rule2 = rule2;
     }
 
-    private OrderedChoiceRule(final @NotNull List<Rule> parsers,
+    private OrderedChoiceRule(final @NotNull List<Rule> rules,
                               final boolean hide,
                               final @NotNull ReductionType red) {
-        this(hide, red, setupParsers(parsers).parser1, setupParsers(parsers).parser2);
+        this(hide, red, setupParsers(rules).rule1, setupParsers(rules).rule2);
     }
 
-    private OrderedChoiceRule(final @NotNull Rule parser1,
-                              final @NotNull Rule parser2) {
-        this(defaultHidden, ReductionType.standardInitialReduction(), parser1, parser2);
-    }
-
-    /**
-     * Creates a new instance from a list of {@link Rule} objects.
-     *
-     * @param parsers The choices.
-     */
-    public OrderedChoiceRule(final @NotNull List<Rule> parsers) {
-        this(setupParsers(parsers).parser1, setupParsers(parsers).parser2);
+    private OrderedChoiceRule(final @NotNull Rule rule1,
+                              final @NotNull Rule rule2) {
+        this(defaultHidden, ReductionType.standardInitialReduction(), rule1, rule2);
     }
 
     private static @NotNull OrderedChoiceRule setupParsers(
@@ -62,10 +53,21 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
         return new OrderedChoiceRule(parsers.getFirst(), setupParsers(restParsers));
     }
 
+    /**
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
+     *
+     * @param rules The wrapped symbol.
+     * @return A rule.
+     */
+    public static @NotNull Rule create(final @NotNull List<Rule> rules) {
+        var setup = setupParsers(rules);
+        return new OrderedChoiceRule(defaultHidden, defaultReductionType, setup.rule1, setup.rule2);
+    }
+
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule1 = parser1;
-        final @NotNull Rule rule2 = parser2;
+        final @NotNull Rule rule1 = this.rule1;
+        final @NotNull Rule rule2 = this.rule2;
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
                 new TrampolineListenerKey(index, rule1);
         final @NotNull TrampolineListenerKey nodeKeyForComb2 =
@@ -78,8 +80,8 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule1 = parser1;
-        final @NotNull Rule rule2 = parser2;
+        final @NotNull Rule rule1 = this.rule1;
+        final @NotNull Rule rule2 = this.rule2;
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
                 new TrampolineListenerKey(index, rule1);
         final @NotNull TrampolineListenerKey nodeKeyForComb2 =
@@ -92,12 +94,12 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
 
     @Override
     public @NotNull OrderedChoiceRule withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new OrderedChoiceRule(getParsers(), hide, this.getReduction());
+        return isHidden() == hide ? this : new OrderedChoiceRule(getRules(), hide, this.getReduction());
     }
 
     @Override
     public @NotNull OrderedChoiceRule withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new OrderedChoiceRule(getParsers(), isHidden(), red);
+        return getReduction() == red ? this : new OrderedChoiceRule(getRules(), isHidden(), red);
     }
 
     @Override

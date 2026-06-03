@@ -21,8 +21,8 @@ class GrammarTest {
         Assertions.assertEquals(Set.of(Sym.sym("S")), new HashSet<>(ga.definedNTs()));
 
         Assertions.assertEquals(
-                Set.of(new StringTerm("1", false),
-                        new StringTerm("2", false)),
+                Set.of(StringTerm.create("1", false),
+                        StringTerm.create("2", false)),
                 new HashSet<>(ga.collectRules(it -> it instanceof StringTerm)));
     }
 }

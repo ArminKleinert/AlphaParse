@@ -30,7 +30,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule parser = getParser();
+        final @NotNull Rule parser = getRule();
         runner.pushListener(
                 new TrampolineListenerKey(index, parser),
                 plusListener(FlatSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
@@ -39,7 +39,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule parser = getParser();
+        final @NotNull Rule parser = getRule();
         runner.pushListener(
                 new TrampolineListenerKey(index, parser),
                 plusFullListener(FlatSeq.make(), parser, index, new TrampolineListenerKey(index, this), runner)
@@ -106,11 +106,11 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
     @Override
     public @NotNull OnceOrMoreRule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new OnceOrMoreRule(hide, red, parser);
+        return isHidden() == hide ? this : new OnceOrMoreRule(hide, red, rule);
     }
 
     @Override
     public @NotNull OnceOrMoreRule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new OnceOrMoreRule(hide, red, parser);
+        return getReduction() == red ? this : new OnceOrMoreRule(hide, red, rule);
     }
 }

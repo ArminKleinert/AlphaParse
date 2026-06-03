@@ -16,17 +16,18 @@ import alphaparse.trampoline.TrampolineListenerNode;
 public final class NegativeLookaheadRule extends RuleWithChild {
     private NegativeLookaheadRule(final boolean hide,
                                   final @NotNull ReductionType red,
-                                  final @NotNull Rule parser) {
-        super(hide, red, parser);
+                                  final @NotNull Rule rule) {
+        super(hide, red, rule);
     }
 
     /**
-     * Creates a new instance.
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
      *
-     * @param parser The thing to avoid.
+     * @param rule The thing to avoid.
+     * @return A rule.
      */
-    public NegativeLookaheadRule(final @NotNull Rule parser) {
-        super(parser);
+    public static @NotNull Rule create(final @NotNull Rule rule) {
+        return new NegativeLookaheadRule(defaultHidden, defaultReductionType, rule);
     }
 
     private boolean resultExists_Q(
@@ -42,7 +43,7 @@ public final class NegativeLookaheadRule extends RuleWithChild {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull Rule rule = getParser();
+        final @NotNull Rule rule = getRule();
         final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, rule);
 
         if (resultExists_Q(runner, nodeKey)) {
@@ -74,11 +75,11 @@ public final class NegativeLookaheadRule extends RuleWithChild {
 
     @Override
     public @NotNull NegativeLookaheadRule withHideTag(boolean hide) {
-        return isHidden() == hide ? this : new NegativeLookaheadRule(hide, red, parser);
+        return isHidden() == hide ? this : new NegativeLookaheadRule(hide, red, rule);
     }
 
     @Override
     public @NotNull NegativeLookaheadRule withReduction(@NotNull ReductionType red) {
-        return getReduction() == red ? this : new NegativeLookaheadRule(hide, red, parser);
+        return getReduction() == red ? this : new NegativeLookaheadRule(hide, red, rule);
     }
 }
