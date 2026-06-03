@@ -29,6 +29,12 @@ public final class NonTerminal extends SimpleRule {
         super();
         this.keyword = keyword;
     }
+
+    /**
+     * Create a new instance. Depending on the implementation, allows for buffering.
+     * @param keyword The wrapped symbol.
+     * @return A non-terminal.
+     */
     public static @NotNull NonTerminal create(final @NotNull Sym keyword) {
         return new NonTerminal(keyword);
     }

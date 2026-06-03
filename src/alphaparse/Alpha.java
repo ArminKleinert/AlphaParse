@@ -9,7 +9,6 @@ import alphaparse.parsing.Gll;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.parser_options.UnhideOptions;
 import alphaparse.result.AlphaParseFailure;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
@@ -29,12 +28,12 @@ public final class Alpha {
     }
 
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
-                                                final @NotNull UnhideOptions unhide) {
-        if (unhide == UnhideOptions.NONE)
+                                                final @NotNull Unhide.UnhideOptions unhide) {
+        if (unhide == Unhide.UnhideOptions.NONE)
             return parser;
 
         return switch (unhide) {
-            case CONTENT -> parser.withGrammar(Unhide.unhideAllContent(parser.grammar()));
+            case CONTENT -> parser.withGrammar(Unhide.unhideContent(parser.grammar()));
             case TAGS -> parser.withGrammar(Unhide.unhideTags(parser.grammar()));
             case ALL -> parser.withGrammar(Unhide.unhideAll(parser.grammar()));
             default -> throw new IllegalStateException("Unexpected value: " + unhide);

@@ -16,9 +16,30 @@ import java.util.stream.Stream;
 
 /**
  * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the {@link #make()} method overridden.
+ * Using a GrammarBuilder is much faster than constructing grammars from strings.
  * <p>
+ * In the following example, two equivalent grammars and parsers are constructed from a string and from a builder. The assertions show that the grammars are equal and that the parsers give equivalent outputs.
  * <pre>
  * {@code
+ *         var gFromString = Alpha.parser("""
+ *                         S = NUMBER NUMBER*
+ *                         NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+ *                         """)
+ *                 .grammar();
+ *         var gFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {
+ *             @Override
+ *             public void make() {
+ *                 addProduction("S", concat(Sym.sym("NUMBER"), repeatMin(nt(Sym.sym("NUMBER")), 0)));
+ *                 addProduction("NUMBER", alternation("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+ *             }
+ *         }.build();
+ *
+ *         Assertions.assertEquals(gFromString, gFromGB);
+ *
+ *         var pFromString = Alpha.parser(gFromString, ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
+ *         var pFromGB = Alpha.parser(gFromGB, ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
+ *         var text = "0123456789";
+ *         Assertions.assertEquals(pFromString.parse(text), pFromGB.parse(text));
  * }
  * </pre>
  * <p>
@@ -28,23 +49,43 @@ public abstract class GrammarBuilder {
     protected @NotNull LinkedHashMap<Sym, Rule> productions;
     protected final @NotNull ParserCreationOptions options;
     protected boolean builtAlready = false;
+    private final BufferForRules buffer;
 
     protected GrammarBuilder(final @NotNull ParserCreationOptions options) {
         productions = new LinkedHashMap<>();
         this.options = options;
+        buffer = new BufferForRules();
     }
 
+    /**
+     * Override this to create a grammar. Used in {@link #build()}.
+     */
     public abstract void make();
 
+    /**
+     * Use this to construct the grammar.
+     * @return The grammar.
+     */
     public final @NotNull Grammar build() {
         return buildWithWhitespace(null);
     }
 
+    /**
+     * Use this to construct the grammar.
+     * @param wsParser Whitespace parser to include.
+     * @return The grammar.
+     */
     public final @NotNull Grammar buildWithWhitespace(
             final @Nullable Parser wsParser) {
         return buildWithWhitespace(null, wsParser);
     }
 
+    /**
+     * Use this to construct the grammar. Productions can be added before starting the builder.
+     * @param initialProductions Productions to add in the beginning.
+     * @param wsParser Whitespace parser to include.
+     * @return The grammar.
+     */
     public final @NotNull Grammar buildWithWhitespace(
             final @Nullable SequencedMap<Sym, Rule> initialProductions,
             final @Nullable Parser wsParser) {
@@ -52,7 +93,7 @@ public abstract class GrammarBuilder {
             throw new IllegalStateException("Build has been finished already.");
 
         if (initialProductions != null) {
-            for (Map.Entry<Sym, Rule> entry : initialProductions.sequencedEntrySet()) {
+            for (final @NotNull var entry : initialProductions.sequencedEntrySet()) {
                 addProduction(entry.getKey(), entry.getValue());
             }
         }
@@ -86,13 +127,23 @@ public abstract class GrammarBuilder {
         return g;
     }
 
+    /**
+     * Add multiple entries.
+     * @param entries The entries.
+     * @see #addProduction(Sym, Rule)
+     */
     public final void addAllProductions(
             final @NotNull Collection<Map.Entry<Sym, Rule>> entries) {
-        for (Map.Entry<Sym, Rule> entry : entries) {
+        for (final @NotNull var entry : entries) {
             addProduction(entry.getKey(), entry.getValue());
         }
     }
 
+    /**
+     *Adds a production to the output. The specific behavior depends on the {@link ParserCreationOptions#redefinitionOption()} used.
+     * @param lhs The production's key. (left-hand-side)
+     * @param rhs The production's right-hand-side.
+     */
     public final void addProduction(
             final @NotNull Sym lhs, final @NotNull Rule rhs) {
         var existing = productions.putIfAbsent(lhs, rhs);
@@ -109,18 +160,38 @@ public abstract class GrammarBuilder {
         }
     }
 
+    /**
+     *Adds a production to the output.
+     * @param lhs The production's key. (left-hand-side)
+     * @param rhs The production's right-hand-side.
+     * @see #addProduction(Sym, Rule)
+     */
     public final void addProduction(
             final @NotNull String lhs, final @NotNull Rule rhs) {
         addProduction(Sym.sym(lhs), rhs);
     }
 
+    /**
+     * Creates a rule depending on the input's specific type.
+     * <ul>
+     * <li>For {@code null}, use {@link EpsilonTerm#getDefault()}.</li>
+     * <li>For {@code Rule}, return the input.</li>
+     * <li>For {@code String}, use {@link #string(String)}.</li>
+     * <li>For {@code Pattern}, use {@link #regex(Pattern)}.</li>
+     * <li>For {@code Sym}, use {@link #nt(Sym)}.</li>
+     * <li>For {@code List}, use {@link #concat(List)}.</li>
+     * <li>For {@code Set}, use {@link #alternation(Object, Object...)}.</li>
+     * </ul>
+     * @param c Input object.
+     * @return A rule depending on the input's type.
+     */
     public static @NotNull Rule staticOf(final @Nullable Object c) {
         return switch (c) {
             case null -> EpsilonTerm.getDefault();
             case Rule r -> r;
-            case String s -> string(s, false);
+            case String s -> new StringTerm(s, false);
             case Pattern p -> new RegexTerm(p);
-            case Sym s -> new NonTerminal(s);
+            case Sym s -> NonTerminal.create(s);
             case List<?> l -> new ConcatRule(
                     l.stream().map(GrammarBuilder::staticOf).toList());
             case Set<?> s -> new AlternationRule(
@@ -130,24 +201,53 @@ public abstract class GrammarBuilder {
         };
     }
 
+    /**
+     * Creates a rule depending on the input's specific type.
+     * <ul>
+     * <li>For {@code null}, use {@link #epsilon()}.</li>
+     * <li>For {@code Rule}, return the input.</li>
+     * <li>For {@code String}, use {@link #string(String)}.</li>
+     * <li>For {@code Pattern}, use {@link #regex(Pattern)}.</li>
+     * <li>For {@code Sym}, use {@link #nt(Sym)}.</li>
+     * <li>For {@code List}, use {@link #concat(List)}.</li>
+     * <li>For {@code Set}, use {@link #alternation(Object, Object...)}.</li>
+     * </ul>
+     * @param c Input object.
+     * @return A rule depending on the input's type.
+     */
     public final @NotNull Rule of(final @Nullable Object c) {
         return switch (c) {
             case null -> EpsilonTerm.getDefault();
             case Rule r -> r;
             case String s -> string(s);
-            case Pattern p -> new RegexTerm(p);
-            case Sym s -> new NonTerminal(s);
-            case List<?> l -> new ConcatRule(
-                    l.stream().map(this::of).toList());
-            case Set<?> s -> new AlternationRule(
-                    s.stream().distinct().map(this::of).toList());
+            case Pattern p -> regex(p);
+            case Sym s -> nt(s);
+            case List<?> l -> concat(l.stream().map(this::of).toList());
+            case Set<?> s -> alternationC(s.stream().distinct().map(this::of).toList());
             default -> throw new IllegalArgumentException(
                     String.valueOf(c.getClass()));
         };
     }
 
-    public final @NotNull Rule regex(final @NotNull Pattern c) {
-        return new RegexTerm(c);
+    /**
+     * Create a {@link RegexTerm}. The rule might be buffered.
+     * If the regex can only ever match a single string, a {@link StringTerm} might be returned instead.
+     * @param p The input regex.
+     * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
+     */
+    public final @NotNull Rule regex(final @NotNull Pattern p) {
+        return buffer.getOrAddRegex(p);
+    }
+
+    /**
+     * See {@link #regex(Pattern)}.
+     * @param s The input regex.
+     * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
+     */
+    public final @NotNull Rule regex(final @NotNull String s) {
+        if (s.isEmpty())
+            return EpsilonTerm.getDefault();
+        return regex(Pattern.compile(s));
     }
 
     /**
@@ -249,12 +349,21 @@ public abstract class GrammarBuilder {
         final @NotNull var result = new OrderedChoiceRule(newParserList);
         return result;
     }
-
-    public static @NotNull NonTerminal nt(final @NotNull Sym name) {
-        return new NonTerminal(name);
+    /**
+     * Create a {@link NonTerminal} from the input symbol. The output might be buffered.
+     * @param name The name symbol of the output rule.
+     * @return A {@link NonTerminal}.
+     */
+    public @NotNull NonTerminal nt(final @NotNull Sym name) {
+        return buffer.getOrAddNt(name);
     }
 
-    public static @NotNull NonTerminal nt(final @NotNull String name) {
+    /**
+     * Equivalent to {@link #nt(Sym)} with the symbol creates from the input string.
+     * @param name The name symbol of the output rule.
+     * @return A {@link NonTerminal}.
+     */
+    public @NotNull NonTerminal nt(final @NotNull String name) {
         return nt(Sym.sym(name));
     }
 
@@ -266,11 +375,10 @@ public abstract class GrammarBuilder {
      * @param explicitCasing Whether the Terminal will match without caring about casing.
      * @return The new parser.
      */
-    public static @NotNull Rule string(
-            final @NotNull String string, final boolean explicitCasing) {
+    public @NotNull Rule string(final @NotNull String string, final boolean explicitCasing) {
         if (string.isEmpty())
             return EpsilonTerm.getDefault();
-        return new StringTerm(string, explicitCasing);
+        return buffer.getOrAddString(string, explicitCasing);
     }
 
     /**
@@ -312,23 +420,49 @@ public abstract class GrammarBuilder {
             return EpsilonTerm.getDefault();
 
         return switch (options.stringCaseInsensitive()) {
-            case TRUE -> new StringTerm(string, true);
-            case FALSE, DEFAULT -> new StringTerm(string, false);
+            case TRUE -> buffer.getOrAddString(string, true);
+            case FALSE, DEFAULT -> buffer.getOrAddString(string, false);
         };
     }
 
-    public final @NotNull Rule hide(final @NotNull Rule o) {
+    /**
+     * Create a copy of the input for which {@link Rule#isHidden} returns true.
+     * @param o The input.
+     * @return A copy of the input for which {@link Rule#isHidden} returns true.
+     */
+    public final @NotNull Rule hide(final @NotNull Object o) {
         return of(o).enableHideTag();
     }
 
+    /**
+     * Get an epsilon rule.
+     * @return An {@link EpsilonTerm}.
+     */
     public final @NotNull Rule epsilon() {
         return EpsilonTerm.getDefault();
     }
 
+    /**
+     * Create a rule which matches end of input.
+     * @return A rule.
+     */
     public final @NotNull Rule eof() {
         return EOFTerm.getDefault();
     }
 
+    /**
+     * Creates a {@link ConcatRule}.
+     * <ul>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
+     * <li>If there is only one element in the list, it is returned.</li>
+     * <li>Otherwise, returns a {@link ConcatRule}, as expected.</li>
+     * </ul>
+     *
+     * @param rule First rule for the output.
+     * @param rules More rules for the output.
+     * @return A rule.
+     * @param <T> Type for the rules.
+     */
     @SafeVarargs
     public final <T> @NotNull Rule concat(
             final @Nullable T rule, final @Nullable T... rules) {
@@ -337,11 +471,6 @@ public abstract class GrammarBuilder {
                         Arrays.stream(rules))
                 .filter(Objects::nonNull)
                 .map(this::of));
-    }
-
-    public final @NotNull Rule concat(
-            final @NotNull Rule rule, final @NotNull Rule... rules) {
-        return concat(Stream.concat(Stream.of(rule), Arrays.stream(rules)));
     }
 
     /**
@@ -370,11 +499,12 @@ public abstract class GrammarBuilder {
         if (result.size() == 1)
             return result.getFirst();
         var compressedResult = new ArrayList<Rule>();
-        for (Rule rule : result) {
-            if (rule instanceof ConcatRule cc)
+        for (final @NotNull Rule rule : result) {
+            if (rule instanceof ConcatRule cc) {
                 compressedResult.addAll(cc.getParsers());
-            else
+            } else {
                 compressedResult.add(rule);
+            }
         }
         return new ConcatRule(compressedResult);
     }
@@ -393,8 +523,8 @@ public abstract class GrammarBuilder {
      */
     public final @NotNull Rule alternation(
             final @NotNull Object rule, final @NotNull Object... rules) {
-        List<@NotNull Rule> result = Stream.concat(
-                        Stream.of(rule),
+        final @NotNull List<@NotNull Rule> result = Stream
+                .concat(Stream.of(rule),
                         Arrays.stream(rules))
                 .distinct()
                 .map(this::of)
@@ -421,7 +551,7 @@ public abstract class GrammarBuilder {
         if (rules.size() == 1)
             return rules.getFirst();
         var compressedResult = new ArrayList<Rule>();
-        for (Rule rule : rules) {
+        for (final @NotNull Rule rule : rules) {
             if (rule instanceof AlternationRule cc)
                 compressedResult.addAll(cc.getParsers());
             else
@@ -445,7 +575,7 @@ public abstract class GrammarBuilder {
         if (rules.size() == 1)
             return rules.getFirst();
         var compressedResult = new ArrayList<Rule>();
-        for (Rule rule : rules) {
+        for (final @NotNull Rule rule : rules) {
             if (rule instanceof AlternationRule cc)
                 compressedResult.addAll(cc.getParsers());
             else
@@ -529,16 +659,37 @@ public abstract class GrammarBuilder {
         return new ExclusionRule(r1, r2);
     }
 
+    /**
+     * Equivalent to {@code repeat(rule, exact, exact)}.
+     * @param rule The rule.
+     * @param exact Minimum and maximum number of repetitions.
+     * @return A repetition rule.
+     * @see #repeat(Rule, int, int)
+     */
     public final @NotNull Rule repeat(
             final @NotNull Rule rule, final int exact) {
         return repeat(rule, exact, exact);
     }
 
+    /**
+     * Equivalent to {@code repeat(rule, min, Integer.MAX_VALUE)}.
+     * @param rule The rule.
+     * @param min Minimum number of repetitions.
+     * @return A repetition rule.
+     * @see #repeat(Rule, int, int)
+     */
     public final @NotNull Rule repeatMin(
             final @NotNull Rule rule, final int min) {
         return repeat(rule, min, Integer.MAX_VALUE);
     }
 
+    /**
+     * Equivalent to {@code repeat(rule, 0, max)}.
+     * @param rule The rule.
+     * @param max Maximum number of repetitions.
+     * @return A repetition rule.
+     * @see #repeat(Rule, int, int)
+     */
     public final @NotNull Rule repeatMax(
             final @NotNull Rule rule, final int max) {
         return repeat(rule, 0, max);
@@ -583,9 +734,7 @@ public abstract class GrammarBuilder {
     }
 
     private void compress() {
-        var buffer = new HashMap<Rule, Rule>();
-
-        for (var symRuleEntry : productions.entrySet()) {
+        for (final @NotNull var symRuleEntry : productions.entrySet()) {
             final @NotNull var value = symRuleEntry.getValue();
             final @NotNull var compressedRule = compressRule(value);
             if (compressedRule != value) // Yes, I need a reference equality check here.
@@ -593,10 +742,7 @@ public abstract class GrammarBuilder {
         }
     }
 
-    private @NotNull Rule compressRule(
-            final @NotNull Rule rule) {
-        var red = rule.getReduction();
-        var hide = rule.isHidden();
+    private @NotNull Rule compressRule(final @NotNull Rule rule) {
         return switch (rule) {
             case VariableRepetitionRule variableRepetitionRule -> {
                 final var min = variableRepetitionRule.getMin();
@@ -619,21 +765,22 @@ public abstract class GrammarBuilder {
                         .withHideTag(variableRepetitionRule.isHidden())
                         .withReduction(variableRepetitionRule.getReduction());
             }
-            case RuleWithManyChildren ruleWithManyChildren -> ruleWithManyChildren.withParsers(ruleWithManyChildren
-                    .getParsers()
-                    .stream()
-                    .map(this::compressRule)
-                    .toList());
-            case RuleWithChild ruleWithChild -> ruleWithChild.withParser(
-                    compressRule(ruleWithChild.getParser()));
+            case RuleWithManyChildren ruleWithManyChildren -> ruleWithManyChildren
+                    .withParsers(ruleWithManyChildren
+                            .getParsers()
+                            .stream()
+                            .map(this::compressRule)
+                            .toList());
+            case RuleWithChild ruleWithChild -> ruleWithChild
+                    .withParser(compressRule(ruleWithChild.getParser()));
             case NonTerminal nonTerminal -> nonTerminal;
             case Terminal terminal -> terminal;
-            case SimpleRule simpleRule -> simpleRule;
+            case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
         };
     }
 
     private void applyStandardReductions() {
-        for (var prod : productions.entrySet()) {
+        for (final @NotNull var prod : productions.entrySet()) {
             final @NotNull var key = prod.getKey();
             @NotNull var value = prod.getValue();
             if (value.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
@@ -676,7 +823,7 @@ public abstract class GrammarBuilder {
                 }
                 yield result;
             }
-            case SimpleRule ignored -> parser;
+            case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
         };
     }
 
@@ -688,7 +835,7 @@ public abstract class GrammarBuilder {
 
         final @NotNull LinkedHashMap<@NotNull Sym, @NotNull Rule> finalGrammar =
                 new LinkedHashMap<>(productions);
-        for (var symRuleEntry : finalGrammar.sequencedEntrySet()) {
+        for (final @NotNull var symRuleEntry : finalGrammar.sequencedEntrySet()) {
             symRuleEntry.setValue(autoWhitespaceHelper(
                     symRuleEntry.getValue(), wsParser));
         }
@@ -706,5 +853,15 @@ public abstract class GrammarBuilder {
                 Objects.requireNonNull(grammarWS.getProduction(startWS)).hideTag());
 
         productions = finalGrammar;
+    }
+
+    protected <T extends Rule> T buffer(T rule) {
+        //noinspection unchecked
+        return (T) switch (rule) {
+            case StringTerm stringTerm -> buffer.getOrAdd(stringTerm);
+            case RegexTerm regexTerm -> buffer.getOrAdd(regexTerm);
+            case NonTerminal nonTerminal -> buffer.getOrAdd(nonTerminal);
+            default -> rule;
+        };
     }
 }

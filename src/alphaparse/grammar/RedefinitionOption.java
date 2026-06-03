@@ -1,7 +1,5 @@
 package alphaparse.grammar;
 
-import java.util.List;
-
 /**
  * Options for deciding what to do when a production is added that already exists.
  * <p>

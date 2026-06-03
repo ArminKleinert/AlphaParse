@@ -192,11 +192,11 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgHideRhs() {
         final @NotNull Rule rulesRule =
                 concat(
-                        List.of(string("<").enableHideTag(),
+                        List.of(buffer(string("<").enableHideTag()),
                                 optWhitespace,
                                 nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                string(">").enableHideTag()));
+                                buffer(string(">").enableHideTag())));
         return rulesRule;
     }
 
@@ -408,7 +408,7 @@ final class CfgGrammar extends GrammarBuilder {
 
         if (i == 0) return onceOrMore(nt(Sym.sym("cat"))).hideTag(); /// {@link #makeCfgCatRhs}
 
-        if (i == 1) return l[0].hideTag();
+        if (i == 1) return buffer(l[0].hideTag());
 
         final @NotNull Rule rulesRule = alternationGuaranteeDistinct(List.of(l)).hideTag();
         return rulesRule;
@@ -417,11 +417,11 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgHideNtRhs() {
         final @NotNull Rule rulesRule =
                 concat(
-                        List.of(string("<").enableHideTag(),
+                        List.of(buffer(string("<").enableHideTag()),
                                 optWhitespace,
                                 nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
                                 optWhitespace,
-                                string(">").enableHideTag()));
+                                buffer(string(">").enableHideTag())));
         return rulesRule;
     }
 
@@ -549,64 +549,64 @@ final class CfgGrammar extends GrammarBuilder {
 
     @Override
     public void make() {
-        addProduction(Sym.sym("rules"), makeCfgRulesRhs());
-        addProduction(Sym.sym("comment"), makeCfgCommentRhs());
-        //addProduction(Sym.sym("inside-comment"), g.makeCfgInsideCommentRhs());
-        addProduction(Sym.sym("opt-whitespace"), makeCfgOptWhitespaceRhs());
-        addProduction(Sym.sym("rule-separator"), makeCfgRuleSeparatorRhs());
-        addProduction(Sym.sym("rule"), makeCfgRuleRhs());
-        addProduction(Sym.sym("nt"), makeCfgNtRhs());
-        addProduction(Sym.sym("hide-nt"), makeCfgHideNtRhs());
-        addProduction(Sym.sym("paren"), makeCfgParenRhs());
-        addProduction(Sym.sym("hide"), makeCfgHideRhs());
-        addProduction(Sym.sym("cat"), makeCfgCatRhs());
-        addProduction(Sym.sym("string"), makeCfgStringRhs());
-        addProduction(Sym.sym("epsilon"), makeCfgEpsilonRhs());
-        addProduction(Sym.sym("factor"), makeCfgFactorRhs());
-        addProduction(Sym.sym("rules-or-parser"), makeCfgRulesOrParserRhs());
-        addProduction(Sym.sym("alt-or-ord"), makeCfgAltOrOrdRhs());
+        addProduction("rules", makeCfgRulesRhs());
+        addProduction("comment", makeCfgCommentRhs());
+        //addProduction("inside-comment"), g.makeCfgInsideCommentRhs());
+        addProduction("opt-whitespace", makeCfgOptWhitespaceRhs());
+        addProduction("rule-separator", makeCfgRuleSeparatorRhs());
+        addProduction("rule", makeCfgRuleRhs());
+        addProduction("nt", makeCfgNtRhs());
+        addProduction("hide-nt", makeCfgHideNtRhs());
+        addProduction("paren", makeCfgParenRhs());
+        addProduction("hide", makeCfgHideRhs());
+        addProduction("cat", makeCfgCatRhs());
+        addProduction("string", makeCfgStringRhs());
+        addProduction("epsilon", makeCfgEpsilonRhs());
+        addProduction("factor", makeCfgFactorRhs());
+        addProduction("rules-or-parser", makeCfgRulesOrParserRhs());
+        addProduction("alt-or-ord", makeCfgAltOrOrdRhs());
 
         if (rulesAvailable.contains(RulesAvailable.ALTERNATION))
-            addProduction(Sym.sym("alt"), makeCfgAltRhs());
+            addProduction("alt", makeCfgAltRhs());
 
         if (rulesAvailable.contains(RulesAvailable.ORDERED_CHOICE))
-            addProduction(Sym.sym("ord"), makeCfgOrdRhs()); // Technically ABNF, but should be included without it as a PAKRAT extension.
+            addProduction("ord", makeCfgOrdRhs()); // Technically ABNF, but should be included without it as a PAKRAT extension.
 
         if (rulesAvailable.contains(RulesAvailable.VARIABLE_REPEAT))
-            addProduction(Sym.sym("rep"), makeCfgRepRhs()); // ABNF
+            addProduction("rep", makeCfgRepRhs()); // ABNF
 
         if (rulesAvailable.contains(RulesAvailable.REGEX))
-            addProduction(Sym.sym("regexp"), makeCfgRegexRhs());
+            addProduction("regexp", makeCfgRegexRhs());
 
         if (rulesAvailable.contains(RulesAvailable.OPTIONAL))
-            addProduction(Sym.sym("opt"), makeCfgOptRhs());
+            addProduction("opt", makeCfgOptRhs());
 
         if (rulesAvailable.contains(RulesAvailable.OPTIONAL_QUERY))
-            addProduction(Sym.sym("opt_query"), makeCfgOptQueryRhs());
+            addProduction("opt_query", makeCfgOptQueryRhs());
 
         if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION_STAR))
-            addProduction(Sym.sym("star"), makeCfgZeroOrMoreStarRhs());
+            addProduction("star", makeCfgZeroOrMoreStarRhs());
 
         if (rulesAvailable.contains(RulesAvailable.OPTIONAL_REPETITION))
-            addProduction(Sym.sym("opt_rep"), makeCfgZeroOrMoreStdRhs());
+            addProduction("opt_rep", makeCfgZeroOrMoreStdRhs());
 
         if (rulesAvailable.contains(RulesAvailable.PLUS))
-            addProduction(Sym.sym("plus"), makeCfgPlusRhs());
+            addProduction("plus", makeCfgPlusRhs());
 
         if (rulesAvailable.contains(RulesAvailable.LOOKAHEAD))
-            addProduction(Sym.sym("look"), makeCfgLookRhs());
+            addProduction("look", makeCfgLookRhs());
 
         if (rulesAvailable.contains(RulesAvailable.NEGATIVE_LOOKAHEAD))
-            addProduction(Sym.sym("neg"), makeCfgNegRhs());
+            addProduction("neg", makeCfgNegRhs());
 
         if (rulesAvailable.contains(RulesAvailable.VALUE_RANGE))
-            addProduction(Sym.sym("abnf-range"), makeABNFValueRange()); // ABNF
+            addProduction("abnf-range", makeABNFValueRange()); // ABNF
 
         if (rulesAvailable.contains(RulesAvailable.EXCLUSION))
-            addProduction(Sym.sym("exclude"), makeCfgExclude());
+            addProduction("exclude", makeCfgExclude());
 
         if (rulesAvailable.contains(RulesAvailable.EXPLICIT_EOF))
-            addProduction(Sym.sym("eof"), makeEofRhs());
+            addProduction("eof", makeEofRhs());
     }
 
     @NotNull

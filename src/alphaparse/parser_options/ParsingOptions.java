@@ -1,5 +1,7 @@
 package alphaparse.parser_options;
 
+import static alphaparse.parser_options.Unhide.UnhideOptions;
+
 import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser.Parser;
@@ -18,7 +20,7 @@ import java.util.Objects;
  * @param usePartial              Whether to return partial (incomplete) parses.
  * @param unhide                  What (if anything) to "unhide" in the results.
  * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
- * @param iterativeDeepening Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link RegexTerm#parse}.
+ * @param iterativeDeepening      Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link RegexTerm#parse}.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE
@@ -48,7 +50,7 @@ public record ParsingOptions(
      */
     public static final boolean DEFAULT_EMBED_FAILURES = false;
     /**
-* By default, do not iteratively deepen search when parsing with a regex. ({@code false})<br/>
+     * By default, do not iteratively deepen search when parsing with a regex. ({@code false})<br/>
      * The reason is that it is much slower to do.
      */
     public static final boolean DEFAULT_ITERATIVE_DEEPENING = false;
@@ -135,7 +137,7 @@ public record ParsingOptions(
      * Now the code:
      * <pre>
      * {@code
-     *   var p = Alpha.parser("S := 'a' <B> C <D> 'a'\nB := 'b'+\n<C> := 'c'\n<D> := 'd'");
+     *   var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
      *
      *   // No options.
      *   println("Default => " + p.parse("abcda"));       // [:S, a, c, a]
@@ -202,7 +204,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
         if (Objects.equals(this.start, start)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
     }
 
     /**
@@ -214,7 +216,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withPartial(final boolean usePartial) {
         if (Objects.equals(this.usePartial, usePartial)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
     }
 
     /**
@@ -226,7 +228,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withUnhide(final @NotNull UnhideOptions unhide) {
         if (Objects.equals(this.unhide, unhide)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
     }
 
     /**
@@ -238,7 +240,7 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withEmbedFailureInParseTree(final boolean embedFailureInParseTree) {
         if (Objects.equals(this.embedFailureInParseTree, embedFailureInParseTree)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
     }
 
     /**
@@ -250,6 +252,6 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withIterativeDeepening(final boolean iterativeDeepening) {
         if (Objects.equals(this.iterativeDeepening, iterativeDeepening)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree,  iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
     }
 }

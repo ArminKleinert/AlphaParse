@@ -5,7 +5,7 @@ import alphaparse.Sym;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.parser_options.UnhideOptions;
+import alphaparse.parser_options.Unhide;
 import alphaparse.result.Node;
 import alphaparse.result.ParseTree;
 
@@ -90,7 +90,7 @@ class AlphaTest {
     @Test
     void testUnhideOptionsNone() {
         var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
-        var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.NONE);
+        var opts = ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.NONE);
         var tree = ParseTree.create("S", "a", "c", "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
     }
@@ -98,7 +98,7 @@ class AlphaTest {
     @Test
     void testUnhideOptionsTags() {
         var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
-        var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS);
+        var opts = ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.TAGS);
         var tree = ParseTree.create("S", "a", ParseTree.create("C", "c"), "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
     }
@@ -106,7 +106,7 @@ class AlphaTest {
     @Test
     void testUnhideOptionsContent() {
         var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
-        var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT);
+        var opts = ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.CONTENT);
         var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), "c", "d", "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
     }
@@ -114,7 +114,7 @@ class AlphaTest {
     @Test
     void testUnhideOptionsAll() {
         var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
-        var opts = ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL);
+        var opts = ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.ALL);
         var tree = ParseTree.create("S", "a", ParseTree.create("B", "b"), ParseTree.create("C", "c"), ParseTree.create("D", "d"), "a");
         Assertions.assertEquals(tree, Alpha.parse(p, "abcda", opts));
     }
@@ -125,15 +125,15 @@ class AlphaTest {
 
         Assertions.assertEquals(
                 ParseTree.create("S", "a", "c", "a"),
-                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.NONE)));
+                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.NONE)));
 
         Assertions.assertEquals(
                 ParseTree.create("S", "a", ParseTree.create("C", "c"), "a"),
-                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS)));
+                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.TAGS)));
 
         Assertions.assertEquals(
                 ParseTree.create("S", "a", ParseTree.create("B", "b"), "c", "d", "a"),
-                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT)));
+                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.CONTENT)));
 
         Assertions.assertEquals(
                 ParseTree.create("S",
@@ -142,7 +142,7 @@ class AlphaTest {
                         ParseTree.create("C", "c"),
                         ParseTree.create("D", "d"),
                         "a"),
-                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
+                Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.ALL)));
     }
 
     @Test
@@ -471,7 +471,7 @@ class AlphaTest {
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
-            final @NotNull var ps = Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false));
+            final @NotNull var ps = Alpha.parses(p, text, new ParsingOptions(null, true, Unhide.UnhideOptions.NONE, false, false));
             final @NotNull var possibleParses = partialParsesOrderedR123();
             Assertions.assertEquals(possibleParses, ps);
         }
@@ -484,7 +484,7 @@ class AlphaTest {
                     """;
             final @NotNull var text = "aa";
             final @NotNull var p = Alpha.parser(grammar);
-            final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new ParsingOptions(null, true, UnhideOptions.NONE, false, false)));
+            final @NotNull var ps = new HashSet<>(Alpha.parses(p, text, new ParsingOptions(null, true, Unhide.UnhideOptions.NONE, false, false)));
             final @NotNull var possibleParses = new HashSet<>(partialParsesOrderedR123());
             Assertions.assertEquals(possibleParses, ps);
         }

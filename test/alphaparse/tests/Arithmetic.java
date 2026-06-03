@@ -7,11 +7,15 @@ import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.AlphaParseResult;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Examples for usage of the library.
+ */
 public class Arithmetic {
+    private Arithmetic(){}
     /**
      * We use a simple EBNF grammar for arithmetic expressions on the test input. We do not use any special features yet.
      *
-     * @return
+     * @return  output for tutorial state
      */
     static @NotNull AlphaParseResult state1() {
         var g = """
@@ -29,7 +33,7 @@ public class Arithmetic {
     /**
      * We use the alternative string terminals '...' instead of the standard "...". This is still 100% standard EBNF.
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state2() {
         var g = """
@@ -47,7 +51,7 @@ public class Arithmetic {
     /**
      * We remove the commas (dividing rules in concatenation) and semicolons (production terminators).
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state3() {
         var g = """
@@ -81,7 +85,7 @@ public class Arithmetic {
      * </pre>
      * This modifies the grammar when starting. But the parse tree should remain the same.
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state4() {
         var g = """
@@ -102,7 +106,7 @@ public class Arithmetic {
      * <p>
      * We need to step out of the standard EBNF territory. We can compress {@code '0'|...|'9'} into the less annoying regex {@code #'[0-9]'}.
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state5() {
         var g = """
@@ -120,7 +124,7 @@ public class Arithmetic {
     /**
      * We can make the grammar a bit nicer to look at by using '?' for optionals and '*' for repetitions.
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state6() {
         var g = """
@@ -139,7 +143,7 @@ public class Arithmetic {
      * In the "Factor" production, do the '(' and ')' around "Expression" provide any value in the parse tree? Not really? Let's hide them.
      * To hide a rule in the output, wrap it in '<' and '>'.
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state7() {
         var g = """
@@ -157,7 +161,7 @@ public class Arithmetic {
     /**
      * AlphaParse also supports '+' to shorten our rule "Digit Digit*".
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state8() {
         var g = """
@@ -175,7 +179,7 @@ public class Arithmetic {
     /**
      * We can compress the output futher by flattening "Digit" into "Number". To do this, wrap Digit between "<" and ">", but this time on the left.
      *
-     * @return
+     * @return output for tutorial state
      */
     static @NotNull AlphaParseResult state9() {
         var g = """
@@ -211,7 +215,10 @@ public class Arithmetic {
         return p.parse("(8 - 9) * -20 / 18 + 1", ParsingOptions.getDefault());
     }
 
-
+    /**
+     * Example main for tutorial.
+     * @param args Ignored.
+     */
     public static void main(String[] args) {
         System.out.println("1:  " + state1());
         System.out.println("2:  " + state2());

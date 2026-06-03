@@ -77,6 +77,7 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
 
     /**
      * True if the list is fully evaluated, false otherwise.
+     *
      * @return true or false.
      */
     public boolean isFullyEvaluated() {
@@ -199,7 +200,8 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
         return at;
     }
 
-    @Override public T getFirst() {
+    @Override
+    public T getFirst() {
         if (!evaluatedPart.isEmpty())
             return evaluatedPart.getFirst();
         evalutePart(0);

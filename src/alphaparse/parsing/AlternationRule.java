@@ -13,21 +13,21 @@ import java.util.List;
  * A class representing a choice or alternation. That is the {@code (p1 | p2)} operator in EBNF (where p1 and p2 are instances of {@link Rule}).
  * <p>
  * Notation: {@code rule1 | rule2}
- *
+ * <p>
  * Example
  * <pre>
- *{@code
+ * {@code
  *         // Accepts the language {"a", "b", "ab"}
  *         var p = Alpha.parser("S := 'a' | 'b' | 'ab'");
  *         println(p.parse("a"));  // [:S, a]
  *         println(p.parse("b"));  // [:S, b]
  *         println(p.parse("ab")); // [:S, ab]
- *}
+ * }
  * </pre>
- *
+ * <p>
  * Alternatively, the {@link ParserCreationOptions} class allows an alternative notation for defining alternations:
  * <pre>
- *{@code
+ * {@code
  *         var opts = Alpha.ParserCreationOptions
  *                 .getDefault()
  *                 .withRedefinitionOption(Grammar.RedefinitionOption.CHOICE);

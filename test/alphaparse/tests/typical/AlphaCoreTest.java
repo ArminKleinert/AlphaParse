@@ -3,10 +3,7 @@ package alphaparse.tests.typical;
 import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser.Parser;
-import alphaparse.parser_options.GlobalCaseInsensitivity;
-import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parser_options.ParsingOptions;
-import alphaparse.parser_options.UnhideOptions;
+import alphaparse.parser_options.*;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
@@ -675,11 +672,11 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(treeNormal, p.parse(text));
         Assertions.assertEquals(treeWParen,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.CONTENT)));
         Assertions.assertEquals(treeWParen,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.ALL)));
         Assertions.assertEquals(treeNormal,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.TAGS)));
     }
 
     @Test
@@ -696,10 +693,10 @@ class AlphaCoreTest {
         var p = paren_ab_hide_tag;
 
         Assertions.assertEquals(treeWTag,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.TAGS)));
 
         Assertions.assertEquals(treeWAll,
-                p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
+                p.parse(text, ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.ALL)));
     }
 
     @Test
@@ -770,7 +767,7 @@ class AlphaCoreTest {
         );
         Assertions.assertEquals(treeWithoutTokenTag, words_and_numbers.parse(text));
 
-        Assertions.assertEquals(treeFull, words_and_numbers.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL)));
+        Assertions.assertEquals(treeFull, words_and_numbers.parse(text, ParsingOptions.getDefault().withUnhide(Unhide.UnhideOptions.ALL)));
     }
 
     @Test

@@ -16,8 +16,16 @@ import java.util.stream.Collectors;
  * A type representing a Grammar.
  */
 public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
+    /**
+     * Staring symbol of this grammar. Can be overridden when the Grammar is used in a parser.
+     */
     private final @Nullable Sym startSym;
 
+    /**
+     * Create a new instance.
+     * @param startSym Starting production key.
+     * @param m Map of productions. This should be an ordered {@link SequencedMap}.
+     */
     public Grammar(final @Nullable Sym startSym, final @NotNull Map<? extends Sym, ? extends Rule> m) {
         super(m);
         this.startSym = startSym;
@@ -26,16 +34,25 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
     /**
      * Creates a new instance from a {@link Map}.
      *
-     * @param m The map.
+     * @param m Map of productions. This should be an ordered {@link SequencedMap}.
      */
     public Grammar(final @NotNull Map<? extends Sym, ? extends Rule> m) {
         this(m.isEmpty() ? null : m.entrySet().stream().findFirst().get().getKey(), m);
     }
 
+    /**
+     * Creates a new instance from a {@link Map}.
+     *
+     * @param m Map of productions. This should be an ordered {@link SequencedMap}.
+     */
     public Grammar(final @NotNull SequencedMap<? extends Sym, ? extends Rule> m) {
         this(m.firstEntry().getKey(), m);
     }
 
+    /**
+     * Return the starting production. This might be null.
+     * @return The starting production key.
+     */
     public @Nullable Sym getStartSym() {
         return startSym;
     }
@@ -142,11 +159,11 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                     case NonTerminal nonTerminal -> result.add(nonTerminal);
                     case Terminal ignored -> {
                     }
-                    case SimpleRule ignored -> {
-                    }
                     case RuleWithManyChildren ruleWithManyChildren ->
                             ruleStack.addAll(ruleWithManyChildren.getParsers());
                     case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getParser());
+                    case SpecialSequenceRule ignored -> {
+                    }
                 }
             }
 

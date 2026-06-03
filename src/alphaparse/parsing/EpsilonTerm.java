@@ -18,7 +18,6 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * If yes, success if the end of input has been reached, fail otherwise. If no, always success.
  */
 public final class EpsilonTerm extends Terminal {
-
     private static final @NotNull EpsilonTerm epsilon = new EpsilonTerm();
 
     private EpsilonTerm(final boolean hide, final @NotNull ReductionType red) {
