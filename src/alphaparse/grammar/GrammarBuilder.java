@@ -245,9 +245,8 @@ public abstract class GrammarBuilder {
      * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
      */
     public final @NotNull Rule regex(final @NotNull Pattern p) {
-
         if (allCharsAreAlphaNumeric(p.pattern()))
-            return stringCI(p.pattern());
+            return stringCS(p.pattern());
         return buffer.getOrAddRegex(p);
     }
 
@@ -261,7 +260,7 @@ public abstract class GrammarBuilder {
         if (s.isEmpty())
             return EpsilonTerm.getDefault();
         if (allCharsAreAlphaNumeric(s))
-            return stringCI(s);
+            return stringCS(s);
         return buffer.getOrAddRegex(Pattern.compile(s));
     }
 
@@ -394,13 +393,13 @@ public abstract class GrammarBuilder {
      * or {@link EpsilonTerm} if the string is empty.
      *
      * @param string         The string to match.
-     * @param explicitCasing Whether the Terminal will match without caring about casing.
+     * @param caseInsensitive Whether the Terminal will match case insensitive.
      * @return The new parser.
      */
-    public @NotNull Rule string(final @NotNull String string, final boolean explicitCasing) {
+    public @NotNull Rule string(final @NotNull String string, final boolean caseInsensitive) {
         if (string.isEmpty())
             return EpsilonTerm.getDefault();
-        return buffer.getOrAddString(string, explicitCasing);
+        return buffer.getOrAddString(string, caseInsensitive);
     }
 
     /**
@@ -440,7 +439,6 @@ public abstract class GrammarBuilder {
     public final @NotNull Rule string(final @NotNull String string) {
         if (string.isEmpty())
             return EpsilonTerm.getDefault();
-
         return switch (options.stringCaseInsensitive()) {
             case TRUE -> buffer.getOrAddString(string, true);
             case FALSE, DEFAULT -> buffer.getOrAddString(string, false);

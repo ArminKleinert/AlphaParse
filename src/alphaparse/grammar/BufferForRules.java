@@ -63,7 +63,7 @@ final class BufferForRules {
     private final @NotNull Map<@NotNull Pattern, @NotNull RegexTerm>
             regexTermMap1 = new HashMap<>();
 
-    @NotNull RegexTerm getOrAddRegex(final @NotNull Pattern keyword) {
-        return regexTermMap1.computeIfAbsent(keyword, RegexTerm::new);
+    @NotNull RegexTerm getOrAddRegex(final @NotNull Pattern pattern) {
+        return regexTermMap1.computeIfAbsent(pattern, RegexTerm::new);
     }
 }

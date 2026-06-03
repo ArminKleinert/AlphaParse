@@ -28,12 +28,13 @@ final class Cfg {
         String spec;
         Grammar grammarGrammar;
 
-        GrammarBuild(@NotNull ParserCreationOptions options, String spec, Grammar grammarGrammar) {
+        GrammarBuild(final @NotNull ParserCreationOptions options,
+                     final @NotNull String spec,
+                     final @NotNull Grammar grammarGrammar) {
             super(options);
             this.spec = spec;
             this.grammarGrammar = grammarGrammar;
         }
-
 
         private @NotNull Rule stringOrStringCaseInsensitiveRule(
                 final @NotNull String s) {
