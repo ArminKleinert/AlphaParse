@@ -149,6 +149,7 @@ class VariableRepetitionTest {
                             S = 1*6 'a'
                             """,
                     creationOpts);
+            System.out.println(repeated_a);
             Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
         }
     }
