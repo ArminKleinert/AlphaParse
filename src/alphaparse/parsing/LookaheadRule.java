@@ -10,7 +10,9 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * This class represents the ABNF "lookahead" operator {@code &p} (where p is an instance of {@link Rule}).
  */
 public final class LookaheadRule extends RuleWithChild {
-    private LookaheadRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
+    private LookaheadRule(final boolean hide,
+                          final @NotNull ReductionType red,
+                          final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 

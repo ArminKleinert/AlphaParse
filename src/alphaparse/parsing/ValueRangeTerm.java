@@ -16,7 +16,9 @@ public final class ValueRangeTerm extends Terminal {
     private final int lo;
     private final int hi;
 
-    private ValueRangeTerm(final boolean hide, final @NotNull ReductionType red, final int lo, final int hi) {
+    private ValueRangeTerm(final boolean hide,
+                           final @NotNull ReductionType red,
+                           final int lo, final int hi) {
         super(hide, red);
         if (lo > hi) throw new IllegalArgumentException();
         this.lo = lo;
@@ -24,7 +26,7 @@ public final class ValueRangeTerm extends Terminal {
     }
 
     /**
-     * Creates a new instance..
+     * Creates a new instance.
      *
      * @param lo The lowest codepoint.
      * @param hi The highest codepoint.

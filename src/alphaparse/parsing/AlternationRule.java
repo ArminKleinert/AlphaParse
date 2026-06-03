@@ -43,7 +43,9 @@ import java.util.List;
  * </pre>
  */
 public final class AlternationRule extends RuleWithManyChildren {
-    private AlternationRule(boolean hide, @NotNull ReductionType red, @NotNull List<Rule> parsers) {
+    private AlternationRule(final boolean hide,
+                            final @NotNull ReductionType red,
+                            final @NotNull List<Rule> parsers) {
         super(hide, red, parsers);
     }
 
@@ -52,7 +54,7 @@ public final class AlternationRule extends RuleWithManyChildren {
      *
      * @param parsers The different parsers in the choice.
      */
-    public AlternationRule(@NotNull List<Rule> parsers) {
+    public AlternationRule(final @NotNull List<Rule> parsers) {
         super(parsers);
     }
 

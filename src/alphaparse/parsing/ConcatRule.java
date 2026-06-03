@@ -16,7 +16,9 @@ import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey
  * When parsing, it tries to match p1, then p2, then p3 and so on.
  */
 public final class ConcatRule extends RuleWithManyChildren {
-    private ConcatRule(boolean hide, @NotNull ReductionType red, @NotNull List<Rule> parsers) {
+    private ConcatRule(final boolean hide,
+                       final @NotNull ReductionType red,
+                       final @NotNull List<Rule> parsers) {
         super(hide, red, parsers);
     }
 
@@ -25,7 +27,7 @@ public final class ConcatRule extends RuleWithManyChildren {
      *
      * @param parsers The parsers.
      */
-    public ConcatRule(@NotNull List<Rule> parsers) {
+    public ConcatRule(final @NotNull List<Rule> parsers) {
         super(parsers);
     }
 

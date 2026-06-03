@@ -15,7 +15,9 @@ import java.util.Objects;
 public final class NonTerminal extends SimpleRule {
     private final @NotNull Sym keyword;
 
-    private NonTerminal(final boolean hide, final @NotNull ReductionType red, final @NotNull Sym keyword) {
+    private NonTerminal(final boolean hide,
+                        final @NotNull ReductionType red,
+                        final @NotNull Sym keyword) {
         super(hide, red);
         this.keyword = keyword;
     }

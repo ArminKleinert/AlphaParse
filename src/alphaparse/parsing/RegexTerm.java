@@ -25,7 +25,9 @@ import java.util.regex.Pattern;
 public final class RegexTerm extends Terminal {
     private final @NotNull Pattern regexp;
 
-    private RegexTerm(final boolean hide, final @NotNull ReductionType red, final @NotNull Pattern regexp) {
+    private RegexTerm(final boolean hide,
+                      final @NotNull ReductionType red,
+                      final @NotNull Pattern regexp) {
         super(hide, red);
         this.regexp = regexp;
     }
@@ -40,7 +42,8 @@ public final class RegexTerm extends Terminal {
         this.regexp = regexp;
     }
 
-    private static @Nullable String reMatchAtFront(final @NotNull Pattern regexp, final @NotNull CharSequence text) {
+    private static @Nullable String reMatchAtFront(final @NotNull Pattern regexp,
+                                                   final @NotNull CharSequence text) {
         final @NotNull Matcher matcher = regexp.matcher(text);
         if (matcher.lookingAt()) return matcher.group();
         return null;

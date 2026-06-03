@@ -28,7 +28,7 @@ public final class StringTerm extends Terminal {
     }
 
     /**
-     * Creates a new instance..
+     * Creates a new instance.
      *
      * @param string          The string to match.
      * @param caseInsensitive True if the casing doesn't matter, false if it does matter.

@@ -13,7 +13,9 @@ import org.jetbrains.annotations.Nullable;
  * Represents a "once or more" parse. That is the {@code p+} operator (where p is an instance of {@link Rule}).
  */
 public final class OnceOrMoreRule extends RuleWithChild {
-    private OnceOrMoreRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
+    private OnceOrMoreRule(final boolean hide,
+                           final @NotNull ReductionType red,
+                           final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 

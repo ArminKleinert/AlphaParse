@@ -14,7 +14,9 @@ import alphaparse.trampoline.TrampolineListenerNode;
  * Example: The production {@code S := !'a' ('a'|'b')+} matches any string of 'a' and 'b' which does NOT start with 'a'.
  */
 public final class NegativeLookaheadRule extends RuleWithChild {
-    private NegativeLookaheadRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
+    private NegativeLookaheadRule(final boolean hide,
+                                  final @NotNull ReductionType red,
+                                  final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 

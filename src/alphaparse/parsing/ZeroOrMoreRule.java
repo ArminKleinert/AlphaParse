@@ -13,12 +13,14 @@ import org.jetbrains.annotations.NotNull;
  * Notation: {@code {rule}} or {@code rule*}
  */
 public final class ZeroOrMoreRule extends RuleWithChild {
-    private ZeroOrMoreRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
+    private ZeroOrMoreRule(final boolean hide,
+                           final @NotNull ReductionType red,
+                           final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 
     /**
-     * Creates a new instance..
+     * Creates a new instance.
      *
      * @param parser The {@link Rule} to match repeatedly.
      */
@@ -29,7 +31,8 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Rule rule = getParser();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForStar =
+                new TrampolineListenerKey(index, this);
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
                 OnceOrMoreRule.plusListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner)

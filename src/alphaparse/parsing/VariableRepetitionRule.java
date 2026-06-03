@@ -25,8 +25,10 @@ public final class VariableRepetitionRule extends RuleWithChild {
     private final int min;
     private final int max;
 
-    private VariableRepetitionRule(final boolean hide, final @NotNull ReductionType red,
-                                   final @NotNull Rule parser, final int min, final int max) {
+    private VariableRepetitionRule(final boolean hide,
+                                   final @NotNull ReductionType red,
+                                   final @NotNull Rule parser,
+                                   final int min, final int max) {
         super(hide, red, parser);
         this.min = min;
         this.max = max;

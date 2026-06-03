@@ -12,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
  * When parsing, the parser contained herein is optional (run zero times or once).
  */
 public final class OptionalRule extends RuleWithChild {
-    private OptionalRule(final boolean hide, final @NotNull ReductionType red, final @NotNull Rule parser) {
+    private OptionalRule(final boolean hide,
+                         final @NotNull ReductionType red,
+                         final @NotNull Rule parser) {
         super(hide, red, parser);
     }
 
@@ -28,7 +30,8 @@ public final class OptionalRule extends RuleWithChild {
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Rule rule = getParser();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForOpt =
+                new TrampolineListenerKey(index, this);
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
                 runner.nodeListener(nodeKeyForOpt)
