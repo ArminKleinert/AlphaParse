@@ -5,6 +5,7 @@ import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
@@ -376,6 +377,7 @@ class RulesAvailableGeneralizedTests {
         var p = AlphaParser("S = 1*3 \"a\" \"b\"", opts);
         Assertions.assertTrue(p.parse("a").isFailure());
         Assertions.assertTrue(p.parse("b").isFailure());
+        System.out.println(p.parse("ab", ParsingOptions.getDefault().withPartial(true)));
         Assertions.assertEquals(ParseTree.create("S", "a", "b"), p.parse("ab"));
         Assertions.assertEquals(ParseTree.create("S", "a", "a", "b"), p.parse("aab"));
         Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "b"), p.parse("aaab"));

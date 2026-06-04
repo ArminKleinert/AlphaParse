@@ -265,9 +265,8 @@ final class Cfg {
 
     @NotNull Parser buildParser(final @NotNull String spec,
                                 final @NotNull Grammar grammarGrammar) {
-        var gb = new GrammarBuild(options, spec, grammarGrammar);
-
-        var grammar = gb.buildWithWhitespace(options.whitespaceParser());
+        var grammar = new GrammarBuild(options, spec, grammarGrammar)
+                .buildWithWhitespace(null, options.whitespaceParser());
         final @NotNull var startProduction = options.startProduction() != null
                 ? options.startProduction()
                 : Objects.requireNonNull(grammar.getStartSym());

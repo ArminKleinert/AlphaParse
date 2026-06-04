@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public record Parser(@NotNull Grammar grammar,
                      @NotNull Sym startProduction) {
-
     /**
      * Creates a new Parser.
      *
@@ -26,7 +25,6 @@ public record Parser(@NotNull Grammar grammar,
     public Parser {
         if (!grammar.containsKey(startProduction))
             throw new IllegalArgumentException("Illegal start-production " + startProduction + ": not in grammar.");
-
     }
 
     /**

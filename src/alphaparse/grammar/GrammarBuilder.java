@@ -68,18 +68,7 @@ public abstract class GrammarBuilder {
      * @return The grammar.
      */
     public final @NotNull Grammar build() {
-        return buildWithWhitespace(null);
-    }
-
-    /**
-     * Use this to construct the grammar.
-     *
-     * @param wsParser Whitespace parser to include.
-     * @return The grammar.
-     */
-    public final @NotNull Grammar buildWithWhitespace(
-            final @Nullable Parser wsParser) {
-        return buildWithWhitespace(null, wsParser);
+        return buildWithWhitespace(null, null);
     }
 
     /**
@@ -466,6 +455,17 @@ public abstract class GrammarBuilder {
     }
 
     /**
+     * Like {@link #concat(List)}, except it assumes that (1) the input is not empty and (2) the input does not include epsilons.
+     *
+     * @param rules The rules.
+     * @return A {@link ConcatRule}.
+     */
+    public @NotNull ConcatRule concatNoEpsilonMoreThan1(
+            final @NotNull List<Rule> rules) {
+        return ConcatRule.createNoEpsilonMoreThan1(rules);
+    }
+
+    /**
      * Creates a {@link AlternationRule}.
      * <ul>
      * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
@@ -503,14 +503,14 @@ public abstract class GrammarBuilder {
     }
 
     /**
-     * Like {@link #alternationC(List)} except the input
-     * list is distinct (each rule in the list occurs exactly once).
+     * Like {@link #alternationC(List)} except the input list is assumed to be distinct
+     * (each rule in the list occurs exactly once) and not empty.
      * Use this method only if you are sure that the rules are distinct.
      *
      * @param rules The rules.
      * @return A rule.
      */
-    public final @NotNull Rule alternationGuaranteeDistinctAndNotEmpty(
+    public final @NotNull AlternationRule alternationGuaranteeDistinctAndNotEmpty(
             final @NotNull List<Rule> rules) {
         return AlternationRule.createGuaranteeDistinctAndNotEmpty(rules);
     }

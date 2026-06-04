@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
@@ -37,23 +36,27 @@ public final class ConcatRule extends RuleWithManyChildren {
             return rules.getFirst();
 
         var compressedResult = new ArrayList<Rule>();
-        var simpleBuffered = new HashMap<SimpleRule, SimpleRule>();
 
         for (@NotNull Rule rule : rules) {
             if (rule instanceof ConcatRule cc) {
                 compressedResult.addAll(cc.getRules());
             } else {
-                if (rule instanceof SimpleRule sr) {
-                    var temp = simpleBuffered.get(sr);
-
-                    if (temp == null) simpleBuffered.put(sr, sr);
-                    else rule = temp;
-                }
                 compressedResult.add(rule);
             }
         }
 
         return new ConcatRule(defaultHidden, defaultReductionType, compressedResult);
+    }
+
+    /**
+     * Like {@link #create(List)}, except it assumes that (1) the input includes no epsilons and (2) there are at least two rules in the input. This makes the method perform fewer optimizations, saving a miniscule amount of time.
+     *
+     * @param rules The rules.
+     * @return A concatenation rule.
+     */
+    public static @NotNull ConcatRule createNoEpsilonMoreThan1(
+            final @NotNull List<Rule> rules) {
+        return new ConcatRule(defaultHidden, defaultReductionType, rules);
     }
 
     @Override

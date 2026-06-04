@@ -1,17 +1,19 @@
-package alphaparse.main;
+package alphaparse.tests;
 
-import alphaparse.*;
-import alphaparse.parser_options.*;
+import alphaparse.Alpha;
+import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.util.TimeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
 
-final class Main {
-    public static void main(String[] args) throws IOException {
+class PerformanceTests {
+    @Test
+    void fullTest() throws IOException {
         final boolean doRun = true;
         final int testNumMultiplierForSlowTests = 100;
         final int testNumMultiplier = 1000;
@@ -136,5 +138,23 @@ Count of parses: 4096
         System.out.println("Original:    -");
 
         System.out.println("Count of parses: " + Alpha.parses(p, text).size());
+    }
+
+    @Test
+    void testNumberOfParses() // Currently tested with max=23, number is exclusive
+    {
+        final int max = 15;
+        System.out.println("\n----------------------------------\n---   Number of parses tests   ---\n----------------------------------");
+        System.gc();
+        var grammar = "S : (A | B)+\nA : 'a' | 'b'\nB : 'b' | 'a'";
+        var p = Alpha.parser(grammar);
+        var sb = new StringBuilder();
+        for (int n = 0; n < max; n++) {
+            int num = Alpha.parses(p, sb.toString()).size();
+            System.out.println("Parses for " + n + ": " + num + " (Correct? "
+                    + (num == 0 || num == 1 << n)
+                    + ")");
+            sb.append("a");
+        }
     }
 }

@@ -74,8 +74,7 @@ public final class AlternationRule extends RuleWithManyChildren {
             }
         }
 
-        return new AlternationRule(
-                defaultHidden, defaultReductionType,
+        return new AlternationRule(defaultHidden, defaultReductionType,
                 compressedRules.stream().distinct().toList());
     }
 
@@ -87,7 +86,8 @@ public final class AlternationRule extends RuleWithManyChildren {
      * @param rules The wrapped rules.
      * @return A rule.
      */
-    public static @NotNull Rule createGuaranteeDistinctAndNotEmpty(final @NotNull List<Rule> rules) {
+    public static @NotNull AlternationRule createGuaranteeDistinctAndNotEmpty(
+            final @NotNull List<Rule> rules) {
         return new AlternationRule(defaultHidden, defaultReductionType, rules);
     }
 

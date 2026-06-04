@@ -1,4 +1,4 @@
-# AlphaParse 0.9.1
+# AlphaParse 0.9.2
 
 A tool to generate and use parsers at runtime.
 

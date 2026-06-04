@@ -124,12 +124,4 @@ public final class FlatSeq<T> implements Iterable<T> {
 
         return new FlatSeq<>(newV);
     }
-
-    public @NotNull FlatSeq<@NotNull T> reverse() {
-        final @NotNull Object[] newV = new Object[v.length];
-        for (int i = 0, revI = v.length-1; i < v.length; i++) {
-            newV[revI--] = v[i];
-        }
-        return new FlatSeq<>(newV);
-    }
 }

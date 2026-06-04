@@ -22,11 +22,8 @@ final class CfgGrammar extends GrammarBuilder {
         this.rulesAvailable = options.usableRules();
     }
 
-    //private final @NotNull Rule optWhitespace =
-    //        NonTerminal.create(Sym.sym("opt-whitespace")).enableHideTag();
-
     private final @NotNull Rule optWhitespace =
-            makeCfgOptWhitespaceRhs().enableHideTag();
+            NonTerminal.create(Sym.sym("opt-whitespace")).enableHideTag();
 
     private @NotNull List<@NotNull Rule> cListOf(Rule... elements) {
         return Arrays.stream(elements).filter(Objects::nonNull).toList();
@@ -36,10 +33,6 @@ final class CfgGrammar extends GrammarBuilder {
             final @NotNull String symString, final @NotNull RulesAvailable ra) {
         return rulesAvailable.contains(ra) ? nt(Sym.sym(symString)) : null;
     }
-
-    private final @NotNull NonTerminal factorNt = nt(Sym.sym("factor"));
-
-    private final @NotNull NonTerminal ntNt = nt(Sym.sym("nt"));
 
     /*
      * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
@@ -60,7 +53,7 @@ final class CfgGrammar extends GrammarBuilder {
                 Map.entry(Sym.sym("HEXDIG"), RegexTerm.create(Pattern.compile("[0-9a-fA-F]"))),
                 Map.entry(Sym.sym("HTAB"), RegexTerm.create(Pattern.compile("\t"))),
                 Map.entry(Sym.sym("LF"), RegexTerm.create(Pattern.compile("\n"))),
-                Map.entry(Sym.sym("LWSP"), ZeroOrMoreRule.create(AlternationRule.create(List.of(WSP, ConcatRule.create(List.of(CRLF, WSP)))))),
+                Map.entry(Sym.sym("LWSP"), ZeroOrMoreRule.create( AlternationRule.create(List.of(WSP,  ConcatRule.create(List.of(CRLF, WSP)))))),
                 Map.entry(Sym.sym("OCTET"), RegexTerm.create(Pattern.compile("[\\u0000-\\u00FF]"))),
                 Map.entry(Sym.sym("SP"), StringTerm.create(" ", false)),
                 Map.entry(Sym.sym("VCHAR"), RegexTerm.create(Pattern.compile("[\\u0021-\\u007E]"))),
@@ -74,7 +67,7 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     private @NotNull Rule makeCfgRulesRhs() {
-        final @NotNull Rule rulesRule = concatNoEpsilonMoreThan1(
+        final @NotNull Rule rulesRule = concat(
                 List.of(optWhitespace,
                         onceOrMore(
                                 nt(Sym.sym("rule")) /// {@link #makeCfgRuleRhs}
@@ -85,34 +78,30 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Rule makeCfgCommentRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(string("(*"),
-                                makeCfgInsideCommentRhs(),
-                                string("*)"))).hideTag();
+                concat("(*",
+                        makeCfgInsideCommentRhs(),
+                        "*)").hideTag();
         return rulesRule;
     }
 
     private @NotNull Rule makeCfgInsideCommentRhs() {
         final @NotNull Pattern insideComment = Pattern.compile("(?s)(?:(?!\\(\\*|\\*\\)).)* (?x) # Comment text");
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(regex(insideComment),
+                concat(regex(insideComment),
                                 zeroOrMore(
-                                        concatNoEpsilonMoreThan1(
-                                                List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
-                                                        regex(insideComment))))));
+                                        concat(Sym.sym("comment"), /// {@link #makeCfgCommentRhs}
+                                                        regex(insideComment))));
         return rulesRule;
     }
 
     private @NotNull Rule makeCfgOptWhitespaceRhs() {
         final @NotNull Pattern ws = regexDoc("[,\\s]*", "optional whitespace");
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(regex(ws),
+                concat(regex(ws),
                                 zeroOrMore(
-                                        concatNoEpsilonMoreThan1(
-                                                List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
-                                                        regex(ws))))));
+                                        concat(
+                                                List.of(Sym.sym("comment"), /// {@link #makeCfgCommentRhs}
+                                                        regex(ws)))));
         return rulesRule;
     }
 
@@ -151,7 +140,7 @@ final class CfgGrammar extends GrammarBuilder {
                                 nt(Sym.sym("epsilon")), /// {@link #makeCfgEpsilonRhs}
                                 makeNT("rep", RulesAvailable.VARIABLE_REPEAT), /// ABNF feature {@link #makeCfgRepRhs}
                                 makeNT("abnf-range", RulesAvailable.VALUE_RANGE), /// ABNF feature {@link #makeABNFValueRange}
-                                ntNt, /// {@link #makeCfgNtRhs}
+                                nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
                                 null
                         ))
                         .hideTag();
@@ -165,10 +154,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgPlusRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(factorNt, /// {@link #makeCfgFactorRhs}
+                concat(
+                        Sym.sym("factor"), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
-                                string("+").enableHideTag()));
+                                string("+").enableHideTag());
         return rulesRule;
     }
 
@@ -187,18 +176,17 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Rule makeCfgParenRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(string("(").enableHideTag(),
+                concat(string("(").enableHideTag(),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                Sym.sym("alt-or-ord"), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                string(")").enableHideTag()));
+                                string(")").enableHideTag());
         return rulesRule;
     }
 
     private @NotNull Rule makeCfgHideRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
+                concat(
                         List.of(buffer(string("<").enableHideTag()),
                                 optWhitespace,
                                 nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
@@ -306,11 +294,10 @@ final class CfgGrammar extends GrammarBuilder {
                     regex(Pattern.compile("\\d+(?:\\*\\d*)?|\\*\\d+"));
         }
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(List.of(
-                        repRegexChoice,
+                concat(repRegexChoice,
                         optWhitespace,
-                        factorNt /// {@link #makeCfgFactorRhs}
-                ));
+                        Sym.sym("factor") /// {@link #makeCfgFactorRhs}
+                );
         return rulesRule;
     }
 
@@ -321,11 +308,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgLookRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(string("&").enableHideTag(),
+                concat(string("&").enableHideTag(),
                                 optWhitespace,
-                                factorNt /// {@link #makeCfgFactorRhs}
-                        ));
+                                Sym.sym("factor") /// {@link #makeCfgFactorRhs}
+                        );
         return rulesRule;
     }
 
@@ -336,11 +322,11 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgNegRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(string("!").enableHideTag(),
+                concat(
+                        string("!").enableHideTag(),
                                 optWhitespace,
-                                factorNt /// {@link #makeCfgFactorRhs}
-                        ));
+                                Sym.sym("factor") /// {@link #makeCfgFactorRhs}
+                        );
         return rulesRule;
     }
 
@@ -351,12 +337,11 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgZeroOrMoreStdRhs() {
         final @NotNull Rule rule =
-                concatNoEpsilonMoreThan1(
-                        List.of(string("{").enableHideTag(),
+                concat(string("{").enableHideTag(),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                Sym.sym("alt-or-ord"), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                string("}").enableHideTag()));
+                                string("}").enableHideTag());
         return rule;
     }
 
@@ -367,10 +352,9 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgZeroOrMoreStarRhs() {
         final @NotNull Rule rule =
-                concatNoEpsilonMoreThan1(
-                        List.of(factorNt, /// {@link #makeCfgFactorRhs}
+                concat(Sym.sym("factor"), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
-                                string("*").enableHideTag()));
+                                string("*").enableHideTag());
         return rule;
     }
 
@@ -381,12 +365,11 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgOptRhs() {
         final @NotNull Rule rule =
-                concatNoEpsilonMoreThan1(
-                        List.of(string("[").enableHideTag(),
+                concat(string("[").enableHideTag(),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                Sym.sym("alt-or-ord"), /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
-                                string("]").enableHideTag()));
+                                string("]").enableHideTag());
         return rule;
     }
 
@@ -397,10 +380,10 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgOptQueryRhs() {
         final @NotNull Rule rule =
-                concatNoEpsilonMoreThan1(
-                        List.of(factorNt, /// {@link #makeCfgFactorRhs}
+                concat(
+                        Sym.sym("factor"), /// {@link #makeCfgFactorRhs}
                                 optWhitespace,
-                                string("?").enableHideTag()));
+                                string("?").enableHideTag());
         return rule;
     }
 
@@ -423,10 +406,10 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @NotNull Rule makeCfgHideNtRhs() {
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
+                concat(
                         List.of(buffer(string("<").enableHideTag()),
                                 optWhitespace,
-                                ntNt, /// {@link #makeCfgNtRhs}
+                                Sym.sym("nt"), /// {@link #makeCfgNtRhs}
                                 optWhitespace,
                                 buffer(string(">").enableHideTag())));
         return rulesRule;
@@ -435,9 +418,9 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgRuleRhs() {
         final @NotNull Rule optWs = nt(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(alternationGuaranteeDistinctAndNotEmpty(
-                                        List.of(ntNt, /// {@link #makeCfgNtRhs}
+                concat(
+                        alternationGuaranteeDistinctAndNotEmpty(
+                                        List.of(nt(Sym.sym("nt")), /// {@link #makeCfgNtRhs}
                                                 nt(Sym.sym("hide-nt")) /// {@link #makeCfgHideNtRhs}
                                         )),
                                 optWhitespace,
@@ -446,13 +429,13 @@ final class CfgGrammar extends GrammarBuilder {
                                 nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
                                 alternationGuaranteeDistinctAndNotEmpty(
                                         List.of(optWs,
-                                                concatNoEpsilonMoreThan1(
+                                                concat(
                                                         List.of(optWs,
                                                                 alternationGuaranteeDistinctAndNotEmpty(
                                                                         List.of(string(";"),
                                                                                 string("."))),
                                                                 optWs))))
-                                        .enableHideTag()));
+                                        .enableHideTag());
         return rulesRule;
     }
 
@@ -464,14 +447,14 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgOrdRhs() {
         final @NotNull Rule catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(catNt,
+                concat(
+                        catNt,
                                 zeroOrMore(
-                                        concatNoEpsilonMoreThan1(
-                                                List.of(optWhitespace,
+                                        concat(
+                                                optWhitespace,
                                                         string("/").enableHideTag(),
                                                         optWhitespace,
-                                                        catNt)))));
+                                                        catNt)));
         return rulesRule;
     }
 
@@ -483,13 +466,12 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgAltRhs() {
         final @NotNull Rule catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(catNt,
-                                zeroOrMore(concatNoEpsilonMoreThan1(
-                                        List.of(optWhitespace,
+                concat(catNt,
+                                zeroOrMore(concat(
+                                        optWhitespace,
                                                 string("|").enableHideTag(),
                                                 optWhitespace,
-                                                catNt)))));
+                                                catNt)));
         return rulesRule;
     }
 
@@ -500,17 +482,16 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgCatRhs() {
         final @NotNull Rule factorLookNeg = alternationGuaranteeDistinctAndNotEmpty(cListOf(
-                factorNt, /// {@link #makeCfgFactorRhs}
+                nt(Sym.sym("factor")), /// {@link #makeCfgFactorRhs}
                 makeNT("look", RulesAvailable.LOOKAHEAD), /// {@link #makeCfgLookRhs}
                 makeNT("neg", RulesAvailable.NEGATIVE_LOOKAHEAD), /// {@link #makeCfgNegRhs}
                 makeNT("exclude", RulesAvailable.EXCLUSION) /// {@link #makeCfgExclude}
         ));
         final @NotNull Rule rulesRule =
                 onceOrMore(
-                        concatNoEpsilonMoreThan1(
-                                List.of(optWhitespace,
+                        concat(optWhitespace,
                                         factorLookNeg,
-                                        optWhitespace)));
+                                        optWhitespace));
         return rulesRule;
     }
 
@@ -520,14 +501,16 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Rule}.
      */
     private @NotNull Rule makeCfgExclude() {
+//        final @NotNull Rule factorLookNeg = alternationGuaranteeDistinct(cListOf(
+//                nt(Sym.sym("factor")) /// {@link #makeCfgFactorRhs}
+//        ));
         final @NotNull Rule factorLookNeg =
-                factorNt; /// {@link #makeCfgFactorRhs}
+                nt(Sym.sym("factor")); /// {@link #makeCfgFactorRhs}
         final @NotNull Rule rulesRule =
-                concatNoEpsilonMoreThan1(
-                        List.of(factorLookNeg, optWhitespace,
+                concat(factorLookNeg, optWhitespace,
                                 string("-").enableHideTag(),
                                 optWhitespace,
-                                alternationGuaranteeDistinctAndNotEmpty(List.of(factorLookNeg, nt(Sym.sym("exclude"))))));
+                                alternationGuaranteeDistinctAndNotEmpty(List.of(factorLookNeg, nt(Sym.sym("exclude")))));
         return rulesRule;
     }
 

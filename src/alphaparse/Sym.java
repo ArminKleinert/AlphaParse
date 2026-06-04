@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A class for string-alternatives that are slightly slower to create than strings, but provide interning and O(1) comparisons via the buildin {@code ==} operator.
+ * A class for string-alternatives that are slightly slower to create than strings, but provide interning and O(1) comparisons via the build-in {@code ==} operator.
  * <p>
  * {@code
  * Sym k1 = Sym.sym(str);
@@ -17,9 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * }
  */
 public final class Sym {
-    private static final ConcurrentHashMap<String, Reference<Sym>> table =
+    private static final @NotNull ConcurrentHashMap<@NotNull String, Reference<Sym>> table =
             new ConcurrentHashMap<>();
-    private static final ReferenceQueue<Sym> rq =
+    private static final @NotNull ReferenceQueue<@NotNull Sym> rq =
             new ReferenceQueue<>();
 
     private final @NotNull String name;
