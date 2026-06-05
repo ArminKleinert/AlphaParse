@@ -20,8 +20,9 @@ statement      : exprStmt
                | block ;
 
 exprStmt       : expression ";" ;
-forStmt        : "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement ;
+forStmt        : "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement
                | "for" "(" IDENTIFIER ":" term ")" statement ;
+
 ifStmt         : "if" "(" expression ")" statement
                  ( "else" statement )? ;
 printStmt      : "print" expression ";" ;

@@ -152,6 +152,7 @@ final class CfgGrammar extends GrammarBuilder {
                                 makeNT("rep", RulesAvailable.VARIABLE_REPEAT), /// ABNF feature {@link #makeCfgRepRhs}
                                 makeNT("abnf-range", RulesAvailable.VALUE_RANGE), /// ABNF feature {@link #makeABNFValueRange}
                                 ntNt, /// {@link #makeCfgNtRhs}
+                                makeNT("eof", RulesAvailable.EXPLICIT_EOF),
                                 null
                         ))
                         .hideTag();
@@ -285,6 +286,9 @@ final class CfgGrammar extends GrammarBuilder {
                     }
                     final String matched = matcher.group();
                     if (options.epsilonNames().contains(matched)) {
+                        return Optional.empty();
+                    }
+                    if (options.usableRules().contains(RulesAvailable.EXPLICIT_EOF) && EOFTerm.text.equals(matched)) {
                         return Optional.empty();
                     }
                     return Optional.of(matched);
@@ -535,7 +539,7 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Rule}.
      */
     private @NotNull Rule makeEofRhs() {
-        return string("EOF");
+        return string(EOFTerm.text);
     }
 
     /**

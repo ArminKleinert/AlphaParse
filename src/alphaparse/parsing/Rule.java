@@ -140,6 +140,8 @@ public abstract sealed class Rule
      * Repeat {@code this} {@code min} to {@code max} times.
      *
      * @return An {@link VariableRepetitionRule} or something that would give equivalent output.
+     * @param min Minimum number of repetitions.
+     * @param max Maximum number of repetitions.
      * @see VariableRepetitionRule#create(Rule, int, int)
      */
     public final @NotNull Rule repeat(final int min, final int max) {
@@ -148,7 +150,7 @@ public abstract sealed class Rule
 
     /**
      * Repeat {@code this} {@code min} to {@code 2^31-1} (max int) times.
-     *
+     * @param min Minimum number of repetitions.
      * @return An {@link VariableRepetitionRule} or something that would give equivalent output.
      * @see VariableRepetitionRule#create(Rule, int, int)
      */
@@ -159,6 +161,7 @@ public abstract sealed class Rule
     /**
      * Repeat {@code this} zero to {@code max} times.
      *
+     * @param max Maximum number of repetitions.
      * @return An {@link VariableRepetitionRule} or something that would give equivalent output.
      * @see VariableRepetitionRule#create(Rule, int, int)
      */

@@ -18,6 +18,11 @@ public final class EOFTerm extends Terminal {
     }
 
     /**
+     * Default text for EOF.
+     */
+    public static @NotNull String text = "EOF";
+
+    /**
      * Default EOF rule. Can be buffered.
      *
      * @return Default EOF rule. Can be buffered.
