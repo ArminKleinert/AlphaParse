@@ -124,7 +124,7 @@ class RulesAvailableGeneralizedTests {
     // Concrete tests start here.
 
     private static Parser AlphaParser(String gr, ParserCreationOptions opts) {
-        return Alpha.parser(gr.replace("=", opts.ruleDefinitionOps().iterator().next()), opts);
+        return Alpha.parser(gr.replace("=", opts.ruleDefinitionOpts().iterator().next()), opts);
     }
 
     private static void alternationAvailable(ParserCreationOptions opts, boolean run) {

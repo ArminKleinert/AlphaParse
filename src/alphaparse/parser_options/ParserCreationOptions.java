@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
  * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
  * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
- * @param ruleDefinitionOps     A collection of possible "definition operators" for rules.
+ * @param ruleDefinitionOpts     A collection of possible "definition operators" for rules.
  * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}.
  */
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
@@ -32,13 +32,13 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @NotNull RedefinitionOption redefinitionOption,
                                     @NotNull Set<RulesAvailable> usableRules,
                                     boolean checkCorrectness,
-                                    @NotNull Collection<@NotNull String> ruleDefinitionOps,
+                                    @NotNull Collection<@NotNull String> ruleDefinitionOpts,
                                     @NotNull Collection<@NotNull String> epsilonNames) {
     private static final boolean defaultUseParserBuffering = true;
     private static final boolean defaultCheckCorrectness = true;
 
     /**
-     * Default for {@link ParserCreationOptions#ruleDefinitionOps()}.
+     * Default for {@link ParserCreationOptions#ruleDefinitionOpts()}.
      * <p>
      * Value (might not be up to date): {@code List.of(":=", "::=", "=", ":")}
      *
@@ -113,7 +113,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      * @param usableRules           A Set of rules that can be used when building the parser. If null, use {@link #defaultRulesAvailable()}. See {@link RulesAvailable}.
      * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
-     * @param ruleDefinitionOps     A collection of possible "definition operators" for rules. If null, use {@link #defaultRuleDefinitionOps()}. Example: {@code List.of(":=", "::=", "=", ":")}
+     * @param ruleDefinitionOpts     A collection of possible "definition operators" for rules. If null, use {@link #defaultRuleDefinitionOps()}. Example: {@code List.of(":=", "::=", "=", ":")}
      * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}. Example: {@code List.of("epsilon", "ε")}
      */
     public ParserCreationOptions(final @Nullable Parser whitespaceParser,
@@ -123,7 +123,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                  final @Nullable RedefinitionOption redefinitionOption,
                                  final @Nullable Set<RulesAvailable> usableRules,
                                  final boolean checkCorrectness,
-                                 final @Nullable Collection<String> ruleDefinitionOps,
+                                 final @Nullable Collection<String> ruleDefinitionOpts,
                                  final @Nullable Collection<String> epsilonNames) {
 
         this.whitespaceParser = whitespaceParser;
@@ -139,11 +139,11 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 ? defaultRulesAvailable()
                 : usableRules;
         this.checkCorrectness = checkCorrectness;
-        this.ruleDefinitionOps = ruleDefinitionOps == null
+        this.ruleDefinitionOpts = ruleDefinitionOpts == null
                 ? defaultRuleDefinitionOps()
-                : ruleDefinitionOps;
+                : ruleDefinitionOpts;
 
-        if (this.ruleDefinitionOps.isEmpty())
+        if (this.ruleDefinitionOpts.isEmpty())
             throw new IllegalArgumentException("Empty rule definition operator list.");
 
         this.epsilonNames = epsilonNames == null
@@ -164,7 +164,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**
@@ -180,7 +180,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**
@@ -196,7 +196,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**
@@ -224,7 +224,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**
@@ -238,7 +238,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**
@@ -282,13 +282,13 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**
-     * Creates a new instance with {@link ParserCreationOptions#ruleDefinitionOps()} set to the parameter.
+     * Creates a new instance with {@link ParserCreationOptions#ruleDefinitionOpts()} set to the parameter.
      *
-     * @param ruleDefinitionOps The new setting for {@link ParserCreationOptions#ruleDefinitionOps()}.
+     * @param ruleDefinitionOps The new setting for {@link ParserCreationOptions#ruleDefinitionOpts()}.
      * @return A new instance.
      */
     public @NotNull ParserCreationOptions withRuleDefinitionOps(
@@ -310,7 +310,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return new ParserCreationOptions(
                 whitespaceParser, startProduction, stringCaseInsensitive,
                 useParserBuffering, redefinitionOption, usableRules,
-                checkCorrectness, ruleDefinitionOps, epsilonNames);
+                checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
     /**

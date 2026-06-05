@@ -8,6 +8,10 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A class representing the right-hand sides of productions.
  */
@@ -126,5 +130,51 @@ public abstract sealed class Rule
     @Override
     public String toString() {
         return Print.ruleToString(this);
+    }
+
+    /*
+    Some methods to make constructing combinators easier.
+     */
+
+    public final @NotNull Rule repeat(final int min, final int max) {
+        return VariableRepetitionRule.create(this, min, max);
+    }
+
+    public final @NotNull Rule repeatLeast(final int min) {
+        return VariableRepetitionRule.create(this, min, Integer.MAX_VALUE);
+    }
+
+    public final @NotNull Rule repeatMost(final int max) {
+        return VariableRepetitionRule.create(this, 0, max);
+    }
+
+    public final @NotNull Rule zeroOrMore() {
+        return ZeroOrMoreRule.create(this);
+    }
+
+    public final @NotNull Rule onceOrMore() {
+        return OnceOrMoreRule.create(this);
+    }
+
+    public final @NotNull Rule optional() {
+        return OptionalRule.create(this);
+    }
+
+    public final @NotNull Rule butNot(final @NotNull Rule rule) {
+        return ExclusionRule.create(this, rule);
+    }
+
+    public final @NotNull Rule andThen(final @NotNull Rule... rules) {
+        List<Rule> res = new ArrayList<>();
+        res.add(this);
+        res.addAll(Arrays.asList(rules));
+        return ConcatRule.create(res);
+    }
+
+    public final @NotNull Rule or(final @NotNull Rule... rules) {
+        List<Rule> res = new ArrayList<>();
+        res.add(this);
+        res.addAll(Arrays.asList(rules));
+        return AlternationRule.create(res);
     }
 }

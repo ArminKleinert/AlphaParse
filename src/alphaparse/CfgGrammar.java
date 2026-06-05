@@ -179,7 +179,7 @@ final class CfgGrammar extends GrammarBuilder {
      */
     private @NotNull Rule makeCfgRuleSeparatorRhs() {
         return alternationC(
-                options.ruleDefinitionOps()
+                options.ruleDefinitionOpts()
                         .stream()
                         .map(it -> string(it, false))
                         .toList());
