@@ -76,9 +76,8 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgRulesRhs() {
         final @NotNull Rule rulesRule = concatNoEpsilonMoreThan1(
                 List.of(optWhitespace,
-                        onceOrMore(
-                                nt(Sym.sym("rule")) /// {@link #makeCfgRuleRhs}
-                        )))
+                        nt(Sym.sym("rule")).onceOrMore() /// {@link #makeCfgRuleRhs}
+                ))
                 .hideTag();
         return rulesRule;
     }
@@ -88,7 +87,8 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(string("(*"),
                                 makeCfgInsideCommentRhs(),
-                                string("*)"))).hideTag();
+                                string("*)")))
+                        .hideTag();
         return rulesRule;
     }
 
@@ -97,10 +97,10 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(regex(insideComment),
-                                zeroOrMore(
-                                        concatNoEpsilonMoreThan1(
-                                                List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
-                                                        regex(insideComment))))));
+                                concatNoEpsilonMoreThan1(
+                                        List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
+                                                regex(insideComment)))
+                                        .zeroOrMore()));
         return rulesRule;
     }
 
@@ -109,10 +109,10 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(regex(ws),
-                                zeroOrMore(
-                                        concatNoEpsilonMoreThan1(
-                                                List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
-                                                        regex(ws))))));
+                                concatNoEpsilonMoreThan1(
+                                        List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
+                                                regex(ws)))
+                                        .zeroOrMore()));
         return rulesRule;
     }
 
@@ -283,7 +283,7 @@ final class CfgGrammar extends GrammarBuilder {
                     if (!matcher.lookingAt()) {
                         return Optional.empty();
                     }
-                    String matched = matcher.group();
+                    final String matched = matcher.group();
                     if (options.epsilonNames().contains(matched)) {
                         return Optional.empty();
                     }
@@ -466,12 +466,11 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(catNt,
-                                zeroOrMore(
-                                        concatNoEpsilonMoreThan1(
-                                                List.of(optWhitespace,
-                                                        string("/").enableHideTag(),
-                                                        optWhitespace,
-                                                        catNt)))));
+                                concatNoEpsilonMoreThan1(
+                                        List.of(optWhitespace,
+                                                string("/").enableHideTag(),
+                                                optWhitespace,
+                                                catNt)).zeroOrMore()));
         return rulesRule;
     }
 
@@ -485,11 +484,11 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(catNt,
-                                zeroOrMore(concatNoEpsilonMoreThan1(
+                                concatNoEpsilonMoreThan1(
                                         List.of(optWhitespace,
                                                 string("|").enableHideTag(),
                                                 optWhitespace,
-                                                catNt)))));
+                                                catNt)).zeroOrMore()));
         return rulesRule;
     }
 
@@ -506,11 +505,10 @@ final class CfgGrammar extends GrammarBuilder {
                 makeNT("exclude", RulesAvailable.EXCLUSION) /// {@link #makeCfgExclude}
         ));
         final @NotNull Rule rulesRule =
-                onceOrMore(
-                        concatNoEpsilonMoreThan1(
-                                List.of(optWhitespace,
-                                        factorLookNeg,
-                                        optWhitespace)));
+                concatNoEpsilonMoreThan1(
+                        List.of(optWhitespace,
+                                factorLookNeg,
+                                optWhitespace)).onceOrMore();
         return rulesRule;
     }
 
