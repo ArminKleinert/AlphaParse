@@ -75,7 +75,7 @@ public final class Print {
                 return ""
                         + min
                         + '*'
-                        + max
+                        + ((max < Integer.MAX_VALUE) ? max : "")
                         + parenForCompound(hidden, repParser.getRule());
             }
             case AlternationRule alternationRule -> {
