@@ -29,4 +29,32 @@ class TestGrammarYail {
         var text = "print 1 ;";
         Assertions.assertTrue(parser().parse(text).isSuccess());
     }
+
+    @Test
+    void verifyVar() {
+        var text = "var v = 0;";
+        Assertions.assertTrue(parser().parse(text).isSuccess());
+    }
+
+    @Test
+    void verifyAssign() {
+        var text = "v = 0;";
+        Assertions.assertTrue(parser().parse(text).isSuccess());
+    }
+
+    @Test
+    void verifyFunctionDef() {
+        var text = "/** */\nfun f() {}";
+        Assertions.assertTrue(parser().parse(text).isSuccess());
+        System.out.println(parser().parse(text));
+    }
+
+    @Test
+    void verifySimpleStuff() {
+        var text = """
+                var v = 4;
+                fun f(v) { if (v > 0) return -v; else return v; }
+                print f(v) <= 0;""";
+        Assertions.assertTrue(parser().parse(text).isSuccess());
+    }
 }

@@ -1,0 +1,18 @@
+[#data/person
+        {:id               #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+         :name             ("Armin" "Kleinert")
+         :name-as-sym      Armin/Kleinert
+         :nationality      "German"
+         :not-day-of-birth #inst "1996-06-28T23:00:00Z"
+         :height-meters    1.80
+         :data/fake-entry  ##NaN
+         ; :commented-key commented-value other stuff
+         }
+ #_ #data/person
+         {:id               #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf8"
+          :name             ("Ute" "Bartsch")
+          :name-as-sym      Ute/Bartsch
+          :nationality      "German"
+          :not-day-of-birth #inst "1940-05-08T20:00:00Z"
+          :height-meters    1.60}
+ ]
