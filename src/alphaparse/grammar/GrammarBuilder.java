@@ -98,7 +98,7 @@ public abstract class GrammarBuilder {
 
         compress();
 
-        applyStandardReductions();
+        ReductionType.applyStandardReductionToProductions(productions);
         if (wsParser != null) {
             autoWhitespace(start, wsParser.grammar(), wsParser.startProduction());
         }
@@ -335,7 +335,7 @@ public abstract class GrammarBuilder {
      * or {@link EpsilonTerm} if the string is empty.
      *
      * @param string          The string to match.
-     * @param caseInsensitive Whether the Terminal will match case insensitive.
+     * @param caseInsensitive Whether the Terminal will match case-insensitive.
      * @return The new rule.
      */
     public @NotNull Rule string(final @NotNull String string, final boolean caseInsensitive) {
@@ -623,7 +623,6 @@ public abstract class GrammarBuilder {
      */
     public final @NotNull Rule onceOrMore(final @NotNull Rule rule) {
         return repeat(rule, 1, Integer.MAX_VALUE);
-        //return OnceOrMoreRule.create(rule);
     }
 
     /**
@@ -640,8 +639,9 @@ public abstract class GrammarBuilder {
         for (final @NotNull var symRuleEntry : productions.entrySet()) {
             final @NotNull var value = symRuleEntry.getValue();
             final @NotNull var compressedRule = compressRule(value);
-            if (compressedRule != value) // Yes, I need a reference equality check here.
+            if (compressedRule != value) {// Yes, I need a reference equality check here.
                 symRuleEntry.setValue(compressedRule);
+            }
         }
     }
 
@@ -652,18 +652,17 @@ public abstract class GrammarBuilder {
                 final var max = variableRepetitionRule.getMax();
                 final @NotNull var rule = compressRule(variableRepetitionRule.getRule());
 
-                final Rule newRule;
-                if (min == 1 && max == Integer.MAX_VALUE) {
-                    newRule = OnceOrMoreRule.create(rule);
+                Rule newRule = null;
+                if (max == Integer.MAX_VALUE) {
+                    if (min == 0) newRule = ZeroOrMoreRule.create(rule);
+                    else if (min == 1) newRule = OnceOrMoreRule.create(rule);
                 } else if (min == 0 && max == 1) {
                     newRule = OptionalRule.create(rule);
-                } else if (min == 0 && max == Integer.MAX_VALUE) {
-                    newRule = ZeroOrMoreRule.create(rule);
-                } else if (min > 1) {
-                    newRule = variableRepetitionRule;
-                } else {
+                }
+                if (newRule == null) {
                     newRule = variableRepetitionRule;
                 }
+
                 yield newRule
                         .withHideTag(variableRepetitionRule.isHidden())
                         .withReduction(variableRepetitionRule.getReduction());
@@ -680,17 +679,6 @@ public abstract class GrammarBuilder {
             case Terminal terminal -> terminal;
             case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
         };
-    }
-
-    private void applyStandardReductions() {
-        for (final @NotNull var prod : productions.entrySet()) {
-            final @NotNull var key = prod.getKey();
-            @NotNull var value = prod.getValue();
-            if (value.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
-                value = value.withReduction(ReductionType.defaultNonRawReduction(key));
-            }
-            prod.setValue(value);
-        }
     }
 
     private @NotNull Rule autoWhitespaceHelper(

@@ -51,7 +51,7 @@ public final class Viztool {
             case Node.NodeString nodeString -> nodeString.content();
             case Node.NodeTreeTag nodeTreeTag -> nodeTreeTag.content().name();
             case Node.NodeFail ignored1 ->
-                    throw new IllegalStateException("Cannot create parse-tree visualization " + fpr.getClass() + " (TODO).");
+                    throw new IllegalStateException("Cannot create parse-tree visualization for " + fpr + " (TODO).");
             case Node.NodeParseTree ignored2 ->
                     throw new IllegalStateException("This case should be handled in dumpParseTreeHelp.");
         };
@@ -73,7 +73,7 @@ public final class Viztool {
      * @param dotFileNamePrefix Filename without file format.
      * @param parseRes          The parse tree.
      * @return The return code. That is 0 on success or another number on failure.
-     * @throws IOException          If the file can't be created for written.
+     * @throws IOException          If the file can't be created or written to.
      * @throws InterruptedException If the operation is interrupted somehow.
      */
     public static int dumpParseTree(
@@ -91,9 +91,7 @@ public final class Viztool {
             throw new RuntimeException(e);
         }
 
-        final int ret = Runtime.getRuntime().exec(args).waitFor();
-
-        return ret;
+        return Runtime.getRuntime().exec(args).waitFor();
     }
 }
 

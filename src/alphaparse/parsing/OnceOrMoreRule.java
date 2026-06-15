@@ -2,7 +2,7 @@ package alphaparse.parsing;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +35,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
         final @NotNull Rule rule = getRule();
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
-                plusListener(FlatSeq.make(), rule, index, new TrampolineListenerKey(index, this), runner)
+                plusListener(FlatResultSeq.make(), rule, index, new TrampolineListenerKey(index, this), runner)
         );
     }
 
@@ -44,12 +44,12 @@ public final class OnceOrMoreRule extends RuleWithChild {
         final @NotNull Rule rule = getRule();
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
-                plusFullListener(FlatSeq.make(), rule, index, new TrampolineListenerKey(index, this), runner)
+                plusFullListener(FlatResultSeq.make(), rule, index, new TrampolineListenerKey(index, this), runner)
         );
     }
 
     @NotNull
-    static Listener plusListener(final @NotNull FlatSeq<Object> resultsSoFar,
+    static Listener plusListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
                                  final @NotNull Rule rule,
                                  final int prevIndex,
                                  final @NotNull TrampolineListenerKey nodeKey,
@@ -63,8 +63,8 @@ public final class OnceOrMoreRule extends RuleWithChild {
                 }
                 return;
             }
-            final var newResultsSoFar = parsedResult instanceof FlatSeq<?>
-                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
+            final var newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
+                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             runner.pushListener(
                     new TrampolineListenerKey(continueIndex, rule),
@@ -75,7 +75,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
 
     @NotNull
-    static Listener plusFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
+    static Listener plusFullListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
                                      final @NotNull Rule rule,
                                      final int prevIndex,
                                      final @NotNull TrampolineListenerKey nodeKey,
@@ -89,8 +89,8 @@ public final class OnceOrMoreRule extends RuleWithChild {
                 }
                 return;
             }
-            final var newResultsSoFar = parsedResult instanceof FlatSeq<?>
-                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
+            final var newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
+                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             if (continueIndex == runner.tramp().getText().length()) {
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);

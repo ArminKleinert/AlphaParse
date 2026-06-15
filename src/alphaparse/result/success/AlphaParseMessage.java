@@ -1,6 +1,6 @@
 package alphaparse.result.success;
 
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import alphaparse.result.ParseTree;
 import alphaparse.result.ParseFailureNode;
 import org.jetbrains.annotations.NotNull;
@@ -63,10 +63,10 @@ public final class AlphaParseMessage {
      * Creates an instance wrapping a FlatSeq.
      *
      * @param index  The last index of the previous parse, exclusive.
-     * @param result The {@link FlatSeq}.
-     * @return The {@link FlatSeq} wrapped into an instance of this class.
+     * @param result The {@link FlatResultSeq}.
+     * @return The {@link FlatResultSeq} wrapped into an instance of this class.
      */
-    public static @NotNull AlphaParseMessage create(final int index, final @NotNull FlatSeq<?> result) {
+    public static @NotNull AlphaParseMessage create(final int index, final @NotNull FlatResultSeq<?> result) {
         return new AlphaParseMessage(index, result);
     }
 
@@ -113,8 +113,8 @@ public final class AlphaParseMessage {
     /**
      * The wrapped object.
      * <p>
-     * This is always {@code null} or an instance of {@link String}, {@link ParseTree}, {@link ParseFailureNode} or {@link FlatSeq}.
-     * If the object is a {@link FlatSeq}, the contents are any of the classes mentioned above.
+     * This is always {@code null} or an instance of {@link String}, {@link ParseTree}, {@link ParseFailureNode} or {@link FlatResultSeq}.
+     * If the object is a {@link FlatResultSeq}, the contents are any of the classes mentioned above.
      *
      * @return The wrapped object.
      */

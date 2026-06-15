@@ -137,29 +137,4 @@ public final class FailureUtil {
 
         return sb.toString();
     }
-
-//    // TODO HERE DONT USE GENERIC MAP
-//    private static @NotNull String reasonString(final Object expected) {
-//        if (expected instanceof Map<?, ?>) {
-//            final Map<Object, Object> exp = (Map<Object, Object>) expected;
-//            if (exp.containsKey(Keyword.intern("NOT"))) {
-//                return "NOT " + exp.get(Keyword.intern("NOT"));
-//            }
-//            throw new IllegalArgumentException();
-//        } else if (expected instanceof AlphaFailureReasonCharRange) {
-//            return expected.toString();
-//        } else if (expected instanceof Pattern) {
-//            return expected.toString();
-//        } else if (expected instanceof String) {
-//            return expected.toString();
-//        } else if (expected instanceof Keyword) {
-//            return expected.toString();
-//        }
-//        //throw new IllegalArgumentException();
-//        return expected.toString();
-//    }
-//
-//    private static void printReason(final Object expected) {
-//        System.out.println(reasonString(expected));
-//    }
 }

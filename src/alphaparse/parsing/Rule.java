@@ -3,7 +3,7 @@ package alphaparse.parsing;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
 import alphaparse.Print;
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ public abstract sealed class Rule
     /**
      * Runs the parser from the provided index. The text is in the arguments.
      * <p>
-     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerKey, FlatSeq, int)} or {@link Gll#fail(TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
+     * Results (successes and failures) are saved using {@link Gll#pushSuccessMessage(TrampolineListenerKey, FlatResultSeq, int)} or {@link Gll#fail(TrampolineListenerKey, int, ParseFailureReason)} or some similar function.
      *
      * @param index  The start index.
      * @param runner Helper structure.

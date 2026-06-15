@@ -396,23 +396,25 @@ class RulesAvailableGeneralizedTests {
     private static void exclusionAvailable(ParserCreationOptions opts, boolean run) {
         if (!run) return;
 
-        Assertions.assertDoesNotThrow(() -> AlphaParser("S = #'[0-9]+' - '1'", opts));
-        Assertions.assertDoesNotThrow(() -> AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", opts));
-        Assertions.assertDoesNotThrow(() -> AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", opts));
+        var optsAndRegex = opts.addAvailableRule(RulesAvailable.REGEX);
 
-        var p = AlphaParser("S = #'[0-9]+' - '1'", opts);
+        Assertions.assertDoesNotThrow(() -> AlphaParser("S = #'[0-9]+' - '1'", optsAndRegex));
+        Assertions.assertDoesNotThrow(() -> AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", optsAndRegex));
+        Assertions.assertDoesNotThrow(() -> AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", optsAndRegex));
+
+        var p = AlphaParser("S = #'[0-9]+' - '1'", optsAndRegex);
         Assertions.assertTrue(p.parse("1").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "11"), p.parse("11"));
         Assertions.assertEquals(ParseTree.create("S", "1111"), p.parse("1111"));
         Assertions.assertEquals(ParseTree.create("S", "2"), p.parse("2"));
 
-        p = AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", opts);
+        p = AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", optsAndRegex);
         Assertions.assertTrue(p.parse("1").isFailure());
         Assertions.assertTrue(p.parse("11").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "1111"), p.parse("1111"));
         Assertions.assertEquals(ParseTree.create("S", "2"), p.parse("2"));
 
-        p = AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", opts);
+        p = AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", optsAndRegex);
         Assertions.assertTrue(p.parse("1").isFailure());
         Assertions.assertEquals(ParseTree.create("S", "11"), p.parse("11"));
         Assertions.assertTrue(p.parse("1111").isFailure());
@@ -422,9 +424,13 @@ class RulesAvailableGeneralizedTests {
     private static void exclusionUnavailable(ParserCreationOptions opts, boolean run) {
         if (!run) return;
 
-        Assertions.assertThrows(ParserCreationFailure.class, () -> AlphaParser("S = #'[0-9]+' - '1'", opts));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", opts));
-        Assertions.assertThrows(ParserCreationFailure.class, () -> AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", opts));
+        var optsAndRegex = opts.addAvailableRule(RulesAvailable.REGEX);
+        Assertions.assertThrows(ParserCreationFailure.class, () ->
+                AlphaParser("S = #'[0-9]+' - '1'", optsAndRegex));
+        Assertions.assertThrows(ParserCreationFailure.class, () ->
+                AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", optsAndRegex));
+        Assertions.assertThrows(ParserCreationFailure.class, () ->
+                AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", optsAndRegex));
     }
 
     private static void abnfCoreAvailable(ParserCreationOptions opts, boolean run) {

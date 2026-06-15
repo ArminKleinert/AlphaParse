@@ -2,7 +2,7 @@ package alphaparse.parsing;
 
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +37,7 @@ public final class ZeroOrMoreRule extends RuleWithChild {
                 new TrampolineListenerKey(index, this);
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
-                OnceOrMoreRule.plusListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner)
+                OnceOrMoreRule.plusListener(FlatResultSeq.make(), rule, index, nodeKeyForStar, runner)
         );
         runner.pushSuccessMessageWithoutValue(nodeKeyForStar, index);
     }
@@ -52,7 +52,7 @@ public final class ZeroOrMoreRule extends RuleWithChild {
         }
         runner.pushListener(
                 new TrampolineListenerKey(index, rule),
-                OnceOrMoreRule.plusFullListener(FlatSeq.make(), rule, index, nodeKeyForStar, runner));
+                OnceOrMoreRule.plusFullListener(FlatResultSeq.make(), rule, index, nodeKeyForStar, runner));
     }
 
     @Override

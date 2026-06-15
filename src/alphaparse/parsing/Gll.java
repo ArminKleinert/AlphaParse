@@ -1,7 +1,7 @@
 package alphaparse.parsing;
 
 import alphaparse.Alpha;
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParsingOptions;
@@ -256,7 +256,7 @@ public final class Gll {
 
     <T> void pushSuccessMessage(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final @NotNull FlatSeq<T> result,
+            final @NotNull FlatResultSeq<T> result,
             final int end) {
         final @NotNull AlphaParseMessage aps = AlphaParseMessage.create(end, result);
         pushResultHelper(nodeKey, aps);

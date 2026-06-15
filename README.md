@@ -201,7 +201,9 @@ which behavior is needed when. It is also immutable with easy readability for ad
 either of these, but never both.
 
 ```java
-alphaparse.collections.FlatSeq<T> flatSeq;
+import alphaparse.collections.FlatResultSeq;
+
+FlatResultSeq<T> flatResultSeq;
 ```
 
 When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries. Java (

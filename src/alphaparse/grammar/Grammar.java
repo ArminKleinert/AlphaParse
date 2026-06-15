@@ -2,7 +2,6 @@ package alphaparse.grammar;
 
 import alphaparse.Sym;
 import alphaparse.parsing.*;
-import alphaparse.reduction.ReductionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,22 +92,6 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
     @Override
     public String toString() {
         return super.toString();
-    }
-
-    /**
-     * Replaces all rules that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with rules with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#TAGGED_PARSE_TREE}.
-     *
-     * @return A new grammar.
-     */
-    public @NotNull Grammar applyStandardReductions() {
-        final LinkedHashMap<Sym, Rule> m = new LinkedHashMap<>();
-        this.forEach((prodKey, pars) -> {
-            if (pars.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
-                pars = pars.withReduction(ReductionType.defaultNonRawReduction(prodKey));
-            }
-            m.put(prodKey, pars);
-        });
-        return new Grammar(m);
     }
 
     /**

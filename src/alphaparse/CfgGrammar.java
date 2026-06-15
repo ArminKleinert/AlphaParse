@@ -22,9 +22,6 @@ final class CfgGrammar extends GrammarBuilder {
         this.rulesAvailable = options.usableRules();
     }
 
-    //private final @NotNull Rule optWhitespace =
-    //        NonTerminal.create(Sym.sym("opt-whitespace")).enableHideTag();
-
     private final @NotNull Rule optWhitespace =
             makeCfgOptWhitespaceRhs().enableHideTag();
 

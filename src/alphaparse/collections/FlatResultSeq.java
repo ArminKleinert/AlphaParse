@@ -14,8 +14,8 @@ import java.util.Iterator;
  * @param <T> The generic type.
  */
 @Unmodifiable
-public final class FlatSeq<T> implements Iterable<T> {
-    private static FlatSeq<Object> EMPTY = null;
+public final class FlatResultSeq<T> implements Iterable<T> {
+    private static FlatResultSeq<Object> EMPTY = null;
 
     private final Object[] v;
     private int hashCode = 0;
@@ -26,13 +26,13 @@ public final class FlatSeq<T> implements Iterable<T> {
      * @param <T> The generic type.
      * @return The empty instance.
      */
-    public static @NotNull <T> FlatSeq<@NotNull T> make() {
-        if (EMPTY == null) EMPTY = new FlatSeq<>(new Object[0]);
+    public static @NotNull <T> FlatResultSeq<@NotNull T> make() {
+        if (EMPTY == null) EMPTY = new FlatResultSeq<>(new Object[0]);
         //noinspection unchecked
-        return (FlatSeq<T>) EMPTY;
+        return (FlatResultSeq<T>) EMPTY;
     }
 
-    private FlatSeq(final @NotNull Object @NotNull [] v) {
+    private FlatResultSeq(final @NotNull Object @NotNull [] v) {
         this.v = v;
     }
 
@@ -77,7 +77,7 @@ public final class FlatSeq<T> implements Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof FlatSeq<?> c)) {
+        if (!(o instanceof FlatResultSeq<?> c)) {
             return false;
         }
         return Arrays.equals(v, c.v);
@@ -98,7 +98,7 @@ public final class FlatSeq<T> implements Iterable<T> {
      * @param obj The new element.
      * @return A new instance with the element appended.
      */
-    public @NotNull FlatSeq<@NotNull T> append(final T obj) {
+    public @NotNull FlatResultSeq<@NotNull T> append(final T obj) {
         if (obj == null) {
             return this;
         }
@@ -106,7 +106,7 @@ public final class FlatSeq<T> implements Iterable<T> {
         final @NotNull Object[] newV = Arrays.copyOf(v, v.length + 1);
         newV[newV.length - 1] = obj;
 
-        return new FlatSeq<>(newV);
+        return new FlatResultSeq<>(newV);
     }
 
     /**
@@ -115,13 +115,13 @@ public final class FlatSeq<T> implements Iterable<T> {
      * @param obj The other instance.
      * @return A new instance with the objects from {@code this} and the parameter.
      */
-    public @NotNull FlatSeq<@NotNull T> concat(final @NotNull FlatSeq<?> obj) {
+    public @NotNull FlatResultSeq<@NotNull T> concat(final @NotNull FlatResultSeq<?> obj) {
         if (size() == 0) //noinspection unchecked
-            return (FlatSeq<T>) obj;
+            return (FlatResultSeq<T>) obj;
         if (obj.isEmpty()) return this;
         final @NotNull Object[] newV = Arrays.copyOf(v, v.length + obj.v.length);
         System.arraycopy(obj.v, 0, newV, v.length, obj.v.length);
 
-        return new FlatSeq<>(newV);
+        return new FlatResultSeq<>(newV);
     }
 }

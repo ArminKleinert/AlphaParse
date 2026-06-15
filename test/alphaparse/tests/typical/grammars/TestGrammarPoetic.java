@@ -79,7 +79,7 @@ class TestGrammarPoetic {
                 '.', 7,
                 ',', 8
         );
-        System.out.println(s.chars().map(c -> transformer.getOrDefault((char) c, 0)).mapToObj((i) -> "a".repeat(i) + " ").collect(Collectors.joining("")));
+        //System.out.println(s.chars().map(c -> transformer.getOrDefault((char) c, 0)).mapToObj((i) -> "a".repeat(i) + " ").collect(Collectors.joining("")));
     }
 
     void bfToN() {
@@ -94,7 +94,7 @@ class TestGrammarPoetic {
                 '.', 7,
                 ',', 8
         );
-        System.out.println(s.chars().mapToObj(c -> transformer.getOrDefault((char) c, 0).toString()).collect(Collectors.joining("\n")));
+        //System.out.println(s.chars().mapToObj(c -> transformer.getOrDefault((char) c, 0).toString()).collect(Collectors.joining("\n")));
     }
 
     @Test
@@ -114,8 +114,8 @@ class TestGrammarPoetic {
                 " SINＮⴹᎠ\n" + // 3 + 3 Filler
                 " \uD800\uDE87ꓳꓣＧⅠＶⴹ\n" + // Filler
                 " ME"; // 2
-        System.out.println(p.parse(code));
-        System.out.println(transform(p.parse(code)));
+//        System.out.println(p.parse(code));
+//        System.out.println(transform(p.parse(code)));
     }
 
     @Test
@@ -123,7 +123,7 @@ class TestGrammarPoetic {
         var p = parser();
         var code = " I love is a great mystery\n" +
                 "but i couldn't really explain it";
-        System.out.println(p.parse(code));
-        System.out.println(transform(p.parse(code)));
+//        System.out.println(p.parse(code));
+//        System.out.println(transform(p.parse(code)));
     }
 }

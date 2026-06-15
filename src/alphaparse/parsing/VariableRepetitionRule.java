@@ -1,9 +1,8 @@
 package alphaparse.parsing;
 
-import static alphaparse.parsing.OnceOrMoreRule.plusFullListener;
 import static alphaparse.trampoline.TrampolineListenerNode.TrampolineListenerKey;
 
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import alphaparse.functions.Listener;
 import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
@@ -76,7 +75,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
         }
         runner.pushListener(
                 nodeKeyForInnerRule,
-                repListener(FlatSeq.make(), 0, this, nodeKeyForThis, runner));
+                repListener(FlatResultSeq.make(), 0, this, nodeKeyForThis, runner));
     }
 
     @Override
@@ -84,7 +83,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
         final @NotNull Rule parser = getRule();
         final @NotNull TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
         final @NotNull TrampolineListenerKey nodeKeyForInnerRule = new TrampolineListenerKey(index, parser);
-        final @NotNull var emptyResults = FlatSeq.make();
+        final @NotNull var emptyResults = FlatResultSeq.make();
         if (getMin() == 0) {
             runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, this), index);
         }
@@ -96,7 +95,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
                 repFullListener(emptyResults, 0, parser, getMin(), getMax(), nodeKeyForThis, runner));
     }
 
-    private @NotNull Listener repListener(final @NotNull FlatSeq<Object> resultsSoFar,
+    private @NotNull Listener repListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
                                           final int nResultsSoFar,
                                           final @NotNull VariableRepetitionRule parser,
                                           final @NotNull TrampolineListenerKey nodeKey,
@@ -105,8 +104,8 @@ public final class VariableRepetitionRule extends RuleWithChild {
             final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.index();
 
-            final @NotNull FlatSeq<Object> newResultsSoFar = parsedResult instanceof FlatSeq<?>
-                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
+            final @NotNull FlatResultSeq<Object> newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
+                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
 
             final int newNResultsSoFar = nResultsSoFar + 1;
@@ -124,7 +123,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
         };
     }
 
-    private @NotNull Listener repFullListener(final @NotNull FlatSeq<Object> resultsSoFar,
+    private @NotNull Listener repFullListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
                                               final int nResultsSoFar,
                                               final @NotNull Rule parser,
                                               final int minimum,
@@ -134,8 +133,8 @@ public final class VariableRepetitionRule extends RuleWithChild {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
             final int continueIndex = result.index();
-            final @NotNull var newResultsSoFar = parsedResult instanceof FlatSeq<?>
-                    ? resultsSoFar.concat((FlatSeq<?>) parsedResult)
+            final @NotNull var newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
+                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
                     : resultsSoFar.append(parsedResult);
             final int newNResultsSoFar = nResultsSoFar + 1;
             if (continueIndex == runner.tramp().getText().length()) {

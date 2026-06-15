@@ -173,7 +173,7 @@ final class Cfg {
                                         tree.getContent().getFirst().content()));
                     }
                     case "regexp" -> {
-                        return of(
+                        return regex(
                                 strParser.processRegexp((String)
                                         tree.getContent().getFirst().content()));
                     }

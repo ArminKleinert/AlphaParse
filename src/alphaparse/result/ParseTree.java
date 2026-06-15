@@ -1,7 +1,7 @@
 package alphaparse.result;
 
 import alphaparse.Sym;
-import alphaparse.collections.FlatSeq;
+import alphaparse.collections.FlatResultSeq;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,7 +103,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
      * Creates a parse tree from a tag and content.
      * <p>
-     * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
+     * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatResultSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
      *
      * @param tag     The tag as a node.
      * @param content The content as a node.
@@ -118,7 +118,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
      * Creates a parse tree from a tag and content.
      * <p>
-     * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
+     * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatResultSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
      *
      * @param tag     The tag as a node.
      * @param content The content as a node.
@@ -133,7 +133,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                                             final int spanEnd) {
         final @NotNull var afs = switch (content) {
             case null -> List.<Node>of();
-            case FlatSeq<?> objects -> {
+            case FlatResultSeq<?> objects -> {
                 final @NotNull var res = new ArrayList<Node>();
                 for (@NotNull var t : objects) res.add(Node.of(t));
                 yield res;

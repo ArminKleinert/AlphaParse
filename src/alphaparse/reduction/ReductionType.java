@@ -6,6 +6,7 @@ import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.SequencedMap;
 
 /**
  * A class for output formats. This entire class might be removed in the future and replaced by an alternative {@link ParseTree} variant specifically for intermediate operations.
@@ -145,5 +146,22 @@ public final class ReductionType {
      */
     public boolean isHiddenOrRaw() {
         return hiddenOrRaw;
+    }
+
+    /**
+     * Replaces all rules that have the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#INITIAL} (the default when created) with rules with the reduction type {@link alphaparse.reduction.ReductionType.ReductionTypesAvailable#TAGGED_PARSE_TREE}.
+     *
+     * @param productions The productions as a mapping of symbols to rules.
+     */
+    public static void applyStandardReductionToProductions(
+            final @NotNull SequencedMap<@NotNull Sym, @NotNull Rule> productions) {
+        for (final @NotNull var prod : productions.entrySet()) {
+            final @NotNull var key = prod.getKey();
+            @NotNull var value = prod.getValue();
+            if (value.getReduction().getReductionType() == ReductionType.ReductionTypesAvailable.INITIAL) {
+                value = value.withReduction(ReductionType.defaultNonRawReduction(key));
+            }
+            prod.setValue(value);
+        }
     }
 }
