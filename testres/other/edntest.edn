@@ -8,7 +8,7 @@
          :data/fake-entry  ##NaN
          ; :commented-key commented-value other stuff
          }
- #_ #data/person
+ #_#data/person
          {:id               #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf8"
           :name             ("Ute" "Bartsch")
           :name-as-sym      Ute/Bartsch

@@ -3,8 +3,8 @@ package alphaparse.tests.typical.grammars;
 import alphaparse.Alpha;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
+import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,18 +26,12 @@ class TestGrammarEdn {
         }
     }
 
-//    private List<Object> lower(AlphaParseResult pr) {
-//        if (!(pr instanceof ParseTree)) throw new IllegalArgumentException("Needed parse tree, got "+pr);
-//        while (((ParseTree) pr).getContent().stream().anyMatch(it->it.content() instanceof ParseTree)) {
-//        }
-//    }
-
     private @NotNull List<String> symbolList() {
         return List.of("a", "+", "*", "<a>", "a:", "+:", "*#", "<a>#");
     }
 
     private @NotNull List<String> symbolListWithNS() {
-        return symbolList().stream().map(it -> it + '/' + it).toList();
+        return symbolList().stream().map(it -> it + '/' + "sym").toList();
     }
 
     private @NotNull List<String> keywordList() {
@@ -52,36 +46,73 @@ class TestGrammarEdn {
     void verifyWithFile() throws IOException {
         var parser = parser();
         var text = Files.readString(Path.of("testres/other/edntest.edn"));
-        System.out.println(parser.parse(text, ParsingOptions.getDefault()));
-        //Assertions.assertTrue(parser.parse(text).isSuccess());
+        Assertions.assertTrue(parser.parse(text).isSuccess());
     }
 
     @Test
     void verifyLineComment() {
         var parser = parser();
         var text = "1 ;abf\n 2";
-        Assertions.assertTrue(parser.parse(text).isSuccess());
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Int", "1"))),
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Int", "2")))),
+                parser.parse(text)
+        );
     }
 
     @Test
     void verifyLineComment2() {
         var parser = parser();
-        var text = "3 #_1  ; abf\n";
-        Assertions.assertTrue(parser.parse(text).isSuccess());
+        var text = "3 #_1 4 ; abf\n";
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Int", "3"))),
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Int", "4")))),
+                parser.parse(text)
+        );
     }
 
     @Test
     void verifyLineComment3() {
         var parser = parser();
-        var text = "1#_2 #_4 ; #_abf\n3";
-        Assertions.assertTrue(parser.parse(text).isSuccess());
+        var text = "1.3#_2 #_4 ; #_abf\n5";
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Float", "1.3"))),
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Int", "5")))),
+                parser.parse(text)
+        );
+    }
+
+    @Test
+    void verifyLineCommentFollowedByEof() {
+        var parser = parser();
+        var text = "1.3#_2 #_4 ; #_abf";
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Number", ParseTree.create("Float", "1.3")))),
+                parser.parse(text)
+        );
     }
 
     @Test
     void verifySymbol() {
         var parser = parser();
         for (String s : symbolList()) {
-            Assertions.assertTrue(parser.parse(s).isSuccess());
+            Assertions.assertEquals(
+                    ParseTree.create("Edn",
+                            ParseTree.create("expression",
+                                    ParseTree.create("Symbol", s))),
+                    parser.parse(s)
+            );
         }
     }
 
@@ -89,7 +120,13 @@ class TestGrammarEdn {
     void verifySymbolWithNS() {
         var parser = parser();
         for (String s : symbolListWithNS()) {
-            Assertions.assertTrue(parser.parse(s).isSuccess());
+            var parts = s.split("/");
+            Assertions.assertEquals(
+                    ParseTree.create("Edn",
+                            ParseTree.create("expression",
+                                    ParseTree.create("Symbol", parts[0], parts[1]))),
+                    parser.parse(s)
+            );
         }
     }
 
@@ -97,7 +134,12 @@ class TestGrammarEdn {
     void verifyKeyword() {
         var parser = parser();
         for (String s : keywordList()) {
-            Assertions.assertTrue(parser.parse(s).isSuccess());
+            Assertions.assertEquals(
+                    ParseTree.create("Edn",
+                            ParseTree.create("expression",
+                                    ParseTree.create("Keyword", ParseTree.create("Symbol", s.substring(1))))),
+                    parser.parse(s)
+            );
         }
     }
 
@@ -105,28 +147,92 @@ class TestGrammarEdn {
     void verifyKeywordWithNS() {
         var parser = parser();
         for (String s : keywordListWithNS()) {
-            Assertions.assertTrue(parser.parse(s).isSuccess());
+            var parts = s.substring(1).split("/");
+            Assertions.assertEquals(
+                    ParseTree.create("Edn",
+                            ParseTree.create("expression",
+                                    ParseTree.create("Keyword", ParseTree.create("Symbol", parts[0], parts[1])))),
+                    parser.parse(s)
+            );
         }
     }
 
     @Test
     void verifyList() {
         var parser = parser();
-        Assertions.assertTrue(parser.parse("()").isSuccess());
-        Assertions.assertTrue(parser.parse("(12)").isSuccess());
-        Assertions.assertTrue(parser.parse("(1 2)").isSuccess());
-        Assertions.assertTrue(parser.parse("( 1 2 )").isSuccess());
-        Assertions.assertTrue(parser.parse("( (1) () )").isSuccess());
+
+        Assertions.assertEquals(
+                ParseTree.create("Edn", ParseTree.create("expression", ParseTree.create("List"))),
+                parser.parse("()"));
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("List",
+                                        ParseTree.create("expression",
+                                        ParseTree.create("Number", ParseTree.create("Int", "12")))))),
+                parser.parse("(12)"));
+
+        var tree_1_2 =
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("List",
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Number", ParseTree.create("Int", "1"))),
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Number", ParseTree.create("Int", "2"))))));
+        Assertions.assertEquals(tree_1_2, parser.parse("(1 2)"));
+        Assertions.assertEquals(tree_1_2, parser.parse("( 1 2 )"));
+
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("List",
+                                        ParseTree.create("expression",
+                                        ParseTree.create("List",
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Number", ParseTree.create("Int", "1"))))),
+                                        ParseTree.create("expression",
+                                                ParseTree.create("List"))))),
+                parser.parse("( (1) () )"));
     }
 
     @Test
     void verifyVector() {
         var parser = parser();
-        Assertions.assertTrue(parser.parse("[]").isSuccess());
-        Assertions.assertTrue(parser.parse("[12]").isSuccess());
-        Assertions.assertTrue(parser.parse("[1 2]").isSuccess());
-        Assertions.assertTrue(parser.parse("[ 1 2 ]").isSuccess());
-        Assertions.assertTrue(parser.parse("[ (1) [] ]").isSuccess());
+
+        Assertions.assertEquals(
+                ParseTree.create("Edn", ParseTree.create("expression", ParseTree.create("Vector"))),
+                parser.parse("[]"));
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Vector",
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Number", ParseTree.create("Int", "12")))))),
+                parser.parse("[12]"));
+
+        var tree_1_2 =
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Vector",
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Number", ParseTree.create("Int", "1"))),
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Number", ParseTree.create("Int", "2"))))));
+        Assertions.assertEquals(tree_1_2, parser.parse("[1 2]"));
+        Assertions.assertEquals(tree_1_2, parser.parse("[ 1 2 ]"));
+
+        Assertions.assertEquals(
+                ParseTree.create("Edn",
+                        ParseTree.create("expression",
+                                ParseTree.create("Vector",
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Vector",
+                                                        ParseTree.create("expression",
+                                                                ParseTree.create("Number", ParseTree.create("Int", "1"))))),
+                                        ParseTree.create("expression",
+                                                ParseTree.create("Vector"))))),
+                parser.parse("[ [1] [] ]"));
     }
 
     @Test

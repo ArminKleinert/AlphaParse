@@ -13,7 +13,8 @@ Number = Int | Float
 Symbol = SymbolPart (<"/"> SymbolPart)?
 <SymbolPart> = #"[a-zA-Z.*+!\-_?$%=<>][a-zA-Z.*+!\-_?$%=<>:#]*"
 Keyword = <":"> Symbol
-Float = #"[+\-]?[0-9]*\.?[0-9]+([eE][+\-][0-9]+)?M?"
+Float = #"[+\-]?[0-9]*\.[0-9]+M?"
+      | #"[+\-]?[0-9]*\.?[0-9]+([eE][+\-][0-9]+)M?"
 Int = #"[+\-]?[0-9]+N?"
 SymbolicValue = "##NaN" | "##Inf" | "##-Inf"
 Literal = "nil" | "true" | "false"
@@ -26,11 +27,11 @@ CharOctal = <"o"> #"[0-7][0-7]?[0-7]?"
 CharOther = !(CharUTF | CharPredefNames) #"[^\n \t]"
 
 SymbolWithNS = SymbolPart <"/"> SymbolPart
-TypeDispatch = <"#"> SymbolWithNS ws? expression
+TypeDispatch = <"#"> !"_" SymbolWithNS ws? expression
 
 Inst = <"#inst"> ws? String
 Uuid = <"#uuid"> ws? String
 
 <ws> = <#"[\n\t ]+"> | <Discard> | <LineComment>
-Discard = "#_" expression
+Discard = "#_" ws? expression
 LineComment = ws? ";" #"[^\n]*" ("\n" | "\r" | EOF) ws?
