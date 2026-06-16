@@ -203,7 +203,7 @@ either of these, but never both.
 ```java
 import alphaparse.collections.FlatResultSeq;
 
-FlatResultSeq<T> flatResultSeq;
+FlatResultSeq flatResultSeq;
 ```
 
 When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries. Java (

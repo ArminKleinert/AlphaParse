@@ -49,7 +49,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
     }
 
     @NotNull
-    static Listener plusListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
+    static Listener plusListener(final @NotNull FlatResultSeq resultsSoFar,
                                  final @NotNull Rule rule,
                                  final int prevIndex,
                                  final @NotNull TrampolineListenerKey nodeKey,
@@ -63,9 +63,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
                 }
                 return;
             }
-            final var newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
-                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
-                    : resultsSoFar.append(parsedResult);
+            final var newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult);
             runner.pushListener(
                     new TrampolineListenerKey(continueIndex, rule),
                     plusListener(newResultsSoFar, rule, continueIndex, nodeKey, runner));
@@ -75,7 +73,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
 
 
     @NotNull
-    static Listener plusFullListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
+    static Listener plusFullListener(final @NotNull FlatResultSeq resultsSoFar,
                                      final @NotNull Rule rule,
                                      final int prevIndex,
                                      final @NotNull TrampolineListenerKey nodeKey,
@@ -89,9 +87,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
                 }
                 return;
             }
-            final var newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
-                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
-                    : resultsSoFar.append(parsedResult);
+            final var newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult);
             if (continueIndex == runner.tramp().getText().length()) {
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
             } else {

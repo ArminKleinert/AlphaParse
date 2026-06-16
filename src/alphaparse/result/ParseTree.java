@@ -133,7 +133,7 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                                             final int spanEnd) {
         final @NotNull var afs = switch (content) {
             case null -> List.<Node>of();
-            case FlatResultSeq<?> objects -> {
+            case FlatResultSeq objects -> {
                 final @NotNull var res = new ArrayList<Node>();
                 for (@NotNull var t : objects) res.add(Node.of(t));
                 yield res;

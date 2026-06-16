@@ -66,7 +66,7 @@ public final class AlphaParseMessage {
      * @param result The {@link FlatResultSeq}.
      * @return The {@link FlatResultSeq} wrapped into an instance of this class.
      */
-    public static @NotNull AlphaParseMessage create(final int index, final @NotNull FlatResultSeq<?> result) {
+    public static @NotNull AlphaParseMessage create(final int index, final @NotNull FlatResultSeq result) {
         return new AlphaParseMessage(index, result);
     }
 

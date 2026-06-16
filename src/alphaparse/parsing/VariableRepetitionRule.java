@@ -95,7 +95,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
                 repFullListener(emptyResults, 0, parser, getMin(), getMax(), nodeKeyForThis, runner));
     }
 
-    private @NotNull Listener repListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
+    private @NotNull Listener repListener(final @NotNull FlatResultSeq resultsSoFar,
                                           final int nResultsSoFar,
                                           final @NotNull VariableRepetitionRule parser,
                                           final @NotNull TrampolineListenerKey nodeKey,
@@ -104,9 +104,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
             final @Nullable Object parsedResult = result.getResult();
             final int continueIndex = result.index();
 
-            final @NotNull FlatResultSeq<Object> newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
-                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
-                    : resultsSoFar.append(parsedResult);
+            final @NotNull FlatResultSeq newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult);
 
             final int newNResultsSoFar = nResultsSoFar + 1;
 
@@ -123,7 +121,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
         };
     }
 
-    private @NotNull Listener repFullListener(final @NotNull FlatResultSeq<Object> resultsSoFar,
+    private @NotNull Listener repFullListener(final @NotNull FlatResultSeq resultsSoFar,
                                               final int nResultsSoFar,
                                               final @NotNull Rule parser,
                                               final int minimum,
@@ -133,9 +131,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
         return result -> {
             final @Nullable var parsedResult = result.getResult();
             final int continueIndex = result.index();
-            final @NotNull var newResultsSoFar = parsedResult instanceof FlatResultSeq<?>
-                    ? resultsSoFar.concat((FlatResultSeq<?>) parsedResult)
-                    : resultsSoFar.append(parsedResult);
+            final @NotNull var newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult);
             final int newNResultsSoFar = nResultsSoFar + 1;
             if (continueIndex == runner.tramp().getText().length()) {
                 if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum) {

@@ -4,18 +4,17 @@ package alphaparse.collections;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Iterator;
 
 /**
  * A list-like type of generic elements. It is used to differentiate from other List types.
  * Elements can be added and iterated upon. Each addition creates a new instance.
- *
- * @param <T> The generic type.
  */
 @Unmodifiable
-public final class FlatResultSeq<T> implements Iterable<T> {
-    private static FlatResultSeq<Object> EMPTY = null;
+public final class FlatResultSeq implements Iterable<Object> {
+    private static FlatResultSeq EMPTY = null;
 
     private final Object[] v;
     private int hashCode = 0;
@@ -23,13 +22,11 @@ public final class FlatResultSeq<T> implements Iterable<T> {
     /**
      * Instances of this type always start empty. This method simply returns an empty sequence.
      *
-     * @param <T> The generic type.
      * @return The empty instance.
      */
-    public static @NotNull <T> FlatResultSeq<@NotNull T> make() {
-        if (EMPTY == null) EMPTY = new FlatResultSeq<>(new Object[0]);
-        //noinspection unchecked
-        return (FlatResultSeq<T>) EMPTY;
+    public static @NotNull FlatResultSeq make() {
+        if (EMPTY == null) EMPTY = new FlatResultSeq(new Object[0]);
+        return EMPTY;
     }
 
     private FlatResultSeq(final @NotNull Object @NotNull [] v) {
@@ -37,7 +34,7 @@ public final class FlatResultSeq<T> implements Iterable<T> {
     }
 
     @Override
-    public @NotNull Iterator<@NotNull T> iterator() {
+    public @NotNull Iterator<Object> iterator() {
         return new Iterator<>() {
             private int pos = 0;
 
@@ -45,9 +42,8 @@ public final class FlatResultSeq<T> implements Iterable<T> {
                 return v.length > pos;
             }
 
-            public T next() {
-                //noinspection unchecked
-                return (T) v[pos++];
+            public Object next() {
+                return v[pos++];
             }
         };
     }
@@ -77,7 +73,7 @@ public final class FlatResultSeq<T> implements Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof FlatResultSeq<?> c)) {
+        if (!(o instanceof FlatResultSeq c)) {
             return false;
         }
         return Arrays.equals(v, c.v);
@@ -92,36 +88,24 @@ public final class FlatResultSeq<T> implements Iterable<T> {
         return hc;
     }
 
-    /**
-     * Append a single element. If the element is null, {@code this} is returned.
-     *
-     * @param obj The new element.
-     * @return A new instance with the element appended.
-     */
-    public @NotNull FlatResultSeq<@NotNull T> append(final T obj) {
-        if (obj == null) {
+    public @NotNull FlatResultSeq appendOrConcat(final Object obj) {
+        if (obj == null)
             return this;
+
+        if (obj instanceof FlatResultSeq frs) {
+            if (size() == 0)
+                return frs;
+            if (frs.isEmpty()) return this;
+            var otherArray = frs.v;
+            final @NotNull Object[] newV = Arrays.copyOf(v, v.length + otherArray.length);
+            System.arraycopy(otherArray, 0, newV, v.length, otherArray.length);
+
+            return new FlatResultSeq(newV);
+        } else {
+            final @NotNull Object[] newV = Arrays.copyOf(v, v.length + 1);
+            newV[newV.length - 1] = obj;
+
+            return new FlatResultSeq(newV);
         }
-
-        final @NotNull Object[] newV = Arrays.copyOf(v, v.length + 1);
-        newV[newV.length - 1] = obj;
-
-        return new FlatResultSeq<>(newV);
-    }
-
-    /**
-     * Appends all elements from another instance.
-     *
-     * @param obj The other instance.
-     * @return A new instance with the objects from {@code this} and the parameter.
-     */
-    public @NotNull FlatResultSeq<@NotNull T> concat(final @NotNull FlatResultSeq<?> obj) {
-        if (size() == 0) //noinspection unchecked
-            return (FlatResultSeq<T>) obj;
-        if (obj.isEmpty()) return this;
-        final @NotNull Object[] newV = Arrays.copyOf(v, v.length + obj.v.length);
-        System.arraycopy(obj.v, 0, newV, v.length, obj.v.length);
-
-        return new FlatResultSeq<>(newV);
     }
 }

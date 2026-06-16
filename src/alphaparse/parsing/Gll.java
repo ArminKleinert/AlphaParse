@@ -256,7 +256,7 @@ public final class Gll {
 
     <T> void pushSuccessMessage(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
-            final @NotNull FlatResultSeq<T> result,
+            final @NotNull FlatResultSeq result,
             final int end) {
         final @NotNull AlphaParseMessage aps = AlphaParseMessage.create(end, result);
         pushResultHelper(nodeKey, aps);
