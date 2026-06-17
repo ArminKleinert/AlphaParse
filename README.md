@@ -183,29 +183,6 @@ alphaparse.functions.Procedure procedure = () -> System.out.println("Procedure")
 
 ### New collection types
 
-I implemented a few new collection types for special purposes.
-
-A part of the code used a TreeMap indexed by `Integer`. I replaced that with a specialized Map which uses primitive
-`int` as keys. This prevents the wrapping and unwrapping of the primitive.
-
-```java
-// Equivalent to Map<Integer, T>, but
-// - Java's collection types introduce a lot of wrapping and unwrapping of the primitive type.
-// - the new type probably has a smaller memory-footprint.
-// Can be removed if project valhalla ever gets finished.
-alphaparse.collections.IntMap<T> m; 
-```
-
-When constructing parse trees, the program needs to differentiate between List types sometimes. This type makes it clear
-which behavior is needed when. It is also immutable with easy readability for additions, which Java's core types provide
-either of these, but never both.
-
-```java
-import alphaparse.collections.FlatResultSeq;
-
-FlatResultSeq flatResultSeq;
-```
-
 When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries. Java (
 to my knowledge) does not have these. The only alternative I
 can think of are `Stream`s, but those can only be iterated once. A construct like

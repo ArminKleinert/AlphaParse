@@ -8,7 +8,7 @@ import alphaparse.parsing.ConcatRule;
 import alphaparse.parsing.LookaheadRule;
 import alphaparse.parsing.RegexTerm;
 import alphaparse.parsing.StringTerm;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -32,29 +32,29 @@ class MultipleLookaheadsTest {
                                 RegexTerm.create(Pattern.compile("[abc]"))))
                 )),
                 ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());
     }
 
     @Test
     void doubledLookahead() {
         var p = Alpha.parser("S = &'a' &'a' ('a' | 'b' | 'c')+");
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());
     }
 
     @Test
     void doubledNegativeLookahead() {
         var p = Alpha.parser("S = !'a' !'a' ('a' | 'b' | 'c')+");
-        Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
-        Assertions.assertEquals(ParseTree.create("S", "c"), p.parse("c"));
+        Assertions.assertEquals(PT.create("S", "b"), p.parse("b"));
+        Assertions.assertEquals(PT.create("S", "c"), p.parse("c"));
         Assertions.assertTrue(p.parse("a").isFailure());
     }
 
     @Test
     void doubledNegativeLookahead1() {
         var p = Alpha.parser("S = !'a' !'b' ('a' | 'b' | 'c')+");
-        Assertions.assertEquals(ParseTree.create("S", "c"), p.parse("c"));
+        Assertions.assertEquals(PT.create("S", "c"), p.parse("c"));
         Assertions.assertTrue(p.parse("a").isFailure());
         Assertions.assertTrue(p.parse("b").isFailure());
     }

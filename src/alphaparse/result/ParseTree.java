@@ -87,18 +87,18 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
 
-    /**
-     * Creates a parse tree from a tag and content.
-     *
-     * @param tag     The tag as a node.
-     * @param content The content as a node.
-     * @return A new parse tree.
-     * @see #create(Node.NodeTreeTag, List, int, int)
-     */
-    public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
-                                            final @NotNull List<Node> content) {
-        return create(tag, content, -1, -1);
-    }
+//    /**
+//     * Creates a parse tree from a tag and content.
+//     *
+//     * @param tag     The tag as a node.
+//     * @param content The content as a node.
+//     * @return A new parse tree.
+//     * @see #create(Node.NodeTreeTag, List, int, int)
+//     */
+//    public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
+//                                            final @NotNull List<Node> content) {
+//        return create(tag, content, -1, -1);
+//    }
 
     /**
      * Creates a parse tree from a tag and content.
@@ -108,7 +108,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * @param tag     The tag as a node.
      * @param content The content as a node.
      * @return A new parse tree.
-     * @see #create(Node.NodeTreeTag, List)
      */
     public static @NotNull ParseTree create(final @NotNull Sym tag,
                                             final @Nullable Object content) {
@@ -125,7 +124,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * @param spanStart Starting index in the input (inclusive).
      * @param spanEnd   End index in the input (exclusive).
      * @return A new parse tree.
-     * @see #create(Node.NodeTreeTag, List)
      */
     public static @NotNull ParseTree create(final @NotNull Sym tag,
                                             final @Nullable Object content,
@@ -201,24 +199,24 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         return new ParseTree(tag, entries, spanStart, spanEnd);
     }
 
-    /**
-     * Convenience method for creating trees.
-     * <pre>
-     * {@code
-     *   var pt1 = ParseTree.create("S", "a", "a");
-     *   var pt2 = ParseTree.create((Node.NodeTreeTag) Node.of(Keyword.intern("S")), List.of(Node.of("a"), Node.of("a")));
-     *   Assertions.assertEquals(pt2, pt1);
-     * }
-     * </pre>
-     *
-     * @param tag     The tag as a string.
-     * @param content The content as variadic arguments.
-     * @return A new parse tree.
-     * @see #create(Node.NodeTreeTag, List)
-     */
-    public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
-        return create(new Node.NodeTreeTag(Sym.sym(tag)), Arrays.stream(content).map(Node::of).toList());
-    }
+//    /**
+//     * Convenience method for creating trees.
+//     * <pre>
+//     * {@code
+//     *   var pt1 = ParseTree.create("S", "a", "a");
+//     *   var pt2 = ParseTree.create((Node.NodeTreeTag) Node.of(Keyword.intern("S")), List.of(Node.of("a"), Node.of("a")));
+//     *   Assertions.assertEquals(pt2, pt1);
+//     * }
+//     * </pre>
+//     *
+//     * @param tag     The tag as a string.
+//     * @param content The content as variadic arguments.
+//     * @return A new parse tree.
+//     * @see #create(Node.NodeTreeTag, List)
+//     */
+//    public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
+//        return create(new Node.NodeTreeTag(Sym.sym(tag)), Arrays.stream(content).map(Node::of).toList());
+//    }
 
     /**
      * Converts the tree into a nested list. Unlike {@link #toList()}, this method is recursive.

@@ -1,7 +1,7 @@
 package alphaparse.tests.typical;
 
 import alphaparse.Sym;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import alphaparse.util.Conversions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ class ConvTest {
         var l = List.of(Sym.sym("S"), "A", List.of(Sym.sym("S"), "A"));
         var pt = Conversions.toParseTree(l);
         Assertions.assertEquals(
-                ParseTree.create("S", "A", ParseTree.create("S", "A")),
+                PT.create("S", "A", PT.create("S", "A")),
                 pt
         );
     }
@@ -27,7 +27,7 @@ class ConvTest {
                 Sym.sym("content"), List.of("A", Map.of(Sym.sym("tag"), Sym.sym("S"), Sym.sym("content"), List.of("A"))));
         var pt = Conversions.toParseTree(l);
         Assertions.assertEquals(
-                ParseTree.create("S", "A", ParseTree.create("S", "A")),
+                PT.create("S", "A", PT.create("S", "A")),
                 pt
         );
     }
@@ -40,7 +40,7 @@ class ConvTest {
                     Sym.sym("content"), List.of("A", List.of(Sym.sym("S"), "A")));
             var pt = Conversions.toParseTree(l);
             Assertions.assertEquals(
-                    ParseTree.create("S", "A", ParseTree.create("S", "A")),
+                    PT.create("S", "A", PT.create("S", "A")),
                     pt
             );
         }
@@ -48,7 +48,7 @@ class ConvTest {
             var l = List.of(Sym.sym("S"), "A", Map.of(Sym.sym("tag"), Sym.sym("S"), Sym.sym("content"), List.of("A")));
             var pt = Conversions.toParseTree(l);
             Assertions.assertEquals(
-                    ParseTree.create("S", "A", ParseTree.create("S", "A")),
+                    PT.create("S", "A", PT.create("S", "A")),
                     pt
             );
         }

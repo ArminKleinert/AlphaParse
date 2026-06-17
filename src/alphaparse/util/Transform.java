@@ -39,7 +39,7 @@ public final class Transform {
         if (transformFn != null) {
             return transformFn.apply(transformedNodes);
         } else {
-            return ParseTree.create(parseTree.getTag(), transformedNodes.stream().map(Node::of).toList());
+            return ParseTree.create(parseTree.getTag().content(), transformedNodes);
         }
     }
 
@@ -156,7 +156,7 @@ public final class Transform {
         if (transformFn != null) {
             result = transformFn.apply(transformedNodes);
         } else {
-            result = ParseTree.create(parseTree.getTag(), transformedNodes.stream().map(Node::of).toList());
+            result = ParseTree.create(parseTree.getTag().content(), transformedNodes);
         }
         return result;
     }

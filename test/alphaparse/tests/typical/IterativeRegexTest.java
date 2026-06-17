@@ -2,7 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,10 +19,10 @@ class IterativeRegexTest {
                         .withIterativeDeepening(true)
                         .withPartial(true));
         Assertions.assertEquals(
-                List.of(ParseTree.create("S", "A"),
-                        ParseTree.create("S", "AA"),
-                        ParseTree.create("S", "AAA"),
-                        ParseTree.create("S", "AAAA")),
+                List.of(PT.create("S", "A"),
+                        PT.create("S", "AA"),
+                        PT.create("S", "AAA"),
+                        PT.create("S", "AAAA")),
                 parses);
     }
 
@@ -36,9 +36,9 @@ class IterativeRegexTest {
         var parses = Alpha.parses(p, "AAAA",
                 ParsingOptions.getDefault().withIterativeDeepening(true));
         Assertions.assertEquals(
-                Set.of(ParseTree.create("S", "A", "AAA"),
-                        ParseTree.create("S", "AA", "AA"),
-                        ParseTree.create("S", "AAA", "A")),
+                Set.of(PT.create("S", "A", "AAA"),
+                        PT.create("S", "AA", "AA"),
+                        PT.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
 
@@ -52,9 +52,9 @@ class IterativeRegexTest {
         var parses = Alpha.parses(p, "AAAA",
                 ParsingOptions.getDefault().withIterativeDeepening(true));
         Assertions.assertEquals(
-                Set.of(ParseTree.create("S", "A", "AAA"),
-                        ParseTree.create("S", "AA", "AA"),
-                        ParseTree.create("S", "AAA", "A")),
+                Set.of(PT.create("S", "A", "AAA"),
+                        PT.create("S", "AA", "AA"),
+                        PT.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
 
@@ -68,9 +68,9 @@ class IterativeRegexTest {
         var parses = Alpha.parses(p, "AAAA",
                 ParsingOptions.getDefault().withIterativeDeepening(true));
         Assertions.assertEquals(
-                Set.of(ParseTree.create("S", "A", "AAA"),
-                        ParseTree.create("S", "AA", "AA"),
-                        ParseTree.create("S", "AAA", "A")),
+                Set.of(PT.create("S", "A", "AAA"),
+                        PT.create("S", "AA", "AA"),
+                        PT.create("S", "AAA", "A")),
                 new HashSet<>(parses));
     }
 
@@ -79,7 +79,7 @@ class IterativeRegexTest {
         var p = Alpha.parser("S = #'A+' 'A'");
         var opts = ParsingOptions.getDefault().withIterativeDeepening(true);
         Assertions.assertEquals(
-                ParseTree.create("S", "AA", "A"),
+                PT.create("S", "AA", "A"),
                 p.parse("AAA", opts));
     }
 }

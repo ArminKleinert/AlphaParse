@@ -3,7 +3,7 @@ package alphaparse.tests.typical;
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.*;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ class RegexTest {
         var opts = ParserCreationOptions.pureEbnf().withRulesAvailable(ruleTypes);
         var p = Alpha.parser("S = #\"[a-fA-F0-9]+\"", opts);
         Assertions.assertEquals(
-                ParseTree.create("S", "7F"),
+                PT.create("S", "7F"),
                 p.parse("7F")
         );
     }

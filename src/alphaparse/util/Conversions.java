@@ -40,7 +40,7 @@ public final class Conversions {
      */
     public static @NotNull ParseTree toParseTree(final @NotNull List<?> l) {
         if (l.isEmpty())
-            return ParseTree.create(ParseTree.NULL_TAG, List.of());
+            return ParseTree.create(ParseTree.NULL_TAG, List.of(), -1, -1);
         if (!(l.getFirst() instanceof Sym))
             return ParseTree.create(ParseTree.NULL_TAG.content(), toParseTreeHelper(l));
         return ParseTree.create((Sym) l.getFirst(), toParseTreeHelper(l.subList(1, l.size())));

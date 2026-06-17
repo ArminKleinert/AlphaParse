@@ -6,6 +6,7 @@ import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
+import alphaparse.result.PT;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +37,7 @@ class NewFeaturesTest {
                         """,
                 ParserCreationOptions.newWithStandardWhitespace());
 
-        var tree = ParseTree.create("S", "foo", "123");
+        var tree = PT.create("S", "foo", "123");
 
         Assertions.assertEquals(tree, auto_whitespace_example.parse("foo 123"));
     }
@@ -53,11 +54,11 @@ class NewFeaturesTest {
     }
     @Test void repRepTest() {
         var p = Alpha.parser("S = 0*4A\n<A> = 'a'");
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"));
+        Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
     }
     @Test void exclusionFullTest1() {
         var p6 = Alpha.parser(

@@ -7,6 +7,7 @@ import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
+import alphaparse.result.PT;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 
@@ -134,8 +135,8 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = \"a\" | \"b\"", opts));
 
         Assertions.assertEquals(
-                Set.of(ParseTree.create("S", ParseTree.create("A", "a")),
-                        ParseTree.create("S", ParseTree.create("B", "a"))),
+                Set.of(PT.create("S", PT.create("A", "a")),
+                        PT.create("S", PT.create("B", "a"))),
                 new HashSet<>(AlphaParser("S = A | B\nA = \"a\"\nB = \"a\"", opts).parses("a"))
         );
     }
@@ -152,11 +153,11 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = %s\"a\"", opts));
 
         var parserI = AlphaParser("S = %i\"a\"", opts);
-        Assertions.assertEquals(ParseTree.create("S", "a"), parserI.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "a"), parserI.parse("A"));
+        Assertions.assertEquals(PT.create("S", "a"), parserI.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a"), parserI.parse("A"));
 
         var parserS = AlphaParser("S = %s\"a\"", opts);
-        Assertions.assertEquals(ParseTree.create("S", "a"), parserS.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a"), parserS.parse("a"));
         Assertions.assertTrue(parserS.parse("A").isFailure());
     }
 
@@ -184,7 +185,7 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = &\"a\" \"a\"", opts));
 
         Assertions.assertEquals(
-                ParseTree.create("S", "a"),
+                PT.create("S", "a"),
                 AlphaParser("S = &\"a\" \"a\"", opts).parse("a"));
         Assertions.assertTrue(
                 AlphaParser("S = &\"b\" \"a\"", opts).parse("a").isFailure());
@@ -201,7 +202,7 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = !\"b\" \"a\"", opts));
 
         Assertions.assertEquals(
-                ParseTree.create("S", "a"),
+                PT.create("S", "a"),
                 AlphaParser("S = !\"b\" \"a\"", opts).parse("a"));
         Assertions.assertTrue(
                 AlphaParser("S = !\"a\" \"a\"", opts).parse("a").isFailure());
@@ -218,8 +219,8 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = [\"a\"]", opts));
 
         var p = AlphaParser("S = [\"a\"]", opts);
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
     }
 
     private static void optionalUnavailable(ParserCreationOptions opts, boolean run) {
@@ -233,8 +234,8 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = \"a\"?", opts));
 
         var p = AlphaParser("S = \"a\"?", opts);
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
     }
 
     private static void optionalQueryUnavailable(ParserCreationOptions opts, boolean run) {
@@ -248,9 +249,9 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = {\"a\"}", opts));
 
         var p = AlphaParser("S = {\"a\"}", opts);
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
     }
 
     private static void optionalRepetitionUnavailable(ParserCreationOptions opts, boolean run) {
@@ -264,9 +265,9 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = \"a\"*", opts));
 
         var p = AlphaParser("S = \"a\"*", opts);
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
     }
 
     private static void optionalRepetitionStarUnavailable(ParserCreationOptions opts, boolean run) {
@@ -280,8 +281,8 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertDoesNotThrow(() -> AlphaParser("S = \"a\" / \"b\"", opts));
 
         Assertions.assertEquals(
-                Set.of(ParseTree.create("S", ParseTree.create("A", "a")),
-                        ParseTree.create("S", ParseTree.create("B", "a"))),
+                Set.of(PT.create("S", PT.create("A", "a")),
+                        PT.create("S", PT.create("B", "a"))),
                 new HashSet<>(AlphaParser("S = A / B\nA = \"a\"\nB = \"a\"", opts).parses("a"))
         );
     }
@@ -298,8 +299,8 @@ class RulesAvailableGeneralizedTests {
 
         var p = AlphaParser("S = \"a\"+", opts);
         Assertions.assertTrue(p.parse("").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
     }
 
     private static void plusUnavailable(ParserCreationOptions opts, boolean run) {
@@ -315,8 +316,8 @@ class RulesAvailableGeneralizedTests {
 
         var p = AlphaParser("S = #\"[0-9]\"", opts);
         Assertions.assertTrue(p.parse("").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "0"), p.parse("0"));
-        Assertions.assertEquals(ParseTree.create("S", "5"), p.parse("5"));
+        Assertions.assertEquals(PT.create("S", "0"), p.parse("0"));
+        Assertions.assertEquals(PT.create("S", "5"), p.parse("5"));
     }
 
     private static void regexUnavailable(ParserCreationOptions opts, boolean run) {
@@ -378,9 +379,9 @@ class RulesAvailableGeneralizedTests {
         Assertions.assertTrue(p.parse("a").isFailure());
         Assertions.assertTrue(p.parse("b").isFailure());
         System.out.println(p.parse("ab", ParsingOptions.getDefault().withPartial(true)));
-        Assertions.assertEquals(ParseTree.create("S", "a", "b"), p.parse("ab"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a", "b"), p.parse("aab"));
-        Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "b"), p.parse("aaab"));
+        Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"));
+        Assertions.assertEquals(PT.create("S", "a", "a", "b"), p.parse("aab"));
+        Assertions.assertEquals(PT.create("S", "a", "a", "a", "b"), p.parse("aaab"));
         Assertions.assertTrue(p.parse("aaaab").isFailure());
     }
 
@@ -404,21 +405,21 @@ class RulesAvailableGeneralizedTests {
 
         var p = AlphaParser("S = #'[0-9]+' - '1'", optsAndRegex);
         Assertions.assertTrue(p.parse("1").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "11"), p.parse("11"));
-        Assertions.assertEquals(ParseTree.create("S", "1111"), p.parse("1111"));
-        Assertions.assertEquals(ParseTree.create("S", "2"), p.parse("2"));
+        Assertions.assertEquals(PT.create("S", "11"), p.parse("11"));
+        Assertions.assertEquals(PT.create("S", "1111"), p.parse("1111"));
+        Assertions.assertEquals(PT.create("S", "2"), p.parse("2"));
 
         p = AlphaParser("S = #'[0-9]+' - ('1' | '11' | '111')", optsAndRegex);
         Assertions.assertTrue(p.parse("1").isFailure());
         Assertions.assertTrue(p.parse("11").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "1111"), p.parse("1111"));
-        Assertions.assertEquals(ParseTree.create("S", "2"), p.parse("2"));
+        Assertions.assertEquals(PT.create("S", "1111"), p.parse("1111"));
+        Assertions.assertEquals(PT.create("S", "2"), p.parse("2"));
 
         p = AlphaParser("S = #'[0-9]+' - (#'[1]+' - '11')", optsAndRegex);
         Assertions.assertTrue(p.parse("1").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "11"), p.parse("11"));
+        Assertions.assertEquals(PT.create("S", "11"), p.parse("11"));
         Assertions.assertTrue(p.parse("1111").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "2"), p.parse("2"));
+        Assertions.assertEquals(PT.create("S", "2"), p.parse("2"));
     }
 
     private static void exclusionUnavailable(ParserCreationOptions opts, boolean run) {
@@ -441,52 +442,52 @@ class RulesAvailableGeneralizedTests {
                 opts));
 
         var text = "a";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("ALPHA", text)), AlphaParser("S = ALPHA", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("ALPHA", text)), AlphaParser("S = ALPHA", opts).parse(text));
 
         text = "0";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("BIT", text)), AlphaParser("S = BIT", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("BIT", text)), AlphaParser("S = BIT", opts).parse(text));
 
         text = "b";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("CHAR", text)), AlphaParser("S = CHAR", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("CHAR", text)), AlphaParser("S = CHAR", opts).parse(text));
 
         text = "\r";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("CR", text)), AlphaParser("S = CR", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("CR", text)), AlphaParser("S = CR", opts).parse(text));
 
         text = "\r\n";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("CRLF", text)), AlphaParser("S = CRLF", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("CRLF", text)), AlphaParser("S = CRLF", opts).parse(text));
 
         text = "\u0001";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("CTL", text)), AlphaParser("S = CTL", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("CTL", text)), AlphaParser("S = CTL", opts).parse(text));
 
         text = "5";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("DIGIT", text)), AlphaParser("S = DIGIT", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("DIGIT", text)), AlphaParser("S = DIGIT", opts).parse(text));
 
         text = "\"";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("DQUOTE", text)), AlphaParser("S = DQUOTE", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("DQUOTE", text)), AlphaParser("S = DQUOTE", opts).parse(text));
 
         text = "F";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("HEXDIG", text)), AlphaParser("S = HEXDIG", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("HEXDIG", text)), AlphaParser("S = HEXDIG", opts).parse(text));
 
         text = "\t";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("HTAB", text)), AlphaParser("S = HTAB", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("HTAB", text)), AlphaParser("S = HTAB", opts).parse(text));
 
         text = "\n";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("LF", text)), AlphaParser("S = LF", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("LF", text)), AlphaParser("S = LF", opts).parse(text));
 
         text = " ";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("LWSP", text)), AlphaParser("S = LWSP", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("LWSP", text)), AlphaParser("S = LWSP", opts).parse(text));
 
         text = "A";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("OCTET", text)), AlphaParser("S = OCTET", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("OCTET", text)), AlphaParser("S = OCTET", opts).parse(text));
 
         text = " ";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("SP", text)), AlphaParser("S = SP", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("SP", text)), AlphaParser("S = SP", opts).parse(text));
 
         text = "!";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("VCHAR", text)), AlphaParser("S = VCHAR", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("VCHAR", text)), AlphaParser("S = VCHAR", opts).parse(text));
 
         text = " ";
-        Assertions.assertEquals(ParseTree.create("S", ParseTree.create("WSP", text)), AlphaParser("S = WSP", opts).parse(text));
+        Assertions.assertEquals(PT.create("S", PT.create("WSP", text)), AlphaParser("S = WSP", opts).parse(text));
     }
 
     private static void abnfCoreUnavailable(ParserCreationOptions opts, boolean run) {

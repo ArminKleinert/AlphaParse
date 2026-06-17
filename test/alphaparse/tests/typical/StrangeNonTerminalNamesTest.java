@@ -2,7 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class StrangeNonTerminalNamesTest {
 
         var p = Alpha.parser("S = EpsNT\nEpsNT = \"1\"", opts);
         Assertions.assertEquals(
-                ParseTree.create("S", ParseTree.create("EpsNT", "1")),
+                PT.create("S", PT.create("EpsNT", "1")),
                 p.parse("1")
         );
     }

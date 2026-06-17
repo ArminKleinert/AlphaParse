@@ -1,6 +1,7 @@
 package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
+import alphaparse.result.PT;
 import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ class ParseTreeSpanTest {
         var tree = p.parse("bAan").castToParseSuccess();
 
         Assertions.assertEquals(
-                ParseTree.create("S", "b", ParseTree.create("A", "Aa"), "n"),
+                PT.create("S", "b", PT.create("A", "Aa"), "n"),
                 tree);
         Assertions.assertEquals(0, tree.getSpanStart());
         Assertions.assertEquals(4, tree.getSpanEndExclusive());
@@ -28,7 +29,7 @@ class ParseTreeSpanTest {
         var tree = p.parse("bAan").castToParseSuccess();
         var subTree = (ParseTree) tree.getContent().get(1).content();
 
-        Assertions.assertEquals(ParseTree.create("A", "Aa"), subTree);
+        Assertions.assertEquals(PT.create("A", "Aa"), subTree);
         Assertions.assertEquals(1, subTree.getSpanStart());
         Assertions.assertEquals(3, subTree.getSpanEndExclusive());
 
@@ -48,7 +49,7 @@ class ParseTreeSpanTest {
 
     @Test
     void testNoSpan() {
-        var tree = ParseTree.create("S", "a", "b", "cdef");
+        var tree = PT.create("S", "a", "b", "cdef");
 
         Assertions.assertTrue(tree.getSpanStart() < 0);
         Assertions.assertTrue(tree.getSpanEndExclusive() < 0);

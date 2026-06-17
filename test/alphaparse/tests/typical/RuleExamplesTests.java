@@ -3,7 +3,7 @@ package alphaparse.tests.typical;
 import alphaparse.Alpha;
 import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,9 +14,9 @@ class RuleExamplesTests {
     void testChoiceExample1() {
         {
             var p = Alpha.parser("S = 'a' | 'b' | 'ab'");
-            Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-            Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
-            Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));
+            Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+            Assertions.assertEquals(PT.create("S", "b"), p.parse("b"));
+            Assertions.assertEquals(PT.create("S", "ab"), p.parse("ab"));
         }
         {
             var opts = ParserCreationOptions
@@ -28,9 +28,9 @@ class RuleExamplesTests {
                     S =/ 'b'
                     S =/ 'ab'
                     """, opts);
-            Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-            Assertions.assertEquals(ParseTree.create("S", "b"), p.parse("b"));
-            Assertions.assertEquals(ParseTree.create("S", "ab"), p.parse("ab"));
+            Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+            Assertions.assertEquals(PT.create("S", "b"), p.parse("b"));
+            Assertions.assertEquals(PT.create("S", "ab"), p.parse("ab"));
         }
     }
 }

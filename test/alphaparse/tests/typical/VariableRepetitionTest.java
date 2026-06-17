@@ -5,6 +5,7 @@ import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
+import alphaparse.result.PT;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -20,10 +21,10 @@ class VariableRepetitionTest {
             final @NotNull var p = Alpha.parser("S = 2* 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
-            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a", "a"), p.parse("aaaaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a"), p.parse("aaaaa"));
         }
     }
 
@@ -31,16 +32,16 @@ class VariableRepetitionTest {
     void parseRepetitionMaximumOnly() {
         {
             final @NotNull var p = Alpha.parser("S = *2 'a'");
-            Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-            Assertions.assertEquals(ParseTree.create("S", "a"), p.parse("a"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertEquals(PT.create("S"), p.parse(""));
+            Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
+            Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
             Assertions.assertTrue(p.parse("aaa").isFailure());
             Assertions.assertTrue(p.parse("aaaa").isFailure());
             Assertions.assertTrue(p.parse("aaaaa").isFailure());
         }
         {
             final @NotNull var p = Alpha.parser("S = *0 'a'");
-            Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
+            Assertions.assertEquals(PT.create("S"), p.parse(""));
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertTrue(p.parse("aa").isFailure());
             Assertions.assertTrue(p.parse("aaa").isFailure());
@@ -55,14 +56,14 @@ class VariableRepetitionTest {
             final @NotNull var p = Alpha.parser("S = 2*4 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
-            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
             Assertions.assertTrue(p.parse("aaaaa").isFailure());
         }
         {
             final @NotNull var p = Alpha.parser("S = 0*0 'a'");
-            Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
+            Assertions.assertEquals(PT.create("S"), p.parse(""));
             Assertions.assertTrue(p.parse("a").isFailure());
             Assertions.assertTrue(p.parse("aa").isFailure());
             Assertions.assertTrue(p.parse("aaa").isFailure());
@@ -76,7 +77,7 @@ class VariableRepetitionTest {
         final @NotNull var p = Alpha.parser("S = 2 'a'");
         Assertions.assertTrue(p.parse("").isFailure());
         Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
         Assertions.assertTrue(p.parse("aaa").isFailure());
         Assertions.assertTrue(p.parse("aaaa").isFailure());
     }
@@ -85,12 +86,12 @@ class VariableRepetitionTest {
     void parseWithPartial() {
         var text = "aaaaaa";
         var treesPartial = Set.of(
-                ParseTree.create("S", "a"),
-                ParseTree.create("S", "a", "a"),
-                ParseTree.create("S", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+                PT.create("S", "a"),
+                PT.create("S", "a", "a"),
+                PT.create("S", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a", "a")
         );
         var partialOpts = ParsingOptions.getDefault().withPartial(true);
 
@@ -108,12 +109,12 @@ class VariableRepetitionTest {
     void parseFullWithPartial() {
         var text = "aaaaaa";
         var treesPartial = Set.of(
-                ParseTree.create("S", "a"),
-                ParseTree.create("S", "a", "a"),
-                ParseTree.create("S", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+                PT.create("S", "a"),
+                PT.create("S", "a", "a"),
+                PT.create("S", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a", "a")
         );
         var partialOpts = ParsingOptions.getDefault().withPartial(true);
 

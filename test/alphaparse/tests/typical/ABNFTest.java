@@ -3,7 +3,7 @@ package alphaparse.tests.typical;
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,15 +19,15 @@ class ABNFTest {
     void caseSensitivityTest() {
         {
             var p = Alpha.parser("S = \"abc\"", ParserCreationOptions.abnf());
-            Assertions.assertEquals(ParseTree.create("S", "abc"), p.parse("abc"));
-            Assertions.assertEquals(ParseTree.create("S", "abc"), p.parse("AbC"));
-            Assertions.assertEquals(ParseTree.create("S", "abc"), p.parse("ABC"));
+            Assertions.assertEquals(PT.create("S", "abc"), p.parse("abc"));
+            Assertions.assertEquals(PT.create("S", "abc"), p.parse("AbC"));
+            Assertions.assertEquals(PT.create("S", "abc"), p.parse("ABC"));
         }
         {
             var p = Alpha.parser("S = \"A\" \"B\"", ParserCreationOptions.abnf());
-            Assertions.assertEquals(ParseTree.create("S", "A", "B"), p.parse("ab"));
-            Assertions.assertEquals(ParseTree.create("S", "A", "B"), p.parse("Ab"));
-            Assertions.assertEquals(ParseTree.create("S", "A", "B"), p.parse("AB"));
+            Assertions.assertEquals(PT.create("S", "A", "B"), p.parse("ab"));
+            Assertions.assertEquals(PT.create("S", "A", "B"), p.parse("Ab"));
+            Assertions.assertEquals(PT.create("S", "A", "B"), p.parse("AB"));
         }
     }
 
@@ -36,43 +36,43 @@ class ABNFTest {
         var p = Alpha.parser("S = 2 \"A\"", ParserCreationOptions.abnf());
         Assertions.assertTrue(p.parse("").isFailure());
         Assertions.assertTrue(p.parse("A").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "A", "A"), p.parse("aa"));
         Assertions.assertTrue(p.parse("AAA").isFailure());}
     @Test
     void countedRepetitionTestSameSides() {
         var p = Alpha.parser("S = 2*2 \"A\"", ParserCreationOptions.abnf());
         Assertions.assertTrue(p.parse("").isFailure());
         Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "A", "A"), p.parse("aa"));
         Assertions.assertTrue(p.parse("aaa").isFailure());}
     @Test
     void countedRepetitionTestRightOnly() {
         var p = Alpha.parser("S = *2 \"A\"", ParserCreationOptions.abnf());
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "A"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "A", "A"), p.parse("aa"));
         Assertions.assertTrue(p.parse("aaa").isFailure());}
     @Test
     void countedRepetitionTestLeftOnly() {
         var p = Alpha.parser("S = 2* \"A\"", ParserCreationOptions.abnf());
         Assertions.assertTrue(p.parse("").isFailure());
         Assertions.assertTrue(p.parse("a").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
-        Assertions.assertEquals(ParseTree.create("S", "A", "A", "A"), p.parse("aaa"));}
+        Assertions.assertEquals(PT.create("S", "A", "A"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "A", "A", "A"), p.parse("aaa"));}
     @Test
     void countedRepetitionTestBoth() {
         var p = Alpha.parser("S = 1*2 \"A\"", ParserCreationOptions.abnf());
         Assertions.assertTrue(p.parse("").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "A"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "A", "A"), p.parse("aa"));
         Assertions.assertTrue(p.parse("aaa").isFailure());}
     @Test
     void countedRepetitionTestStarOnly() {
         var p = Alpha.parser("S = * \"A\"", ParserCreationOptions.abnf());
-        Assertions.assertEquals(ParseTree.create("S"), p.parse(""));
-        Assertions.assertEquals(ParseTree.create("S", "A"), p.parse("a"));
-        Assertions.assertEquals(ParseTree.create("S", "A", "A"), p.parse("aa"));
-        Assertions.assertEquals(ParseTree.create("S", "A", "A", "A"), p.parse("aaa"));
+        Assertions.assertEquals(PT.create("S"), p.parse(""));
+        Assertions.assertEquals(PT.create("S", "A"), p.parse("a"));
+        Assertions.assertEquals(PT.create("S", "A", "A"), p.parse("aa"));
+        Assertions.assertEquals(PT.create("S", "A", "A", "A"), p.parse("aaa"));
     }
     @Test
     void incrementalExtensionTest() {
@@ -81,17 +81,17 @@ class ABNFTest {
                     S =/ "b" S
                     S =/ ε
                     """, ParserCreationOptions.abnf());
-        var epsTree = ParseTree.create("S");
+        var epsTree = PT.create("S");
         Assertions.assertEquals(
-                ParseTree.create("S", "a", epsTree),
+                PT.create("S", "a", epsTree),
                 p.parse("a")
         );
         Assertions.assertEquals(
-                ParseTree.create("S", "a", ParseTree.create("S", "b", epsTree)),
+                PT.create("S", "a", PT.create("S", "b", epsTree)),
                 p.parse("ab")
         );
         Assertions.assertEquals(
-                ParseTree.create("S", "a", ParseTree.create("S", "a", epsTree)),
+                PT.create("S", "a", PT.create("S", "a", epsTree)),
                 p.parse("aa")
         );
     }
@@ -103,7 +103,7 @@ class ABNFTest {
                     S = %x41-43
                     """, ParserCreationOptions.abnf());
             Assertions.assertEquals(
-                    ParseTree.create("S", "A"),
+                    PT.create("S", "A"),
                     p.parse("A")
             );
         }
@@ -112,21 +112,21 @@ class ABNFTest {
                     S = %d65-67
                     """, ParserCreationOptions.abnf());
             Assertions.assertEquals(
-                    ParseTree.create("S", "A"),
+                    PT.create("S", "A"),
                     p.parse("A")
             );
         }
         {
             var p = Alpha.parser("S = 1* A\n<A> = %d66", ParserCreationOptions.abnf());
             Assertions.assertEquals(
-                    ParseTree.create("S", "B"),
+                    PT.create("S", "B"),
                     p.parse("B")
             );
         }
         {
             var p = Alpha.parser("S = 1* (%d65-67)", ParserCreationOptions.abnf());
             Assertions.assertEquals(
-                    ParseTree.create("S", "B", "B", "B"),
+                    PT.create("S", "B", "B", "B"),
                     p.parse("BBB")
             );
         }
@@ -136,7 +136,7 @@ class ABNFTest {
         {
             var p = Alpha.parser("S = 1* (%d65-67)", ParserCreationOptions.abnf());
             Assertions.assertEquals(
-                    ParseTree.create("S", "B"),
+                    PT.create("S", "B"),
                     p.parse("B")
             );
         }

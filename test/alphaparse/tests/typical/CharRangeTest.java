@@ -4,7 +4,7 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.result.ParseTree;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
     void unicodeCodepointSingleParse() {
         var parser = Alpha.parser("S = %x1F381", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
+        Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"));
         Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure());
         Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure());
     }
@@ -26,7 +26,7 @@ ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
     void unicodeCodepointSingleParse2() {
         var parser = Alpha.parser("S = %x1F381-1F381", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
+        Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"));
         Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure());
         Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure());
     }
@@ -35,8 +35,8 @@ ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
     void unicodeCodepointShortRangeParse() {
         var parser = Alpha.parser("S = %x1F381-1F382", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
-        Assertions.assertEquals(ParseTree.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"));
+        Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"));
+        Assertions.assertEquals(PT.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"));
         Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure());
     }
 
@@ -44,17 +44,17 @@ ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
     void unicodeCodepointLongRangeParse() {
         var parser = Alpha.parser("S = %x41-1F382", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "A"), parser.parse("A"));
-        Assertions.assertEquals(ParseTree.create("S", "🎁"), parser.parse("🎁"));
-        Assertions.assertEquals(ParseTree.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"));
+        Assertions.assertEquals(PT.create("S", "A"), parser.parse("A"));
+        Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"));
+        Assertions.assertEquals(PT.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"));
     }
 
     @Test
     void unicodeCodepointSmallCharParse() {
         var parser = Alpha.parser("S = %x41-5A", options);
         Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure());
-        Assertions.assertEquals(ParseTree.create("S", "A"), parser.parse("A"));
-        Assertions.assertEquals(ParseTree.create("S", "Z"), parser.parse("Z"));
+        Assertions.assertEquals(PT.create("S", "A"), parser.parse("A"));
+        Assertions.assertEquals(PT.create("S", "Z"), parser.parse("Z"));
         Assertions.assertTrue(parser.parse("\uD83C\uDF81").isFailure());
     }
 
@@ -88,7 +88,7 @@ ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
     @Test
     void unicodeCodepointRulePrecedence() {
         var text = "🎁🎁🎁";
-        var tree = ParseTree.create("S", "🎁", "🎁", "🎁");
+        var tree = PT.create("S", "🎁", "🎁", "🎁");
         Assertions.assertEquals(
                 tree,
                 Alpha.parser("S = %x1F381-1F381 %x1F381-1F381 %x1F381-1F381", options).parse(text));

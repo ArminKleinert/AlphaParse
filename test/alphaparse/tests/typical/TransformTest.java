@@ -2,6 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
+import alphaparse.result.PT;
 import alphaparse.result.ParseTree;
 import alphaparse.util.Transform;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +15,7 @@ import java.util.function.Function;
 class TransformTest {
     @Test
     void testAdd1() {
-        var tree = ParseTree.create("S", "1", "2", "3");
+        var tree = PT.create("S", "1", "2", "3");
         Function<List<Object>, Object> transformFn =
                 o -> o.stream().mapToInt(it -> Integer.parseInt((String) it)).sum();
         Map<Sym, Function<List<Object>, Object>> transformMap = Map.of(Sym.sym("S"), transformFn);
@@ -98,10 +99,10 @@ class TransformTest {
         );
 
         Assertions.assertEquals(
-                ParseTree.create("S", "6"),
+                PT.create("S", "6"),
                 Transform.transform(tree, transformMap));
         Assertions.assertEquals(
-                ParseTree.create("S", "6"),
+                PT.create("S", "6"),
                 Transform.transform(tree, transformMap, (o) -> (ParseTree) o));
     }
 }

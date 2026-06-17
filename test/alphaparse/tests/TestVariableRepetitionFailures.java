@@ -5,6 +5,7 @@ import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
+import alphaparse.result.PT;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -17,13 +18,13 @@ class TestVariableRepetitionFailures {
     void parseWithPartial1() {
         var text = "aaaaaa";
         var treesPartial = List.of(
-                ParseTree.create("S"),
-                ParseTree.create("S", "a"),
-                ParseTree.create("S", "a", "a"),
-                ParseTree.create("S", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+                PT.create("S"),
+                PT.create("S", "a"),
+                PT.create("S", "a", "a"),
+                PT.create("S", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a", "a")
         );
         var partialOpts = ParsingOptions.getDefault().withPartial(true);
         var creationOpts = ParserCreationOptions
@@ -40,12 +41,12 @@ class TestVariableRepetitionFailures {
     void parseWithPartial2() {
         var text = "aaaaaa";
         var treesPartial = List.of(
-                ParseTree.create("S", "a"),
-                ParseTree.create("S", "a", "a"),
-                ParseTree.create("S", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+                PT.create("S", "a"),
+                PT.create("S", "a", "a"),
+                PT.create("S", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a", "a")
         );
         var partialOpts = ParsingOptions.getDefault().withPartial(true);
         var creationOpts = ParserCreationOptions
@@ -63,12 +64,12 @@ class TestVariableRepetitionFailures {
     void parseFullWithPartial() {
         var text = "aaaaaa";
         var treesPartial = List.of(
-                ParseTree.create("S", "a"),
-                ParseTree.create("S", "a", "a"),
-                ParseTree.create("S", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a"),
-                ParseTree.create("S", "a", "a", "a", "a", "a", "a")
+                PT.create("S", "a"),
+                PT.create("S", "a", "a"),
+                PT.create("S", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a"),
+                PT.create("S", "a", "a", "a", "a", "a", "a")
         );
         var partialOpts = ParsingOptions.getDefault().withPartial(true);
         var creationOpts = ParserCreationOptions
@@ -86,9 +87,9 @@ class TestVariableRepetitionFailures {
             final @NotNull var p = Alpha.parser("S = 2*4 'a'");
             Assertions.assertTrue(p.parse("").isFailure());
             Assertions.assertTrue(p.parse("a").isFailure());
-            Assertions.assertEquals(ParseTree.create("S", "a", "a"), p.parse("aa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a"), p.parse("aaa"));
-            Assertions.assertEquals(ParseTree.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"));
+            Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
             Assertions.assertTrue(p.parse("aaaaa").isFailure());
     }
     @Test
