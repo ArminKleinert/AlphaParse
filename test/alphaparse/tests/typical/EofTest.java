@@ -15,15 +15,15 @@ class EofTest {
 
         Assertions.assertEquals(
                 PT.create("S"),
-                Alpha.parser("S = " + EOFTerm.text, opts).parse(""));
+                Alpha.parser("S = " + EOFTerm.text(), opts).parse(""));
 
         Assertions.assertEquals(
                 PT.create("S"),
-                Alpha.parser("S = <' '>" + EOFTerm.text, opts).parse(" "));
+                Alpha.parser("S = <' '>" + EOFTerm.text(), opts).parse(" "));
 
         Assertions.assertEquals(
                 PT.create("S", "a"),
-                Alpha.parser("S = 'a' " + EOFTerm.text, opts).parse("a"));
+                Alpha.parser("S = 'a' " + EOFTerm.text(), opts).parse("a"));
     }
 
     @Test
@@ -32,10 +32,10 @@ class EofTest {
 
         Assertions.assertEquals(
                 PT.create("S"),
-                Alpha.parser("S = " + EOFTerm.text, opts).parse(""));
+                Alpha.parser("S = " + EOFTerm.text(), opts).parse(""));
 
         Assertions.assertEquals(
                 PT.create("S"),
-                Alpha.parser("S = " + EOFTerm.text, opts).parse(" "));
+                Alpha.parser("S = " + EOFTerm.text(), opts).parse(" "));
     }
 }

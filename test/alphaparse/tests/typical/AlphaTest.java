@@ -24,7 +24,7 @@ class AlphaTest {
     @Test
     void simplifiedParseTreeCreation() {
         var pt1 = PT.create("S", "a", "a");
-        var pt2 = PT.create(new Node.NodeTreeTag(Sym.sym("S")), List.of(Node.of("a"), Node.of("a")));
+        var pt2 = PT.create(Sym.sym("S"), List.of(Node.of("a"), Node.of("a")));
         Assertions.assertEquals(pt2, pt1);
     }
 
