@@ -12,9 +12,30 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 class NewFeaturesTest {
+    @Test void orderedChoiceTest() {
+        {
+            final @NotNull var p = Alpha.parser("""
+                    S = A / B / ε / C
+                    A = C
+                    B = C
+                    C = ε
+                    """);
+            System.out.println(Alpha.parses(p, ""));
+        }
+        {
+            final @NotNull var p = Alpha.parser("""
+                    S = A | B | ε | C
+                    A = C
+                    B = C
+                    C = ε
+                    """);
+            System.out.println(Alpha.parses(p, ""));
+        }
+    }
     @Test void plusTest() {
         var p = Alpha.parser("S = !#'[ \t]*\\n[ \t]*' 'a'+", ParserCreationOptions.newWithStandardWhitespace());
         System.out.println(p.parses("aaa"));

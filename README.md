@@ -24,8 +24,18 @@ Missing features and problems:
 
 ## Usage
 
-1. Download the `.jar` file or compile it yourself. 
+1. Download the `.jar` file or compile it yourself.
 2. Add the library to your classpath. I recommend using an IDE for this.
+
+## User-side Priorities
+
+These are priorities that directly impact the usage.
+
+- Parse tree format follows OOP style: Instaparse uses raw objects and supports two different formats for parse trees.
+  Alphaparse has only one type for parse trees which uses a wrapping type `Node`.
+- Parse trees are smaller. If the grammar is ambiguous, AlphaParse can hold more output trees than Instaparse, at least
+  on my machine.
+- Smaller library `.jar` size. I set a maximum size goal of 220 mB.
 
 ## Grammar elements
 
@@ -105,26 +115,24 @@ class RedefTest {
     static void main(String[] args) {
         String gr = "S : 'A'\nS : 'B'\nS : 'C'"; // Three different definitions for "S".
         Parser p;
+        var opts = ParserCreationOptions.getDefault();
 
         p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
-        IO.println(p.parse("A").isSuccess()); // false
-        IO.println(p.parse("B").isSuccess()); // false
-        IO.println(p.parse("C").isSuccess()); // true
+        System.out.println(p.parse("A").isSuccess()); // false
+        System.out.println(p.parse("B").isSuccess()); // false
+        System.out.println(p.parse("C").isSuccess()); // true
 
         p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.ERROR)); // Fails
-        IO.println(p.parse("A").isSuccess()); // n.a.
-        IO.println(p.parse("B").isSuccess()); // n.a.
-        IO.println(p.parse("C").isSuccess()); // n.a.
 
         p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.CHOICE));
-        IO.println(p.parse("A").isSuccess()); // true
-        IO.println(p.parse("B").isSuccess()); // true
-        IO.println(p.parse("C").isSuccess()); // true
+        System.out.println(p.parse("A").isSuccess()); // true
+        System.out.println(p.parse("B").isSuccess()); // true
+        System.out.println(p.parse("C").isSuccess()); // true
 
         p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.KEEP));
-        IO.println(p.parse("A").isSuccess()); // true
-        IO.println(p.parse("B").isSuccess()); // false
-        IO.println(p.parse("C").isSuccess()); // false
+        System.out.println(p.parse("A").isSuccess()); // true
+        System.out.println(p.parse("B").isSuccess()); // false
+        System.out.println(p.parse("C").isSuccess()); // false
     }
 }
 ```

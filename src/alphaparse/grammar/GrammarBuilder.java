@@ -155,7 +155,7 @@ public abstract class GrammarBuilder {
     }
 
     /**
-     * Adds a production to the output.
+     * Adds a production to the output. This method is a convenient alternative to {@link #addProduction(Sym, Rule)} if you do not want to make the string into a symbol yourself.
      *
      * @param lhs The production's key. (left-hand-side)
      * @param rhs The production's right-hand-side.
