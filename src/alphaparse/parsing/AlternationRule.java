@@ -72,7 +72,8 @@ public final class AlternationRule extends RuleWithManyChildren {
             }
         }
 
-        return new AlternationRule(defaultHidden, defaultReductionType,
+        return new AlternationRule(
+                defaultHidden, defaultReductionType,
                 compressedRules.stream().distinct().toList());
     }
 
@@ -91,20 +92,22 @@ public final class AlternationRule extends RuleWithManyChildren {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
+        var thisKey = new TrampolineListenerKey(index, this);
         for (final @NotNull Rule rule : getRules()) {
             runner.pushListener(
                     new TrampolineListenerKey(index, rule),
-                    runner.nodeListener(new TrampolineListenerKey(index, this))
+                    runner.nodeListener(thisKey)
             );
         }
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
+        var thisKey = new TrampolineListenerKey(index, this);
         for (final @NotNull Rule parser : getRules()) {
             runner.pushFullListener(
                     new TrampolineListenerKey(index, parser),
-                    runner.nodeListener(new TrampolineListenerKey(index, this))
+                    runner.nodeListener(thisKey)
             );
         }
     }
