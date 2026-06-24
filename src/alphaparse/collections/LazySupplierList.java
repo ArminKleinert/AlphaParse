@@ -56,7 +56,6 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
         if (next == null) {
             fullyEvaluated = true;
             nextFn = null; // Discard the function.
-            //evaluatedPart = new UnmodList<>(evaluatedPart); // Everything evaluated. Compress the list.
             return null;
         }
 

@@ -19,13 +19,18 @@ class NewFeaturesTest {
     @Test void orderedChoiceTest() {
         {
             final @NotNull var p = Alpha.parser("""
-                    S = A / B / C / ε
-                    A = C
-                    B = C
+                    S = A / B / C / D / E
+                    A = ε
+                    B = ε
                     C = ε
+                    D = ε
+                    E = ε
                     """);
-            System.out.println("Expect: [[:S, [:A, [:C]]], [:S, [:B, [:C]]], [:S, [:C]], [:S]]");
-            System.out.println("Have:   "+Alpha.parses(p, ""));
+            System.out.println(p);
+            var ps = Alpha.parses(p, "").stream().toList();
+            System.out.println();
+            System.out.println("Expect: [[:S, [:A]], [:S, [:B]], [:S, [:C]], [:S, [:D]], [:S, [:E]]]");
+            System.out.println("Have:   " + ps);
         }
         {
             final @NotNull var grammar = """
@@ -41,8 +46,8 @@ class NewFeaturesTest {
                     PT.create("S", PT.create("r1", "a"), PT.create("r2", "a")),
                     PT.create("S", PT.create("r2", "a"), PT.create("r2", "a"))
             );
-            System.out.println("Expect: "+possibleParses);
-            System.out.println("Have:   "+Alpha.parses(p, text));
+//            System.out.println("Expect: "+possibleParses);
+//            System.out.println("Have:   "+Alpha.parses(p, text));
         }
     }
     @Test void plusTest() {
