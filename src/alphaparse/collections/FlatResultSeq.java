@@ -88,6 +88,14 @@ public final class FlatResultSeq implements Iterable<Object> {
         return hc;
     }
 
+    /**
+     * Appends the input to the sequence. If the input is a {@link FlatResultSeq}, it is inserted into the instance flattened.
+     * <p>
+     * {@code null} inputs are ignored, as are empty {@link FlatResultSeq} inputs.
+     *
+     * @param obj Input.
+     * @return A new instance.
+     */
     public @NotNull FlatResultSeq appendOrConcat(final Object obj) {
         if (obj == null)
             return this;
@@ -95,7 +103,8 @@ public final class FlatResultSeq implements Iterable<Object> {
         if (obj instanceof FlatResultSeq frs) {
             if (size() == 0)
                 return frs;
-            if (frs.isEmpty()) return this;
+            if (frs.isEmpty())
+                return this;
             var otherArray = frs.v;
             final @NotNull Object[] newV = Arrays.copyOf(v, v.length + otherArray.length);
             System.arraycopy(otherArray, 0, newV, v.length, otherArray.length);

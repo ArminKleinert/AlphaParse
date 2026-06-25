@@ -59,7 +59,7 @@ public final class LookaheadRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull LookaheadRule withInner(final @NotNull Rule rule) {
+    public @NotNull LookaheadRule withRule(final @NotNull Rule rule) {
         return new LookaheadRule(hide, red, rule);
     }
 }

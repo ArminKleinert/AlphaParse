@@ -55,7 +55,7 @@ public final class OptionalRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull OptionalRule withInner(final @NotNull Rule rule) {
+    public @NotNull OptionalRule withRule(final @NotNull Rule rule) {
         return new OptionalRule(hide, red, rule);
     }
 

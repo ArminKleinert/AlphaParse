@@ -19,6 +19,7 @@ public final class EOFTerm extends Terminal {
 
     /**
      * Default text for EOF.
+     * @return The text that identifies an EOF rule in a grammar.
      */
     public static @NotNull String text () {
         return "EOF";

@@ -45,7 +45,8 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull Rule rule = getRule();
-        final @NotNull TrampolineListenerKey nodeKeyForStar = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKeyForStar =
+                new TrampolineListenerKey(index, this);
         if (index == runner.tramp().getText().length()) {
             runner.pushSuccessMessageWithoutValue(nodeKeyForStar, index);
             return;
@@ -56,7 +57,7 @@ public final class ZeroOrMoreRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull ZeroOrMoreRule withInner(final @NotNull Rule rule) {
+    public @NotNull ZeroOrMoreRule withRule(final @NotNull Rule rule) {
         return new ZeroOrMoreRule(hide, red, rule);
     }
 

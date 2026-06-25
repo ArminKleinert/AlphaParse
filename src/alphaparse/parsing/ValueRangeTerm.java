@@ -42,65 +42,34 @@ public final class ValueRangeTerm extends Terminal {
 
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
-        final @NotNull String text = runner.tramp().getText();
-        final int lo = getLo();
-        final int hi = getHi();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
-
-        if (index >= text.length()) {
-            runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
-            return;
-        }
-
-        if (hi <= 0xFFFF) {
-            final int code = text.charAt(index); // (int (.charAt text index))
-            if (lo <= code && code <= hi) {
-                runner.pushSuccessMessage(nodeKey, String.valueOf((char)code), index + 1);
-            } else {
-                runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
-            }
-            return;
-        }
-
-        final int codePoint = Character.codePointAt(text, index);
-        final @NotNull String charString = new String(Character.toChars(codePoint));
-        if (lo <= codePoint && codePoint <= hi) {
-            runner.pushSuccessMessage(nodeKey, charString, index + charString.length());
-        } else {
-            runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, false));
-        }
+        parse(index, runner, false);
     }
 
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
+        parse(index, runner, true);
+    }
+
+    private void parse(final int index, final @NotNull Gll runner, final boolean expectEnd) {
         final @NotNull String text = runner.tramp().getText();
         final int lo = getLo();
         final int hi = getHi();
         final int end = text.length();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKeyForThis = new TrampolineListenerKey(index, this);
+        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, this);
 
         if (index >= text.length()) {
-            runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
-            return;
-        }
-
-        if (hi <= 0xFFFF) {
-            final var code = (int) text.charAt(index);
-            if (index + 1 == end && lo <= code && code <= hi) {
-                runner.pushSuccessMessage(nodeKeyForThis, Character.toString(code), end);
-            } else {
-                runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
-            }
+            runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, expectEnd));
             return;
         }
 
         final int codePoint = Character.codePointAt(text, index);
         final @NotNull String charString = new String(Character.toChars(codePoint));
 
-        if ((index + charString.length()) == end && lo <= codePoint && codePoint <= hi) {
-            runner.pushSuccessMessage(nodeKeyForThis, charString, end);
+        boolean check = !expectEnd || (index + charString.length() == end);
+        if (check && lo <= codePoint && codePoint <= hi) {
+            runner.pushSuccessMessage(nodeKey, charString, index + charString.length());
         } else {
-            runner.fail(nodeKeyForThis, index, ParseFailureReason.ofUnicodeChar(this, true));
+            runner.fail(nodeKey, index, ParseFailureReason.ofUnicodeChar(this, expectEnd));
         }
     }
 

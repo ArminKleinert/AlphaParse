@@ -46,21 +46,21 @@ public final class NegativeLookaheadRule extends RuleWithChild {
     @Override
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull Rule rule = getRule();
-        final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, rule);
+        final @NotNull TrampolineListenerKey nodeKey = new TrampolineListenerKey(index, rule);
+        final @NotNull var thisNodeKey = new TrampolineListenerKey(index, this);
 
         if (resultExists_Q(runner, nodeKey)) {
-            runner.fail(new TrampolineListenerKey(index, this), index, ParseFailureReason.ofNegated(this, false));
+            runner.fail(thisNodeKey, index, ParseFailureReason.ofNegated(this, false));
             return;
         }
 
         runner.pushListener(nodeKey, ignored -> runner.fail(
-                new TrampolineListenerKey(index, this), index,
+                thisNodeKey, index,
                 ParseFailureReason.ofNegated(this, false)));
 
-        final @NotNull Rule p = this;
         runner.pushNegativeListener(nodeKey, () -> {
             if (!resultExists_Q(runner, nodeKey)) {
-                runner.pushSuccessMessageWithoutValue(new TrampolineListenerKey(index, p), index);
+                runner.pushSuccessMessageWithoutValue(thisNodeKey, index);
             }
         });
     }
@@ -71,7 +71,7 @@ public final class NegativeLookaheadRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull NegativeLookaheadRule withInner(final @NotNull Rule rule) {
+    public @NotNull NegativeLookaheadRule withRule(final @NotNull Rule rule) {
         return new NegativeLookaheadRule(hide, red, rule);
     }
 

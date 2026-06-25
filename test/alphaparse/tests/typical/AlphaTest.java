@@ -371,20 +371,24 @@ class AlphaTest {
 
             Assertions.assertEquals(possibleResults, res);
         }
+
         {
             final @NotNull var p = Alpha.parser("""
-                    S = A / B / ε / C
-                    A = C
-                    B = C
+                    S = A / B / C / D / E
+                    A = ε
+                    B = ε
                     C = ε
+                    D = ε
+                    E = ε
                     """);
-            final @NotNull var possibleTrees = List.of(
-                    PT.create("S", PT.create("A", PT.create("C"))),
-                    PT.create("S", PT.create("B", PT.create("C"))),
-                    PT.create("S"),
-                    PT.create("S", PT.create("C"))
+            var expect = List.of(
+                    PT.create("S", PT.create("A")),
+                    PT.create("S", PT.create("B")),
+                    PT.create("S", PT.create("C")),
+                    PT.create("S", PT.create("D")),
+                    PT.create("S", PT.create("E"))
             );
-            Assertions.assertEquals(possibleTrees, Alpha.parses(p, ""));
+            Assertions.assertEquals(expect, Alpha.parses(p, ""));
         }
         {
             final @NotNull var p = Alpha.parser("S = 'a' / ε / 'a'");

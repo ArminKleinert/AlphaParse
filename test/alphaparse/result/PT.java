@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
+/**
+ * Helper functions for creating and handling parse trees in test cases.
+ */
 public final class PT {
     private PT() {}
 

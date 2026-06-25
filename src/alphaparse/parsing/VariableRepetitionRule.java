@@ -173,7 +173,7 @@ public final class VariableRepetitionRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull VariableRepetitionRule withInner(final @NotNull Rule rule) {
+    public @NotNull VariableRepetitionRule withRule(final @NotNull Rule rule) {
         return new VariableRepetitionRule(hide, red, rule, min, max);
     }
 

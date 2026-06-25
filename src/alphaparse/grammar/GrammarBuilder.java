@@ -674,7 +674,7 @@ public abstract class GrammarBuilder {
                             .map(this::compressRule)
                             .toList());
             case RuleWithChild ruleWithChild -> ruleWithChild
-                    .withInner(compressRule(ruleWithChild.getRule()));
+                    .withRule(compressRule(ruleWithChild.getRule()));
             case NonTerminal nonTerminal -> nonTerminal;
             case Terminal terminal -> terminal;
             case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
@@ -687,8 +687,8 @@ public abstract class GrammarBuilder {
         return switch (originalRule) {
             case NonTerminal ignored -> originalRule;
             case EpsilonTerm ignored2 -> originalRule;
-            case RuleWithChild rule -> (rule.withInner(autoWhitespaceHelper(
-                    rule.getRule(), whitespaceRule)));
+            case RuleWithChild rule -> (rule.withRule(
+                    autoWhitespaceHelper(rule.getRule(), whitespaceRule)));
             case RuleWithManyChildren combWithParsers -> {
                 final @NotNull List<@NotNull Rule> rules = combWithParsers
                         .getRules()

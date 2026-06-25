@@ -80,12 +80,12 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
         final @NotNull Rule rule2 = this.rule2;
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
                 new TrampolineListenerKey(index, rule1);
-        final @NotNull TrampolineListenerKey nodeKeyForComb2 =
-                new TrampolineListenerKey(index, rule2);
         final @NotNull Listener listener =
                 runner.nodeListener(new TrampolineListenerKey(index, this));
         runner.pushListener(nodeKeyForComb1, listener);
-        runner.pushNegativeListener(nodeKeyForComb1, () -> runner.pushListener(nodeKeyForComb2, listener));
+        runner.pushNegativeListener(
+                nodeKeyForComb1,
+                () -> runner.pushListener(new TrampolineListenerKey(index, rule2), listener));
     }
 
     @Override
@@ -94,22 +94,22 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
         final @NotNull Rule rule2 = this.rule2;
         final @NotNull TrampolineListenerKey nodeKeyForComb1 =
                 new TrampolineListenerKey(index, rule1);
-        final @NotNull TrampolineListenerKey nodeKeyForComb2 =
-                new TrampolineListenerKey(index, rule2);
         final @NotNull Listener listener =
                 runner.nodeListener(new TrampolineListenerKey(index, this));
         runner.pushFullListener(nodeKeyForComb1, listener);
-        runner.pushNegativeListener(nodeKeyForComb1, () -> runner.pushFullListener(nodeKeyForComb2, listener));
+        runner.pushNegativeListener(
+                nodeKeyForComb1,
+                () -> runner.pushFullListener(new TrampolineListenerKey(index, rule2), listener));
     }
 
     @Override
     public @NotNull OrderedChoiceRule withHideTag(final boolean hide) {
-        return isHidden() == hide ? this : new OrderedChoiceRule(getRules(), hide, this.getReduction());
+        return isHidden() == hide ? this : new OrderedChoiceRule(hide, this.getReduction(), rule1, rule2);
     }
 
     @Override
     public @NotNull OrderedChoiceRule withReduction(final @NotNull ReductionType red) {
-        return getReduction() == red ? this : new OrderedChoiceRule(getRules(), isHidden(), red);
+        return getReduction() == red ? this : new OrderedChoiceRule(isHidden(), red, rule1, rule2);
     }
 
     @Override

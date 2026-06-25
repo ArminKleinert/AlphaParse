@@ -36,11 +36,11 @@ public sealed abstract class RuleWithChild
      * @param rule The new inner {@link Rule}.
      * @return A new instance.
      */
-    public abstract @NotNull RuleWithChild withInner(final @NotNull Rule rule);
+    public abstract @NotNull RuleWithChild withRule(final @NotNull Rule rule);
 
     @Override
     public @NotNull Rule unhideContent() {
-        return ((RuleWithChild) withHideTag(false)).withInner(rule.unhideContent());
+        return ((RuleWithChild) withHideTag(false)).withRule(rule.unhideContent());
     }
 
     @Override

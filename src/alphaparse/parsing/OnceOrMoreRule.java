@@ -99,7 +99,7 @@ public final class OnceOrMoreRule extends RuleWithChild {
     }
 
     @Override
-    public @NotNull OnceOrMoreRule withInner(final @NotNull Rule rule) {
+    public @NotNull OnceOrMoreRule withRule(final @NotNull Rule rule) {
         return new OnceOrMoreRule(hide, red, rule);
     }
 
