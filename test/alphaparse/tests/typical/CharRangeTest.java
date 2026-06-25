@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class CharRangeTest {
 
     private final ParserCreationOptions options =
-ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
+            ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.VALUE_RANGE);
 
     @Test
     void unicodeCodepointSingleParse() {

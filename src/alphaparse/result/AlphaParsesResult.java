@@ -88,7 +88,7 @@ public sealed interface AlphaParsesResult
     }
 
     /**
-     * This class is used for {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)} to represent the failure.
+     * This class is used for {@link Alpha#parses(Parser, String, ParsingOptions)} to represent the failure.
      */
     final class ParsesFailureResult implements AlphaParsesResult, PretenderList<ParseTree> {
         final @NotNull AlphaParseFailure alphaParseFailure;

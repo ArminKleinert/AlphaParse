@@ -76,7 +76,7 @@ public enum RulesAvailable {
      * With this option, any character can be used except those which are used for other purposes:
      * {@code " ' ! ? + * [ ] ( ) { } < > : = / | # & }
      * <p>
-     * This means that the production {@code 🎁 = "a"} becomes legal with this option.
+     * This means that the production {@code 🎁 = "a"} becomes legal.
      * <p>
      * Possible replacements through other rule types: N.A.
      */

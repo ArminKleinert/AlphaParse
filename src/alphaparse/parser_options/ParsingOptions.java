@@ -18,20 +18,23 @@ import java.util.Objects;
  *
  * @param start                   Start production for the parse. Use {@code null} to use the Parser's start production.
  * @param usePartial              Whether to return partial (incomplete) parses.
- * @param unhide                  What (if anything) to "unhide" in the results.
- * @param embedFailureInParseTree Whether to return parse trees containing failure nodes or just return the failure itself.
+ * @param unhide                  Which parts of a parse result to show when they would normally be hidden by the parser.
+ * @param embedFailureInParseTree If true, a failed parse results in a {@link ParseTree}, as a success would, but a {@link ParseFailureNode} is embedded in the tree.
  * @param iterativeDeepening      Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link RegexTerm#parse}.
+ * @param failureIfEmpty Important for {@link Alpha#parses(Parser, String, ParsingOptions)} only. If false, return an empty list if the parsing failed. If true, return the failure.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE
  * @see ParsingOptions#DEFAULT_EMBED_FAILURES
+ * @see ParsingOptions#DEFAULT_FAILURE_IF_EMPTY
  */
 public record ParsingOptions(
         @Nullable Sym start,
         boolean usePartial,
         @NotNull UnhideOptions unhide,
         boolean embedFailureInParseTree,
-        boolean iterativeDeepening
+        boolean iterativeDeepening,
+        boolean failureIfEmpty
 ) {
     /**
      * Default for the start production name of a parse operation. ({@code null})
@@ -54,9 +57,13 @@ public record ParsingOptions(
      * The reason is that it is much slower to do.
      */
     public static final boolean DEFAULT_ITERATIVE_DEEPENING = false;
+    /**
+     * {@code false} by default.
+     */
+    public static final boolean DEFAULT_FAILURE_IF_EMPTY = false;
 
     /**
-     * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean)} with the static defaults.
+     * Calls {@link ParsingOptions#ParsingOptions(Sym, boolean, UnhideOptions, boolean, boolean, boolean)} with the static defaults.
      *
      * @return An instance of this class, using all the static DEFAULT_* values.
      * @see ParsingOptions#DEFAULT_START
@@ -64,13 +71,14 @@ public record ParsingOptions(
      * @see ParsingOptions#DEFAULT_UNHIDE
      * @see ParsingOptions#DEFAULT_EMBED_FAILURES
      * @see ParsingOptions#DEFAULT_ITERATIVE_DEEPENING
+     * @see ParsingOptions#DEFAULT_FAILURE_IF_EMPTY
      */
     public static @NotNull ParsingOptions getDefault() {
-        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_EMBED_FAILURES, DEFAULT_ITERATIVE_DEEPENING);
+        return new ParsingOptions(DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE, DEFAULT_EMBED_FAILURES, DEFAULT_ITERATIVE_DEEPENING, DEFAULT_FAILURE_IF_EMPTY);
     }
 
     /**
-     * When a parser is created, it carries its own start production. With this option, the start production can be forcefully changed for a parse. If the parser's start should be used, this method returns {@code null}.
+     * When a parser is created, it carries its own start production. With this option, the start production can be forcefully changed for a parse. If the parser's start should be used, use {@code null} as the parameter.
      * <p>
      * Example:
      * <pre>
@@ -89,16 +97,21 @@ public record ParsingOptions(
      * </pre>
      * This can be useful if the grammar has multiple unrelated parts.
      *
-     * @return A keyword.
+     * @param start The new start production.
+     * @return A new instance.
+     * @see ParsingOptions#start()
+     * @see ParsingOptions#DEFAULT_START
+     * @see ParsingOptions#getDefault()
      */
-    public @Nullable Sym getStart() {
-        return start;
+    public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
+        if (Objects.equals(this.start, start)) return this;
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
     }
 
     /**
      * When generating a parse tree, the parser tries to parse the full string first. With this option, partial parses can be made available.
      * <br>
-     * The option only applies when requesting the full parse forest (e.g. {@link Alpha#parses(Parser, String, ParsingOptions)} and {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)}), but not when only a single parse is requested (e.g. {@link Alpha#parse(Parser, String, ParsingOptions)}).
+     * The option only applies when requesting the full parse forest (e.g. {@link Alpha#parses(Parser, String, ParsingOptions)}), but not when only a single parse is requested (e.g. {@link Alpha#parse(Parser, String, ParsingOptions)}).
      * <pre>
      * {@code
      *      var p = Alpha.parser("S := 'a'+");
@@ -112,16 +125,17 @@ public record ParsingOptions(
      * }
      * </pre>
      *
-     * @return true or false
-     * @see ParsingOptions#DEFAULT_PARTIAL
-     * @see ParsingOptions#getDefault()
+     * @param usePartial The argument as a boolean.
+     * @return A new instance.
+     * @see #usePartial()
      */
-    public boolean usePartial() {
-        return usePartial;
+    public @NotNull ParsingOptions withPartial(final boolean usePartial) {
+        if (Objects.equals(this.usePartial, usePartial)) return this;
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
     }
 
     /**
-     * Determine which parts of a parse result to show when they would normally be hidden by the parser.
+     * Create a new instance with {@link #unhide()} set to the parameter.
      * <p>
      * Consider the following grammar:
      * <pre>
@@ -159,16 +173,18 @@ public record ParsingOptions(
      * }
      * </pre>
      *
-     * @return The unhide option.
-     * @see ParsingOptions#DEFAULT_UNHIDE
-     * @see ParsingOptions#getDefault()
+     * @param unhide The new option.
+     * @return A new instance.
+     * @see #unhide()
      */
-    public @NotNull UnhideOptions unhide() {
-        return unhide;
+    public @NotNull ParsingOptions withUnhide(final @NotNull UnhideOptions unhide) {
+        if (Objects.equals(this.unhide, unhide)) return this;
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
     }
 
     /**
-     * If true, a failed parse results in a {@link ParseTree}, as a success would, but a {@link ParseFailureNode} is embedded in the tree.
+     * Creates a new instance with the {@link #embedFailureInParseTree()} option set to the parameter.
+     *
      * <pre>
      * {@code
      *      var p = Alpha.parser("S := #'a'+");
@@ -185,62 +201,13 @@ public record ParsingOptions(
      * }
      * </pre>
      *
-     * @return true or false
-     * @see ParsingOptions#DEFAULT_EMBED_FAILURES
-     * @see ParsingOptions#getDefault()
-     */
-    public boolean embedFailureInParseTree() {
-        return embedFailureInParseTree;
-    }
-
-    /**
-     * Sets the start production explicitly.
-     *
-     * @param start The new start production.
-     * @return A new instance.
-     * @see ParsingOptions#getStart()
-     * @see ParsingOptions#DEFAULT_START
-     * @see ParsingOptions#getDefault()
-     */
-    public @NotNull ParsingOptions withStart(final @Nullable Sym start) {
-        if (Objects.equals(this.start, start)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
-    }
-
-    /**
-     * Makes a new instance with the {@link #usePartial()} option set to the argument.
-     *
-     * @param usePartial The argument as a boolean.
-     * @return A new instance.
-     * @see #usePartial()
-     */
-    public @NotNull ParsingOptions withPartial(final boolean usePartial) {
-        if (Objects.equals(this.usePartial, usePartial)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
-    }
-
-    /**
-     * Creates a new instance with the {@link #unhide()} option set to the parameter.
-     *
-     * @param unhide The new option.
-     * @return A new instance.
-     * @see #unhide()
-     */
-    public @NotNull ParsingOptions withUnhide(final @NotNull UnhideOptions unhide) {
-        if (Objects.equals(this.unhide, unhide)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
-    }
-
-    /**
-     * Creates a new instance with the {@link #embedFailureInParseTree()} option set to the parameter.
-     *
      * @param embedFailureInParseTree The new (or old) setting.
      * @return A new instance.
      * @see #embedFailureInParseTree()
      */
     public @NotNull ParsingOptions withEmbedFailureInParseTree(final boolean embedFailureInParseTree) {
         if (Objects.equals(this.embedFailureInParseTree, embedFailureInParseTree)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
     }
 
     /**
@@ -252,6 +219,10 @@ public record ParsingOptions(
      */
     public @NotNull ParsingOptions withIterativeDeepening(final boolean iterativeDeepening) {
         if (Objects.equals(this.iterativeDeepening, iterativeDeepening)) return this;
-        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening);
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
+    }
+    public @NotNull ParsingOptions withFailureIfEmpty(final boolean failureIfEmpty) {
+        if (Objects.equals(this.failureIfEmpty, failureIfEmpty)) return this;
+        return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
     }
 }

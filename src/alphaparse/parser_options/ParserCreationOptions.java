@@ -64,6 +64,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * <ul>
      *     <li>{@link RulesAvailable#ALTERNATION}</li>
      *     <li>{@link RulesAvailable#EXCLUSION}</li>
+     *     <li>{@link RulesAvailable#EXPLICIT_EOF}</li>
      *     <li>{@link RulesAvailable#EXTENDED_IDENTIFIERS}</li>
      *     <li>{@link RulesAvailable#LOOKAHEAD}</li>
      *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD}</li>
@@ -86,6 +87,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
         return Set.of(
                 RulesAvailable.ALTERNATION,
                 RulesAvailable.EXCLUSION,
+                RulesAvailable.EXPLICIT_EOF,
                 RulesAvailable.EXTENDED_IDENTIFIERS,
                 RulesAvailable.LOOKAHEAD,
                 RulesAvailable.NEGATIVE_LOOKAHEAD,
@@ -125,7 +127,6 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                  final boolean checkCorrectness,
                                  final @Nullable Collection<String> ruleDefinitionOpts,
                                  final @Nullable Collection<String> epsilonNames) {
-
         this.whitespaceParser = whitespaceParser;
         this.startProduction = startProduction;
         this.stringCaseInsensitive = stringCaseInsensitive == null

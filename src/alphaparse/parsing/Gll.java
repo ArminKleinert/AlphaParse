@@ -254,7 +254,7 @@ public final class Gll {
         pushResultHelper(nodeKey, AlphaParseMessage.create(end));
     }
 
-    <T> void pushSuccessMessage(
+    void pushSuccessMessage(
             final @NotNull TrampolineListenerNode.TrampolineListenerKey nodeKey,
             final @NotNull FlatResultSeq result,
             final int end) {
@@ -293,7 +293,7 @@ public final class Gll {
         return new ParseFailureNode(text, key, start, end);
     }
 
-    private static @NotNull AlphaParsesResult parsesTotalAfterFail(
+    private static @NotNull AlphaParsesResult parsesEmbedFailureAfterFail(
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
@@ -320,6 +320,7 @@ public final class Gll {
      * @param text               The text.
      * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
+     * @param errorIfEmpty       If true, return an error if the parsing failed. By default, an empty list would be returned.
      * @return The parse forest.
      * @see Alpha#parses(Parser, String)
      * @see Alpha#parse(Parser, String, ParsingOptions)
@@ -329,38 +330,14 @@ public final class Gll {
             final @NotNull Sym start,
             final @NotNull String text,
             final boolean partial,
-            final boolean iterativeDeepening) {
+            final boolean iterativeDeepening,
+            final boolean errorIfEmpty) {
         final @NotNull var tramp = new Tramp(grammar, text);
         final @NotNull var parser = NonTerminal.create(start);
         var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
-        return AlphaParsesResult.make(allParses);
-    }
-
-    /**
-     * This method should not be called directly. Use {@link Alpha#parsesOrFailure(Parser, String, ParsingOptions)} instead.
-     *
-     * @param grammar            The grammar.
-     * @param start              The name of the start production.
-     * @param text               The text.
-     * @param partial            Whether to include partial results.
-     * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
-     * @return The parse forest or failure.
-     * @see Alpha#parsesOrFailure(Parser, String, ParsingOptions)
-     */
-    public static @NotNull AlphaParsesResult parsesOrFailure(
-            final @NotNull Grammar grammar,
-            final @NotNull Sym start,
-            final @NotNull String text,
-            final boolean partial,
-            final boolean iterativeDeepening) {
-        final @NotNull var tramp = new Tramp(grammar, text);
-        final @NotNull var parser = NonTerminal.create(start);
-        var gll = new Gll(tramp, iterativeDeepening);
-        gll.startParser(tramp, parser, partial);
-        final @NotNull var allParses = gll.run();
-        if (allParses.isEmpty()) {
+        if (errorIfEmpty && allParses.isEmpty()) {
             if (tramp.getFailure() == null)
                 throw new IllegalStateException("No parses found but no failure on trampoline.");
             @NotNull AlphaParseFailure apf = FailureUtil.augmentFailure(tramp.getFailure(), text);
@@ -401,7 +378,7 @@ public final class Gll {
     }
 
     /**
-     * 4This method should not be called directly. Use {@link Alpha#parses(Parser, String, ParsingOptions)} with {@link ParsingOptions#embedFailureInParseTree()} set to true instead.
+     * This method should not be called directly. Use {@link Alpha#parses(Parser, String, ParsingOptions)} with {@link ParsingOptions#embedFailureInParseTree()} set to true instead.
      *
      * @param grammar            The grammar.
      * @param start              The name of the start production.
@@ -412,18 +389,18 @@ public final class Gll {
      * @see Alpha#parses(Parser, String, ParsingOptions)
      * @see ParsingOptions#embedFailureInParseTree()
      */
-    public static @NotNull AlphaParsesResult parsesTotal(
+    public static @NotNull AlphaParsesResult parsesEmbedFailure(
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
             final boolean partial,
             final boolean iterativeDeepening) {
-        final @NotNull var allParses = parses(grammar, start, text, partial, iterativeDeepening);
+        final @NotNull var allParses = parses(grammar, start, text, partial, iterativeDeepening, false);
         if (!allParses.castToParsesSuccess().isEmpty()) return AlphaParsesResult.make(allParses);
-        return parsesTotalAfterFail(grammar, start, text, partial, iterativeDeepening);
+        return parsesEmbedFailureAfterFail(grammar, start, text, partial, iterativeDeepening);
     }
 
-    private static @NotNull AlphaParseResult parseTotalAfterFail(
+    private static @NotNull AlphaParseResult parseEmbedFailureAfterFail(
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
@@ -452,7 +429,7 @@ public final class Gll {
      * @see Alpha#parse(Parser, String, ParsingOptions)
      * @see ParsingOptions#embedFailureInParseTree()
      */
-    public static @NotNull AlphaParseResult parseTotal(
+    public static @NotNull AlphaParseResult parseEmbedFailure(
             final @NotNull Grammar grammar,
             final @NotNull Sym start,
             final @NotNull String text,
@@ -460,7 +437,7 @@ public final class Gll {
             final boolean iterativeDeepening) {
         final @NotNull var result = parse(grammar, start, text, partial, iterativeDeepening);
         if (!(result instanceof AlphaParseFailure)) return result;
-        return parseTotalAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial, iterativeDeepening);
+        return parseEmbedFailureAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial, iterativeDeepening);
     }
 
     String getInstanceIdForDebug() {//noinspection RedundantCast

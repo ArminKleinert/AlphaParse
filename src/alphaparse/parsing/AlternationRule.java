@@ -104,9 +104,9 @@ public final class AlternationRule extends RuleWithManyChildren {
     @Override
     public void fullParse(final int index, final @NotNull Gll runner) {
         var listener = runner.nodeListener(new TrampolineListenerKey(index, this));
-        for (final @NotNull Rule parser : getRules()) {
+        for (final @NotNull Rule rule : getRules()) {
             runner.pushFullListener(
-                    new TrampolineListenerKey(index, parser),
+                    new TrampolineListenerKey(index, rule),
                     listener
             );
         }

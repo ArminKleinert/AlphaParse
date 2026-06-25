@@ -132,109 +132,12 @@ public abstract sealed class Rule
         return Print.ruleToString(this);
     }
 
-    /*
-     *Some methods to make constructing combinators easier.
-     */
-
     /**
-     * Repeat {@code this} {@code min} to {@code max} times.
-     *
-     * @return An {@link VariableRepetitionRule} or something that would give equivalent output.
-     * @param min Minimum number of repetitions.
-     * @param max Maximum number of repetitions.
-     * @see VariableRepetitionRule#create(Rule, int, int)
+     * Equivalent to {@code new TrampolineListenerKey(index, this)}.
+     * @param index The index.
+     * @return A listener key.
      */
-    public final @NotNull Rule repeat(final int min, final int max) {
-        return VariableRepetitionRule.create(this, min, max);
-    }
-
-    /**
-     * Repeat {@code this} {@code min} to {@code 2^31-1} (max int) times.
-     * @param min Minimum number of repetitions.
-     * @return An {@link VariableRepetitionRule} or something that would give equivalent output.
-     * @see VariableRepetitionRule#create(Rule, int, int)
-     */
-    public final @NotNull Rule repeatLeast(final int min) {
-        return VariableRepetitionRule.create(this, min, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Repeat {@code this} zero to {@code max} times.
-     *
-     * @param max Maximum number of repetitions.
-     * @return An {@link VariableRepetitionRule} or something that would give equivalent output.
-     * @see VariableRepetitionRule#create(Rule, int, int)
-     */
-    public final @NotNull Rule repeatMost(final int max) {
-        return VariableRepetitionRule.create(this, 0, max);
-    }
-
-    /**
-     * Creates an {@link ZeroOrMoreRule} wrapping {@code this} or something that would give equivalent output.
-     *
-     * @return An {@link ZeroOrMoreRule} or something that would give equivalent output.
-     * @see ZeroOrMoreRule#create(Rule)
-     */
-    public final @NotNull Rule zeroOrMore() {
-        return ZeroOrMoreRule.create(this);
-    }
-
-    /**
-     * Creates an {@link OnceOrMoreRule} wrapping {@code this} or something that would give equivalent output.
-     *
-     * @return An {@link OnceOrMoreRule} or something that would give equivalent output.
-     * @see OnceOrMoreRule#create(Rule)
-     */
-    public final @NotNull Rule onceOrMore() {
-        return OnceOrMoreRule.create(this);
-    }
-
-    /**
-     * Creates an {@link OptionalRule} wrapping {@code this} or something that would give equivalent output.
-     *
-     * @return An {@link OptionalRule} or something that would give equivalent output.
-     * @see OptionalRule#create(Rule)
-     */
-    public final @NotNull Rule optional() {
-        return OptionalRule.create(this);
-    }
-
-    /**
-     * Creates an {@link ExclusionRule} or something that would give equivalent output. {@code this} is the first rule, the parameter is the excluded rule.
-     *
-     * @param rule The rule to exclude.
-     * @return An {@link ExclusionRule} or something that would give equivalent output.
-     * @see ExclusionRule#create(Rule, Rule)
-     */
-    public final @NotNull Rule butNot(final @NotNull Rule rule) {
-        return ExclusionRule.create(this, rule);
-    }
-
-    /**
-     * Creates an {@link ConcatRule} with {@code this} as the first element or something that would give equivalent output.
-     *
-     * @param rules The other rules.
-     * @return An {@link ConcatRule} or something that would give equivalent output.
-     * @see ConcatRule#create(List)
-     */
-    public final @NotNull Rule andThen(final @NotNull Rule... rules) {
-        List<Rule> res = new ArrayList<>();
-        res.add(this);
-        res.addAll(Arrays.asList(rules));
-        return ConcatRule.create(res);
-    }
-
-    /**
-     * Creates an {@link AlternationRule} with {@code this} as the first element or something that would give equivalent output.
-     *
-     * @param rules The other rules.
-     * @return An {@link AlternationRule} or something that would give equivalent output.
-     * @see AlternationRule#create(List)
-     */
-    public final @NotNull Rule or(final @NotNull Rule... rules) {
-        List<Rule> res = new ArrayList<>();
-        res.add(this);
-        res.addAll(Arrays.asList(rules));
-        return AlternationRule.create(res);
+    public final @NotNull TrampolineListenerKey listenerKey(int index) {
+        return new TrampolineListenerKey(index, this);
     }
 }

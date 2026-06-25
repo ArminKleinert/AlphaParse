@@ -1004,4 +1004,10 @@ class AlphaCoreTest {
                 PT.create("S", "aAa"),
                 case_insensitive_regexp.parse("aAa"));
     }
+    @Test void testOptionFailureIfEmpty() {
+        var opts = ParsingOptions.getDefault().withFailureIfEmpty(true);
+        var p = Alpha.parser("S = 'a'");
+        Assertions.assertTrue(p.parses("b").isEmpty());
+        Assertions.assertFalse(p.parses("b", opts).isSuccess());
+    }
 }

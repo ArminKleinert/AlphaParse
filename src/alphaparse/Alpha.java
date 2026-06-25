@@ -58,7 +58,7 @@ public final class Alpha {
      * <ul>
      *     <li>{@link ParsingOptions#embedFailureInParseTree()}: Return a {@link ParseTree} on failure, with the information included in the tree.</li>
      *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
-     *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
+     *     <li>{@link ParsingOptions#start()}: Explicitly changes the start production.</li>
      * </ul>
      *
      * @param parser  The parser.
@@ -76,7 +76,7 @@ public final class Alpha {
         final @NotNull AlphaParseResult parsingResult;
         if (options.embedFailureInParseTree()) {
             parsingResult = AlphaParseResult.make(
-                    Gll.parseTotal(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
+                    Gll.parseEmbedFailure(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
         } else {
             parsingResult = AlphaParseResult.make(
                     Gll.parse(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
@@ -107,7 +107,7 @@ public final class Alpha {
      *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
      *     <li>{@link ParsingOptions#embedFailureInParseTree()}: Include failure information in parse trees.</li>
      *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
-     *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
+     *     <li>{@link ParsingOptions#start()}: Explicitly changes the start production.</li>
      * </ul>
      *
      * @param parser  The parser.
@@ -123,11 +123,11 @@ public final class Alpha {
         final var usePartial = options.usePartial();
         final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
 
-        final var useParseTotal = options.embedFailureInParseTree();
-        if (useParseTotal) {
-            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
+        final var embedFailure = options.embedFailureInParseTree();
+        if (embedFailure) {
+            return Gll.parsesEmbedFailure(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
         } else {
-            return Gll.parses(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
+            return Gll.parses(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening(), options.failureIfEmpty());
         }
     }
 
@@ -143,39 +143,6 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text) {
         return parses(parser, text, ParsingOptions.getDefault());
-    }
-
-    /**
-     * Runs a parser on a string and returns a parse forest as an {@link AlphaParsesResult.LazyResultList}.
-     * If no parse is successful, returns a {@link AlphaParsesResult.ParsesFailureResult} instead.
-     * <p>
-     * The following options apply:
-     * <ul>
-     *     <li>{@link ParsingOptions#usePartial()}: Include partial parses.</li>
-     *     <li>{@link ParsingOptions#embedFailureInParseTree()}: Include failure information in parse trees.</li>
-     *     <li>{@link ParsingOptions#unhide()}: Unhide some parts of the parser in the output.</li>
-     *     <li>{@link ParsingOptions#getStart()}: Explicitly changes the start production.</li>
-     * </ul>
-     *
-     * @param parser  The parser.
-     * @param text    The text.
-     * @param options The options.
-     * @return A {@link AlphaParsesResult.LazyResultList} (parse forest) if successful, {@link AlphaParsesResult.ParsesFailureResult} if not.
-     */
-    public static @NotNull AlphaParsesResult parsesOrFailure(final @NotNull Parser parser,
-                                                             final @NotNull String text,
-                                                             final @NotNull ParsingOptions options) {
-        final @NotNull var startProduction =
-                getStartProductionFromParserOrOptionsAndCheck(options, parser);
-        final var usePartial = options.usePartial();
-        final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
-
-        final var useParseTotal = options.embedFailureInParseTree();
-        if (useParseTotal) {
-            return Gll.parsesTotal(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
-        } else {
-            return Gll.parsesOrFailure(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
-        }
     }
 
     /**
