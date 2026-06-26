@@ -21,7 +21,7 @@ import java.util.Objects;
  * @param unhide                  Which parts of a parse result to show when they would normally be hidden by the parser.
  * @param embedFailureInParseTree If true, a failed parse results in a {@link ParseTree}, as a success would, but a {@link ParseFailureNode} is embedded in the tree.
  * @param iterativeDeepening      Whether to iteratively deepen parsing when parsing with a regex terminal. See {@link RegexTerm#parse}.
- * @param failureIfEmpty Important for {@link Alpha#parses(Parser, String, ParsingOptions)} only. If false, return an empty list if the parsing failed. If true, return the failure.
+ * @param failureIfEmpty          Important for {@link Alpha#parses(Parser, String, ParsingOptions)} only. If false, return an empty list if the parsing failed. If true, return the failure.
  * @see ParsingOptions#DEFAULT_START
  * @see ParsingOptions#DEFAULT_PARTIAL
  * @see ParsingOptions#DEFAULT_UNHIDE
@@ -146,7 +146,7 @@ public record ParsingOptions(
      *   <D> = 'd' (* Same as C *)
      * }
      * </pre>
-     * Explanation: Production S expects the string "abcde", but the outputs of productions B and D will be hidden. The result of production C will be shown in the output without the associated tag "C".
+     * Explanation: Production S expects the string {@code "abcde"}, but the outputs of productions B and D will be hidden. The result of production C will be shown in the output without the associated tag "C".
      * <br>
      * Now the code:
      * <pre>
@@ -221,6 +221,14 @@ public record ParsingOptions(
         if (Objects.equals(this.iterativeDeepening, iterativeDeepening)) return this;
         return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);
     }
+
+    /**
+     * Creates a new instance with the {@link #failureIfEmpty()} option set to the parameter.
+     *
+     * @param failureIfEmpty The new (or old) setting.
+     * @return A new instance.
+     * @see #failureIfEmpty()
+     */
     public @NotNull ParsingOptions withFailureIfEmpty(final boolean failureIfEmpty) {
         if (Objects.equals(this.failureIfEmpty, failureIfEmpty)) return this;
         return new ParsingOptions(start, usePartial, unhide, embedFailureInParseTree, iterativeDeepening, failureIfEmpty);

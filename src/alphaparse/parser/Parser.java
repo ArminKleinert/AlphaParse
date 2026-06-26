@@ -6,6 +6,7 @@ import alphaparse.parser_options.ParsingOptions;
 import alphaparse.result.AlphaParseResult;
 import alphaparse.result.AlphaParsesResult;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A parser contains a grammar and the name of the first production to try.
@@ -36,8 +37,10 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parse(Parser, String)
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text,
-                                           final @NotNull ParsingOptions options) {
-        return Alpha.parse(this, text, options);
+                                           final @Nullable ParsingOptions options) {
+        return Alpha.parse(
+                this, text,
+                options == null ? ParsingOptions.getDefault() : options);
     }
 
     /**
@@ -48,7 +51,7 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parse(Parser, String)
      */
     public @NotNull AlphaParseResult parse(final @NotNull String text) {
-        return Alpha.parse(this, text, ParsingOptions.getDefault());
+        return parse(text, null);
     }
 
     /**
@@ -60,8 +63,10 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parses(Parser, String, ParsingOptions)
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text,
-                                             final @NotNull ParsingOptions options) {
-        return Alpha.parses(this, text, options);
+                                             final @Nullable ParsingOptions options) {
+        return Alpha.parses(
+                this, text,
+                options == null ? ParsingOptions.getDefault() : options);
     }
 
     /**
@@ -72,7 +77,7 @@ public record Parser(@NotNull Grammar grammar,
      * @see Alpha#parses(Parser, String)
      */
     public @NotNull AlphaParsesResult parses(final @NotNull String text) {
-        return Alpha.parses(this, text, ParsingOptions.getDefault());
+        return parses(text, null);
     }
 
     /**
@@ -85,17 +90,6 @@ public record Parser(@NotNull Grammar grammar,
     public @NotNull Parser withGrammar(final @NotNull Grammar grammar) {
         if (this.grammar.equals(grammar))
             return this;
-        return new Parser(grammar, startProduction);
-    }
-
-    /**
-     * Creates a new Parser with the start production changed. This method may fail if the input is invalid.
-     *
-     * @param startProduction The new start production key.
-     * @return A new Parser.
-     * @throws IllegalArgumentException if the grammar does not include a production for the new start production.
-     */
-    public @NotNull Parser withStartProduction(final @NotNull Sym startProduction) {
         return new Parser(grammar, startProduction);
     }
 

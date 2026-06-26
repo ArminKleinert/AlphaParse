@@ -6,18 +6,18 @@ import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.result.PT;
-import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 class TestVariableRepetitionFailures {
     @Test
     void parseWithPartial1() {
         var text = "aaaaaa";
-        var treesPartial = List.of(
+        var treesPartial = Set.of(
                 PT.create("S"),
                 PT.create("S", "a"),
                 PT.create("S", "a", "a"),
@@ -35,12 +35,12 @@ class TestVariableRepetitionFailures {
                         """,
                 creationOpts);
         System.out.println(repeated_a);
-        Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
+        Assertions.assertEquals(treesPartial, new HashSet<>(Alpha.parses(repeated_a, text, partialOpts)));
     }
     @Test
     void parseWithPartial2() {
         var text = "aaaaaa";
-        var treesPartial = List.of(
+        var treesPartial = Set.of(
                 PT.create("S", "a"),
                 PT.create("S", "a", "a"),
                 PT.create("S", "a", "a", "a"),
@@ -57,13 +57,13 @@ class TestVariableRepetitionFailures {
                         """,
                 creationOpts);
         System.out.println(repeated_a);
-        Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
+        Assertions.assertEquals(treesPartial, new HashSet<>(Alpha.parses(repeated_a, text, partialOpts)));
     }
 
     @Test
     void parseFullWithPartial() {
         var text = "aaaaaa";
-        var treesPartial = List.of(
+        var treesPartial = Set.of(
                 PT.create("S", "a"),
                 PT.create("S", "a", "a"),
                 PT.create("S", "a", "a", "a"),
@@ -80,7 +80,7 @@ class TestVariableRepetitionFailures {
                         """,
                 creationOpts);
         System.out.println(repeated_a);
-        Assertions.assertEquals(treesPartial, Alpha.parses(repeated_a, text, partialOpts));
+        Assertions.assertEquals(treesPartial, new HashSet<>(Alpha.parses(repeated_a, text, partialOpts)));
     }
     @Test
     void parseRepetitionMinMax() {

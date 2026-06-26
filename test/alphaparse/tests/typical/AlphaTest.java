@@ -519,7 +519,9 @@ class AlphaTest {
         Assertions.assertEquals(PT.create("S1", "A"), p.parse("A"));
         Assertions.assertTrue(p.parse("B").isFailure());
 
-        var parserWithOtherStart = p.withStartProduction(Sym.sym("S2"));
+        var parserWithOtherStart = Alpha.parser(
+                "S1 = 'A'\nS2 = 'B'",
+                ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S2")));
         Assertions.assertTrue(parserWithOtherStart.parse("A").isFailure());
         Assertions.assertEquals(PT.create("S2", "B"), parserWithOtherStart.parse("B"));
     }

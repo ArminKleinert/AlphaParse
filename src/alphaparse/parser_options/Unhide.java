@@ -25,17 +25,10 @@ import java.util.LinkedHashMap;
  * {@code
  *      var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
  *
- *      // [:S, "a", "c", "a"]
- *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.NONE));
- *
- *      // [:S, "a", [:C, "c"], "a"]
- *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS));
- *
- *      // [:S, "a", [:B, "b"], "c", "d", "a"]
- *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT));
- *
- *      // [:S, "a", [:B, "b"], [:C, "c"], [:D, "d"], "a"]
- *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL));
+ *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.NONE));    // [:S, "a", "c", "a"]
+ *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS));    // [:S, "a", [:C, "c"], "a"]
+ *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT)); // [:S, "a", [:B, "b"], "c", "d", "a"]
+ *      Alpha.parse(p, "abcda", ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL));     // [:S, "a", [:B, "b"], [:C, "c"], [:D, "d"], "a"]
  * }
  * </pre>
  *

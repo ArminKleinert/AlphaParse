@@ -25,6 +25,7 @@ import java.util.stream.Stream;
  * @param ruleDefinitionOpts    A collection of possible "definition operators" for rules.
  * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}.
  */
+@Unmodifiable
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable Sym startProduction,
                                     @NotNull GlobalCaseInsensitivity stringCaseInsensitive,

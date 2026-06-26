@@ -31,12 +31,13 @@ final class CfgGrammar extends GrammarBuilder {
 
     private @Nullable NonTerminal makeNT(
             final @NotNull String symString, final @NotNull RulesAvailable ra) {
-        return rulesAvailable.contains(ra) ? nt(Sym.sym(symString)) : null;
+        return rulesAvailable.contains(ra) ? nt(symString) : null;
     }
 
-    private final @NotNull NonTerminal factorNt = nt(Sym.sym("factor"));
+    private final @NotNull NonTerminal factorNt = nt("factor");
 
-    private final @NotNull NonTerminal ntNt = nt(Sym.sym("nt"));
+    private final @NotNull NonTerminal ntNt = nt("nt");
+    private final @NotNull NonTerminal altOrOrdNt = nt("alt-or-ord");
 
     /*
      * These rules are added later if {@link RulesAvailable.ABNF_CORE} is in the Set of available rules when creating a parser.
@@ -73,7 +74,7 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgRulesRhs() {
         final @NotNull Rule rulesRule = concatNoEpsilonMoreThan1(
                 List.of(optWhitespace,
-                        onceOrMore(nt(Sym.sym("rule"))) /// {@link #makeCfgRuleRhs}
+                        onceOrMore(nt("rule")) /// {@link #makeCfgRuleRhs}
                 ))
                 .hideTag();
         return rulesRule;
@@ -95,7 +96,7 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(regex(insideComment),
                                 zeroOrMore(concatNoEpsilonMoreThan1(
-                                        List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
+                                        List.of(nt("comment"), /// {@link #makeCfgCommentRhs}
                                                 regex(insideComment)))
                                 )));
         return rulesRule;
@@ -107,7 +108,7 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(regex(ws),
                                 zeroOrMore(concatNoEpsilonMoreThan1(
-                                        List.of(nt(Sym.sym("comment")), /// {@link #makeCfgCommentRhs}
+                                        List.of(nt("comment"), /// {@link #makeCfgCommentRhs}
                                                 regex(ws)))
                                 )));
         return rulesRule;
@@ -136,16 +137,16 @@ final class CfgGrammar extends GrammarBuilder {
         final @NotNull Rule rulesRule =
                 alternationGuaranteeDistinctAndNotEmpty(
                         cListOf(
-                                nt(Sym.sym("string")), /// {@link #makeCfgStringRhs}
+                                nt("string"), /// {@link #makeCfgStringRhs}
                                 makeNT("regexp", RulesAvailable.REGEX), /// {@link #makeCfgRegexRhs}
                                 makeNT("opt", RulesAvailable.OPTIONAL), /// {@link #makeCfgOptRhs}
                                 makeNT("opt_query", RulesAvailable.OPTIONAL_QUERY), /// {@link #makeCfgOptQueryRhs}
                                 makeNT("star", RulesAvailable.OPTIONAL_REPETITION_STAR), /// {@link #makeCfgZeroOrMoreStarRhs}
                                 makeNT("opt_rep", RulesAvailable.OPTIONAL_REPETITION), /// {@link #makeCfgZeroOrMoreStdRhs}
                                 makeNT("plus", RulesAvailable.PLUS), /// {@link #makeCfgPlusRhs}
-                                nt(Sym.sym("paren")), /// {@link #makeCfgParenRhs}
-                                nt(Sym.sym("hide")), /// {@link #makeCfgHideRhs}
-                                nt(Sym.sym("epsilon")), /// {@link #makeCfgEpsilonRhs}
+                                nt("paren"), /// {@link #makeCfgParenRhs}
+                                nt("hide"), /// {@link #makeCfgHideRhs}
+                                nt("epsilon"), /// {@link #makeCfgEpsilonRhs}
                                 makeNT("rep", RulesAvailable.VARIABLE_REPEAT), /// ABNF feature {@link #makeCfgRepRhs}
                                 makeNT("abnf-range", RulesAvailable.VALUE_RANGE), /// ABNF feature {@link #makeABNFValueRange}
                                 makeNT("eof", RulesAvailable.EXPLICIT_EOF), /// {@link #makeEofRhs}
@@ -188,7 +189,7 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(string("(").enableHideTag(),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                altOrOrdNt, /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
                                 string(")").enableHideTag()));
         return rulesRule;
@@ -199,7 +200,7 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(buffer(string("<").enableHideTag()),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                altOrOrdNt, /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
                                 buffer(string(">").enableHideTag())));
         return rulesRule;
@@ -257,8 +258,8 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgRulesOrParserRhs() {
         final @NotNull Rule rulesRule =
                 alternationGuaranteeDistinctAndNotEmpty(
-                        List.of(nt(Sym.sym("rules")), /// {@link #makeCfgRulesRhs}
-                                nt(Sym.sym("alt-or-ord")) /// {@link #makeCfgAltOrOrdRhs}
+                        List.of(nt("rules"), /// {@link #makeCfgRulesRhs}
+                                altOrOrdNt /// {@link #makeCfgAltOrOrdRhs}
                         ))
                         .hideTag();
         return rulesRule;
@@ -355,7 +356,7 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(string("{").enableHideTag(),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                altOrOrdNt, /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
                                 string("}").enableHideTag()));
         return rule;
@@ -385,7 +386,7 @@ final class CfgGrammar extends GrammarBuilder {
                 concatNoEpsilonMoreThan1(
                         List.of(string("[").enableHideTag(),
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                altOrOrdNt, /// {@link #makeCfgAltOrOrdRhs}
                                 optWhitespace,
                                 string("]").enableHideTag()));
         return rule;
@@ -410,11 +411,11 @@ final class CfgGrammar extends GrammarBuilder {
         Rule[] l = new Rule[2];
 
         if (options.usableRules().contains(RulesAvailable.ALTERNATION))
-            l[i++] = (nt(Sym.sym("alt"))); /// {@link #makeCfgAltRhs}
+            l[i++] = nt("alt"); /// {@link #makeCfgAltRhs}
         if (options.usableRules().contains(RulesAvailable.ORDERED_CHOICE))
-            l[i++] = (nt(Sym.sym("ord"))); /// {@link #makeCfgOrdRhs}
+            l[i++] = nt("ord"); /// {@link #makeCfgOrdRhs}
 
-        if (i == 0) return onceOrMore(nt(Sym.sym("cat"))).hideTag(); /// {@link #makeCfgCatRhs}
+        if (i == 0) return onceOrMore(nt("cat")).hideTag(); /// {@link #makeCfgCatRhs}
 
         if (i == 1) return buffer(l[0].hideTag());
 
@@ -434,17 +435,17 @@ final class CfgGrammar extends GrammarBuilder {
     }
 
     private @NotNull Rule makeCfgRuleRhs() {
-        final @NotNull Rule optWs = nt(Sym.sym("opt-whitespace")); /// {@link #makeCfgOptWhitespaceRhs}
+        final @NotNull Rule optWs = nt("opt-whitespace"); /// {@link #makeCfgOptWhitespaceRhs}
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(alternationGuaranteeDistinctAndNotEmpty(
                                         List.of(ntNt, /// {@link #makeCfgNtRhs}
-                                                nt(Sym.sym("hide-nt")) /// {@link #makeCfgHideNtRhs}
+                                                nt("hide-nt") /// {@link #makeCfgHideNtRhs}
                                         )),
                                 optWhitespace,
-                                nt(Sym.sym("rule-separator")).enableHideTag(), /// {@link #makeCfgRuleSeparatorRhs}
+                                nt("rule-separator").enableHideTag(), /// {@link #makeCfgRuleSeparatorRhs}
                                 optWhitespace,
-                                nt(Sym.sym("alt-or-ord")), /// {@link #makeCfgAltOrOrdRhs}
+                                altOrOrdNt, /// {@link #makeCfgAltOrOrdRhs}
                                 alternationGuaranteeDistinctAndNotEmpty(
                                         List.of(optWs,
                                                 concatNoEpsilonMoreThan1(
@@ -463,7 +464,7 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Rule}.
      */
     private @NotNull Rule makeCfgOrdRhs() {
-        final @NotNull Rule catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
+        final @NotNull Rule catNt = nt("cat"); /// {@link #makeCfgCatRhs}
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(catNt,
@@ -482,7 +483,7 @@ final class CfgGrammar extends GrammarBuilder {
      * @return A {@link Rule}.
      */
     private @NotNull Rule makeCfgAltRhs() {
-        final @NotNull Rule catNt = nt(Sym.sym("cat")); /// {@link #makeCfgCatRhs}
+        final @NotNull Rule catNt = nt("cat"); /// {@link #makeCfgCatRhs}
         final @NotNull Rule rulesRule =
                 concatNoEpsilonMoreThan1(
                         List.of(catNt,
@@ -529,7 +530,7 @@ final class CfgGrammar extends GrammarBuilder {
                         List.of(factorLookNeg, optWhitespace,
                                 string("-").enableHideTag(),
                                 optWhitespace,
-                                alternationGuaranteeDistinctAndNotEmpty(List.of(factorLookNeg, nt(Sym.sym("exclude"))))));
+                                alternationGuaranteeDistinctAndNotEmpty(List.of(factorLookNeg, nt("exclude")))));
         return rulesRule;
     }
 

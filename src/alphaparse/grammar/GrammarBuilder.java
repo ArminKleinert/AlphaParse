@@ -48,7 +48,6 @@ import java.util.stream.Stream;
 public abstract class GrammarBuilder {
     protected @NotNull LinkedHashMap<Sym, Rule> productions;
     protected final @NotNull ParserCreationOptions options;
-    protected boolean builtAlready = false;
     private final BufferForRules buffer;
 
     protected GrammarBuilder(final @NotNull ParserCreationOptions options) {
@@ -81,30 +80,30 @@ public abstract class GrammarBuilder {
     public final @NotNull Grammar buildWithWhitespace(
             final @Nullable SequencedMap<Sym, Rule> initialProductions,
             final @Nullable Parser wsParser) {
-        if (builtAlready)
-            throw new IllegalStateException("Build has been finished already.");
+        final @NotNull Sym start;
 
-        if (initialProductions != null) {
-            for (final @NotNull var entry : initialProductions.sequencedEntrySet()) {
-                addProduction(entry.getKey(), entry.getValue());
+        synchronized (this) {
+            if (initialProductions != null) {
+                for (final @NotNull var entry : initialProductions.sequencedEntrySet()) {
+                    addProduction(entry.getKey(), entry.getValue());
+                }
+            }
+
+            make();
+
+            start = options.startProduction() != null
+                    ? options.startProduction()
+                    : productions.sequencedKeySet().getFirst();
+
+            compress();
+
+            ReductionType.applyStandardReductionToProductions(productions);
+            if (wsParser != null) {
+                autoWhitespace(start, wsParser.grammar(), wsParser.startProduction());
             }
         }
 
-        make();
-
-        var start = options.startProduction() != null
-                ? options.startProduction()
-                : productions.sequencedKeySet().getFirst();
-
-        compress();
-
-        ReductionType.applyStandardReductionToProductions(productions);
-        if (wsParser != null) {
-            autoWhitespace(start, wsParser.grammar(), wsParser.startProduction());
-        }
-
         var g = new Grammar(start, productions);
-        builtAlready = true;
 
         if (options.checkCorrectness()) {
             final @NotNull var analysisResult = g.analyze();
@@ -164,37 +163,6 @@ public abstract class GrammarBuilder {
     public final void addProduction(
             final @NotNull String lhs, final @NotNull Rule rhs) {
         addProduction(Sym.sym(lhs), rhs);
-    }
-
-    /**
-     * Creates a rule depending on the input's specific type.
-     * <ul>
-     * <li>For {@code null}, use {@link EpsilonTerm#getDefault()}.</li>
-     * <li>For {@code Rule}, return the input.</li>
-     * <li>For {@code String}, use {@link #string(String)}.</li>
-     * <li>For {@code Pattern}, use {@link #regex(Pattern)}.</li>
-     * <li>For {@code Sym}, use {@link #nt(Sym)}.</li>
-     * <li>For {@code List}, use {@link #concat(List)}.</li>
-     * <li>For {@code Set}, use {@link #alternation(Object, Object...)}.</li>
-     * </ul>
-     *
-     * @param c Input object.
-     * @return A rule depending on the input's type.
-     */
-    public static @NotNull Rule staticOf(final @Nullable Object c) {
-        return switch (c) {
-            case null -> EpsilonTerm.getDefault();
-            case Rule r -> r;
-            case String s -> StringTerm.create(s, false);
-            case Pattern p -> RegexTerm.create(p);
-            case Sym s -> NonTerminal.create(s);
-            case List<?> l -> ConcatRule.create(
-                    l.stream().map(GrammarBuilder::staticOf).toList());
-            case Set<?> s -> AlternationRule.create(
-                    s.stream().distinct().map(GrammarBuilder::staticOf).toList());
-            default -> throw new IllegalArgumentException(
-                    String.valueOf(c.getClass()));
-        };
     }
 
     /**
@@ -327,7 +295,7 @@ public abstract class GrammarBuilder {
      * @return A {@link NonTerminal}.
      */
     public @NotNull NonTerminal nt(final @NotNull String name) {
-        return nt(Sym.sym(name));
+        return buffer.getOrAddNt(Sym.sym(name));
     }
 
     /**

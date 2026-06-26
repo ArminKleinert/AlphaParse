@@ -87,7 +87,7 @@ public enum RulesAvailable {
      * <p>
      * Notation: {@code &look rule}.
      * <p>
-     * Example: {@code &'a' ('a' | 'b')} means "use the alternation a|b, but start with an 'a'". I can't think of better examples.
+     * Example: {@code &'a' ('a' | 'b')} means "use the alternation {@code a|b}, but start with an {@code 'a'}.". I can't think of better examples.
      * <p>
      * Possible replacements through other rule types: None.
      *
@@ -100,7 +100,7 @@ public enum RulesAvailable {
      * <p>
      * Notation: {@code !look rule}
      * <p>
-     * Example: {@code !'a' ('a' | 'b')} means "use the alternation a|b, but do NOT start with an 'a'". I can't think of better examples.
+     * Example: {@code !'a' ('a' | 'b')} means "use the alternation {@code a|b}, but do NOT start with an {@code 'a'}.". I can't think of better examples.
      * <p>
      * Possible replacements through other rule types: None.
      *
@@ -245,9 +245,9 @@ public enum RulesAvailable {
      * <p>
      * Possible replacements through other rule types:
      * <ul>
-     *     <li>{@code n*m rule} can be replaced by using n occurrences of the rule followed by m-n {@link #OPTIONAL} occurrences of the rule</li>
-     *     <li>{@code n* rule} can be replaced by using n occurrences of the rule followed by an {@link #OPTIONAL_REPETITION} of the rule</li>
-     *     <li>{@code *m rule} can be replaced by using m {@link #OPTIONAL} occurrences of the rule</li>
+     *     <li>{@code n*m rule} can be replaced by using {@code n} occurrences of the rule followed by {@code m-n} {@link #OPTIONAL} occurrences of the rule</li>
+     *     <li>{@code n* rule} can be replaced by using {@code n} occurrences of the rule followed by an {@link #OPTIONAL_REPETITION} of the rule</li>
+     *     <li>{@code *m rule} can be replaced by using {m} {@link #OPTIONAL} occurrences of the rule</li>
      *     <li>{@code n rule} is equivalent to n occurrences of the rule</li>
      *     <li>{@code * rule} is equivalent to {@link #OPTIONAL_REPETITION}</li>
      * </ul>
