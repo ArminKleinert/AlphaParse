@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
  * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
  * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
- * @param ruleDefinitionOpts     A collection of possible "definition operators" for rules.
+ * @param ruleDefinitionOpts    A collection of possible "definition operators" for rules.
  * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}.
  */
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
@@ -115,7 +115,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      * @param usableRules           A Set of rules that can be used when building the parser. If null, use {@link #defaultRulesAvailable()}. See {@link RulesAvailable}.
      * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
-     * @param ruleDefinitionOpts     A collection of possible "definition operators" for rules. If null, use {@link #defaultRuleDefinitionOps()}. Example: {@code List.of(":=", "::=", "=", ":")}
+     * @param ruleDefinitionOpts    A collection of possible "definition operators" for rules. If null, use {@link #defaultRuleDefinitionOps()}. Example: {@code List.of(":=", "::=", "=", ":")}
      * @param epsilonNames          A collection of possible epsilon names. If null, use {@link #defaultEpsilonNames()}. Example: {@code List.of("epsilon", "ε")}
      */
     public ParserCreationOptions(final @Nullable Parser whitespaceParser,
