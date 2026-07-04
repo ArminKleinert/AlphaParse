@@ -1,4 +1,4 @@
-package alphaparse.grammar;
+package alphaparse.parser_options;
 
 /**
  * Options for deciding what to do when a production is added that already exists.

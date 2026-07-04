@@ -42,7 +42,7 @@ public final class Sym {
 
                 for (final @NotNull var e : table.entrySet()) {
                     final @NotNull Reference<Sym> val = e.getValue();
-                    if (val != null && val.get() == null) {
+                    if (val.get() == null) {
                         table.remove(e.getKey(), val);
                     }
                 }

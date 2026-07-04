@@ -2,7 +2,6 @@ package alphaparse.parser_options;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
-import alphaparse.grammar.RedefinitionOption;
 import alphaparse.parser.Parser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

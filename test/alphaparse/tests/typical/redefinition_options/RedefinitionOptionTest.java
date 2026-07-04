@@ -1,10 +1,9 @@
 package alphaparse.tests.typical.redefinition_options;
 
 import alphaparse.Alpha;
-import alphaparse.grammar.RedefinitionOption;
+import alphaparse.parser_options.RedefinitionOption;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.result.PT;
-import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

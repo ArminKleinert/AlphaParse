@@ -107,7 +107,7 @@ Instaparse chooses to override the previous definitions silently. AlphaParse all
 
 ```java
 import alphaparse.Alpha;
-import alphaparse.grammar.RedefinitionOption;
+import alphaparse.parser_options.RedefinitionOption;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 
