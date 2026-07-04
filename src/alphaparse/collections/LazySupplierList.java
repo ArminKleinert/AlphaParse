@@ -14,7 +14,7 @@ import java.util.function.IntFunction;
  *
  * @param <T> The result type for the function.
  */
-public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optional<T>> {
+public class LazySupplierList<T> implements List<@Nullable T> {
     private final @NotNull List<@NotNull T> evaluatedPart;
     private final int maxResults;
     private @Nullable IntFunction<@Nullable T> nextFn;
@@ -81,16 +81,6 @@ public class LazySupplierList<T> implements List<@Nullable T>, IntFunction<Optio
      */
     public boolean isFullyEvaluated() {
         return fullyEvaluated;
-    }
-
-    /**
-     * Allows treating this list a function returning an optional value.
-     *
-     * @return An instance of Optional holding the element at index i, or {@link Optional#empty()} if the list is not that long.
-     */
-    @Override
-    public Optional<T> apply(final int i) {
-        return Optional.ofNullable(getOrNull(i));
     }
 
     @Override
