@@ -255,11 +255,11 @@ public abstract class GrammarBuilder {
      * Creates a {@link Rule} to match the codepoint.
      * This can be any kind of {@link Rule} capable of accomplishing that task.
      *
-     * @param lohi The codepoint.
+     * @param loHi The codepoint.
      * @return The new rule.
      */
-    public @NotNull Rule unicodeChar(final int lohi) {
-        return ValueRangeTerm.create(lohi, lohi);
+    public @NotNull Rule unicodeChar(final int loHi) {
+        return ValueRangeTerm.create(loHi, loHi);
     }
 
     /**

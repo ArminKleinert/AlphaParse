@@ -6,11 +6,15 @@ import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
+import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 class GrammarBuilderTest {
@@ -58,5 +62,52 @@ class GrammarBuilderTest {
         }.build();
 
         Assertions.assertEquals(pFromGrammar, pFromGB);
+    }
+
+    @Test
+    void testGrammarBuilderFeatures() {
+        // A grammar which has 9 different ways to match at least one number/underscore.
+        var gFromGB = new GrammarBuilder(ParserCreationOptions.ebnf()) {
+            @Override
+            public void make() {
+                addProduction("S", orderedChoice(List.of(
+                        Sym.sym("A"), Sym.sym("B"), Sym.sym("C"), Sym.sym("D"),
+                        Sym.sym("E"), Sym.sym("F"), Sym.sym("G"), Sym.sym("H"),
+                        Sym.sym("I"),
+                        eof())
+                ));
+                addProduction("A", concat(repeat(regex("[0-9_]"), 1, Integer.MAX_VALUE)));
+                addProduction("B", concat(regex("[0-9_]"), repeatMax(regex("[0-9_]"), Integer.MAX_VALUE)));
+                addProduction("C", concat(repeatMin(regex("[0-9_]"), 1)));
+                addProduction("D", concat(regex("[0-9_]"), zeroOrMore(regex("[0-9_]"))));
+                addProduction("E", concat(repeat(regex("[0-9_]"), 1), zeroOrMore(regex("[0-9_]"))));
+                addProduction("F", repeatMin(alternation(unicodeChar('0', '9'), unicodeChar(0x5F)), 1));
+                addProduction("G", onceOrMore(alternationC(
+                                Stream.concat(
+                                                IntStream.range('0', '9'+1).boxed(),
+                                                Stream.of((int) '_'))
+                                        .map(i -> String.valueOf((char) i.intValue()))
+                                        .map(this::of)
+                                        .collect(Collectors.toList()))));
+                addProduction("H", onceOrMore(alternationC(
+                                Stream.concat(
+                                                IntStream.range('0', '9'+1).boxed(),
+                                                Stream.of((int) '_'))
+                                        .map(i -> String.valueOf((char) i.intValue()))
+                                        .map(this::of)
+                                        .collect(Collectors.toList()))));
+                addProduction("I", concat(regex("[0-9_]"), optional(onceOrMore(regex("[0-9_]")))));
+            }
+        }.build();
+        var p = Alpha.parser(gFromGB, ParserCreationOptions.getDefault());
+
+        Assertions.assertEquals(
+                List.of(PT.create("S", PT.create("A", "9", "9")), PT.create("S", PT.create("B", "9", "9")),
+                        PT.create("S", PT.create("C", "9", "9")), PT.create("S", PT.create("D", "9", "9")),
+                        PT.create("S", PT.create("E", "9", "9")), PT.create("S", PT.create("F", "9", "9")),
+                        PT.create("S", PT.create("G", "9", "9")), PT.create("S", PT.create("H", "9", "9")),
+                        PT.create("S", PT.create("I", "9", "9"))),
+                Alpha.parser(gFromGB, ParserCreationOptions.getDefault()).parses("99"));
+        Assertions.assertEquals(List.of(PT.create("S")), p.parses(""));
     }
 }

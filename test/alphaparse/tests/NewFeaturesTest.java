@@ -3,39 +3,16 @@ package alphaparse.tests;
 import alphaparse.Alpha;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
 import alphaparse.result.PT;
-import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 class NewFeaturesTest {
-    @Test
-    void test() {
-        final @NotNull Parser auto_whitespace_example = Alpha.parser(
-                """
-                        S = A B
-                        <A> = 'foo'
-                        <B> = #'\\d+'
-                        """,
-                ParserCreationOptions.getDefault().withWhitespaceParser(
-                        Alpha.getPredefinedWhitespaceParser("standard")));
-
-        var tree = PT.create("S", "foo", "123");
-        var text = "foo 123";
-
-        System.out.println(auto_whitespace_example.parse(text));
-        System.out.println(auto_whitespace_example);
-
-        Assertions.assertEquals(tree, auto_whitespace_example.parse(text));
-    }
-
     @Test
     void orderedChoiceTest() {
         {
