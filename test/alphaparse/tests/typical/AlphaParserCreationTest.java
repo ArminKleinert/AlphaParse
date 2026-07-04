@@ -116,18 +116,8 @@ class AlphaParserCreationTest {
                     null,
                     null);
             Assertions.assertThrows(
-                    IllegalArgumentException.class,
-                    () -> Alpha.parser(grammar, options));
-        }
-        {
-            // Error: No start symbol provided
-            final @NotNull var grammar = new Grammar(Map.of(
-                    Sym.sym("S"), EpsilonTerm.getDefault(),
-                    Sym.sym("A"), EpsilonTerm.getDefault()
-            ));
-            Assertions.assertThrows(
                     ParserCreationFailure.class,
-                    () -> Alpha.parser(grammar, ParserCreationOptions.getDefault()));
+                    () -> Alpha.parser(grammar, options));
         }
     }
 

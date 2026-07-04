@@ -62,8 +62,8 @@ DIGIT          : #"[0-9]" ;
 COMMENT        : BLOCKCOMMENT | LINECOMMENT ;
 BLOCKCOMMENT   : #"/\*(?:(?!\*\/).)*\*/"
 LINECOMMENT    : #"//[^:].*\n?"
-FUN_DOC_COMMENT: #"//: (?:(?!\*\/).)*\*/" ;
-VAR_DOC_COMMENT: #"//: (?:(?!\*\/).)*\*/" ;
-CLS_DOC_COMMENT: #"//: (?:(?!\*\/).)*\*/" ;
+FUN_DOC_COMMENT: #"//: (?:(?!\*\/).)*" ;
+VAR_DOC_COMMENT: #"//: (?:(?!\*\/).)*" ;
+CLS_DOC_COMMENT: #"//: (?:(?!\*\/).)*" ;
 
 

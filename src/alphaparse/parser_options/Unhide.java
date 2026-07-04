@@ -53,7 +53,7 @@ public class Unhide {
             final @NotNull var pUnhide = value.unhideContent();
             res.put(key, pUnhide);
         }
-        return new Grammar(res);
+        return new Grammar(grammar.getStartSym(), res);
     }
 
     /**
@@ -71,7 +71,7 @@ public class Unhide {
             final @NotNull var pUnhide = value.withReduction(reduction);
             res.put(key, pUnhide);
         }
-        return new Grammar(res);
+        return new Grammar(grammar.getStartSym(), res);
     }
 
     /**
@@ -90,7 +90,7 @@ public class Unhide {
             final @NotNull var p = value.unhideContent().withReduction(reduction);
             res.put(key, p);
         }
-        return new Grammar(res);
+        return new Grammar(grammar.getStartSym(), res);
     }
 
     /**

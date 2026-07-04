@@ -16,7 +16,28 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 class NewFeaturesTest {
-    @Test void orderedChoiceTest() {
+    @Test
+    void test() {
+        final @NotNull Parser auto_whitespace_example = Alpha.parser(
+                """
+                        S = A B
+                        <A> = 'foo'
+                        <B> = #'\\d+'
+                        """,
+                ParserCreationOptions.getDefault().withWhitespaceParser(
+                        Alpha.getPredefinedWhitespaceParser("standard")));
+
+        var tree = PT.create("S", "foo", "123");
+        var text = "foo 123";
+
+        System.out.println(auto_whitespace_example.parse(text));
+        System.out.println(auto_whitespace_example);
+
+        Assertions.assertEquals(tree, auto_whitespace_example.parse(text));
+    }
+
+    @Test
+    void orderedChoiceTest() {
         {
             final @NotNull var p = Alpha.parser("""
                     S = A / B / C / D / E
@@ -50,7 +71,9 @@ class NewFeaturesTest {
 //            System.out.println("Have:   "+Alpha.parses(p, text));
         }
     }
-    @Test void plusTest() {
+
+    @Test
+    void plusTest() {
         var p = Alpha.parser("S = !#'[ \t]*\\n[ \t]*' 'a'+", ParserCreationOptions.newWithStandardWhitespace());
         System.out.println(p.parses("aaa"));
         System.out.println(p.parses(" aaa "));
@@ -59,7 +82,9 @@ class NewFeaturesTest {
         System.out.println(p.parses(" \naaa "));
         System.out.println(p.parses(" \n aaa "));
     }
-    @Test void wsExample1() {
+
+    @Test
+    void wsExample1() {
         final @NotNull Parser whitespace = Alpha.parser(
                 """
                         whitespace = #'\\s+'
@@ -76,7 +101,9 @@ class NewFeaturesTest {
 
         Assertions.assertEquals(tree, auto_whitespace_example.parse("foo 123"));
     }
-    @Test void simple() {
+
+    @Test
+    void simple() {
         var g = """
                 Expression = Term , { ( '+' | '-' ) , Term } ;
                 Term       = Factor , { ( '*' | '/' ) , Factor } ;
@@ -87,7 +114,9 @@ class NewFeaturesTest {
         var p = Alpha.parser(g);
         System.out.println(p.parse("(8-9)*-20/18+1"));
     }
-    @Test void repRepTest() {
+
+    @Test
+    void repRepTest() {
         var p = Alpha.parser("S = 0*4A\n<A> = 'a'");
         Assertions.assertEquals(PT.create("S"), p.parse(""));
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
@@ -95,7 +124,9 @@ class NewFeaturesTest {
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"));
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"));
     }
-    @Test void exclusionFullTest1() {
+
+    @Test
+    void exclusionFullTest1() {
         var p6 = Alpha.parser(
                 "S := #'[0-9]+' - ('11' | '13')",
                 ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.EXCLUSION));
@@ -105,7 +136,9 @@ class NewFeaturesTest {
         System.out.println("---");
         System.out.println(p6.parse("11"));
     }
-    @Test void exclusionFullTest() {
+
+    @Test
+    void exclusionFullTest() {
         var p6 = Alpha.parser(
                 "S := #'[0-9]+' - '11'",
                 ParserCreationOptions.getDefault().addAvailableRule(RulesAvailable.EXCLUSION));
@@ -115,6 +148,7 @@ class NewFeaturesTest {
         System.out.println("---");
         System.out.println(p6.parse("11"));
     }
+
     @Test
     void exclusionTest() {
         var p6 = Alpha.parser(

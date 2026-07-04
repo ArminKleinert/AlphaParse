@@ -137,6 +137,19 @@ class RedefTest {
 }
 ```
 
+## Design goals
+
+### User-side
+- Small `.jar` file
+- High performance
+- Keep output memory small
+- Use only the Java standard libraries
+- Deterministic
+
+### Code-side
+- Safe code
+- Annotate
+
 ## Style considerations
 
 When starting this project, I made a few decisions that are all over the code.
@@ -173,7 +186,7 @@ equal.
 
 So it came down to readability and personal preference.
 
-### Use `LinkedHashMap` and `LinkedHashSet`
+### Consistent use `LinkedHashMap` and `LinkedHashSet`
 
 I use these types because they are ordered. Some test cases showed inconsistent behavior when using the non-sequenced
 types. But only *sometimes*. I prefer deterministic behavior.
@@ -191,8 +204,8 @@ alphaparse.functions.Procedure procedure = () -> System.out.println("Procedure")
 
 ### New collection types
 
-When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries. Java (
-to my knowledge) does not have these. The only alternative I
+When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries.
+Java (to my knowledge) does not have these. The only alternative I
 can think of are `Stream`s, but those can only be iterated once. A construct like
 Clojure's [LazySeq](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LazySeq.java) could achieve the
 same while being simpler, but after testing each approach, I found this new type to be substantially faster.

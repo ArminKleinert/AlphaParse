@@ -1,6 +1,7 @@
 package alphaparse.parser;
 
 import alphaparse.*;
+import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.result.AlphaParseResult;
@@ -21,11 +22,11 @@ public record Parser(@NotNull Grammar grammar,
      *
      * @param grammar         The grammar.
      * @param startProduction The first production to try.
-     * @throws IllegalArgumentException if the parameters are invalid (for example, if the grammar does not contain the start-production symbol).
+     * @throws ParserCreationFailure if the parameters are invalid (for example, if the grammar does not contain the start-production symbol).
      */
     public Parser {
         if (!grammar.containsKey(startProduction))
-            throw new IllegalArgumentException("Illegal start-production " + startProduction + ": not in grammar.");
+            throw new ParserCreationFailure("Illegal start-production " + startProduction + ": not in grammar.");
     }
 
     /**

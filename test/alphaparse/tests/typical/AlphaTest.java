@@ -183,7 +183,7 @@ class AlphaTest {
         {
             // The production is not in the grammar => Fail
             final var opts = ParserCreationOptions.getDefault().withStartProduction(Sym.sym("B"));
-            Assertions.assertThrows(IllegalArgumentException.class, () -> Alpha.parser("A = 'a'", opts));
+            Assertions.assertThrows(ParserCreationFailure.class, () -> Alpha.parser("A = 'a'", opts));
         }
     }
 

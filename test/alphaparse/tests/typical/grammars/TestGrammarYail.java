@@ -44,9 +44,9 @@ class TestGrammarYail {
 
     @Test
     void verifyFunctionDef() {
-        var text = "/** */\nfun f() {}";
+        var text = "//: \nfun f() {}";
+        System.out.println(parser().parse(text));
         Assertions.assertTrue(parser().parse(text).isSuccess());
-        //System.out.println(parser().parse(text));
     }
 
     @Test

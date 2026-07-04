@@ -6,8 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -18,41 +16,29 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
     /**
      * Staring symbol of this grammar. Can be overridden when the Grammar is used in a parser.
      */
-    private final @Nullable Sym startSym;
+    private final @NotNull Sym startSym;
 
     /**
      * Create a new instance.
+     *
      * @param startSym Starting production key.
-     * @param m Map of productions. This should be an ordered {@link SequencedMap}.
+     * @param m        Map of productions. This should be an ordered {@link SequencedMap}.
      */
-    public Grammar(final @Nullable Sym startSym, final @NotNull Map<? extends Sym, ? extends Rule> m) {
+    public Grammar(final @NotNull Sym startSym, final @NotNull Map<? extends Sym, ? extends Rule> m) {
         super(m);
+
+        if (m.isEmpty())
+            throw new IllegalArgumentException("Empty grammar.");
+
         this.startSym = startSym;
     }
 
     /**
-     * Creates a new instance from a {@link Map}.
-     *
-     * @param m Map of productions. This should be an ordered {@link SequencedMap}.
-     */
-    public Grammar(final @NotNull Map<? extends Sym, ? extends Rule> m) {
-        this(m.isEmpty() ? null : m.entrySet().stream().findFirst().get().getKey(), m);
-    }
-
-    /**
-     * Creates a new instance from a {@link Map}.
-     *
-     * @param m Map of productions. This should be an ordered {@link SequencedMap}.
-     */
-    public Grammar(final @NotNull SequencedMap<? extends Sym, ? extends Rule> m) {
-        this(m.firstEntry().getKey(), m);
-    }
-
-    /**
      * Return the starting production. This might be null.
+     *
      * @return The starting production key.
      */
-    public @Nullable Sym getStartSym() {
+    public @NotNull Sym getStartSym() {
         return startSym;
     }
 
@@ -142,8 +128,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                     case NonTerminal nonTerminal -> result.add(nonTerminal);
                     case Terminal ignored -> {
                     }
-                    case RuleWithManyChildren ruleWithManyChildren ->
-                            ruleStack.addAll(ruleWithManyChildren.getRules());
+                    case RuleWithManyChildren ruleWithManyChildren -> ruleStack.addAll(ruleWithManyChildren.getRules());
                     case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getRule());
                     case SpecialSequenceRule ignored -> {
                     }
@@ -234,95 +219,5 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                     ", isValid=" + isValid() +
                     ']';
         }
-    }
-
-    @Override
-    public Grammar reversed() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map.Entry<Sym, Rule> pollFirstEntry() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map.Entry<Sym, Rule> pollLastEntry() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule putFirst(Sym k, Rule v) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule putLast(Sym k, Rule v) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule put(Sym key, Rule value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule remove(Object key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void putAll(Map<? extends @NotNull Sym, ? extends Rule> m) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void replaceAll(BiFunction<? super @NotNull Sym, ? super Rule, ? extends Rule> function) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule putIfAbsent(Sym key, Rule value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object key, Object value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean replace(Sym key, Rule oldValue, Rule newValue) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule replace(Sym key, Rule value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule computeIfAbsent(@NotNull Sym key, Function<? super @NotNull Sym, ? extends Rule> mappingFunction) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule computeIfPresent(Sym key, BiFunction<? super Sym, ? super Rule, ? extends Rule> remappingFunction) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule compute(Sym key, BiFunction<? super Sym, ? super Rule, ? extends Rule> remappingFunction) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Rule merge(Sym key, Rule value, BiFunction<? super Rule, ? super Rule, ? extends Rule> remappingFunction) {
-        throw new UnsupportedOperationException();
     }
 }

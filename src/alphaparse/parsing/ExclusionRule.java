@@ -119,7 +119,7 @@ public final class ExclusionRule extends RuleWithManyChildren {
                     ConcatRule.create(List.of(parserExcluded, EOFTerm.getDefault())));
             ReductionType.applyStandardReductionToProductions(tempG);
 
-            grammar = new Grammar(tempG);
+            grammar = new Grammar(startSymbol, tempG);
         }
         return Gll.parse(grammar, startSymbol, subs, false, false);
     }

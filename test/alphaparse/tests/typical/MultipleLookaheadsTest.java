@@ -27,10 +27,12 @@ class MultipleLookaheadsTest {
 
     @Test
     void lookaheads1() {
-        var p = Alpha.parser(new Grammar(Map.of(
-                        Sym.sym("S"), ConcatRule.create(List.of(LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
-                                RegexTerm.create(Pattern.compile("[abc]"))))
-                )),
+        var p = Alpha.parser(new Grammar(
+                        Sym.sym("S"),
+                        Map.of(
+                                Sym.sym("S"), ConcatRule.create(List.of(LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
+                                        RegexTerm.create(Pattern.compile("[abc]"))))
+                        )),
                 ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());

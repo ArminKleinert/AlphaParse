@@ -188,7 +188,8 @@ public final class Alpha {
     public static @NotNull Parser parser(final @NotNull String grammar,
                                          final @NotNull ParserCreationOptions options) {
         var grammarForParsingGrammar = CfgGrammar.makeCfg(options);
-        return Cfg.make(options).buildParser(grammar, grammarForParsingGrammar);
+        var g = Cfg.make(options).buildGrammar(grammar, grammarForParsingGrammar);
+        return parser(g, options);
     }
 
     /**
@@ -207,7 +208,6 @@ public final class Alpha {
 
     /**
      * Creates a parser from a grammar. See {@link #parser(String, ParserCreationOptions)} for what the options do.
-     * Unlike the other creation methods, the options are mandatory, specifically {@link ParserCreationOptions#startProduction()}, which must not be null.
      *
      * @param grammar The grammar.
      * @param options The options, most importantly the start production.
@@ -216,10 +216,7 @@ public final class Alpha {
      */
     public static @NotNull Parser parser(@NotNull Grammar grammar,
                                          final @NotNull ParserCreationOptions options) {
-        if (options.startProduction() == null)
-            throw new ParserCreationFailure("Start production must be specified when creating a parser from a Grammar object.");
-
-        if (!grammar.containsKey(options.startProduction()))
+        if (options.startProduction() != null && !grammar.containsKey(options.startProduction()))
             throw new ParserCreationFailure("The start production " + options.startProduction() + " is not in the grammar.");
 
         try {
@@ -231,7 +228,10 @@ public final class Alpha {
 
             var g = builder.buildWithWhitespace(grammar, options.whitespaceParser());
 
-            return new Parser(g, options.startProduction());
+            var start = options.startProduction() != null
+                    ? options.startProduction()
+                    : grammar.getStartSym();
+            return new Parser(g, start);
         } catch (IllegalGrammarException exception) {
             throw new ParserCreationFailure(exception);
         }

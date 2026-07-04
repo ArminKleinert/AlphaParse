@@ -3,7 +3,6 @@ package alphaparse;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
-import alphaparse.parser.*;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
@@ -263,14 +262,8 @@ final class Cfg {
         }
     }
 
-    @NotNull Parser buildParser(final @NotNull String spec,
-                                final @NotNull Grammar grammarGrammar) {
-        var grammar = new GrammarBuild(options, spec, grammarGrammar)
-                .buildWithWhitespace(null, options.whitespaceParser());
-        final @NotNull var startProduction = options.startProduction() != null
-                ? options.startProduction()
-                : Objects.requireNonNull(grammar.getStartSym());
-
-        return new Parser(grammar, startProduction);
+    @NotNull Grammar buildGrammar(final @NotNull String spec,
+                                  final @NotNull Grammar grammarGrammar) {
+        return new GrammarBuild(options, spec, grammarGrammar).build();
     }
 }

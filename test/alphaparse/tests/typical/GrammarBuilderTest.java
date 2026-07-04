@@ -44,7 +44,10 @@ class GrammarBuilderTest {
         pGrammarList.put(Sym.sym("S"),
                 ConcatRule.create(List.of(NonTerminal.create(Sym.sym("NUMBER")), ZeroOrMoreRule.create(NonTerminal.create(Sym.sym("NUMBER"))))));
         pGrammarList.put(Sym.sym("NUMBER"), AlternationRule.create(Stream.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9").map(it -> StringTerm.create(it, false)).toList()));
-        var pFromGrammar = Alpha.parser(new Grammar(pGrammarList), ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S"))).grammar();
+        var pFromGrammar = Alpha.parser(
+                        new Grammar(Sym.sym("S"), pGrammarList),
+                        ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")))
+                .grammar();
 
         var pFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {
             @Override
