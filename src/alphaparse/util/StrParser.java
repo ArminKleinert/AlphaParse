@@ -46,6 +46,7 @@ public final class StrParser {
                             i += 5;
                             sb.appendCodePoint(Integer.parseInt(s, i - 4, i, 16));
                         }
+                        case '\\' -> sb.append('\\');
                         default -> sb.append('\\').append(c2);
                     }
                 }

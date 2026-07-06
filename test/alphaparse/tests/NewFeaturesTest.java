@@ -50,17 +50,6 @@ class NewFeaturesTest {
     }
 
     @Test
-    void plusTest() {
-        var p = Alpha.parser("S = !#'[ \t]*\\n[ \t]*' 'a'+", ParserCreationOptions.newWithStandardWhitespace());
-        System.out.println(p.parses("aaa"));
-        System.out.println(p.parses(" aaa "));
-        System.out.println(p.parses("\naaa "));
-        System.out.println(p.parses("\n aaa "));
-        System.out.println(p.parses(" \naaa "));
-        System.out.println(p.parses(" \n aaa "));
-    }
-
-    @Test
     void wsExample1() {
         final @NotNull Parser whitespace = Alpha.parser(
                 """

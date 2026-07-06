@@ -198,7 +198,7 @@ floating_constant
 
 character_constant
   = #"L?'\\[0-7]([0-7][0-7]?)?'" (* octal char *)
-  | #"L?'\\x[0-9a-fA-F]+(\\x[0-9a-fA-F]+)*'" (* hex char. Yes, having multiple chars in one char is valid, but results in a warning. In that case, only the last char is taken *)
+  | #"L?'\\\\x[0-9a-fA-F]+(\\\\x[0-9a-fA-F]+)*'" (* hex char. Yes, having multiple chars in one char is valid, but results in a warning. In that case, only the last char is taken *)
   | #"L?'\\['\\\"?abfnFtv]'" (* escape char *)
   | #"L?'[^\\']'" (* Any other char *)
   ;

@@ -123,17 +123,14 @@ final class Cfg {
                         return alternationC(tree
                                 .getContent()
                                 .stream()
-                                .map((c) -> (Rule) buildRule(
-                                        (ParseTree) c.content()))
-                                .map(this::of)
+                                .map((c) -> (Rule) buildRule((ParseTree) c.content()))
                                 .toList());
                     }
                     case "ord" -> {
                         return orderedChoice(tree
                                 .getContent()
                                 .stream()
-                                .map((c) ->
-                                        buildRule((ParseTree) c.content()))
+                                .map((c) -> buildRule((ParseTree) c.content()))
                                 .toList());
                     }
                     case "hide" -> {
@@ -144,8 +141,7 @@ final class Cfg {
                         return concat(tree
                                 .getContent()
                                 .stream()
-                                .map((c) -> (Rule) buildRule(
-                                        (ParseTree) c.content()))
+                                .map((c) -> (Rule) buildRule((ParseTree) c.content()))
                                 .toList());
                     }
                     case "string" -> {
