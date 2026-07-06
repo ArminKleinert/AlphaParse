@@ -8,10 +8,6 @@ import alphaparse.reduction.ReductionType;
 import alphaparse.result.failure.ParseFailureReason;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * A class representing the right-hand sides of productions.
  */
@@ -130,14 +126,5 @@ public abstract sealed class Rule
     @Override
     public String toString() {
         return Print.ruleToString(this);
-    }
-
-    /**
-     * Equivalent to {@code new TrampolineListenerKey(index, this)}.
-     * @param index The index.
-     * @return A listener key.
-     */
-    public final @NotNull TrampolineListenerKey listenerKey(int index) {
-        return new TrampolineListenerKey(index, this);
     }
 }

@@ -1,5 +1,7 @@
 package alphaparse.parser_options;
 
+import alphaparse.parsing.AlternationRule;
+
 /**
  * Options for deciding what to do when a production is added that already exists.
  * <p>
@@ -35,7 +37,7 @@ public enum RedefinitionOption {
     ERROR,
 
     /**
-     * Throw exception if a duplicate is added.
+     * Create an {@link AlternationRule}.
      * <p>
      * Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
      */

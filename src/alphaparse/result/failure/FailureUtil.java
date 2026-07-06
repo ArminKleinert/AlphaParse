@@ -24,8 +24,9 @@ public final class FailureUtil {
      * @param text    The text.
      * @return A new string.
      */
-    public static @NotNull AlphaParseFailure augmentFailure(final @NotNull AlphaParseFailure failure,
-                                                            final @NotNull String text) {
+    public static @NotNull AlphaParseFailure augmentFailure(
+            final @NotNull AlphaParseFailure failure,
+            final @NotNull String text) {
         int line = 1;
         int col = 1;
 
@@ -75,9 +76,10 @@ public final class FailureUtil {
      * @param nextIndex The next index for the reasonList.
      * @return A modified failure object.
      */
-    public static @NotNull AlphaParseFailure modifyFailureByIndex(final @Nullable AlphaParseFailure failure,
-                                                                  final ParseFailureReason newReason,
-                                                                  final int nextIndex) {
+    public static @NotNull AlphaParseFailure modifyFailureByIndex(
+            final @Nullable AlphaParseFailure failure,
+            final ParseFailureReason newReason,
+            final int nextIndex) {
         final int currentIndex = failure == null ? 0 : failure.index();
         if (nextIndex > currentIndex)
             return new AlphaParseFailure(nextIndex, new ArrayList<>(Collections.singletonList(newReason)));
@@ -121,8 +123,10 @@ public final class FailureUtil {
 
         final int total = fullReasons.size() + partialReasons.size();
 
-        if (total == 1) sb.append("Expected:").append('\n');
-        else if (total > 1) sb.append("Expected one of:").append('\n');
+        if (total == 1)
+            sb.append("Expected:").append('\n');
+        else if (total > 1)
+            sb.append("Expected one of:").append('\n');
 
         for (String fullReasonExpect : fullReasons) {
             sb.append(fullReasonExpect);

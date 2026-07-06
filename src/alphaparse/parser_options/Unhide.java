@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
  *      <D> = 'd'
  * }
  * </pre>
- * Now, parsing the text {@code "abcda"}, the expected tree would be {@code [:S, "a", "c", "a"]}. Where the `B` subtree is completely hidden, `C` is flattened (merged into `S`) and `D` is also completely hidden.
+ * Now, parsing the text {@code "abcda"}, the expected tree would be {@code [:S, "a", "c", "a"]}. Where the {@code B} subtree is completely hidden, {@code C} is flattened (merged into {@code S}) and {@code D} is also completely hidden.
  * <pre>
  * {@code
  *      var p = Alpha.parser("S = 'a' <B> C <D> 'a'\nB = 'b'+\n<C> = 'c'\n<D> = 'd'");
@@ -48,10 +48,8 @@ public class Unhide {
     public static @NotNull Grammar unhideContent(final @NotNull Grammar grammar) {
         final @NotNull LinkedHashMap<Sym, Rule> res = new LinkedHashMap<>();
         for (final @NotNull var symRuleEntry : grammar.sequencedEntrySet()) {
-            final @NotNull var key = symRuleEntry.getKey();
-            final @NotNull var value = symRuleEntry.getValue();
-            final @NotNull var pUnhide = value.unhideContent();
-            res.put(key, pUnhide);
+            res.put(symRuleEntry.getKey(),
+                    symRuleEntry.getValue().unhideContent());
         }
         return new Grammar(grammar.getStartSym(), res);
     }
@@ -66,9 +64,8 @@ public class Unhide {
         final @NotNull LinkedHashMap<Sym, Rule> res = new LinkedHashMap<>();
         for (final @NotNull var symRuleEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = symRuleEntry.getKey();
-            final @NotNull var value = symRuleEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
-            final @NotNull var pUnhide = value.withReduction(reduction);
+            final @NotNull var pUnhide = symRuleEntry.getValue().withReduction(reduction);
             res.put(key, pUnhide);
         }
         return new Grammar(grammar.getStartSym(), res);
@@ -85,9 +82,8 @@ public class Unhide {
         final @NotNull LinkedHashMap<Sym, Rule> res = new LinkedHashMap<>();
         for (final @NotNull var symRuleEntry : grammar.sequencedEntrySet()) {
             final @NotNull var key = symRuleEntry.getKey();
-            final @NotNull var value = symRuleEntry.getValue();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
-            final @NotNull var p = value.unhideContent().withReduction(reduction);
+            final @NotNull var p = symRuleEntry.getValue().unhideContent().withReduction(reduction);
             res.put(key, p);
         }
         return new Grammar(grammar.getStartSym(), res);
