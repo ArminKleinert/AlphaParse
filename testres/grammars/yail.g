@@ -58,12 +58,15 @@ STRING         : "\"" #'[^\"]'* "\"" ;
 IDENTIFIER     : ALPHA ( ALPHA | DIGIT )* ;
 ALPHA          : #"[a-zA-z_]" ;
 DIGIT          : #"[0-9]" ;
+TYPENAME       : IDENTIFIER ;
+
+VAR_MODIFIERS  : "final" | "immutable"
 
 COMMENT        : BLOCKCOMMENT | LINECOMMENT ;
 BLOCKCOMMENT   : #"/\*(?:(?!\*\/).)*\*/"
 LINECOMMENT    : #"//[^:].*\n?"
-FUN_DOC_COMMENT: #"//: (?:(?!\*\/).)*" ;
-VAR_DOC_COMMENT: #"//: (?:(?!\*\/).)*" ;
-CLS_DOC_COMMENT: #"//: (?:(?!\*\/).)*" ;
+FUN_DOC_COMMENT: "//:" "(" (TYPENAME ",")* TYPENAME? ")" "->" TYPENAME "\n" ;
+VAR_DOC_COMMENT: "//:"  "\n" ;
+CLS_DOC_COMMENT: "//:"  "\n" ;
 
 
