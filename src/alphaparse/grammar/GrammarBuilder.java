@@ -109,13 +109,17 @@ public abstract class GrammarBuilder {
             final @NotNull var analysisResult = g.analyze();
             if (!analysisResult.isValid())
                 throw new IllegalGrammarException(
-                        "The keys "
-                                + analysisResult.getUndefinedUsedNTs()
-                                + " appear on the right-hand side of the"
-                                + " grammar, but not on the left.");
+                        stringBuildGrammarCreationFailureMessage(analysisResult));
         }
 
         return g;
+    }
+
+    private String stringBuildGrammarCreationFailureMessage(Grammar.GrammarInfo analysisResult) {
+        throw new IllegalGrammarException(
+                "The grammar is invalid. Undefined productions: "
+                        + analysisResult.getUndefinedUsedNTs()
+                        + "; number of terminals: " + analysisResult.definedTerminals().size() + " (a valid grammar has at least one terminal)");
     }
 
     /**

@@ -29,14 +29,11 @@ public final class Alpha {
 
     private static @NotNull Parser unhideParser(final @NotNull Parser parser,
                                                 final @NotNull Unhide.UnhideOptions unhide) {
-        if (unhide == Unhide.UnhideOptions.NONE)
-            return parser;
-
         return switch (unhide) {
+            case NONE -> parser;
             case CONTENT -> parser.withGrammar(Unhide.unhideContent(parser.grammar()));
             case TAGS -> parser.withGrammar(Unhide.unhideTags(parser.grammar()));
             case ALL -> parser.withGrammar(Unhide.unhideAll(parser.grammar()));
-            default -> throw new IllegalStateException("Unexpected value: " + unhide);
         };
     }
 

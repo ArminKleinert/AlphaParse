@@ -111,9 +111,13 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          *
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
          */
-        public @NotNull Collection<@NotNull Sym> usedNTs() {
-            final @NotNull Set<NonTerminal> result = new HashSet<>();
-            final @NotNull Set<Rule> analyzedRules = new HashSet<>();
+        public Set<@NotNull Sym> usedNTs() {
+            return collect(it -> it instanceof NonTerminal).stream().map(it -> ((NonTerminal) it).getKeyword()).collect(Collectors.toSet());
+        }
+
+        public @NotNull Set<@NotNull Rule> collect(final @NotNull Predicate<@NotNull Rule> collector) {
+            final @NotNull Set<Rule> result = new HashSet<>();
+            final @NotNull Set<Rule> analyzedRules = Collections.newSetFromMap(new IdentityHashMap<>());
             final @NotNull ArrayList<@NotNull Rule> ruleStack = new ArrayList<>(grammar.values());
             @NotNull Rule parser;
 
@@ -125,17 +129,18 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                 analyzedRules.add(parser);
 
                 switch (parser) {
-                    case NonTerminal nonTerminal -> result.add(nonTerminal);
-                    case Terminal ignored -> {
-                    }
                     case RuleWithManyChildren ruleWithManyChildren -> ruleStack.addAll(ruleWithManyChildren.getRules());
                     case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getRule());
-                    case SpecialSequenceRule ignored -> {
+                    default -> {
                     }
+                }
+
+                if (collector.test(parser)) {
+                    result.add(parser);
                 }
             }
 
-            return result.stream().map(NonTerminal::getKeyword).collect(Collectors.toSet());
+            return result;
         }
 
         /**
@@ -154,7 +159,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          * @return A collection of unused non-terminals.
          */
         public @NotNull Collection<Sym> getUnusedNTs() {
-            return definedNTs().stream().filter(it -> !usedNTs().contains(it)).collect(Collectors.toSet());
+            var usedNTs = usedNTs();
+            return definedNTs().stream().filter(it -> !usedNTs.contains(it)).collect(Collectors.toSet());
         }
 
         /**
@@ -178,36 +184,15 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          * @see GrammarInfo#getUndefinedUsedNTs()
          */
         public boolean isValid() {
-            return getUndefinedUsedNTs().isEmpty();
+            return getUndefinedUsedNTs().isEmpty()
+                    && !definedTerminals().isEmpty();
         }
 
         /**
-         * This method collects all rules contained in the grammar.
-         * <pre>
-         * {@code
-         *   // Pseudocode
-         *   collectRules(S := ('0' | '1')*) == Set['0', '1', ('0'|'1'), ('0'|'1')*]
-         * }
-         * </pre>
-         *
-         * @param predicate A predicate which can be used to collect only rules which match it.
-         * @return A collection of all rules contained in the grammar.
+         * Collects all terminals and equivalent rules. If a rule occurs multiple times in the grammar, it still appears only once in the resulting collection.
+         * @return A collection of all terminals and special sequences (functions).
          */
-        public @NotNull Collection<Rule> collectRules(@Nullable Predicate<Rule> predicate) {
-            if (predicate == null) predicate = (it) -> true;
-            var result = new LinkedHashSet<Rule>();
-
-            List<Rule> stack = new ArrayList<>(grammar.values());
-            while (!stack.isEmpty()) {
-                @NotNull Rule top = stack.removeLast();
-                if (top instanceof RuleWithChild topC) stack.add((topC).getRule());
-                else if (top instanceof RuleWithManyChildren topC) stack.addAll(topC.getRules());
-
-                if (predicate.test(top)) result.add(top);
-            }
-
-            return result;
-        }
+        public @NotNull Set<@NotNull Rule> definedTerminals() {return collect(it -> it instanceof Terminal || it instanceof SpecialSequenceRule);}
 
         @Override
         public @NotNull String toString() {

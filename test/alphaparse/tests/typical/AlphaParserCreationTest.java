@@ -4,8 +4,6 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
-import alphaparse.grammar.Grammar;
-import alphaparse.parsing.EpsilonTerm;
 import alphaparse.parser_options.GlobalCaseInsensitivity;
 import alphaparse.parser_options.ParserCreationOptions;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 
 class AlphaParserCreationTest {
 
@@ -96,18 +93,29 @@ class AlphaParserCreationTest {
     }
 
     @Test
+    void failBecauseOfUndefinedNT() {
+        // Error: Illegal grammar
+        final @NotNull var grammar = "S := A";
+        Assertions.assertThrows(
+                IllegalGrammarException.class,
+                () -> Alpha.parser(grammar));
+    }
+
+    @Test
+    void failBecauseNoTerminals() {
+        // Error: Illegal grammar
+        final @NotNull var grammar = "S := S";
+        Assertions.assertThrows(
+                IllegalGrammarException.class,
+                () -> Alpha.parser(grammar));
+    }
+
+    @Test
     void parserCreationFail() {
-        {
-            // Error: Illegal grammar
-            final @NotNull var grammar = "S := A";
-            Assertions.assertThrows(
-                    IllegalGrammarException.class,
-                    () -> Alpha.parser(grammar));
-        }
         {
             // Error: Starting symbol not in grammar
             final @NotNull var grammar = "S = 'abc'";
-            final @NotNull var options = new ParserCreationOptions(
+            final @NotNull var options = ParserCreationOptions.create(
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
                     true, null,

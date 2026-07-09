@@ -11,7 +11,7 @@ import java.util.Set;
 
 class GrammarTest {
     @Test
-    void grammarCollectRules() {
+    void grammarCollect() {
         var g = Alpha.parser("S = '1' | '2' S").grammar();
         var ga = g.analyze();
 
@@ -23,6 +23,6 @@ class GrammarTest {
         Assertions.assertEquals(
                 Set.of(StringTerm.create("1", false),
                         StringTerm.create("2", false)),
-                new HashSet<>(ga.collectRules(it -> it instanceof StringTerm)));
+                new HashSet<>(ga.collect(it -> it instanceof StringTerm)));
     }
 }
