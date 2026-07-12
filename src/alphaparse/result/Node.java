@@ -72,6 +72,26 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
     @NotNull Object content();
 
     /**
+     * Casts the node to a {@link NodeString} and returns its content, treated as a String.
+     *
+     * @return The content as a string.
+     * @throws ClassCastException If the node is not a {@link NodeString}.
+     */
+    default @NotNull String string() {
+        return ((NodeString) this).content();
+    }
+
+    /**
+     * Casts the node to a {@link NodeParseTree} and returns its content, treated as a {@link ParseTree}.
+     *
+     * @return The content as a {@link ParseTree}.
+     * @throws ClassCastException If the node is not a {@link NodeParseTree}.
+     */
+    default @NotNull ParseTree tree() {
+        return ((NodeParseTree) this).content();
+    }
+
+    /**
      * Represents the tag of a tree. This is the left hand side of a production. A tag can not exist without a tree and a tree can not exist without a tag.
      *
      * @param content The inner object.
