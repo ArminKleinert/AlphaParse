@@ -30,7 +30,7 @@ final class Main {
             TimeUtil.measureTimeMillis(20,
                     () -> Alpha.parser(c99GrammarText, ParserCreationOptions.newWithStandardWhitespace()));
             TimeUtil.measureTimeMillis(2000,
-                    () -> Alpha.parse(p, text));
+                    () -> p.parse(text));
 
             System.out.println("\n----------------------------------\n--- Standard performance tests ---\n----------------------------------");
             System.out.println("Make parser without correctness check.");
@@ -54,7 +54,7 @@ final class Main {
             System.out.println("---");
             System.out.println("Extract the first parse.");
             System.out.println("             " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                    () -> Alpha.parse(p, text)));
+                    () -> p.parse(text)));
             System.out.println("0_9_3:       {:lowest 1.231, :highest 4.927, :diff 3.696, :average 1.272, :mid 1.266, :median 1.266, :total 25443.634}");
             System.out.println("0_9_2:       {:lowest 1.233, :highest 4.808, :diff 3.575, :average 1.276, :mid 1.267, :median 1.267, :total 25524.641}");
             System.out.println("Raw types:   {:lowest 1.274, :highest 3.420, :diff 2.146, :average 1.309, :mid 1.303, :median 1.303, :total 26187.008}");
@@ -63,7 +63,7 @@ final class Main {
             System.out.println("---");
             System.out.println("All parses as a lazy list. (Parse Forest)");
             System.out.println("             " + TimeUtil.measureTimeMillis(20 * testNumMultiplier,
-                    () -> Alpha.parses(p, text)));
+                    () -> p.parses(text)));
             System.out.println("0_9_3:       {:lowest 0.001, :highest 1.030, :diff 1.029, :average 0.001, :mid 0.001, :median 0.001, :total 27.635}");
             System.out.println("0_9_2:       {:lowest 0.001, :highest 0.078, :diff 0.078, :average 0.001, :mid 0.001, :median 0.001, :total 24.908}");
             System.out.println("Raw types:   {:lowest 1.246, :highest 3.653, :diff 2.407, :average 1.287, :mid 1.280, :median 1.280, :total 25736.796}");
@@ -72,7 +72,7 @@ final class Main {
             System.out.println("---");
             System.out.println("Get all parses (parse forest) and make an array.");
             System.out.println("             " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                    () -> Alpha.parses(p, text).toArray()));
+                    () -> p.parses(text).toArray()));
             System.out.println("0_9_3:       {:lowest 10.107, :highest 20.716, :diff 10.609, :average 10.394, :mid 10.328, :median 10.331, :total 20787.379}");
             System.out.println("0_9_2:       {:lowest 10.149, :highest 18.285, :diff 8.136, :average 10.384, :mid 10.336, :median 10.336, :total 20767.543}");
             System.out.println("Raw types:   {:lowest 13.913, :highest 19.723, :diff 5.810, ::average 14.222, :mid 14.141, :median 14.144, :total 284433.845}");
@@ -82,7 +82,7 @@ final class Main {
             System.out.println("Get all parses (parse forest) and iterate using a for-each loop.");
             System.out.println("             " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
                     () -> {
-                        for (var ignored : Alpha.parses(p, text)) ;
+                        for (var ignored : p.parses(text)) ;
                     }));
             System.out.println("0_9_3:       {:lowest 10.100, :highest 14.363, :diff 4.263, :average 10.378, :mid 10.329, :median 10.331, :total 20755.519}");
             System.out.println("0_9_2:       {:lowest 10.173, :highest 13.408, :diff 3.236, :average 10.399, :mid 10.359, :median 10.358, :total 20798.482}");
@@ -93,7 +93,7 @@ final class Main {
             System.out.println("Get all parses (parse forest) and turn it into an ArrayList.");
             System.out.println("             " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
                     () -> {
-                        var l = new ArrayList<>(Alpha.parses(p, text));
+                        var l = new ArrayList<>(Alpha.parses(p, text, ParsingOptions.getDefault()));
                     }));
             System.out.println("0_9_3:       {:lowest 10.128, :highest 14.839, :diff 4.710, :average 10.375, :mid 10.306, :median 10.310, :total 20749.135}");
             System.out.println("0_9_2:       {:lowest 10.188, :highest 15.160, :diff 4.972, :average 10.404, :mid 10.368, :median 10.369, :total 20807.481}");
@@ -103,13 +103,13 @@ final class Main {
             System.out.println("---");
             System.out.println("Get all parses (parse forest) and count them.");
             System.out.println("             " + TimeUtil.measureTimeMillis(20 * testNumMultiplierForSlowTests,
-                    () -> Alpha.parses(p, text).size()));
+                    () -> p.parses(text).size()));
             System.out.println("0_9_3:       {:lowest 10.088, :highest 14.320, :diff 4.232, :average 10.376, :mid 10.323, :median 10.326, :total 20751.320}");
             System.out.println("0_9_2:       {:lowest 10.112, :highest 13.464, :diff 3.352, :average 10.427, :mid 10.342, :median 10.347, :total 20854.633}");
             System.out.println("Raw types:   {:lowest 13.960, :highest 23.369, :diff 9.409, :average 14.266, :mid 14.191, :median 14.191, :total 285313.230}");
             System.out.println("Original:    -");
 
-            System.out.println("Count of parses: " + Alpha.parses(p, text).size());
+            System.out.println("Count of parses: " + p.parses(text).size());
         }
 
         {
@@ -120,7 +120,7 @@ final class Main {
             var p = Alpha.parser(grammar);
             var sb = new StringBuilder();
             for (int n = 0; n < max; n++) {
-                int num = Alpha.parses(p, sb.toString()).size();
+                int num = Alpha.parses(p, sb.toString(), ParsingOptions.getDefault()).size();
                 System.out.println("Parses for " + n + ": " + num + " (Correct? "
                         + (num == 0 || num == 1 << n)
                         + ")");

@@ -313,7 +313,7 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parses(Parser, String)} or {@link Alpha#parses(Parser, String, ParsingOptions)} instead.
+     * This method should not be called directly. Use {@link Parser#parses(String)} or {@link Parser#parses(String, ParsingOptions)} instead.
      *
      * @param grammar            The grammar.
      * @param start              The name of the start production.
@@ -322,8 +322,8 @@ public final class Gll {
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @param errorIfEmpty       If true, return an error if the parsing failed. By default, an empty list would be returned.
      * @return The parse forest.
-     * @see Alpha#parses(Parser, String)
-     * @see Alpha#parse(Parser, String, ParsingOptions)
+     * @see Parser#parses(String)
+     * @see Parser#parses(String, ParsingOptions)
      */
     public static @NotNull AlphaParsesResult parses(
             final @NotNull Grammar grammar,
@@ -347,7 +347,7 @@ public final class Gll {
     }
 
     /**
-     * This method should not be called directly. Use {@link Alpha#parse(Parser, String)} or {@link Alpha#parse(Parser, String, ParsingOptions)} instead.
+     * This method should not be called directly. Use {@link Parser#parse(String)} or {@link Parser#parse(String, ParsingOptions)} instead.
      *
      * @param grammar            The grammar.
      * @param start              The name of the start production.
@@ -355,8 +355,8 @@ public final class Gll {
      * @param partial            Whether to include partial results.
      * @param iterativeDeepening Iteratively deepens the evaluation of {@link RegexTerm#parse}.
      * @return The parse tree or failure.
-     * @see Alpha#parse(Parser, String)
-     * @see Alpha#parse(Parser, String, ParsingOptions)
+     * @see Parser#parse(String)
+     * @see Parser#parse(String, ParsingOptions)
      */
     public static @NotNull AlphaParseResult parse(
             final @NotNull Grammar grammar,

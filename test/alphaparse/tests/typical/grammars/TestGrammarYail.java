@@ -3,6 +3,7 @@ package alphaparse.tests.typical.grammars;
 import alphaparse.Alpha;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -11,13 +12,19 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
 class TestGrammarYail {
     private @NotNull Parser parser() {
         try {
+            var opts = ParserCreationOptions.pureEbnf()
+                    .addAvailableRule(RulesAvailable.NEGATIVE_LOOKAHEAD)
+                    .addAvailableRule(RulesAvailable.VARIABLE_REPEAT)
+                    .addAvailableRule(RulesAvailable.EXPLICIT_EOF)
+                    .withRuleDefinitionOps(Set.of(":="));
             return Alpha.parser(
                     Files.readString(Path.of("testres/grammars/yail.g")),
-                    ParserCreationOptions.newWithStandardWhitespace().addAvailableRule(RulesAvailable.EXPLICIT_EOF)
+                    opts
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -46,7 +53,7 @@ class TestGrammarYail {
     void verifyFunctionDef() {
         var text = "//: (int32_t, int32_t) -> int64_t\nfun f(a, b) { return host(\"((int64_t)a) + b\"); }";
         //System.out.println(parser().parse(text));
-        Assertions.assertTrue(parser().parse(text).isSuccess());
+        Assertions.assertTrue(parser().parse(text, ParsingOptions.getDefault()).isSuccess());
     }
 
     @Test

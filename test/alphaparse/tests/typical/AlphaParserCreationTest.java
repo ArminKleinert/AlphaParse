@@ -53,7 +53,7 @@ class AlphaParserCreationTest {
         try {
             final @NotNull var grammarFile = new File("testres/grammars/as_and_bs.g");
             final @NotNull var p = Alpha.parser(Files.readString(grammarFile.toPath()));
-            Assertions.assertEquals(p, Alpha.parser(grammarFile));
+            Assertions.assertEquals(p, Alpha.parser(Files.readString(grammarFile.toPath())));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

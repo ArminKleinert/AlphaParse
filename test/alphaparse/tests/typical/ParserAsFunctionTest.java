@@ -2,6 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.util.Transform;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class ParserAsFunctionTest {
         var p = Alpha.parser("S = #'[A-Z]'");
         var strings = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(it -> String.valueOf((char) it)).toList();
         Assertions.assertEquals(
-                strings.stream().map(it -> Alpha.parse(p, it)).toList(),
+                strings.stream().map(it -> Alpha.parse(p, it, ParsingOptions.getDefault())).toList(),
                 strings.stream().map(p::parse).toList()
         );
     }

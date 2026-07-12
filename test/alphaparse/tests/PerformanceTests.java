@@ -2,6 +2,7 @@ package alphaparse.tests;
 
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.util.TimeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -114,7 +115,7 @@ class PerformanceTests {
         var p = Alpha.parser(grammar);
         var sb = new StringBuilder();
         for (int n = 0; n < max; n++) {
-            int num = Alpha.parses(p, sb.toString()).size();
+            int num = Alpha.parses(p, sb.toString(), ParsingOptions.getDefault()).size();
             System.out.println("Parses for " + n + ": " + num + " (Correct? "
                     + (num == 0 || num == 1 << n)
                     + ")");

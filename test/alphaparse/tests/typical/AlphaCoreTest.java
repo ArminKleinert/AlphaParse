@@ -252,7 +252,7 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(
                 tree,
-                Alpha.parse(as_and_bs, text)
+                Alpha.parse(as_and_bs, text, ParsingOptions.getDefault())
         );
 
         Assertions.assertEquals(
@@ -272,7 +272,7 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(
                 tree,
-                Alpha.parse(as_and_bs_regex, text)
+                Alpha.parse(as_and_bs_regex, text, ParsingOptions.getDefault())
         );
 
         Assertions.assertEquals(
@@ -305,7 +305,7 @@ class AlphaCoreTest {
 
         Assertions.assertEquals(
                 treeHiccup,
-                Alpha.parse(as_and_bs, text).castToParseSuccess().toRawList()
+                Alpha.parse(as_and_bs, text, ParsingOptions.getDefault()).castToParseSuccess().toRawList()
         );
     }
 
@@ -349,9 +349,9 @@ class AlphaCoreTest {
                 PT.create("seq-of-A-or-B", "a", "b", "a"),
                 ")");
 
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab, text));
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab, text, ParsingOptions.getDefault()));
 
-        Assertions.assertEquals(Alpha.parse(paren_ab, text), paren_ab.parse(text));
+        Assertions.assertEquals(Alpha.parse(paren_ab, text, ParsingOptions.getDefault()), paren_ab.parse(text));
     }
 
     @Test
@@ -360,8 +360,8 @@ class AlphaCoreTest {
         var tree = PT.create("paren-wrapped",
                 PT.create("seq-of-A-or-B", "a", "b", "a"));
 
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text));
-        Assertions.assertEquals(Alpha.parse(paren_ab_hide_parens, text), paren_ab_hide_parens.parse(text));
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_parens, text, ParsingOptions.getDefault()));
+        Assertions.assertEquals(Alpha.parse(paren_ab_hide_parens, text, ParsingOptions.getDefault()), paren_ab_hide_parens.parse(text));
     }
 
     @Test
@@ -369,8 +369,8 @@ class AlphaCoreTest {
         var text = "(aba)";
         var tree = PT.create("paren-wrapped", "a", "b", "a");
 
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text));
-        Assertions.assertEquals(Alpha.parse(paren_ab_manually_flattened, text), paren_ab_manually_flattened.parse(text));
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_manually_flattened, text, ParsingOptions.getDefault()));
+        Assertions.assertEquals(Alpha.parse(paren_ab_manually_flattened, text, ParsingOptions.getDefault()), paren_ab_manually_flattened.parse(text));
     }
 
     @Test
@@ -378,8 +378,8 @@ class AlphaCoreTest {
         var text = "(aba)";
         var tree = PT.create("paren-wrapped", "a", "b", "a");
 
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text));
-        Assertions.assertEquals(Alpha.parse(paren_ab_hide_tag, text), paren_ab_hide_tag.parse(text));
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_tag, text, ParsingOptions.getDefault()));
+        Assertions.assertEquals(Alpha.parse(paren_ab_hide_tag, text, ParsingOptions.getDefault()), paren_ab_hide_tag.parse(text));
     }
 
     @Test
@@ -394,8 +394,8 @@ class AlphaCoreTest {
         // That raw output can be achieved by manual conversion:
         Assertions.assertEquals(List.of("a", "b", "a"), tree.toRawList());
 
-        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text));
-        Assertions.assertEquals(Alpha.parse(paren_ab_hide_both_tags, text), paren_ab_hide_both_tags.parse(text));
+        Assertions.assertEquals(tree, Alpha.parse(paren_ab_hide_both_tags, text, ParsingOptions.getDefault()));
+        Assertions.assertEquals(Alpha.parse(paren_ab_hide_both_tags, text, ParsingOptions.getDefault()), paren_ab_hide_both_tags.parse(text));
     }
 
     @Test
@@ -432,7 +432,6 @@ class AlphaCoreTest {
                 PT.create("S", PT.create("A"), PT.create("A", "a", "a", "a", "a", "a", "a"))
         );
 
-        Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text));
         Assertions.assertEquals(treesAmbiguous, Alpha.parses(ambiguous, text, ParsingOptions.getDefault()));
 
         Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text));
@@ -448,7 +447,6 @@ class AlphaCoreTest {
                 PT.create("S", PT.create("A", text), PT.create("A", ""))
         );
 
-        Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text));
         Assertions.assertEquals(treesUnambiguous, Alpha.parses(not_ambiguous, text, ParsingOptions.getDefault()));
 
         Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text));
@@ -521,7 +519,7 @@ class AlphaCoreTest {
                 PT.create("sentence", PT.create("keyword", "defn"), PT.create("identifier", "my"), PT.create("keyword", "cond"))
         );
 
-        Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(ambiguous_tokenizer, text)));
+        Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(ambiguous_tokenizer, text, ParsingOptions.getDefault())));
     }
 
     @Test
@@ -531,7 +529,7 @@ class AlphaCoreTest {
                 PT.create("sentence", PT.create("keyword", "defn"), PT.create("identifier", "my"), PT.create("keyword", "cond"))
         );
 
-        Assertions.assertEquals(trees, Alpha.parses(unambiguous_tokenizer, text));
+        Assertions.assertEquals(trees, Alpha.parses(unambiguous_tokenizer, text, ParsingOptions.getDefault()));
     }
 
     @Test
@@ -547,7 +545,7 @@ class AlphaCoreTest {
                 PT.create("sentence", PT.create("identifier", "defn"), PT.create("identifier", "my"), PT.create("identifier", "cond"))
         );
 
-        Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(preferential_tokenizer, text)));
+        Assertions.assertEquals(trees, new HashSet<>(Alpha.parses(preferential_tokenizer, text, ParsingOptions.getDefault())));
     }
 
     @Test
@@ -561,7 +559,7 @@ class AlphaCoreTest {
                 PT.create("S", "a", "a", "a", "a", "a", "a")
         );
 
-        Assertions.assertEquals(trees, Alpha.parses(repeated_a, text));
+        Assertions.assertEquals(trees, Alpha.parses(repeated_a, text, ParsingOptions.getDefault()));
 
         var partialOpts = ParsingOptions.getDefault().withPartial(true);
         var treesPartial = List.of(
@@ -584,7 +582,7 @@ class AlphaCoreTest {
                 PT.create("number", "1", "2", "3"),
                 PT.create("word", "d", "e", "f"));
 
-        Assertions.assertEquals(tree, Alpha.parse(words_and_numbers_one_character_at_a_time, text));
+        Assertions.assertEquals(tree, Alpha.parse(words_and_numbers_one_character_at_a_time, text, ParsingOptions.getDefault()));
     }
 
     @Test
@@ -604,7 +602,7 @@ class AlphaCoreTest {
                                 PT.create("number", "6")))
         );
 
-        Assertions.assertEquals(tree, Alpha.parse(arithmetic, text));
+        Assertions.assertEquals(tree, Alpha.parse(arithmetic, text, ParsingOptions.getDefault()));
     }
 
     /*
@@ -622,8 +620,8 @@ class AlphaCoreTest {
         var tree1 = PT.create("S", "=", "=", "=");
         var tree2 = PT.create("S", PT.create("B", "b", "="));
 
-        Assertions.assertEquals(tree1, Alpha.parse(tricky_ebnf_build, text1));
-        Assertions.assertEquals(tree2, Alpha.parse(tricky_ebnf_build, text2));
+        Assertions.assertEquals(tree1, Alpha.parse(tricky_ebnf_build, text1, ParsingOptions.getDefault()));
+        Assertions.assertEquals(tree2, Alpha.parse(tricky_ebnf_build, text2, ParsingOptions.getDefault()));
     }
 
     @Test

@@ -3,6 +3,7 @@ package alphaparse.tests;
 import alphaparse.Alpha;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
+import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.RulesAvailable;
 import alphaparse.parsing.*;
 import alphaparse.result.PT;
@@ -25,7 +26,7 @@ class NewFeaturesTest {
                     E = ε
                     """);
             System.out.println(p);
-            var ps = Alpha.parses(p, "").stream().toList();
+            var ps = Alpha.parses(p, "", ParsingOptions.getDefault()).stream().toList();
             System.out.println();
             System.out.println("Expect: [[:S, [:A]], [:S, [:B]], [:S, [:C]], [:S, [:D]], [:S, [:E]]]");
             System.out.println("Have:   " + ps);

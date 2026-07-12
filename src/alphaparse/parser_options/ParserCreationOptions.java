@@ -122,14 +122,14 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      */
     public static @NotNull ParserCreationOptions create(
             final @Nullable Parser whitespaceParser,
-                                 final @Nullable Sym startProduction,
-                                 final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
-                                 final boolean useParserBuffering,
-                                 final @Nullable RedefinitionOption redefinitionOption,
-                                 final @Nullable Set<RulesAvailable> usableRules,
-                                 final boolean checkCorrectness,
-                                 final @Nullable Collection<String> ruleDefinitionOpts,
-                                 final @Nullable Collection<String> epsilonNames) {
+            final @Nullable Sym startProduction,
+            final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
+            final boolean useParserBuffering,
+            final @Nullable RedefinitionOption redefinitionOption,
+            final @Nullable Set<RulesAvailable> usableRules,
+            final boolean checkCorrectness,
+            final @Nullable Collection<String> ruleDefinitionOpts,
+            final @Nullable Collection<String> epsilonNames) {
         var stringCaseInsensitive1 = stringCaseInsensitive == null
                 ? GlobalCaseInsensitivity.DEFAULT
                 : stringCaseInsensitive;
@@ -150,7 +150,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 ? defaultEpsilonNames()
                 : epsilonNames.stream().sorted(Comparator.comparingInt(String::length)).toList();
 
-        return new ParserCreationOptions(whitespaceParser,startProduction,stringCaseInsensitive1,useParserBuffering,redefinitionOption1,usableRules1,checkCorrectness,ruleDefinitionOpts1,epsilonNames1);
+        return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive1, useParserBuffering, redefinitionOption1, usableRules1, checkCorrectness, ruleDefinitionOpts1, epsilonNames1);
     }
 
     /**

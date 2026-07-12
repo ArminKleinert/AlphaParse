@@ -1,72 +1,96 @@
-program : declaration* EOF ;
+program         := { WS declaration } WS ;
 
-declaration    : classDecl
-               | funDecl
-               | varDecl
-               | statement
-               | COMMENT ;
+declaration     := class
+                 | fun
+                 | var
+                 | statement
+                 ;
 
-classDecl      : CLS_DOC_COMMENT? "class" IDENTIFIER ( "<" IDENTIFIER )?
-                 "{" function* "}" ;
-funDecl        : FUN_DOC_COMMENT? "fun" function ;
-varDecl        : VAR_DOC_COMMENT? "var" IDENTIFIER ( "=" expression )? ";" ;
+class           := "class" WS identifier [ WS "<" WS identifier ] WS "{" { WS funWithOutKey } WS "}" ;
 
-statement      : exprStmt
-               | forStmt
-               | ifStmt
-               | printStmt
-               | returnStmt
-               | whileStmt
-               | block ;
+funCmt          := "//:" WS "(" WS [ { identifier WS "," WS } identifier WS ] ")" WS "->" WS identifier <"\n"> ;
+fun             := [ funCmt WS ] "fun" WS funWithOutKey ;
+funWithOutKey   := identifier WS "(" [ { WS identifier WS "," } WS identifier] WS ")" WS block ;
 
-exprStmt       : expression ";" ;
-forStmt        : "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement
-               | "for" "(" IDENTIFIER ":" term ")" statement ;
+varCmt          := "//:" WS { varMod WS } identifier <"\n"> ;
+varMod          := "final" | "immutable" ;
+var             := "var" WS identifier [ WS "=" WS expression ] WS ";" ;
 
-ifStmt         : "if" "(" expression ")" statement ( "else" statement )? ;
-printStmt      : "print" expression ";" ;
-returnStmt     : "return" expression? ";" ;
-whileStmt      : "while" "(" expression ")" statement ;
-block          : "{" declaration* "}" ;
+statement       := exprStmt
+                 | for
+                 | if
+                 | print
+                 | return
+                 | while
+                 | block
+                 ;
 
-expression     : assignment ;
+exprStmt        := expression WS ";" ;
+for             := "for" WS "(" WS ( var | exprStmt | ";" ) [ WS expression ] WS ";" [ WS expression ] WS ")" WS statement ;
+if              := "if" WS "(" WS expression WS ")" WS statement [ WS "else" WS statement ] ;
+print           := "print" WS expression WS ";" ;
+return          := "return" [ WS expression ] WS ";" ;
+while           := "while" WS "(" WS expression WS ")" WS statement ;
+block           := "{" { WS declaration } WS "}" ;
 
-assignment     : ( call "." )? IDENTIFIER "=" assignment
-               | logic_or ;
+expression      := assignment ;
 
-logic_or       : logic_and ( "or" logic_and )* ;
-logic_and      : equality ( "and" equality )* ;
-equality       : comparison ( ( "!=" | "==" ) comparison )* ;
-comparison     : term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-term           : factor ( ( "-" | "+" ) factor )* ;
-factor         : unary ( ( "/" | "*" ) unary )* ;
+assignment      := ternary [ WS ( "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | "&=" | "^=" | "|=" ) WS assignment ] ;
+ternary         := logicOr [ WS "?" WS expression WS ":" WS ternary ]  ; (* https://en.cppreference.com/c/language/operator_precedence#cite_note-3 *)
+logicOr         := logicAnd [ WS ( "||" | "or" ) WS logicOr ] ;
+logicAnd        := binOr [ WS ( "&&" | "and" ) WS logicAnd ] ;
+binOr           := binXor [ WS "|" WS binOr ] ;
+binXor          := binAnd [ WS "^" WS binXor ] ;
+binAnd          := equality [ WS "&" WS binAnd ] ;
+equality        := comparison [ WS ( "==" | "!=" ) WS equality ] ;
+comparison      := bitShift [ WS ( "<" | "<=" | ">" | ">=" ) WS comparison ] ;
+bitShift        := addition [ WS ( "<<" | ">>" ) WS bitShift ] ;
+addition        := multiply [ WS ( "+" | "-" ) WS addition ] ;
+multiply        := unary [ WS ( "*" | "/" | "%" | "mod" ) WS multiply ] ;
+unary           := ( "+" | "-" | "!" ) WS unary | postfix ;
+postfix         := callOrAccess [ WS ( "++" | "--" ) ] ;
 
-unary          : ( "!" | "+" | "-" | "~" ) unary | call ;
-call           : primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
-primary        : "true" | "false" | "nil" | "this"
-               | NUMBER | STRING | IDENTIFIER | "(" expression ")"
-               | "super" "." IDENTIFIER ;
+callOrAccess    := primary { WS callOrAccess } ;
+callOrAccessIn  := "(" WS callParams WS ")"
+                 | "." WS identifier
+                 | "[" WS expression WS "]" ;
+primary         := bool
+                 | null
+                 | this
+                 | number
+                 | string
+                 | identifier
+                 | <"("> expression <")">
+                 | superAccess ;
 
-function       : IDENTIFIER "(" parameters? ")" block ;
-parameters     : IDENTIFIER ( "," IDENTIFIER )* ;
-arguments      : expression ( "," expression )* ;
+callParams      := [ { expression WS "," WS } expression ] ;
 
-NUMBER         : INT | FLOAT ;
-INT            : #"0x[0-9a-fA-F]+" | #"0b[0-1]+" | #"[0-9a-fA-F]+" ;
-FLOAT          : #"[0-9]+\.[0-9]+f?" ;
-STRING         : "\"" #'[^\"]'* "\"" ;
-IDENTIFIER     : ALPHA ( ALPHA | DIGIT )* ;
-ALPHA          : #"[a-zA-z_]" ;
-DIGIT          : #"[0-9]" ;
-TYPENAME       : IDENTIFIER ;
+number          := integer
+                 | float
+                 ;
+integer         := "0x" #"[0-9a-fA-F]+"
+                 | "0b" #"0b[0-1]+"
+                 | #"[0-9]+"
+                 ;
+float           := #"[0-9]+\.[0-9]+f?" ;
 
-VAR_MODIFIERS  : "final" | "immutable"
+symbolInString  := <'$'> ( identifier | <'{'> expression <'}'> ) ;
+escapeSequence  := <'\\'> ( '"' | 'b' | 'f' | 'n' | 'r' | 't' | '{' | 'u' 4 #'[a-fA-F0-9]' | 'x' 8 #'[a-fA-F0-9]' ) ;
+stringInsertion := <'{'> #'[0-9]+' <'}'> ;
+string          := <'"'> { #'[^$"\\\\{]+' | symbolInString | escapeSequence | stringInsertion } <'"'> ;
 
-COMMENT        : BLOCKCOMMENT | LINECOMMENT ;
-BLOCKCOMMENT   : #"/\*(?:(?!\*\/).)*\*/"
-LINECOMMENT    : #"//[^:].*\n?"
-FUN_DOC_COMMENT: "//:" "(" (TYPENAME ",")* TYPENAME? ")" "->" TYPENAME "\n" ;
-VAR_DOC_COMMENT: "//:"  "\n" ;
-CLS_DOC_COMMENT: "//:"  "\n" ;
+comment         := blockcomment
+                 | linecomment
+                 ;
+blockcomment    := "/*" #"^(\*/)*" "*/" ;
+linecomment     := "//" !":" #"[^\n]*" ( "\n" | EOF ) ;
 
+identifier      := #"[a-zA-Z_][a-zA-Z0-9_]*" ;
+this            := "this" ;
+bool            := "true"
+                 | "false"
+                 ;
+null            := "nil" ;
+superAccess     := "super" "." identifier ;
 
+<WS>            := { <#"[\s\r\n]*"> | comment } ;

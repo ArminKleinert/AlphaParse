@@ -4,8 +4,6 @@ import alphaparse.error.IllegalGrammarException;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
-import alphaparse.parser_options.Unhide;
-import alphaparse.parsing.Gll;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
@@ -27,27 +25,6 @@ public final class Alpha {
     private Alpha() {
     }
 
-    private static @NotNull Parser unhideParser(final @NotNull Parser parser,
-                                                final @NotNull Unhide.UnhideOptions unhide) {
-        return switch (unhide) {
-            case NONE -> parser;
-            case CONTENT -> parser.withGrammar(Unhide.unhideContent(parser.grammar()));
-            case TAGS -> parser.withGrammar(Unhide.unhideTags(parser.grammar()));
-            case ALL -> parser.withGrammar(Unhide.unhideAll(parser.grammar()));
-        };
-    }
-
-    private static @NotNull Sym getStartProductionFromParserOrOptionsAndCheck(
-            final @NotNull ParsingOptions options,
-            final @NotNull Parser parser) {
-        var startProduction = options.start();
-        if (startProduction == null)
-            startProduction = parser.startProduction();
-        if (!parser.grammar().containsKey(startProduction))
-            throw new ParserCreationFailure("Start production not in grammar: " + startProduction);
-        return startProduction;
-    }
-
     /**
      * Runs a parser on a text. If the parse is successful, returns a {@link ParseTree}. If the parse fails, returns a {@link AlphaParseFailure}
      * <p>
@@ -66,35 +43,22 @@ public final class Alpha {
     public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
                                                   final @NotNull String text,
                                                   final @NotNull ParsingOptions options) {
-        final @NotNull var startProduction =
-                getStartProductionFromParserOrOptionsAndCheck(options, parser);
-        final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
-
-        final @NotNull AlphaParseResult parsingResult;
-        if (options.embedFailureInParseTree()) {
-            parsingResult = AlphaParseResult.make(
-                    Gll.parseEmbedFailure(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
-        } else {
-            parsingResult = AlphaParseResult.make(
-                    Gll.parse(unhiddenParser.grammar(), startProduction, text, false, options.iterativeDeepening()));
-        }
-
-        return parsingResult;
+        return parser.parse(text, options);
     }
 
-    /**
-     * Runs the parse algorithm with default options.
-     *
-     * @param parser The parser.
-     * @param text   The text.
-     * @return The resulting tree or failure.
-     * @see #parse(Parser, String, ParsingOptions)
-     * @see ParsingOptions#getDefault()
-     */
-    public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
-                                                  final @NotNull String text) {
-        return parse(parser, text, ParsingOptions.getDefault());
-    }
+//    /**
+//     * Runs the parse algorithm with default options.
+//     *
+//     * @param parser The parser.
+//     * @param text   The text.
+//     * @return The resulting tree or failure.
+//     * @see #parse(Parser, String, ParsingOptions)
+//     * @see ParsingOptions#getDefault()
+//     */
+//    public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
+//                                                  final @NotNull String text) {
+//        return parse(parser, text, ParsingOptions.getDefault());
+//    }
 
     /**
      * Runs a parser on a string and returns a parse forest as a {@link AlphaParsesResult.LazyResultList}.
@@ -115,32 +79,22 @@ public final class Alpha {
     public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
                                                     final @NotNull String text,
                                                     final @NotNull ParsingOptions options) {
-        final @NotNull var startProduction =
-                getStartProductionFromParserOrOptionsAndCheck(options, parser);
-        final var usePartial = options.usePartial();
-        final @NotNull var unhiddenParser = unhideParser(parser, options.unhide());
-
-        final var embedFailure = options.embedFailureInParseTree();
-        if (embedFailure) {
-            return Gll.parsesEmbedFailure(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening());
-        } else {
-            return Gll.parses(unhiddenParser.grammar(), startProduction, text, usePartial, options.iterativeDeepening(), options.failureIfEmpty());
-        }
+        return parser.parses(text, options);
     }
 
-    /**
-     * Runs the parses algorithm with default options.
-     *
-     * @param parser The parser.
-     * @param text   The text.
-     * @return The resulting trees.
-     * @see #parses(Parser, String, ParsingOptions)
-     * @see ParsingOptions#getDefault()
-     */
-    public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
-                                                    final @NotNull String text) {
-        return parses(parser, text, ParsingOptions.getDefault());
-    }
+//    /**
+//     * Runs the parses algorithm with default options.
+//     *
+//     * @param parser The parser.
+//     * @param text   The text.
+//     * @return The resulting trees.
+//     * @see #parses(Parser, String, ParsingOptions)
+//     * @see ParsingOptions#getDefault()
+//     */
+//    public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
+//                                                    final @NotNull String text) {
+//        return parses(parser, text, ParsingOptions.getDefault());
+//    }
 
     /**
      * Creates a parser from a grammar specification, using the default creation options.
@@ -151,19 +105,6 @@ public final class Alpha {
      * @see ParserCreationOptions#getDefault()
      */
     public static @NotNull Parser parser(final @NotNull String grammar) {
-        return parser(grammar, ParserCreationOptions.getDefault());
-    }
-
-    /**
-     * Creates a parser from a grammar specification, using the default creation options.
-     *
-     * @param grammar The grammar as a file.
-     * @return The parser.
-     * @throws IOException If the file doesn't exist or can't be accessed.
-     * @see #parser(File, ParserCreationOptions)
-     * @see ParserCreationOptions#getDefault()
-     */
-    public static @NotNull Parser parser(final @NotNull File grammar) throws IOException {
         return parser(grammar, ParserCreationOptions.getDefault());
     }
 
