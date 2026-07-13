@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * This class represents parse trees. Throughout the documentation, trees are typically notated as lists.
  */
-public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
+public final class ParseTree extends AbstractList<@NotNull Node> implements List<@NotNull Node>, AlphaParseResult {
     /**
      * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See {@link #create(Node.NodeTreeTag, List, int, int)}
      */
@@ -18,7 +18,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
 
     private final @NotNull Node.NodeTreeTag tag;
     private final @NotNull List<@NotNull Node> content;
-    private int hashCode = 0;
 
     private final int spanStart;
     private final int spanEndExclusive;
@@ -74,6 +73,17 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     }
 
     /**
+     * Returns the node at a specific index. May throw {@link IndexOutOfBoundsException}.
+     *
+     * @param nodeIndex The index.
+     * @return The node at the specified index.
+     * @throws IndexOutOfBoundsException If there is no node at that index.
+     */
+    public @NotNull Node nodeAt(final int nodeIndex) {
+        return content.get(nodeIndex);
+    }
+
+    /**
      * Returns the tag ({@link #getTag()} and content ({@link #getContent()}) into a single list.
      * This method is not recursive, ie does not apply to subtrees.
      *
@@ -85,20 +95,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         alist.addAll(content);
         return Collections.unmodifiableList(alist);
     }
-
-
-//    /**
-//     * Creates a parse tree from a tag and content.
-//     *
-//     * @param tag     The tag as a node.
-//     * @param content The content as a node.
-//     * @return A new parse tree.
-//     * @see #create(Node.NodeTreeTag, List, int, int)
-//     */
-//    public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
-//                                            final @NotNull List<Node> content) {
-//        return create(tag, content, -1, -1);
-//    }
 
     /**
      * Creates a parse tree from a tag and content.
@@ -119,8 +115,8 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * <p>
      * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatResultSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
      *
-     * @param tag     The tag as a node.
-     * @param content The content as a node.
+     * @param tag       The tag as a node.
+     * @param content   The content as a node.
      * @param spanStart Starting index in the input (inclusive).
      * @param spanEnd   End index in the input (exclusive).
      * @return A new parse tree.
@@ -198,25 +194,6 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
 
         return new ParseTree(tag, entries, spanStart, spanEnd);
     }
-
-//    /**
-//     * Convenience method for creating trees.
-//     * <pre>
-//     * {@code
-//     *   var pt1 = ParseTree.create("S", "a", "a");
-//     *   var pt2 = ParseTree.create((Node.NodeTreeTag) Node.of(Keyword.intern("S")), List.of(Node.of("a"), Node.of("a")));
-//     *   Assertions.assertEquals(pt2, pt1);
-//     * }
-//     * </pre>
-//     *
-//     * @param tag     The tag as a string.
-//     * @param content The content as variadic arguments.
-//     * @return A new parse tree.
-//     * @see #create(Node.NodeTreeTag, List)
-//     */
-//    public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
-//        return create(new Node.NodeTreeTag(Sym.sym(tag)), Arrays.stream(content).map(Node::of).toList());
-//    }
 
     /**
      * Converts the tree into a nested list. Unlike {@link #toList()}, this method is recursive.
@@ -307,184 +284,17 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         return Optional.of(s.substring(spanStart, spanEndExclusive));
     }
 
-    @Override
-    public @NotNull String toString() {
-        //return getSpanStart() + " " + getSpanEndExclusive() + " " + toList();
-        return toList().toString();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof List<?> c)) {
-            return false;
-        }
-        if (o instanceof ParseTree that) {
-            return Objects.equals(getTag(), that.getTag()) && Objects.equals(getContent(), that.getContent());
-        }
-        final @NotNull var otherIter = c.iterator();
-        if (!otherIter.hasNext()) return false;
-
-        for (var thisNext : this) {
-            if (!otherIter.hasNext()) return false;
-            final @NotNull var otherNext = otherIter.next();
-            if (!Objects.equals(thisNext, otherNext)) return false;
-        }
-
-        return !otherIter.hasNext();
-    }
-
     /* SECTION: Methods that allow treating the tree like a list. */
 
     @Override
     public int size() {
-        return content.size() + 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return !(tag.equals(NULL_TAG) && content.isEmpty());
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return Objects.equals(tag, o) || content.contains(o);
-    }
-
-    @Override
-    public @NotNull Iterator<@NotNull Node> iterator() {
-        return new Iterator<>() {
-            Iterator<@NotNull Node> delegate = null;
-
-            @Override
-            public boolean hasNext() {
-                return delegate == null || delegate.hasNext();
-            }
-
-            @Override
-            public Node next() {
-                if (delegate == null) {
-                    delegate = content.iterator();
-                    return tag;
-                } else {
-                    return delegate.next();
-                }
-            }
-        };
-    }
-
-    @Override
-    public boolean containsAll(@NotNull Collection<?> collection) {
-        return new HashSet<>(content).containsAll(collection);
-    }
-
-    @Override
-    public @NotNull Object @NotNull [] toArray() {
-        return toList().toArray();
-    }
-
-    @Override
-    public @NotNull <T> T @NotNull [] toArray(@NotNull T @NotNull [] ts) {
-        return toList().toArray(ts);
-    }
-
-    @Override
-    public int hashCode() {
-        if (hashCode != 0)
-            return hashCode;
-        int hc = 1;
-        for (final var e : this)
-            hc = hc * 31 + Objects.hashCode(e);
-        hashCode = hc;
-        return hc;
+        return tag.equals(NULL_TAG) ? content.size() : content.size() + 1;
     }
 
     @Override
     public Node get(final int i) {
+        if (tag.equals(NULL_TAG)) return content.get(i);
         if (i == 0) return tag;
         return content.get(i - 1);
-    }
-
-    @Override
-    public int indexOf(final Object o) {
-        if (Objects.equals(tag, o)) return 0;
-        int i = content.indexOf(o);
-        if (i < 0) return i;
-        return i + 1;
-    }
-
-    @Override
-    public int lastIndexOf(final Object o) {
-        int i = content.lastIndexOf(o);
-        if (i >= 0) return i + 1;
-        if (Objects.equals(tag, o)) return 0;
-        return -1;
-    }
-
-    @Override
-    public @NotNull ListIterator<@NotNull Node> listIterator() {
-        return toList().listIterator();
-    }
-
-    @Override
-    public @NotNull ListIterator<@NotNull Node> listIterator(final int i) {
-        return toList().listIterator();
-    }
-
-    @Override
-    public @NotNull List<@NotNull Node> subList(final int i, final int i1) {
-        if (i == 1 && i1 == content.size() + 1) return content;
-        return toList().subList(i, i1);
-    }
-
-    /* SECTION: Methods that always throw UnsupportedOperationException. */
-
-    @Override
-    public boolean add(Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(@NotNull Collection<? extends Node> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(int i, @NotNull Collection<? extends Node> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(@NotNull Collection<?> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(@NotNull Collection<?> collection) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Node set(final int i, final @NotNull Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void add(final int i, final @NotNull Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Node remove(final int i) {
-        throw new UnsupportedOperationException();
     }
 }
