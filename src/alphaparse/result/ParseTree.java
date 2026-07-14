@@ -10,24 +10,30 @@ import java.util.*;
 /**
  * This class represents parse trees. Throughout the documentation, trees are typically notated as lists.
  */
-public final class ParseTree extends AbstractList<@NotNull Node> implements List<@NotNull Node>, AlphaParseResult {
+public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
     /**
-     * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See {@link #create(Node.NodeTreeTag, List, int, int)}
+     * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See {@link #create(List, int, int)}
      */
     public static @NotNull Node.NodeTreeTag NULL_TAG = new Node.NodeTreeTag(Sym.sym("\0\0\0\0"));
 
-    private final @NotNull Node.NodeTreeTag tag;
-    private final @NotNull List<@NotNull Node> content;
+//    private final @NotNull Node.NodeTreeTag tag;
+//    private final @NotNull List<@NotNull Node> content;
+    private final @NotNull List<@NotNull Node> tagContent;
+
+    //private final @NotNull List<@NotNull Node> tagAndContent;
 
     private final int spanStart;
     private final int spanEndExclusive;
 
-    private ParseTree(final @NotNull Node.NodeTreeTag tag,
-                      final @NotNull List<@NotNull Node> content,
+    private ParseTree(final @NotNull List<@NotNull Node> tagContent,
                       final int spanStart,
                       final int spanEndExclusive) {
-        this.tag = tag;
-        this.content = content;
+//        this.tag = tag;
+//        this.content = content;
+
+        this.tagContent = tagContent;
+//        tagContent.add(tag);
+//        tagContent.addAll(content);
 
         if ((spanStart == -1 && spanEndExclusive != -1) || (spanStart != -1 && spanStart > spanEndExclusive))
             throw new IllegalArgumentException("Invalid span " + spanStart + " to " + spanEndExclusive + ".");
@@ -52,7 +58,7 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
      * @return The tag of the tree.
      */
     public @NotNull Node.NodeTreeTag getTag() {
-        return tag;
+        return (Node.NodeTreeTag) tagContent.getFirst();
     }
 
     /**
@@ -69,18 +75,7 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
      * @return The content of the tree.
      */
     public @NotNull List<@NotNull Node> getContent() {
-        return content;
-    }
-
-    /**
-     * Returns the node at a specific index. May throw {@link IndexOutOfBoundsException}.
-     *
-     * @param nodeIndex The index.
-     * @return The node at the specified index.
-     * @throws IndexOutOfBoundsException If there is no node at that index.
-     */
-    public @NotNull Node nodeAt(final int nodeIndex) {
-        return content.get(nodeIndex);
+        return tagContent.subList(1, tagContent.size());
     }
 
     /**
@@ -90,10 +85,7 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
      * @return The tree as a list of nodes.
      */
     public @NotNull List<@NotNull Node> toList() {
-        final @NotNull List<@NotNull Node> alist = new ArrayList<>();
-        if (!tag.equals(NULL_TAG)) alist.add(tag);
-        alist.addAll(content);
-        return Collections.unmodifiableList(alist);
+        return tagContent;
     }
 
     /**
@@ -125,21 +117,28 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
                                             final @Nullable Object content,
                                             final int spanStart,
                                             final int spanEnd) {
+        var tagNode = new Node.NodeTreeTag(tag);
         final @NotNull var afs = switch (content) {
-            case null -> List.<Node>of();
+            case null -> List.<Node>of(tagNode);
             case FlatResultSeq objects -> {
                 final @NotNull var res = new ArrayList<Node>();
+                res.add(tagNode);
                 for (@NotNull var t : objects) res.add(Node.of(t));
                 yield res;
             }
-            case String ignored -> List.of(Node.of(content));
-            case TotalParsesFailureNode ignored -> List.of(Node.of(content));
-            case ParseFailureNode ignored -> List.of(Node.of(content));
-            case ParseTree ignored -> List.of(Node.of(content));
-            case List<?> objects -> objects.stream().map(Node::of).toList();
+            case String ignored -> List.of(tagNode,Node.of(content));
+            case TotalParsesFailureNode ignored -> List.of(tagNode,Node.of(content));
+            case ParseFailureNode ignored -> List.of(tagNode,Node.of(content));
+            case ParseTree ignored -> List.of(tagNode,Node.of(content));
+            case List<?> objects -> {
+                final @NotNull var res = new ArrayList<Node>();
+                res.add(tagNode);
+                for (@NotNull var t : objects) res.add(Node.of(t));
+                yield res;
+            }
             default -> throw new IllegalArgumentException(content.getClass().toString());
         };
-        return create(new Node.NodeTreeTag(tag), afs, spanStart, spanEnd);
+        return create(afs, spanStart, spanEnd);
     }
 
     /**
@@ -150,28 +149,27 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
      * E.g. {@code [:S, "A", [:S, "A"]]} is flat, but {@code [:S, [NULL_TAG, "A"], [:S, "A"]]} is not.
      * This happens when hide-tags are used, for example in the grammar {@code "S := A S | EPS \n <A> := 'A'"}.
      *
-     * @param tag       The tag as a node.
+//     * @param tag       The tag as a node.
      * @param content   The content as a node.
      * @param spanStart Starting index in the input (inclusive).
      * @param spanEnd   End index in the input (exclusive).
      * @return A new parse tree.
      */
-    public static @NotNull ParseTree create(final @NotNull Node.NodeTreeTag tag,
-                                            final @NotNull List<Node> content,
+    public static @NotNull ParseTree create(final @NotNull List<Node> content,
                                             final int spanStart,
                                             final int spanEnd) {
         // If the content contains a ParseTree which has the NULL_TAG, it has to be "flattened".
         boolean isFlat = true;
         for (Node node : content) {
             if (node instanceof Node.NodeParseTree(ParseTree parseTree)
-                    && parseTree.tag.equals(NULL_TAG)) {
+                    && parseTree.getTag().equals(NULL_TAG)) {
                 // Subtree with NULL_TAG found. Must merge.
                 isFlat = false;
                 break;
             }
         }
         if (isFlat) {
-            return new ParseTree(tag, content, spanStart, spanEnd);
+            return new ParseTree(content, spanStart, spanEnd);
         }
 
         // The rest of this method handles the case that there is an unflattened subtree.
@@ -185,15 +183,34 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
 
             final @NotNull var subTree = ((Node.NodeParseTree) e).content();
 
-            if (subTree.tag.equals(NULL_TAG)) {
+            if (subTree.getTag().equals(NULL_TAG)) {
                 entries.addAll(subTree.getContent());
             } else {
                 entries.add(Node.of(subTree));
             }
         }
 
-        return new ParseTree(tag, entries, spanStart, spanEnd);
+        return new ParseTree(entries, spanStart, spanEnd);
     }
+
+//    /**
+//     * Convenience method for creating trees.
+//     * <pre>
+//     * {@code
+//     *   var pt1 = ParseTree.create("S", "a", "a");
+//     *   var pt2 = ParseTree.create((Node.NodeTreeTag) Node.of(Keyword.intern("S")), List.of(Node.of("a"), Node.of("a")));
+//     *   Assertions.assertEquals(pt2, pt1);
+//     * }
+//     * </pre>
+//     *
+//     * @param tag     The tag as a string.
+//     * @param content The content as variadic arguments.
+//     * @return A new parse tree.
+//     * @see #create(Node.NodeTreeTag, List)
+//     */
+//    public static @NotNull ParseTree create(final @NotNull String tag, final @NotNull Object... content) {
+//        return create(new Node.NodeTreeTag(Sym.sym(tag)), Arrays.stream(content).map(Node::of).toList());
+//    }
 
     /**
      * Converts the tree into a nested list. Unlike {@link #toList()}, this method is recursive.
@@ -201,26 +218,12 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
      * @return A nested list of Objects.
      */
     public @NotNull List<@NotNull Object> toRawList() {
-        int i = 0;
-
-        final @NotNull Object[] l;
-        if (tag.equals(NULL_TAG)) {
-            l = new Object[content.size()];
-        } else {
-            l = new Object[content.size() + 1];
-            l[i++] = tag.content();
-        }
-
-        for (@NotNull Node node : content) {
-            switch (node) {
-                case Node.NodeParseTree npt -> l[i++] = npt.content().toRawList();
-                case Node.NodeTreeTag ntt -> l[i++] = ntt.content();
-                case Node.NodeString ns -> l[i++] = ns.content();
-                case Node.NodeFail nf -> l[i++] = nf.content();
-            }
-        }
-
-        return Arrays.asList(l);
+        return tagContent.stream()
+                .map(node -> (node instanceof Node.NodeParseTree)
+                        ? ((Node.NodeParseTree) node).content().toRawList()
+                        : node.content())
+                .filter(it -> it != NULL_TAG.content())
+                .toList();
     }
 
     /**
@@ -284,17 +287,154 @@ public final class ParseTree extends AbstractList<@NotNull Node> implements List
         return Optional.of(s.substring(spanStart, spanEndExclusive));
     }
 
+    @Override
+    public @NotNull String toString() {
+        //return getSpanStart() + " " + getSpanEndExclusive() + " " + toList();
+        return toList().toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof List<?> c)) {
+            return false;
+        }
+        if (o instanceof ParseTree that) {
+            return Objects.equals(getTag(), that.getTag()) && Objects.equals(getContent(), that.getContent());
+        }
+        final @NotNull var otherIter = c.iterator();
+        if (!otherIter.hasNext()) return false;
+
+        for (var thisNext : this) {
+            if (!otherIter.hasNext()) return false;
+            final @NotNull var otherNext = otherIter.next();
+            if (!Objects.equals(thisNext, otherNext)) return false;
+        }
+
+        return !otherIter.hasNext();
+    }
+
     /* SECTION: Methods that allow treating the tree like a list. */
 
     @Override
     public int size() {
-        return tag.equals(NULL_TAG) ? content.size() : content.size() + 1;
+        return tagContent.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return toList().contains(o);
+    }
+
+    @Override
+    public @NotNull Iterator<@NotNull Node> iterator() {
+        return tagContent.iterator();
+    }
+
+    @Override
+    public @NotNull Object[] toArray() {
+        return toList().toArray();
+    }
+
+    @Override
+    public @NotNull <T> T[] toArray(@NotNull T[] ts) {
+        return toList().toArray(ts);
+    }
+
+    @Override
+    public boolean add(@NotNull Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> collection) {
+        return toList().containsAll(collection);
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends @NotNull Node> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(int i, @NotNull Collection<? extends @NotNull Node> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int hashCode() {
+        return tagContent.hashCode();
     }
 
     @Override
     public Node get(final int i) {
-        if (tag.equals(NULL_TAG)) return content.get(i);
-        if (i == 0) return tag;
-        return content.get(i - 1);
+        return tagContent.get(i);
     }
+
+    @Override
+    public @NotNull Node set(int i, @NotNull Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void add(int i, @NotNull Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public @NotNull Node remove(int i) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return toList().indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return toList().lastIndexOf(o);
+    }
+
+    @Override
+    public @NotNull ListIterator<@NotNull Node> listIterator() {
+        return toList().listIterator();
+    }
+
+    @Override
+    public @NotNull ListIterator<@NotNull Node> listIterator(int i) {
+        return toList().listIterator(i);
+    }
+
+    @Override
+    public @NotNull List<@NotNull Node> subList(int i, int i1) {
+        return toList().subList(i,i1);
+    }
+
+    /* SECTION: Methods that always throw UnsupportedOperationException. */
+
 }
