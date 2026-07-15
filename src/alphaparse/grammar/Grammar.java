@@ -112,31 +112,51 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
          */
         public Set<@NotNull Sym> usedNTs() {
-            return collect(it -> it instanceof NonTerminal).stream().map(it -> ((NonTerminal) it).getKeyword()).collect(Collectors.toSet());
+            return collect(it -> it instanceof NonTerminal).stream()
+                    .map(it -> ((NonTerminal) it).getKeyword())
+                    .collect(Collectors.toSet());
         }
 
+        /**
+         * Returns a collection of all rules that match the predicate.
+         *
+         * <pre>
+         * {@code
+         *     var parser = Alpha.parser("""
+         *                     S = A*
+         *                     A = "a" | "b"
+         *                     """);
+         *     var grammarInfo = parser.grammar().analyze();
+         *     System.out.println(grammarInfo.collect(rule -> rule instanceof Terminal));       // [a, b]
+         *     System.out.println(grammarInfo.collect(rule -> rule instanceof ZeroOrMoreRule)); // [A*]
+         * }
+         * </pre>
+         *
+         * @param collector The predicate.
+         * @return A collection of rules that match the predicate.
+         */
         public @NotNull Set<@NotNull Rule> collect(final @NotNull Predicate<@NotNull Rule> collector) {
             final @NotNull Set<Rule> result = new HashSet<>();
             final @NotNull Set<Rule> analyzedRules = Collections.newSetFromMap(new IdentityHashMap<>());
             final @NotNull ArrayList<@NotNull Rule> ruleStack = new ArrayList<>(grammar.values());
-            @NotNull Rule parser;
+            @NotNull Rule rule;
 
             while (!ruleStack.isEmpty()) {
-                parser = ruleStack.removeLast();
-                if (analyzedRules.contains(parser)) {
+                rule = ruleStack.removeLast();
+                if (analyzedRules.contains(rule)) {
                     continue;
                 }
-                analyzedRules.add(parser);
+                analyzedRules.add(rule);
 
-                switch (parser) {
+                switch (rule) {
                     case RuleWithManyChildren ruleWithManyChildren -> ruleStack.addAll(ruleWithManyChildren.getRules());
                     case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getRule());
                     default -> {
                     }
                 }
 
-                if (collector.test(parser)) {
-                    result.add(parser);
+                if (collector.test(rule)) {
+                    result.add(rule);
                 }
             }
 
@@ -190,9 +210,12 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
 
         /**
          * Collects all terminals and equivalent rules. If a rule occurs multiple times in the grammar, it still appears only once in the resulting collection.
+         *
          * @return A collection of all terminals and special sequences (functions).
          */
-        public @NotNull Set<@NotNull Rule> definedTerminals() {return collect(it -> it instanceof Terminal || it instanceof SpecialSequenceRule);}
+        public @NotNull Set<@NotNull Rule> definedTerminals() {
+            return collect(it -> it instanceof Terminal || it instanceof SpecialSequenceRule);
+        }
 
         @Override
         public @NotNull String toString() {
