@@ -44,7 +44,7 @@ final class Cfg {
         }
 
         private @NotNull Rule buildRepRule(final @NotNull ParseTree tree) {
-            final @NotNull var partsUncut = (String) tree.get(1).content();
+            final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
             @NotNull var parts = partsUncut.split("\\*");
             if (parts.length == 1) {
             /*
@@ -69,21 +69,22 @@ final class Cfg {
             final int min = parts[0].isBlank() ? 0 : Integer.parseInt(parts[0]);
             final int max = parts[1].isBlank() ? Integer.MAX_VALUE : Integer.parseInt(parts[1]);
             final @NotNull var repeatedRule =
-                    (Rule) buildRule((ParseTree) tree.get(2).content());
+                    (Rule) buildRule((ParseTree) tree.getContent().get(1).content());
             return repeat(repeatedRule, min, max);
         }
 
         private @NotNull Map.Entry<@NotNull Sym, @NotNull Rule> buildRuleRule(
                 final @NotNull ParseTree tree) {
-            final @NotNull var nt = (ParseTree) tree.get(1).content();
-            final @NotNull var altOrOrd = (ParseTree) tree.get(2).content();
-            @NotNull var content = nt.get(1);
+            final @NotNull var allContents = tree.getContent();
+            final @NotNull var nt = (ParseTree) allContents.getFirst().content();
+            final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
+            @NotNull var content = nt.getContent().getFirst();
 
             final @NotNull Sym key;
             final @NotNull Rule rule;
 
             if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
-                content = ((ParseTree) content.content()).get(1);
+                content = ((ParseTree) content.content()).getContent().getFirst();
                 key = Sym.sym(content.content().toString());
                 rule = ((Rule) buildRule(altOrOrd)).hideTag();
             } else {
@@ -100,7 +101,7 @@ final class Cfg {
             @NotNull ParseTree tree = tree1;
             for (; ; ) {
                 if (tree.getTag().equals(ParseTree.NULL_TAG)) {
-                    tree = (ParseTree) tree.get(1).content();
+                    tree = (ParseTree) tree.getContent().getFirst().content();
                     continue;
                 }
 
@@ -110,12 +111,12 @@ final class Cfg {
                         return buildRuleRule(tree);
                     }
                     case "nt" -> {
-                        var name = (String) tree.get(1).content();
+                        var name = (String) tree.getContent().getFirst().content();
                         return nt(Sym.sym(name));
                     }
                     case "paren" -> {
                         // The parse tree is wrapped in hidden "(" ")".
-                        tree = (ParseTree) tree.get(1).content();
+                        tree = (ParseTree) tree.getContent().getFirst().content();
                         continue; // Open up the grouping and take it to the top.
                     }
                     case "alt" -> {
@@ -134,7 +135,7 @@ final class Cfg {
                     }
                     case "hide" -> {
                         return ((Rule) buildRule(
-                                ((Node.NodeParseTree) tree.get(1)).content())).enableHideTag();
+                                ((Node.NodeParseTree) tree.getContent().getFirst()).content())).enableHideTag();
                     }
                     case "cat" -> {
                         return concat(tree
@@ -144,7 +145,7 @@ final class Cfg {
                                 .toList());
                     }
                     case "string" -> {
-                        String s = (String) tree.get(1).content();
+                        String s = (String) tree.getContent().getFirst().content();
                         if (s.startsWith("%")) {
                             boolean caseInsensitive = switch (s.charAt(1)) {
                                 case 'i' -> true;
@@ -159,37 +160,37 @@ final class Cfg {
                     }
                     case "string-cs" -> {
                         return stringCS(
-                                strParser.processString((String) tree.get(1).content()));
+                                strParser.processString((String) tree.getContent().getFirst().content()));
                     }
                     case "string-ci" -> {
                         return stringCI(
                                 strParser.processString((String)
-                                        tree.get(1).content()));
+                                        tree.getContent().getFirst().content()));
                     }
                     case "regexp" -> {
                         return regex(
                                 strParser.processRegexp((String)
-                                        tree.get(1).content()));
+                                        tree.getContent().getFirst().content()));
                     }
                     case "neg" -> {
                         return negate(buildRule(
-                                (ParseTree) tree.get(1).content()));
+                                (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "opt", "opt_query" -> {
                         return optional((Rule) buildRule(
-                                (ParseTree) tree.get(1).content()));
+                                (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "star", "opt_rep" -> {
                         return zeroOrMore((Rule) buildRule(
-                                (ParseTree) tree.get(1).content()));
+                                (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "plus" -> {
                         return onceOrMore((Rule) buildRule(
-                                (ParseTree) tree.get(1).content()));
+                                (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "look" -> {
                         return lookahead(buildRule(
-                                (ParseTree) tree.get(1).content()));
+                                (ParseTree) tree.getContent().getFirst().content()));
                     }
                     case "rep" -> {
                         try {
@@ -199,7 +200,8 @@ final class Cfg {
                         }
                     }
                     case "abnf-range" -> {
-                        var parts = ((String) tree.get(1).content()).split("-");
+                        var content = tree.getContent();
+                        var parts = ((String) content.get(0).content()).split("-");
                         var prefix = parts[0]; // "%b..."/"%d..."/"%x..."
                         final int radix = switch (prefix.charAt(1)) {
                             case 'b' -> 2;
@@ -220,9 +222,9 @@ final class Cfg {
                     }
                     case "exclude" -> {
                         var rule1 = (Rule) buildRule((ParseTree)
-                                tree.get(1).content());
+                                tree.getContent().get(0).content());
                         var rule2 = (Rule) buildRule((ParseTree)
-                                tree.get(2).content());
+                                tree.getContent().get(1).content());
                         return exclude(rule1, rule2);
                     }
                     case "eof" -> {
@@ -245,10 +247,7 @@ final class Cfg {
                         "Error parsing grammar specification:\n" + rules + "\n");
             }
 
-            var rulesIter = rules.castToParseSuccess().iterator();
-            rulesIter.next(); // skip tag
-            while (rulesIter.hasNext()) {
-                var rule = rulesIter.next();
+            for (final Node rule : rules.castToParseSuccess().getContent()) {
                 var sc = buildRuleRule((ParseTree) rule.content());
                 addProduction(sc.getKey(), sc.getValue());
             }

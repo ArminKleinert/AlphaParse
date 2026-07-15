@@ -2,7 +2,10 @@ package alphaparse.collections;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * An interface which pretends to be a list.
@@ -17,32 +20,27 @@ public interface PretenderList<T> extends List<T> {
 
     @Override
     default boolean isEmpty() {
-        return size() == 0;
-    }
-
-    @Override
-    default @NotNull Iterator<T> iterator() {
-        return Arrays.asList(toArray()).iterator();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default boolean contains(Object o) {
-        for (var e : this) if (Objects.equals(o, e)) return true;
-        return false;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default @NotNull Iterator<T> iterator() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default @NotNull T @NotNull [] toArray() {
-        return toArray((T[])new Object[0]);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default @NotNull <T1> T1 @NotNull [] toArray(@NotNull T1 @NotNull [] ts) {
-        if (ts.length < size())
-            ts = (T1[])new Object[size()];
-        for (int i = 0; i < size(); i++)
-            ts[i] = (T1) get(i);
-        return ts;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -57,9 +55,7 @@ public interface PretenderList<T> extends List<T> {
 
     @Override
     default boolean containsAll(@NotNull Collection<?> collection) {
-        for (Object o : collection) {
-            if (!contains(o)) return false;
-        }return true;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -109,31 +105,26 @@ public interface PretenderList<T> extends List<T> {
 
     @Override
     default int indexOf(Object o) {
-        for (int i = 0; i < size(); i++) {
-            if (Objects.equals(get(i),o))return i;
-        }return -1;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default int lastIndexOf(Object o) {
-        for (int i = size()-1; i >= 0; i--) {
-                if (Objects.equals(get(i),o))return i;
-        }
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default @NotNull ListIterator<T> listIterator() {
-        return listIterator(0);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default @NotNull ListIterator<T> listIterator(int i) {
-        return Arrays.asList(toArray()).listIterator(i);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     default @NotNull List<T> subList(int i, int i1) {
-        return Arrays.asList(toArray()).subList(i, i1);
+        throw new UnsupportedOperationException();
     }
 }
