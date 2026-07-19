@@ -18,6 +18,18 @@ import java.util.List;
 
 class NewFeaturesTest {
     @Test
+    void negativeEpsilon() {
+        var p = Alpha.parser("S = !epsilon 'a'");
+        System.out.println(p.parse("a"));
+    }
+    @Test
+    void zeroOrMoreRuleCausesInfiniteEpsilonProblem() {
+        var p = Alpha.parser("S = (S epsilon)*", ParserCreationOptions.getDefault());
+        System.out.println(p.grammar().analyze().definedTerminals());
+        System.out.println(p.parses("").stream().limit(5).toList());
+    }
+
+    @Test
     void bigTest() throws IOException {
         var p = Alpha.parser(
                 Files.readString(Path.of("testres/grammars/c99.g")),
@@ -50,6 +62,7 @@ class NewFeaturesTest {
         System.out.println(res.castToParseSuccess().getSpanStart());
         System.out.println(res.castToParseSuccess().getSpanEndExclusive());
     }
+
     @Test
     void orderedChoiceTest() {
         {

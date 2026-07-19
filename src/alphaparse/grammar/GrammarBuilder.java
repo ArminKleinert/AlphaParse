@@ -119,7 +119,9 @@ public abstract class GrammarBuilder {
         throw new IllegalGrammarException(
                 "The grammar is invalid. Undefined productions: "
                         + analysisResult.getUndefinedUsedNTs()
-                        + "; number of terminals: " + analysisResult.definedTerminals().size() + " (a valid grammar has at least one terminal)");
+                        + "; number of terminals: "
+                        + analysisResult.definedTerminals().size()
+                        + " (a valid grammar has at least one terminal)");
     }
 
     /**
@@ -398,8 +400,8 @@ public abstract class GrammarBuilder {
         return concat(Stream.concat(
                         Stream.of(rule),
                         Arrays.stream(rules))
-                .filter(Objects::nonNull)
-                .map(this::of));
+                .map(this::of)
+                .toList());
     }
 
     /**
@@ -415,15 +417,7 @@ public abstract class GrammarBuilder {
      */
     public final @NotNull Rule concat(
             final @NotNull List<@NotNull Rule> rules) {
-        return concat(rules.stream());
-    }
-
-    private @NotNull Rule concat(
-            final @NotNull Stream<Rule> ruleStream) {
-        final @NotNull List<@NotNull Rule> result = ruleStream
-                .filter(it -> it != EpsilonTerm.getDefault())
-                .toList();
-        return ConcatRule.create(result);
+        return ConcatRule.create(rules);
     }
 
     /**

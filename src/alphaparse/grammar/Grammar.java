@@ -221,6 +221,93 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
             return collect(it -> it instanceof Terminal || it instanceof SpecialSequenceRule);
         }
 
+        /**
+         * Returns a Set of rules that are reachable from the input production name.
+         *
+         * @param start The production from which to analyze.
+         * @return A Set of reachable rules.
+         */
+        public @NotNull Collection<@NotNull Sym> reachableSubset(final @NotNull Sym start) {
+            var startRule = grammar.getProduction(start);
+
+            if (startRule == null)
+                throw new IllegalArgumentException("Symbol not in grammar: " + start);
+
+            var visited = new HashSet<@NotNull Rule>();
+            var stack = new ArrayList<@NotNull Rule>();
+            stack.add(startRule);
+
+            var reachable = new HashSet<Sym>();
+            reachable.add(start);
+
+            while (!stack.isEmpty()) {
+                var rule = stack.removeLast();
+
+                // If already in set -> Ignore
+                if (!visited.add(rule))
+                    continue;
+
+                switch (rule) {
+                    case RuleWithManyChildren ruleWithManyChildren -> stack.addAll(ruleWithManyChildren.getRules());
+                    case RuleWithChild ruleWithChild -> stack.add(ruleWithChild.getRule());
+                    case NonTerminal nonTerminal -> {
+                        stack.add(Objects.requireNonNull(grammar.getProduction(nonTerminal.getKeyword())));
+                        reachable.add(nonTerminal.getKeyword());
+                    }
+                    default -> {
+                    }
+                }
+            }
+
+            return reachable;
+        }
+
+//        /**
+//         * Returns a Set of rules that are reachable from the input production name.
+//         * @param start The production from which to analyze.
+//         * @return A Set of reachable rules.
+//         */
+//        public boolean infiniteEmptyRecursionPossible(final Rule start, Map<Rule, Boolean> searched) {
+//            if (searched.containsKey(start)) {
+//                return searched.get(start);
+//            }
+//
+//            final boolean res;
+//
+//            if (start instanceof OrderedChoiceRule) {
+//                var children = ((RuleWithManyChildren) start).getRules();
+//                res = children.stream().anyMatch(it -> infiniteEmptyRecursionPossible(it, searched));
+//            } else if (start instanceof AlternationRule) {
+//                var children = ((RuleWithManyChildren) start).getRules();
+//                res = children.stream().anyMatch(it -> infiniteEmptyRecursionPossible(it, searched));
+//            } else if (start instanceof ConcatRule) {
+//                res = ((ConcatRule) start).getRules().stream().allMatch(it -> infiniteEmptyRecursionPossible(it, searched));
+//            } else if (start instanceof EpsilonTerm || start instanceof OptionalRule || start instanceof ZeroOrMoreRule) {
+//                res = true;
+//            } else if (start instanceof VariableRepetitionRule) {
+//                res = ((VariableRepetitionRule) start).getMin() == 0;
+//            } else if (start instanceof RegexTerm) {
+//                res = ((RegexTerm) start).getRegexp().matcher("").matches();
+//            } else if (start instanceof NonTerminal) {
+//                res = infiniteEmptyRecursionPossible(grammar.getProduction(((NonTerminal) start).getKeyword()), searched);
+//            } else if (start instanceof ExclusionRule) {
+//                res = infiniteEmptyRecursionPossible(((ExclusionRule) start).getParserExpected(), searched)
+//                        && !infiniteEmptyRecursionPossible(((ExclusionRule) start).getParserExcluded(), searched);
+//            } else if (start instanceof StringTerm) {
+//                res = ((StringTerm) start).getString().isEmpty();
+//            } else if (start instanceof ValueRangeTerm) {
+//                res = ((ValueRangeTerm) start).getLo() == 0;
+//            } else if (start instanceof LookaheadRule) {
+//                res = infiniteEmptyRecursionPossible(((LookaheadRule) start).getRule(), searched);
+//            } else if (start instanceof NegativeLookaheadRule) {
+//                res = !infiniteEmptyRecursionPossible(((NegativeLookaheadRule) start).getRule(), searched);
+//            }
+//
+//
+//            searched.put(start, res);
+//            return res;
+//        }
+
         @Override
         public @NotNull String toString() {
             return "GrammarInfo[" +
