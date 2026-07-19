@@ -180,7 +180,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          */
         public @NotNull Collection<Sym> getUnusedNTs() {
             var usedNTs = usedNTs();
-            return definedNTs().stream().filter(it -> !usedNTs.contains(it)).collect(Collectors.toSet());
+            return definedNTs().stream()
+                    .filter(it -> !usedNTs.contains(it))
+                    .filter(it -> !Objects.equals(it, grammar.getStartSym()))
+                    .collect(Collectors.toSet());
         }
 
         /**
@@ -194,7 +197,8 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          * @return A collection which is hopefully empty.
          */
         public @NotNull Collection<Sym> getUndefinedUsedNTs() {
-            return usedNTs().stream().filter(it -> !definedNTs().contains(it)).collect(Collectors.toSet());
+            var definedNTs = definedNTs();
+            return usedNTs().stream().filter(it -> !definedNTs.contains(it)).collect(Collectors.toSet());
         }
 
         /**

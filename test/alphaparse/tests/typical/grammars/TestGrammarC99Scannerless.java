@@ -13,8 +13,6 @@ import java.nio.file.Path;
 
 /**
  * Test(s) for the C99 grammar.
- * <p>
- * Grammar and tests from <a href="https://esolangs.org/wiki/Brainfuck#Examples">esolangs.org/wiki/Brainfuck</a>.
  */
 class TestGrammarC99Scannerless {
     private @NotNull Parser parser() {

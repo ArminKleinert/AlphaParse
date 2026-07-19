@@ -3,7 +3,6 @@ package alphaparse.parser_options;
 import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser.Parser;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -17,8 +16,7 @@ import java.util.stream.Stream;
  *
  * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used.
  * @param startProduction       The starting production name of the parser.
- * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive.
- * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. For very large grammars, use {@code true}. Otherwise, {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
+ * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. Individual string terminals can override this by using explicit case-sensitivity prefixes (see {@link RulesAvailable#STRING_CASE_SENSITIVITY_PREFIX}).
  * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
  * @param usableRules           A Set of rules that can be used when building the parser. See {@link RulesAvailable}.
  * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
@@ -29,13 +27,11 @@ import java.util.stream.Stream;
 public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                                     @Nullable Sym startProduction,
                                     @NotNull GlobalCaseInsensitivity stringCaseInsensitive,
-                                    boolean useParserBuffering,
                                     @NotNull RedefinitionOption redefinitionOption,
                                     @NotNull Set<RulesAvailable> usableRules,
                                     boolean checkCorrectness,
                                     @NotNull Collection<@NotNull String> ruleDefinitionOpts,
                                     @NotNull Collection<@NotNull String> epsilonNames) {
-    private static final boolean defaultUseParserBuffering = true;
     private static final boolean defaultCheckCorrectness = true;
 
     /**
@@ -112,7 +108,6 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * @param whitespaceParser      A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used. If null, no such parser is used.
      * @param startProduction       The starting production name of the parser. If null, the first defined production is used.
      * @param stringCaseInsensitive Set to make all string terminals case-insensitive or case-sensitive. If null, {@link GlobalCaseInsensitivity#DEFAULT} is used.
-     * @param useParserBuffering    Set to true if buffering should be used when creating the parser. This only makes sense if a productions right side is repeated often. {@code false} should be generally preferred. Whether buffering is used has only insignificant performance impact.
      * @param redefinitionOption    Sets what to do when a production appears twice in the definition.
      * @param usableRules           A Set of rules that can be used when building the parser. If null, use {@link #defaultRulesAvailable()}. See {@link RulesAvailable}.
      * @param checkCorrectness      Whether to check the correctness of the grammar when creating the parser.
@@ -124,7 +119,6 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final @Nullable Parser whitespaceParser,
             final @Nullable Sym startProduction,
             final @Nullable GlobalCaseInsensitivity stringCaseInsensitive,
-            final boolean useParserBuffering,
             final @Nullable RedefinitionOption redefinitionOption,
             final @Nullable Set<RulesAvailable> usableRules,
             final boolean checkCorrectness,
@@ -138,7 +132,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 : redefinitionOption;
         var usableRules1 = usableRules == null
                 ? defaultRulesAvailable()
-                : usableRules;
+                : (usableRules.isEmpty() ? EnumSet.noneOf(RulesAvailable.class) : EnumSet.copyOf(usableRules));
         var ruleDefinitionOpts1 = ruleDefinitionOpts == null
                 ? defaultRuleDefinitionOps()
                 : ruleDefinitionOpts;
@@ -150,7 +144,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 ? defaultEpsilonNames()
                 : epsilonNames.stream().sorted(Comparator.comparingInt(String::length)).toList();
 
-        return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive1, useParserBuffering, redefinitionOption1, usableRules1, checkCorrectness, ruleDefinitionOpts1, epsilonNames1);
+        return new ParserCreationOptions(whitespaceParser, startProduction, stringCaseInsensitive1, redefinitionOption1, usableRules1, checkCorrectness, ruleDefinitionOpts1, epsilonNames1);
     }
 
     /**
@@ -165,7 +159,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             return this;
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -181,7 +175,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             return this;
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -197,7 +191,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             return this;
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -225,7 +219,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final RedefinitionOption redefinitionOption) {
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -239,7 +233,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final @Nullable Set<RulesAvailable> usableRules) {
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -283,7 +277,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final boolean checkCorrectness) {
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -297,7 +291,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final @Nullable Collection<String> ruleDefinitionOps) {
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOps, epsilonNames);
     }
 
@@ -311,7 +305,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
             final @Nullable Collection<String> epsilonNames) {
         return ParserCreationOptions.create(
                 whitespaceParser, startProduction, stringCaseInsensitive,
-                useParserBuffering, redefinitionOption, usableRules,
+                redefinitionOption, usableRules,
                 checkCorrectness, ruleDefinitionOpts, epsilonNames);
     }
 
@@ -339,7 +333,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     }
 
     /**
-     * The default settings. Equivalent to {@link ParserCreationOptions#ParserCreationOptions(Parser, Sym, GlobalCaseInsensitivity, boolean, RedefinitionOption, Set, boolean, Collection, Collection)} with using {@code null} or whichever defaults this class provides.
+     * The default settings. Equivalent to {@link ParserCreationOptions#ParserCreationOptions(Parser, Sym, GlobalCaseInsensitivity, RedefinitionOption, Set, boolean, Collection, Collection)} with using {@code null} or whichever defaults this class provides.
      *
      * <p>
      * Characteristics:
@@ -356,7 +350,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     public static @NotNull ParserCreationOptions getDefault() {
         return ParserCreationOptions.create(
                 null, null, null,
-                defaultUseParserBuffering, null, null,
+                null, null,
                 defaultCheckCorrectness, null, null);
     }
 
@@ -395,8 +389,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 RulesAvailable.VARIABLE_REPEAT);
         return ParserCreationOptions.create(
                 null, null, GlobalCaseInsensitivity.TRUE,
-                defaultUseParserBuffering, RedefinitionOption.CHOICE, rules,
-                defaultCheckCorrectness,
+                RedefinitionOption.CHOICE, rules, defaultCheckCorrectness,
                 List.of("=/", "="),
                 List.of("ε")
         );
@@ -445,8 +438,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 RulesAvailable.SINGLY_QUOTED);
         return ParserCreationOptions.create(
                 null, null, GlobalCaseInsensitivity.FALSE,
-                defaultUseParserBuffering, RedefinitionOption.defaultOption, rules,
-                defaultCheckCorrectness,
+                RedefinitionOption.defaultOption, rules, defaultCheckCorrectness,
                 List.of("="),
                 List.of("ε")
         );
@@ -485,8 +477,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 RulesAvailable.SINGLY_QUOTED);
         return ParserCreationOptions.create(
                 null, null, GlobalCaseInsensitivity.FALSE,
-                defaultUseParserBuffering, RedefinitionOption.defaultOption, rules,
-                defaultCheckCorrectness,
+                RedefinitionOption.defaultOption, rules, defaultCheckCorrectness,
                 List.of("="),
                 List.of("ε")
         );

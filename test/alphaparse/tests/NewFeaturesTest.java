@@ -11,9 +11,45 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 class NewFeaturesTest {
+    @Test
+    void bigTest() throws IOException {
+        var p = Alpha.parser(
+                Files.readString(Path.of("testres/grammars/c99.g")),
+                ParserCreationOptions.newWithStandardWhitespace()
+        );
+        var res = p.parse("""
+                int utf8_from_codepoint(utf8_code_pt c, utf8_chr *const buff) {
+                  if (c < 0x80) {
+                    buff[0] = ((c >> 0) & 0x7F) | 0x00;
+                    return 1;
+                  } else if (c < 0x0800) {
+                    buff[0] = ((c >> 6) & 0x1F) | 0xC0;
+                    buff[1] = ((c >> 0) & 0x3F) | 0x80;
+                    return 2;
+                  } else if (c < 0x010000) {
+                    buff[0] = ((c >> 12) & 0x0F) | 0xE0;
+                    buff[1] = ((c >> 6) & 0x3F) | 0x80;
+                    buff[2] = ((c >> 0) & 0x3F) | 0x80;
+                    return 3;
+                  } else if (c < 0x110000) {
+                    buff[0] = ((c >> 18) & 0x07) | 0xF0;
+                    buff[1] = ((c >> 12) & 0x3F) | 0x80;
+                    buff[2] = ((c >> 6) & 0x3F) | 0x80;
+                    buff[3] = ((c >> 0) & 0x3F) | 0x80;
+                    return 4;
+                  }
+                  return -1;
+                }
+                """.repeat(156));
+        System.out.println(res.castToParseSuccess().getSpanStart());
+        System.out.println(res.castToParseSuccess().getSpanEndExclusive());
+    }
     @Test
     void orderedChoiceTest() {
         {

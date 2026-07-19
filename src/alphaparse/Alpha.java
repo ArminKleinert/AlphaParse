@@ -46,20 +46,6 @@ public final class Alpha {
         return parser.parse(text, options);
     }
 
-//    /**
-//     * Runs the parse algorithm with default options.
-//     *
-//     * @param parser The parser.
-//     * @param text   The text.
-//     * @return The resulting tree or failure.
-//     * @see #parse(Parser, String, ParsingOptions)
-//     * @see ParsingOptions#getDefault()
-//     */
-//    public static @NotNull AlphaParseResult parse(final @NotNull Parser parser,
-//                                                  final @NotNull String text) {
-//        return parse(parser, text, ParsingOptions.getDefault());
-//    }
-
     /**
      * Runs a parser on a string and returns a parse forest as a {@link AlphaParsesResult.LazyResultList}.
      * <p>
@@ -82,20 +68,6 @@ public final class Alpha {
         return parser.parses(text, options);
     }
 
-//    /**
-//     * Runs the parses algorithm with default options.
-//     *
-//     * @param parser The parser.
-//     * @param text   The text.
-//     * @return The resulting trees.
-//     * @see #parses(Parser, String, ParsingOptions)
-//     * @see ParsingOptions#getDefault()
-//     */
-//    public static @NotNull AlphaParsesResult parses(final @NotNull Parser parser,
-//                                                    final @NotNull String text) {
-//        return parses(parser, text, ParsingOptions.getDefault());
-//    }
-
     /**
      * Creates a parser from a grammar specification, using the default creation options.
      *
@@ -109,15 +81,7 @@ public final class Alpha {
     }
 
     /**
-     * Creates a parser from a grammar specification.
-     * <p>
-     * The options are as follows:
-     * <ul>
-     *     <li>{@link ParserCreationOptions#whitespaceParser()}: Include another parser which is intended to filter out whitespace.</li>
-     *     <li>{@link ParserCreationOptions#startProduction()}: Explicitly set the starting production.</li>
-     *     <li>{@link ParserCreationOptions#stringCaseInsensitive()}: Make ll string terminals ignore casing.</li>
-     *     <li>{@link ParserCreationOptions#useParserBuffering()}: Whether to use buffering for the productions to ensure that no productions are doubled.</li>
-     * </ul>
+     * Creates a parser from a grammar specification. For documentation of the options, see {@link ParserCreationOptions}.
      *
      * @param grammar The grammar as a string.
      * @param options The options.
@@ -131,12 +95,13 @@ public final class Alpha {
     }
 
     /**
-     * Creates a parser from a grammar specification. To see how options apply, see {@link #parser(String, ParserCreationOptions)}.
+     * Creates a parser from a grammar specification. For documentation of the options, see {@link ParserCreationOptions}.
      *
      * @param grammar The grammar as a file.
      * @param options The options
      * @return The parser.
      * @throws IOException If the file doesn't exist or can't be accessed.
+     * @see #parser(String, ParserCreationOptions) 
      */
     public static @NotNull Parser parser(final @NotNull File grammar,
                                          final @NotNull ParserCreationOptions options) throws IOException {

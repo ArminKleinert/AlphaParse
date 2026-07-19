@@ -118,7 +118,7 @@ class AlphaParserCreationTest {
             final @NotNull var options = ParserCreationOptions.create(
                     null, Sym.sym("C"),
                     GlobalCaseInsensitivity.DEFAULT,
-                    true, null,
+                    null,
                     null,
                     true,
                     null,
