@@ -227,7 +227,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          * @param start The production from which to analyze.
          * @return A Set of reachable rules.
          */
-        public @NotNull Collection<@NotNull Sym> reachableSubset(final @NotNull Sym start) {
+        public @NotNull Grammar subGrammar(final @NotNull Sym start) {
             var startRule = grammar.getProduction(start);
 
             if (startRule == null)
@@ -237,7 +237,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
             var stack = new ArrayList<@NotNull Rule>();
             stack.add(startRule);
 
-            var reachable = new HashSet<Sym>();
+            var reachable = new LinkedHashSet<Sym>();
             reachable.add(start);
 
             while (!stack.isEmpty()) {
@@ -251,7 +251,10 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                     case RuleWithManyChildren ruleWithManyChildren -> stack.addAll(ruleWithManyChildren.getRules());
                     case RuleWithChild ruleWithChild -> stack.add(ruleWithChild.getRule());
                     case NonTerminal nonTerminal -> {
-                        stack.add(Objects.requireNonNull(grammar.getProduction(nonTerminal.getKeyword())));
+                        var prod = grammar.getProduction(nonTerminal.getKeyword());
+                        if (prod == null)
+                            throw new IllegalArgumentException("Symbol not in grammar: " + start);
+                        stack.add(Objects.requireNonNull(prod));
                         reachable.add(nonTerminal.getKeyword());
                     }
                     default -> {
@@ -259,54 +262,140 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
                 }
             }
 
-            return reachable;
+            var subGrammar = new LinkedHashMap<Sym, Rule>(reachable.size());
+            for (Sym sym : reachable) {
+                subGrammar.put(sym, grammar.getProduction(sym));
+            }
+
+            return new Grammar(start, subGrammar);
         }
 
-//        /**
-//         * Returns a Set of rules that are reachable from the input production name.
-//         * @param start The production from which to analyze.
-//         * @return A Set of reachable rules.
-//         */
-//        public boolean infiniteEmptyRecursionPossible(final Rule start, Map<Rule, Boolean> searched) {
-//            if (searched.containsKey(start)) {
-//                return searched.get(start);
-//            }
-//
-//            final boolean res;
-//
-//            if (start instanceof OrderedChoiceRule) {
-//                var children = ((RuleWithManyChildren) start).getRules();
-//                res = children.stream().anyMatch(it -> infiniteEmptyRecursionPossible(it, searched));
-//            } else if (start instanceof AlternationRule) {
-//                var children = ((RuleWithManyChildren) start).getRules();
-//                res = children.stream().anyMatch(it -> infiniteEmptyRecursionPossible(it, searched));
-//            } else if (start instanceof ConcatRule) {
-//                res = ((ConcatRule) start).getRules().stream().allMatch(it -> infiniteEmptyRecursionPossible(it, searched));
-//            } else if (start instanceof EpsilonTerm || start instanceof OptionalRule || start instanceof ZeroOrMoreRule) {
-//                res = true;
-//            } else if (start instanceof VariableRepetitionRule) {
-//                res = ((VariableRepetitionRule) start).getMin() == 0;
-//            } else if (start instanceof RegexTerm) {
-//                res = ((RegexTerm) start).getRegexp().matcher("").matches();
-//            } else if (start instanceof NonTerminal) {
-//                res = infiniteEmptyRecursionPossible(grammar.getProduction(((NonTerminal) start).getKeyword()), searched);
-//            } else if (start instanceof ExclusionRule) {
-//                res = infiniteEmptyRecursionPossible(((ExclusionRule) start).getParserExpected(), searched)
-//                        && !infiniteEmptyRecursionPossible(((ExclusionRule) start).getParserExcluded(), searched);
-//            } else if (start instanceof StringTerm) {
-//                res = ((StringTerm) start).getString().isEmpty();
-//            } else if (start instanceof ValueRangeTerm) {
-//                res = ((ValueRangeTerm) start).getLo() == 0;
-//            } else if (start instanceof LookaheadRule) {
-//                res = infiniteEmptyRecursionPossible(((LookaheadRule) start).getRule(), searched);
-//            } else if (start instanceof NegativeLookaheadRule) {
-//                res = !infiniteEmptyRecursionPossible(((NegativeLookaheadRule) start).getRule(), searched);
-//            }
-//
-//
-//            searched.put(start, res);
-//            return res;
-//        }
+        /**
+         * Return true if the grammar can terminate for the given starting symbol.
+         *
+         * Sometimes, a grammar can be non-productive, meaning that it would technically not produce an output for any input. For example, the following:
+         * <pre>
+         * {@code
+         *         S = A S
+         *         A = epsilon
+         * }
+         * </pre>
+         * With a naive algorithm, the parser could never terminate. You can check for this case by using the following:
+         * <pre>
+         * {@code
+         *         var parser1 = Alpha.parser("S = A S ; A = epsilon ;");
+         *         var analysis1 = parser1.grammar().analyze();
+         *         System.out.println(analysis1.isProductive(Sym.sym("S"))); // false
+         * }
+         * </pre>
+         * @param start The starting symbol.
+         * @return true or false
+         */
+        public boolean isProductive(final @NotNull Sym start) {
+            return isProductive(start, new HashMap<>());
+        }
+
+        private boolean isProductive(final @NotNull Sym start, final @NotNull Map<Sym, Boolean> productive) {
+            boolean changed;
+
+            if (productive.containsKey(start))
+                return productive.get(start);
+
+            do {
+                changed = false;
+                for (var entry : grammar.entrySet()) {
+                    var nt = entry.getKey();
+                    var rule = entry.getValue();
+
+                    productive.putIfAbsent(nt, false);
+
+                    if (productiveRule(rule, productive) && !productive.get(nt)) {
+                        productive.put(nt, true);
+                        changed = true;
+                    }
+                }
+            } while (changed);
+            return productive.getOrDefault(start, false);
+        }
+
+        private boolean productiveRule(final @NotNull Rule rule, final @NotNull Map<Sym, Boolean> productive) {
+            return switch (rule) {
+                case Terminal ignored -> true;
+                case NonTerminal nt -> productive.getOrDefault(nt.getKeyword(), false);
+                case ConcatRule concatRule ->
+                        concatRule.getRules().stream().allMatch(it -> productiveRule(it, productive));
+                case AlternationRule alt -> alt.getRules().stream().anyMatch(it -> productiveRule(it, productive));
+                case OrderedChoiceRule orderedChoiceRule ->
+                        orderedChoiceRule.getRules().stream().anyMatch(it -> productiveRule(it, productive));
+                case OptionalRule ignored -> true;
+                case ZeroOrMoreRule ignored -> true;
+                case OnceOrMoreRule rep -> productiveRule(rep.getRule(), productive);
+                case LookaheadRule look -> productiveRule(look.getRule(), productive);
+                case NegativeLookaheadRule look -> productiveRule(look.getRule(), productive);
+                case ExclusionRule look -> productiveRule(look.getParserExpected(), productive)
+                        && productiveRule(look.getParserExcluded(), productive);
+                case SpecialSequenceRule ignored -> true; // Assumption
+                case VariableRepetitionRule variableRepetitionRule ->
+                        variableRepetitionRule.getMin() == 0 || productiveRule(rule, productive);
+            };
+        }
+
+        /**
+         * Check whether a grammar can create an infinite number of empty matches through recursion or repetition.
+         * <p>
+         * Algorithm outline:
+         * - {@link AlternationRule}: If any branch can result in an infinite number of trees.
+         * - {@link ConcatRule}:
+         *
+         * @param start
+         * @return
+         */
+        public boolean infiniteEmptyRecursionPossible(final Sym start) {
+            return infiniteEmptyRecursionPossible(grammar.getProduction(start), new HashMap<>());
+        }
+
+        public boolean infiniteEmptyRecursionPossible(final Rule start, Map<Rule, Boolean> searched) {
+            if (searched.containsKey(start)) {
+                return searched.get(start);
+            }
+
+            final boolean res;
+
+            if (start instanceof OrderedChoiceRule) {
+                var children = ((RuleWithManyChildren) start).getRules();
+                res = children.stream().anyMatch(it -> infiniteEmptyRecursionPossible(it, searched));
+            } else if (start instanceof AlternationRule) {
+                var children = ((RuleWithManyChildren) start).getRules();
+                res = children.stream().anyMatch(it -> infiniteEmptyRecursionPossible(it, searched));
+            } else if (start instanceof ConcatRule) {
+                res = ((ConcatRule) start).getRules().stream().allMatch(it -> infiniteEmptyRecursionPossible(it, searched));
+            } else if (start instanceof EpsilonTerm || start instanceof OptionalRule || start instanceof ZeroOrMoreRule) {
+                res = true;
+            } else if (start instanceof VariableRepetitionRule) {
+                res = ((VariableRepetitionRule) start).getMin() == 0;
+            } else if (start instanceof RegexTerm) {
+                res = ((RegexTerm) start).getRegexp().matcher("").matches();
+            } else if (start instanceof NonTerminal) {
+                res = infiniteEmptyRecursionPossible(grammar.getProduction(((NonTerminal) start).getKeyword()), searched);
+            } else if (start instanceof ExclusionRule) {
+                res = infiniteEmptyRecursionPossible(((ExclusionRule) start).getParserExpected(), searched)
+                        && !infiniteEmptyRecursionPossible(((ExclusionRule) start).getParserExcluded(), searched);
+            } else if (start instanceof StringTerm) {
+                res = ((StringTerm) start).getString().isEmpty();
+            } else if (start instanceof ValueRangeTerm) {
+                res = ((ValueRangeTerm) start).getLo() == 0;
+            } else if (start instanceof LookaheadRule) {
+                res = infiniteEmptyRecursionPossible(((LookaheadRule) start).getRule(), searched);
+            } else if (start instanceof NegativeLookaheadRule) {
+                res = !infiniteEmptyRecursionPossible(((NegativeLookaheadRule) start).getRule(), searched);
+            } else {
+                res = false;
+            }
+
+
+            searched.put(start, res);
+            return res;
+        }
 
         @Override
         public @NotNull String toString() {

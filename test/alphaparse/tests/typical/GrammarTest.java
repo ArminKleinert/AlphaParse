@@ -2,9 +2,9 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.Sym;
-import alphaparse.parsing.EpsilonTerm;
-import alphaparse.parsing.NonTerminal;
+import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.StringTerm;
+import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -50,9 +50,15 @@ class GrammarTest {
                 B = "b"
                 C = "c"
                 """).grammar().analyze();
-        Assertions.assertEquals(Set.of(Sym.sym("S"), Sym.sym("A"), Sym.sym("B"), Sym.sym("C")), ga.definedNTs());
-        Assertions.assertEquals(Set.of(Sym.sym("A")), ga.usedNTs());
-        Assertions.assertEquals(Set.of(Sym.sym("B"), Sym.sym("C")), ga.getUnusedNTs());
+        Assertions.assertEquals(
+                Set.of(Sym.sym("S"), Sym.sym("A"), Sym.sym("B"), Sym.sym("C")),
+                ga.definedNTs());
+        Assertions.assertEquals(
+                Set.of(Sym.sym("A")),
+                ga.usedNTs());
+        Assertions.assertEquals(
+                Set.of(Sym.sym("B"), Sym.sym("C")),
+                ga.getUnusedNTs());
         Assertions.assertFalse(ga.getUnusedNTs().contains(Sym.sym("S")));
         Assertions.assertTrue(ga.isValid());
     }
@@ -66,8 +72,8 @@ class GrammarTest {
                 C = "c"
                 """).grammar().analyze();
         Assertions.assertEquals(
-                ga.grammar().keySet(),
-                ga.reachableSubset(Sym.sym("S")));
+                ga.grammar(),
+                ga.subGrammar(Sym.sym("S")));
     }
 
     @Test
@@ -80,7 +86,45 @@ class GrammarTest {
                 """).grammar().analyze();
         Assertions.assertEquals(
                 Set.of(Sym.sym("S"), Sym.sym("A"), Sym.sym("C")),
-                ga.reachableSubset(Sym.sym("S"))
+                ga.subGrammar(Sym.sym("S")).keySet()
         );
+        Assertions.assertEquals(
+                Set.of(Sym.sym("A"), Sym.sym("C")),
+                ga.subGrammar(Sym.sym("A")).keySet()
+        );
+    }
+
+    @Test
+    void grammarSubsetPartialTest1() {
+        var p1 = Alpha.parser("""
+                S = A | "a"
+                A = A | C
+                C = "c"
+                """);
+        var p2 = Alpha.parser("""
+                S = A | "a"
+                A = A | C
+                B = C
+                C = "c"
+                """);
+        Assertions.assertEquals(
+                p1.grammar(),
+                p2.grammar().analyze().subGrammar(Sym.sym("S"))
+        );
+    }
+    @Test
+    void grammarIsProductiveTest() {
+        var noCheckOpts = ParserCreationOptions.getDefault().withCorrectnessCheck(false);
+        Assertions.assertFalse(Alpha.parser("S = S", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+        Assertions.assertTrue(Alpha.parser("S = S | epsilon", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+
+        Assertions.assertTrue(Alpha.parser("S = A | epsilon; A = A", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+        Assertions.assertFalse(Alpha.parser("S = A | epsilon; A = A", noCheckOpts).grammar().analyze().isProductive(Sym.sym("A")));
+        Assertions.assertTrue(Alpha.parser("S = A | epsilon; A = S", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+
+        Assertions.assertTrue(Alpha.parser("S = A B | epsilon; A = 'a'; B = 'b'", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+        Assertions.assertTrue(Alpha.parser("S = A B | epsilon; A = 'a'; B = S", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+        Assertions.assertFalse(Alpha.parser("S = A B; A = 'a'; B = S", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
+        Assertions.assertFalse(Alpha.parser("S = A B; A = 'a'; B = C; C = B", noCheckOpts).grammar().analyze().isProductive(Sym.sym("S")));
     }
 }

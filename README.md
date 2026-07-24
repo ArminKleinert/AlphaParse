@@ -39,43 +39,68 @@ These are priorities that directly impact the usage.
 
 ## Grammar elements
 
-| Category                                | Notations                                         | Example                 | Note                                |
-|-----------------------------------------|---------------------------------------------------|-------------------------|-------------------------------------|
-| <td colspan=5><h5>Default elements</h5> |
-| Rule                                    | `:` `:=` `::=` `=`                                | `S = A`                 |                                     |
-| End of rule                             | `;` `.` (optional)                                | `S = A;`                |                                     |
-| Alternation                             | <code>&#124;</code> and `/`                       | <code>A &#124; B</code> | Also known as "Choice"; Not in ABNF |
-| Concatenation                           | whitespace or `,`                                 | `A B`                   |                                     |
-| Grouping                                | `()`                                              | `(A  B)+ C`             |                                     |
-| Optional                                | `[]`                                              | `[A]`                   |                                     |
-| Optional (alt)                          | `?`                                               | `A?`                    |                                     |
-| One or more                             | `+`                                               | `A+`                    |                                     |
-| Zero or more                            | `{}`                                              | `{A}`                   |                                     |
-| Zero or more (alt)                      | `*`                                               | `A*`                    |                                     |
-| String terminal                         | `""`                                              | `"a"`                   |                                     |
-| String terminal (alt)                   | `''`                                              | `'a'`                   | Not in ABNF                         |
-| Regex terminal                          | `#""` `#''`                                       | `#"[0-9]"` `#'[0-9]'`   |                                     |
-| Epsilon                                 | `Epsilon epsilon EPSILON eps ε "" ''`             | `S = epsilon`           |                                     |
-| Comment                                 | `(* *)`                                           | `(* Comment *)`         |                                     |
-| <td colspan=5><h5>Extended options</h5> |
-| Variable repetition (zero or more)      | `*`                                               | `* A`                   | ABNF, see below.                    |
-| Variable repetition (n or more)         | `n*`                                              | `5* A`                  | ABNF                                |
-| Variable repetition (zero to m)         | `*m`                                              | `*5 A`                  | ABNF                                |
-| Variable repetition (n to m)            | `n*m`                                             | `5*19 A`                | ABNF                                |
-| Variable repetition (exactly n)         | `n`                                               | `5 A`                   | ABNF                                |
-| Value range                             | `%xXXXX[-XXXX]`, `%bBBBB[-BBBB]`, `%dDDDD[-DDDD]` | `%x41-5a`               | ABNF                                |
-| ABNF core rules                         | See below.                                        |                         |                                     |
-| Explicit string case sensitivity        | `%i"..."` `%s"..."` (and `%i'...'` `%s'...'`)     | `%i"A"`, `%s"A"`        | ABNF                                |
-| Exclusion / Exception                   | `-`                                               | `A - B`                 | EBNF                                |
+### Basic options
+
+| Category                   | Notations                             | Example                 | Note                                |
+|----------------------------|---------------------------------------|-------------------------|-------------------------------------|
+| Rule                       | `:` `:=` `::=` `=`                    | `S = A`                 |                                     |
+| End of rule                | `;` `.` (optional)                    | `S = A;`                |                                     |
+| Alternation                | <code>&#124;</code> and `/`           | <code>A &#124; B</code> | Also known as "Choice"; Not in ABNF |
+| Concatenation              | whitespace or `,`                     | `A B`                   |                                     |
+| Grouping                   | `()`                                  | `(A  B)+ C`             |                                     |
+| Optional                   | `[]`                                  | `[A]`                   |                                     |
+| Optional (alt)             | `?`                                   | `A?`                    |                                     |
+| One or more                | `+`                                   | `A+`                    |                                     |
+| Zero or more               | `{}`                                  | `{A}`                   |                                     |
+| Zero or more (alt)         | `*`                                   | `A*`                    |                                     |
+| String terminal            | `""`                                  | `"a"`                   |                                     |
+| String terminal (alt)      | `''`                                  | `'a'`                   | Not in ABNF                         |
+| Regex terminal             | `#""` `#''`                           | `#"[0-9]"` `#'[0-9]'`   |                                     |
+| Epsilon                    | `Epsilon epsilon EPSILON eps ε "" ''` | `S = epsilon`           |                                     |
+| Comment                    | `(* *)`                               | `(* Comment *)`         |                                     |
+| End of file / end of input | `EOF`                                 | `EOF`                   |                                     |
+
+### Extended options
+
+| Category                           | Notations                                         | Example          | Note            |
+|------------------------------------|---------------------------------------------------|------------------|-----------------|
+| Variable repetition (zero or more) | `*`                                               | `* A`            | ABNF, see below |
+| Variable repetition (n or more)    | `n*`                                              | `5* A`           | ABNF            |
+| Variable repetition (zero to m)    | `*m`                                              | `*5 A`           | ABNF            |
+| Variable repetition (n to m)       | `n*m`                                             | `5*19 A`         | ABNF            |
+| Variable repetition (exactly n)    | `n`                                               | `5 A`            | ABNF            |
+| Value range                        | `%xXXXX[-XXXX]`, `%bBBBB[-BBBB]`, `%dDDDD[-DDDD]` | `%x41-5a`        | ABNF            |
+| ABNF core rules                    | See below.                                        |                  |                 |
+| Explicit string case sensitivity   | `%i"..."` `%s"..."` (and `%i'...'` `%s'...'`)     | `%i"A"`, `%s"A"` | ABNF            |
+| Exclusion / Exception              | `-`                                               | `A - B`          | EBNF            |
 
 - For available value range formats, see [the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-11).
 - For available ABNF core rules, see [the specification](https://datatracker.ietf.org/doc/html/rfc5234#autoid-25).
 
 ## Problems
 
-- Grammars like `S : S` or `S : A\nA : S` will terminate, but produce no output and also not log a failure.
-- Grammars like `S : epsilon | S` produce an infinite number of results if the input is empty. This is technically
-  correct behavior, but very confusing to users.
+- Non-productive Grammars, like `S = S` or `S = A S\nA = epsilon`, will terminate, but produce no output and also not
+  log a failure. The "productivity" of a grammar can be checked by using the analysis algorithm `isProductive(Sym)` on the grammar. (See example below.)
+- Grammars like `S = epsilon | S` produce an infinite number of results if the input is empty. This is technically
+  correct behavior, but very confusing to users. This corner case can be checked for my using the `infiniteEmptyRecursionPossible(Sym)` analysis. (See example below.)
+
+```java
+import alphaparse.Alpha;
+import alphaparse.Sym;
+
+class VerySpecificGrammarProblems {
+    void test() {
+        var parser1 = Alpha.parser("S = A S ; A = epsilon ;");
+        var analysis1 = parser1.grammar().analyze();
+        System.out.println(analysis1.isProductive(Sym.sym("S"))); // True if the grammar can produce a result
+
+        var parser2 = Alpha.parser("S = S | epsilon");
+        var analysis2 = parser2.grammar().analyze();
+        // TODO: Does not work yet.
+        System.out.println(analysis2.infiniteEmptyRecursionPossible(Sym.sym("S"))); // True if the problem is possible.
+    }
+}
+```
 
 ## Differences from Instaparse
 
@@ -93,16 +118,8 @@ AlphaParse treats some features of Instaparse as bugs. For example, Instaparse t
 
 ### Production redefinitions
 
-When you write a grammar like
-
-```
-S = A
-S = B
-S = C
-```
-
-the question arises: What is the right-hand side of the production `S`?
-
+When you write a grammar like `S = A ; S = B ; S = C ;` the question arises: What is the right-hand side of the
+production `S`?  
 Instaparse chooses to override the previous definitions silently. AlphaParse allows the user to choose between options:
 
 ```java
@@ -113,26 +130,34 @@ import alphaparse.parser_options.ParserCreationOptions;
 
 class RedefTest {
     static void main(String[] args) {
-        String gr = "S : 'A'\nS : 'B'\nS : 'C'"; // Three different definitions for "S".
+        String grammar = """
+                S = 'A' ;
+                S = 'B' ;
+                S = 'C' ;
+                """; // Three different definitions for "S".
         Parser p;
         var opts = ParserCreationOptions.getDefault();
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
+        // Override: The grammar is equal to `S = 'C'`
+        p = Alpha.parser(grammar, opts.withRedefinitionOption(RedefinitionOption.OVERRIDE));
         System.out.println(p.parse("A").isSuccess()); // false
         System.out.println(p.parse("B").isSuccess()); // false
         System.out.println(p.parse("C").isSuccess()); // true
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.ERROR)); // Fails
-
-        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.CHOICE));
+        // Choice: The grammar is equal to `S = 'A' | 'B' | 'C'`
+        p = Alpha.parser(grammar, opts.withRedefinitionOption(RedefinitionOption.CHOICE));
         System.out.println(p.parse("A").isSuccess()); // true
         System.out.println(p.parse("B").isSuccess()); // true
         System.out.println(p.parse("C").isSuccess()); // true
 
-        p = Alpha.parser(gr, opts.withRedefinitionOption(RedefinitionOption.KEEP));
+        // Keep first: The grammar is equal to `S = 'A'`
+        p = Alpha.parser(grammar, opts.withRedefinitionOption(RedefinitionOption.KEEP));
         System.out.println(p.parse("A").isSuccess()); // true
         System.out.println(p.parse("B").isSuccess()); // false
         System.out.println(p.parse("C").isSuccess()); // false
+
+        // Error: The grammar is considered invalid and will throw an exception.
+        p = Alpha.parser(grammar, opts.withRedefinitionOption(RedefinitionOption.ERROR)); // Fails
     }
 }
 ```
@@ -140,6 +165,7 @@ class RedefTest {
 ## Design goals
 
 ### User-side
+
 - Small `.jar` file
 - High performance
 - Keep output memory small
@@ -147,8 +173,8 @@ class RedefTest {
 - Deterministic
 
 ### Code-side
+
 - Safe code
-- Annotate
 
 ## Style considerations
 
@@ -174,7 +200,7 @@ using records is sometimes 60% slower than equivalent classes, let me know. :)
 ### `Sym` vs `String`
 
 Strings in Java are very optimized. Still, AlphaParse uses its own type `Sym` for production names. Like Clojure's
-Keyword, `Sym` instances are interned. Clojure embeds the Keywords into the code directly, while AlphaParse always
+`Keyword`, `Sym` instances are interned. Clojure embeds the Keywords into the code directly, while AlphaParse always
 instantiates them when needed. The advantage that interning provides is the possibility of a constant `O(1)` equality
 check.
 
@@ -204,9 +230,9 @@ alphaparse.functions.Procedure procedure = () -> System.out.println("Procedure")
 
 ### New collection types
 
-When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries.
-Java (to my knowledge) does not have these. The only alternative I
-can think of are `Stream`s, but those can only be iterated once. A construct like
+When returning a parse forest, a lazy list is used because parse forests can easily have over a million entries. Java
+(to my knowledge) does not have these. The only alternative I can think of are `Stream`s, but those can only be iterated
+once. A construct like
 Clojure's [LazySeq](https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/LazySeq.java) could achieve the
 same while being simpler, but after testing each approach, I found this new type to be substantially faster.
 
