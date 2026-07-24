@@ -35,7 +35,7 @@ These are priorities that directly impact the usage.
   Alphaparse has only one type for parse trees which uses a wrapping type `Node`.
 - Parse trees are smaller. If the grammar is ambiguous, AlphaParse can hold more output trees than Instaparse, at least
   on my machine.
-- Smaller library `.jar` size. I set a maximum size goal of 220 mB.
+- Smaller library `.jar` size. I set a maximum size goal of 220 kB.
 
 ## Grammar elements
 
