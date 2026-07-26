@@ -18,6 +18,17 @@ import java.util.List;
 
 class NewFeaturesTest {
     @Test
+    void testExampleFromWikipedia() {
+        var grammar = """
+                S = digit digit-excluding-zero*
+                digit = "0" | digit-excluding-zero ;
+                digit-excluding-zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+                """;
+        var p = Alpha.parser(grammar);
+        System.out.println(p.parse("91"));
+        System.out.println(p.parse("091"));
+    }
+    @Test
     void testArithmetic() {
         var p = Alpha.parser("""
                sum          = sum ('+'|'-') sum | product
