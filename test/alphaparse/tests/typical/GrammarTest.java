@@ -4,13 +4,11 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.StringTerm;
-import alphaparse.result.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 class GrammarTest {
     @Test
@@ -112,6 +110,7 @@ class GrammarTest {
                 p2.grammar().analyze().subGrammar(Sym.sym("S"))
         );
     }
+
     @Test
     void grammarIsProductiveTest() {
         var noCheckOpts = ParserCreationOptions.getDefault().withCorrectnessCheck(false);

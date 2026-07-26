@@ -1,4 +1,4 @@
-# AlphaParse 0.9.3
+# AlphaParse 0.9.4
 
 A tool to generate and use parsers at runtime.
 
@@ -19,8 +19,42 @@ but has grown beyond it.
 Missing features and problems:
 
 - [ ] ABNF line comments are not implemented yet.
-- [ ] PEG-like ordered alternative `rule1 / rule2` needs to be investigated. I am not entirely sure whether it does or
-  does not work.
+
+## First parser
+
+To create a parser, you'll typically want to use the `Alpha.parser` static method. It takes a string as its first argument.
+
+```java
+import alphaparse.Alpha;
+import alphaparse.parser_options.ParserCreationOptions;
+
+class MyFirstParser {
+  public static void main(String[] args) {
+    // Using multiline strings can be helpful. This grammar defines  arithmetic expressions
+    var grammar = """
+            sum          = product ('+'|'-') sum   | product
+            product      = power ('*'|'/') product | power4
+            power        = paren-or-val '^' power  | paren-or-val
+            paren-or-val = '(' sum ')'             | number
+            number       = ('+'|'-')? ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9')+
+            """;
+    var p = Alpha.parser(grammar);
+
+    // Start the parser by using its parse(String) method.
+    // The parser will output the parse tree.
+    System.out.println(p.parse("1")); // [:sum, [:product, [:power, [:paren-or-val, [:number, "1"]]]]]
+    
+    // The grammar can not yet handle whitespace.
+    // The following returns an error:
+    System.out.println(p.parse("1 + 2"));
+    
+    // You can manually add support for whitespace to the grammar or use the optional argument for the Alpha.parser method:
+    p = Alpha.parser(grammar, ParserCreationOptions.newWithStandardWhitespace());
+    // Now, the parse works. Go on, try it. :)
+    System.out.println(p.parse("1 + 2"));
+  }
+}
+```
 
 ## Usage
 
@@ -41,24 +75,24 @@ These are priorities that directly impact the usage.
 
 ### Basic options
 
-| Category                   | Notations                             | Example                 | Note                                |
-|----------------------------|---------------------------------------|-------------------------|-------------------------------------|
-| Rule                       | `:` `:=` `::=` `=`                    | `S = A`                 |                                     |
-| End of rule                | `;` `.` (optional)                    | `S = A;`                |                                     |
-| Alternation                | <code>&#124;</code> and `/`           | <code>A &#124; B</code> | Also known as "Choice"; Not in ABNF |
-| Concatenation              | whitespace or `,`                     | `A B`                   |                                     |
-| Grouping                   | `()`                                  | `(A  B)+ C`             |                                     |
-| Optional                   | `[]`                                  | `[A]`                   |                                     |
-| Optional (alt)             | `?`                                   | `A?`                    |                                     |
-| One or more                | `+`                                   | `A+`                    |                                     |
-| Zero or more               | `{}`                                  | `{A}`                   |                                     |
-| Zero or more (alt)         | `*`                                   | `A*`                    |                                     |
-| String terminal            | `""`                                  | `"a"`                   |                                     |
-| String terminal (alt)      | `''`                                  | `'a'`                   | Not in ABNF                         |
-| Regex terminal             | `#""` `#''`                           | `#"[0-9]"` `#'[0-9]'`   |                                     |
-| Epsilon                    | `Epsilon epsilon EPSILON eps ε "" ''` | `S = epsilon`           |                                     |
-| Comment                    | `(* *)`                               | `(* Comment *)`         |                                     |
-| End of file / end of input | `EOF`                                 | `EOF`                   |                                     |
+| Category                   | Notations                             | Example                 | Note                                            |
+|----------------------------|---------------------------------------|-------------------------|-------------------------------------------------|
+| Rule                       | `:` `:=` `::=` `=`                    | `S = A`                 |                                                 |
+| End of rule                | `;` `.` (optional)                    | `S = A;`                |                                                 |
+| Alternation                | <code>&#124;</code> and `/`           | <code>A &#124; B</code> | Also known as "Choice"; ABNF uses `/` for this. |
+| Concatenation              | whitespace or `,`                     | `A B`                   |                                                 |
+| Grouping                   | `()`                                  | `(A  B)+ C`             |                                                 |
+| Optional                   | `[]`                                  | `[A]`                   |                                                 |
+| Optional (alt)             | `?`                                   | `A?`                    |                                                 |
+| One or more                | `+`                                   | `A+`                    |                                                 |
+| Zero or more               | `{}`                                  | `{A}`                   |                                                 |
+| Zero or more (alt)         | `*`                                   | `A*`                    |                                                 |
+| String terminal            | `""`                                  | `"a"`                   |                                                 |
+| String terminal (alt)      | `''`                                  | `'a'`                   | Not in ABNF                                     |
+| Regex terminal             | `#""` `#''`                           | `#"[0-9]"` `#'[0-9]'`   |                                                 |
+| Epsilon                    | `Epsilon epsilon EPSILON eps ε "" ''` | `S = epsilon`           |                                                 |
+| Comment                    | `(* *)`                               | `(* Comment *)`         |                                                 |
+| End of file / end of input | `EOF`                                 | `EOF`                   |                                                 |
 
 ### Extended options
 

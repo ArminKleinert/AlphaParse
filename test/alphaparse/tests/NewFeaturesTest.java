@@ -18,8 +18,25 @@ import java.util.List;
 
 class NewFeaturesTest {
     @Test
+    void testArithmetic() {
+        var p = Alpha.parser("""
+               sum          = sum ('+'|'-') sum | product
+               product      = power ('*'|'/') product | power
+               power        = paren-or-val '^' power | paren-or-val
+               paren-or-val = '(' sum ')' | number
+               number       = ('+'|'-')? ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9')+
+               """, ParserCreationOptions.newWithStandardWhitespace());
+        System.out.println(p.parse("1"));
+        System.out.println(p.parse("1+2"));
+        System.out.println(p.parse("1 + 2"));
+        System.out.println(p.parse("1*2"));
+        System.out.println(p.parse("1+2*3^4"));
+        System.out.println(p.parse("1*2+3*4"));
+        System.out.println(p.parse("1*(2+-3)^4"));
+    }
+    @Test
     void negativeEpsilon() {
-        var p = Alpha.parser("S = !epsilon 'a'");
+        var p = Alpha.parser("S = !epsilon epsilon 'a'");
         System.out.println(p.parse("a"));
     }
     @Test

@@ -272,7 +272,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
 
         /**
          * Return true if the grammar can terminate for the given starting symbol.
-         *
+         * <p>
          * Sometimes, a grammar can be non-productive, meaning that it would technically not produce an output for any input. For example, the following:
          * <pre>
          * {@code
@@ -288,6 +288,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
          *         System.out.println(analysis1.isProductive(Sym.sym("S"))); // false
          * }
          * </pre>
+         *
          * @param start The starting symbol.
          * @return true or false
          */
