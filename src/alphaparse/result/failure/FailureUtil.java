@@ -46,8 +46,7 @@ public final class FailureUtil {
         }
 
         final @NotNull Optional<String> lineText = text.lines().skip(line - 1).findFirst();
-        return new AlphaParseFailure(index, failure.reasonList(), line, col, lineText.orElse(null)
-        );
+        return new AlphaParseFailure(index, failure.reasonList(), line, col, lineText.orElse(null));
     }
 
     /**

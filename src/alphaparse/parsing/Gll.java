@@ -339,7 +339,7 @@ public final class Gll {
         final @NotNull var allParses = gll.run();
         if (errorIfEmpty && allParses.isEmpty()) {
             if (tramp.getFailure() == null)
-                throw new IllegalStateException("No parses found but no failure on trampoline.");
+                throw new IllegalStateException("Parsing failed. Perhaps the grammar was non-productive?");
             @NotNull AlphaParseFailure apf = FailureUtil.augmentFailure(tramp.getFailure(), text);
             return AlphaParsesResult.make(apf);
         }
@@ -371,7 +371,7 @@ public final class Gll {
         final @NotNull var allParses = gll.run(1);
         if (allParses.isEmpty()) {
             if (tramp.getFailure() == null)
-                throw new IllegalStateException("No parses found but no failure on trampoline.");
+                throw new IllegalStateException("Parsing failed. Perhaps the grammar was non-productive?");
             return AlphaParseResult.make(FailureUtil.augmentFailure(tramp.getFailure(), text));
         }
         return AlphaParseResult.make(allParses.getFirst());
