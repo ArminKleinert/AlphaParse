@@ -44,7 +44,7 @@ final class Cfg {
         }
 
         private @NotNull Rule buildRepRule(final @NotNull ParseTree tree) {
-            final @NotNull var partsUncut = (String) tree.getContent().getFirst().content();
+            final @NotNull var partsUncut = (String) tree.getContent().get(0).content();
             @NotNull var parts = partsUncut.split("\\*");
             if (parts.length == 1) {
             /*
@@ -76,15 +76,15 @@ final class Cfg {
         private @NotNull Map.Entry<@NotNull Sym, @NotNull Rule> buildRuleRule(
                 final @NotNull ParseTree tree) {
             final @NotNull var allContents = tree.getContent();
-            final @NotNull var nt = (ParseTree) allContents.getFirst().content();
+            final @NotNull var nt = (ParseTree) allContents.get(0).content();
             final @NotNull var altOrOrd = (ParseTree) allContents.get(1).content();
-            @NotNull var content = nt.getContent().getFirst();
+            @NotNull var content = nt.getContent().get(0);
 
             final @NotNull Sym key;
             final @NotNull Rule rule;
 
             if (Objects.equals(Sym.sym("hide-nt"), nt.getTag().content())) {
-                content = ((ParseTree) content.content()).getContent().getFirst();
+                content = ((ParseTree) content.content()).getContent().get(0);
                 key = Sym.sym(content.content().toString());
                 rule = ((Rule) buildRule(altOrOrd)).hideTag();
             } else {
@@ -101,7 +101,7 @@ final class Cfg {
             @NotNull ParseTree tree = tree1;
             for (; ; ) {
                 if (tree.getTag().equals(ParseTree.NULL_TAG)) {
-                    tree = (ParseTree) tree.getContent().getFirst().content();
+                    tree = (ParseTree) tree.getContent().get(0).content();
                     continue;
                 }
 
@@ -111,12 +111,12 @@ final class Cfg {
                         return buildRuleRule(tree);
                     }
                     case "nt" -> {
-                        var name = (String) tree.getContent().getFirst().content();
+                        var name = (String) tree.getContent().get(0).content();
                         return nt(Sym.sym(name));
                     }
                     case "paren" -> {
                         // The parse tree is wrapped in hidden "(" ")".
-                        tree = (ParseTree) tree.getContent().getFirst().content();
+                        tree = (ParseTree) tree.getContent().get(0).content();
                         continue; // Open up the grouping and take it to the top.
                     }
                     case "alt" -> {
@@ -135,7 +135,7 @@ final class Cfg {
                     }
                     case "hide" -> {
                         return ((Rule) buildRule(
-                                ((Node.NodeParseTree) tree.getContent().getFirst()).content())).enableHideTag();
+                                ((Node.NodeParseTree) tree.getContent().get(0)).content())).enableHideTag();
                     }
                     case "cat" -> {
                         return concat(tree
@@ -145,7 +145,7 @@ final class Cfg {
                                 .toList());
                     }
                     case "string" -> {
-                        String s = (String) tree.getContent().getFirst().content();
+                        String s = (String) tree.getContent().get(0).content();
                         if (s.startsWith("%")) {
                             boolean caseInsensitive = switch (s.charAt(1)) {
                                 case 'i' -> true;
@@ -160,37 +160,37 @@ final class Cfg {
                     }
                     case "string-cs" -> {
                         return stringCS(
-                                strParser.processString((String) tree.getContent().getFirst().content()));
+                                strParser.processString((String) tree.getContent().get(0).content()));
                     }
                     case "string-ci" -> {
                         return stringCI(
                                 strParser.processString((String)
-                                        tree.getContent().getFirst().content()));
+                                        tree.getContent().get(0).content()));
                     }
                     case "regexp" -> {
                         return regex(
                                 strParser.processRegexp((String)
-                                        tree.getContent().getFirst().content()));
+                                        tree.getContent().get(0).content()));
                     }
                     case "neg" -> {
                         return negate(buildRule(
-                                (ParseTree) tree.getContent().getFirst().content()));
+                                (ParseTree) tree.getContent().get(0).content()));
                     }
                     case "opt", "opt_query" -> {
                         return optional((Rule) buildRule(
-                                (ParseTree) tree.getContent().getFirst().content()));
+                                (ParseTree) tree.getContent().get(0).content()));
                     }
                     case "star", "opt_rep" -> {
                         return zeroOrMore((Rule) buildRule(
-                                (ParseTree) tree.getContent().getFirst().content()));
+                                (ParseTree) tree.getContent().get(0).content()));
                     }
                     case "plus" -> {
                         return onceOrMore((Rule) buildRule(
-                                (ParseTree) tree.getContent().getFirst().content()));
+                                (ParseTree) tree.getContent().get(0).content()));
                     }
                     case "look" -> {
                         return lookahead(buildRule(
-                                (ParseTree) tree.getContent().getFirst().content()));
+                                (ParseTree) tree.getContent().get(0).content()));
                     }
                     case "rep" -> {
                         try {

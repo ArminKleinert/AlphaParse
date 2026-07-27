@@ -21,17 +21,13 @@ public sealed interface Node permits Node.NodeFail, Node.NodeParseTree, Node.Nod
      * @return A node.
      */
     static @NotNull Node of(final @Nullable Object o) {
-        if (o == null)
-            throw new IllegalArgumentException("Input cannot be null.");
-        return switch (o) {
-            case ParseTree nodes -> new NodeParseTree(nodes);
-            case String s -> new NodeString(s);
-            case ParseFailureNode parseFailureNode -> new NodeFail(parseFailureNode);
-            case Sym ignored ->
-                    throw new IllegalArgumentException("Node.of should not be used on Symbols. Use NodeTreeTag explicitly.");
-            case Node node -> node;
-            default -> throw new IllegalArgumentException("Cannot handle input type " + o.getClass());
-        };
+        if (o == null) throw new IllegalArgumentException("Input cannot be null.");
+        if    (o instanceof ParseTree) return new NodeParseTree((ParseTree)o);
+        if    (o instanceof String)  return new NodeString((String) o);
+        if    (o instanceof ParseFailureNode)  return new NodeFail((ParseFailureNode) o);
+        if    (o instanceof Node)  return (Node) o;
+        if    (o instanceof Sym)  throw new IllegalArgumentException("Node.of should not be used on Symbols. Use NodeTreeTag explicitly.");
+        throw new IllegalArgumentException(o.getClass().toString());
     }
 
     /**

@@ -4,16 +4,13 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParserCreationOptions;
-import alphaparse.parsing.ConcatRule;
-import alphaparse.parsing.LookaheadRule;
-import alphaparse.parsing.RegexTerm;
-import alphaparse.parsing.StringTerm;
+import alphaparse.parsing.*;
 import alphaparse.result.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 class MultipleLookaheadsTest {
@@ -27,12 +24,14 @@ class MultipleLookaheadsTest {
 
     @Test
     void lookaheads1() {
+        var grammarAsMap = new LinkedHashMap<Sym, Rule>();
+        grammarAsMap.put(
+                Sym.sym("S"),
+                ConcatRule.create(List.of(LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
+                        RegexTerm.create(Pattern.compile("[abc]")))));
         var p = Alpha.parser(new Grammar(
                         Sym.sym("S"),
-                        Map.of(
-                                Sym.sym("S"), ConcatRule.create(List.of(LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
-                                        RegexTerm.create(Pattern.compile("[abc]"))))
-                        )),
+                        grammarAsMap),
                 ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"));
         Assertions.assertTrue(p.parse("b").isFailure());

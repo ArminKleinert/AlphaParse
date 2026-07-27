@@ -156,6 +156,6 @@ public final class ExclusionRule extends RuleWithManyChildren {
     public @NotNull ExclusionRule withRules(final @NotNull List<@NotNull Rule> rules) {
         if (rules.size() != 2)
             throw new IllegalArgumentException("Must pass exactly 2 arguments.");
-        return new ExclusionRule(isHidden(), getReduction(), rules.getFirst(), rules.getLast());
+        return new ExclusionRule(isHidden(), getReduction(), rules.get(0), rules.get(rules.size()-1));
     }
 }

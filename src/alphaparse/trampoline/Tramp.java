@@ -26,8 +26,8 @@ public final class Tramp {
     private int generation;
     //private final @NotNull TreeMap<@NotNull Integer, @NotNull NegativeListener> negativeListeners;
     private final @NotNull IntMap<@NotNull NegativeListener> negativeListeners;
-    private final @NotNull SequencedMap<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
-    private final @NotNull SequencedMap<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
+    private final @NotNull LinkedHashMap<@NotNull TrampolineMsgCacheKey, @NotNull Integer> msgCache;
+    private final @NotNull LinkedHashMap<@NotNull TrampolineListenerKey, @NotNull TrampolineListenerNode> nodes;
     private @Nullable AlphaParseMessage success;
     private @Nullable AlphaParseFailure failure;
 
@@ -167,7 +167,7 @@ public final class Tramp {
      * Removes the top of the stack.
      */
     public void popStack() {
-        stack.removeLast();
+        stack.remove(stack.size()-1);
     }
 
     /**

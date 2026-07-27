@@ -66,7 +66,7 @@ class TransformTest {
                         .map(it -> (String) it)
                         .mapToInt(Integer::parseInt)
                         .sum(),
-                Sym.sym("NUM"), List::getFirst
+                Sym.sym("NUM"), o -> o.get(0)
         );
 
         Assertions.assertEquals(
@@ -95,7 +95,7 @@ class TransformTest {
                         .map(it -> (String) it)
                         .mapToInt(Integer::parseInt)
                         .sum()),
-                Sym.sym("NUM"), List::getFirst
+                Sym.sym("NUM"), o -> o.get(0)
         );
 
         Assertions.assertEquals(

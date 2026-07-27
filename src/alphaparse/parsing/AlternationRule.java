@@ -60,7 +60,7 @@ public final class AlternationRule extends RuleWithManyChildren {
         if (rules.isEmpty())
             return EpsilonTerm.getDefault();
         if (rules.size() == 1)
-            return rules.getFirst();
+            return rules.get(0);
 
         var compressedRules = new ArrayList<Rule>();
 

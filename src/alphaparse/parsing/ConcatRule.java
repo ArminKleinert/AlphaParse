@@ -33,7 +33,7 @@ public final class ConcatRule extends RuleWithManyChildren {
         if (rules.isEmpty())
             return EpsilonTerm.getDefault();
         if (rules.size() == 1)
-            return rules.getFirst();
+            return rules.get(0);
 
         var compressedResult = new ArrayList<Rule>();
 
@@ -63,7 +63,7 @@ public final class ConcatRule extends RuleWithManyChildren {
     public void parse(final int index, final @NotNull Gll runner) {
         final @NotNull List<@NotNull Rule> parsers = getRules();
         runner.pushListener(
-                new TrampolineListenerKey(index, parsers.getFirst()),
+                new TrampolineListenerKey(index, parsers.get(0)),
                 catListener(FlatResultSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
     }
 
@@ -71,7 +71,7 @@ public final class ConcatRule extends RuleWithManyChildren {
     public void fullParse(final int index, final @NotNull Gll runner) {
         final @NotNull List<@NotNull Rule> parsers = getRules();
         runner.pushListener(
-                new TrampolineListenerKey(index, parsers.getFirst()),
+                new TrampolineListenerKey(index, parsers.get(0)),
                 catFullListener(FlatResultSeq.make(), parsers.subList(1, parsers.size()), new TrampolineListenerKey(index, this), runner));
     }
 
@@ -88,7 +88,7 @@ public final class ConcatRule extends RuleWithManyChildren {
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
             } else {
                 runner.pushListener(
-                        new TrampolineListenerKey(continueIndex, parserSequence.getFirst()),
+                        new TrampolineListenerKey(continueIndex, parserSequence.get(0)),
                         catListener(
                                 newResultsSoFar,
                                 parserSequence.subList(1, parserSequence.size()),
@@ -109,7 +109,7 @@ public final class ConcatRule extends RuleWithManyChildren {
             final @NotNull var newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult);
 
             if (!parserSequence.isEmpty()) {
-                var listenerKey = new TrampolineListenerKey(continueIndex, parserSequence.getFirst());
+                var listenerKey = new TrampolineListenerKey(continueIndex, parserSequence.get(0));
                 var listener = catFullListener(
                         newResultsSoFar,
                         parserSequence.subList(1, parserSequence.size()),

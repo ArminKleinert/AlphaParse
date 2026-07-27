@@ -32,7 +32,7 @@ public final class ClassUtil {
      */
     public static @Nullable Class<?> mostDerived(final @NotNull Collection<?> objects) {
         List<Class<?>> common = null;
-        SequencedSet<Class<?>> checked = objects.size() > 30 ? new LinkedHashSet<>() : null;
+        LinkedHashSet<Class<?>> checked = objects.size() > 30 ? new LinkedHashSet<>() : null;
         for (final Object object : objects) {
             if (object == null) {
                 continue;
@@ -55,7 +55,7 @@ public final class ClassUtil {
                 common.retainAll(hierarchy);
             }
         }
-        return common != null ? (!common.isEmpty() ? common.getFirst() : Object.class) : null;
+        return common != null ? (!common.isEmpty() ? common.get(0) : Object.class) : null;
     }
 
     private static @Nullable List<String> uniqueStrings = null;

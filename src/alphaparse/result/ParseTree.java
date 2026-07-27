@@ -119,8 +119,8 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
      * <p>
      * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a {@link FlatResultSeq}, it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
      *
-     * @param tag     The tag as a node.
-     * @param content The content as a node.
+     * @param tag       The tag as a node.
+     * @param content   The content as a node.
      * @param spanStart Starting index in the input (inclusive).
      * @param spanEnd   End index in the input (exclusive).
      * @return A new parse tree.
@@ -129,20 +129,26 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
                                             final @Nullable Object content,
                                             final int spanStart,
                                             final int spanEnd) {
-        final @NotNull var afs = switch (content) {
-            case null -> List.<Node>of();
-            case FlatResultSeq objects -> {
-                final @NotNull var res = new ArrayList<Node>();
-                for (@NotNull var t : objects) res.add(Node.of(t));
-                yield res;
-            }
-            case String ignored -> List.of(Node.of(content));
-            case TotalParsesFailureNode ignored -> List.of(Node.of(content));
-            case ParseFailureNode ignored -> List.of(Node.of(content));
-            case ParseTree ignored -> List.of(Node.of(content));
-            case List<?> objects -> objects.stream().map(Node::of).toList();
-            default -> throw new IllegalArgumentException(content.getClass().toString());
-        };
+        final @NotNull List<Node> afs;
+        if (content == null) {
+            afs = List.of();
+        } else if (content instanceof FlatResultSeq) {
+            final @NotNull var res = new ArrayList<Node>();
+            for (@NotNull var t : ((FlatResultSeq) content)) res.add(Node.of(t));
+            afs = res;
+        } else if (content instanceof String) {
+            afs = List.of(Node.of(content));
+        } else if (content instanceof TotalParsesFailureNode) {
+            afs = List.of(Node.of(content));
+        } else if (content instanceof ParseFailureNode) {
+            afs = List.of(Node.of(content));
+        } else if (content instanceof ParseTree) {
+            afs = List.of(Node.of(content));
+        } else if (content instanceof List<?>) {
+            afs = ((List<?>) content).stream().map(Node::of).toList();
+        } else {
+            throw new IllegalArgumentException(content.getClass().toString());
+        }
         return create(new Node.NodeTreeTag(tag), afs, spanStart, spanEnd);
     }
 
@@ -167,8 +173,8 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         // If the content contains a ParseTree which has the NULL_TAG, it has to be "flattened".
         boolean isFlat = true;
         for (Node node : content) {
-            if (node instanceof Node.NodeParseTree(ParseTree parseTree)
-                    && parseTree.tag.equals(NULL_TAG)) {
+            if (node instanceof Node.NodeParseTree
+                    && ((Node.NodeParseTree) node).content().tag.equals(NULL_TAG)) {
                 // Subtree with NULL_TAG found. Must merge.
                 isFlat = false;
                 break;
@@ -235,12 +241,9 @@ public final class ParseTree implements List<@NotNull Node>, AlphaParseResult {
         }
 
         for (@NotNull Node node : content) {
-            switch (node) {
-                case Node.NodeParseTree npt -> l[i++] = npt.content().toRawList();
-                case Node.NodeTreeTag ntt -> l[i++] = ntt.content();
-                case Node.NodeString ns -> l[i++] = ns.content();
-                case Node.NodeFail nf -> l[i++] = nf.content();
-            }
+            if (node instanceof Node.NodeParseTree) l[i++] = ((Node.NodeParseTree)node).content().toRawList();
+            else if (node instanceof Node.NodeTreeTag || node instanceof Node.NodeString || node instanceof Node.NodeFail)l[i++] = node.content();
+            else throw new IllegalArgumentException(node.getClass().toString());
         }
 
         return Arrays.asList(l);

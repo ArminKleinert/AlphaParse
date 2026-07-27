@@ -23,8 +23,8 @@ import alphaparse.trampoline.Tramp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.SequencedSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -99,7 +99,7 @@ public final class Gll {
     }
 
     private void step() {
-        final Procedure top = tramp.getStack().getLast();
+        final Procedure top = tramp.getStack().get(tramp.getStack().size()-1);
         tramp.popStack();
         top.execute();
     }
@@ -201,7 +201,7 @@ public final class Gll {
         }
 
         final boolean reachedEndOfInput = tramp.getText().length() == result.index();
-        final @NotNull SequencedSet<@NotNull AlphaParseMessage> results =
+        final @NotNull LinkedHashSet<@NotNull AlphaParseMessage> results =
                 reachedEndOfInput ? node.fullResults() : node.results();
 
         final var resultExisted = !results.add(result);

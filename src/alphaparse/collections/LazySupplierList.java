@@ -189,12 +189,11 @@ public class LazySupplierList<T> implements List<@Nullable T> {
         return at;
     }
 
-    @Override
     public T getFirst() {
         if (!evaluatedPart.isEmpty())
-            return evaluatedPart.getFirst();
+            return evaluatedPart.get(0);
         evalutePart(0);
-        return evaluatedPart.getFirst();
+        return evaluatedPart.get(0);
     }
 
     /**

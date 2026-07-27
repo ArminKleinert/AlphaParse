@@ -1,4 +1,4 @@
-# AlphaParse 0.9.4
+# AlphaParse 0.9.5
 
 A tool to generate and use parsers at runtime.
 
@@ -57,6 +57,8 @@ class MyFirstParser {
 ```
 
 ## Usage
+
+You need Java 17 or newer to use AlphaParse. Older versions of AlphaParse required Java 21.
 
 1. Download the `.jar` file or compile it yourself.
 2. Add the library to your classpath. I recommend using an IDE for this.

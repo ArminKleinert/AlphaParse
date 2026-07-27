@@ -47,7 +47,7 @@ public class Unhide {
      */
     public static @NotNull Grammar unhideContent(final @NotNull Grammar grammar) {
         final @NotNull LinkedHashMap<Sym, Rule> res = new LinkedHashMap<>();
-        for (final @NotNull var symRuleEntry : grammar.sequencedEntrySet()) {
+        for (final @NotNull var symRuleEntry : grammar.entrySet()) {
             res.put(symRuleEntry.getKey(),
                     symRuleEntry.getValue().unhideContent());
         }
@@ -62,7 +62,7 @@ public class Unhide {
      */
     public static @NotNull Grammar unhideTags(final @NotNull Grammar grammar) {
         final @NotNull LinkedHashMap<Sym, Rule> res = new LinkedHashMap<>();
-        for (final @NotNull var symRuleEntry : grammar.sequencedEntrySet()) {
+        for (final @NotNull var symRuleEntry : grammar.entrySet()) {
             final @NotNull var key = symRuleEntry.getKey();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
             final @NotNull var pUnhide = symRuleEntry.getValue().withReduction(reduction);
@@ -80,7 +80,7 @@ public class Unhide {
      */
     public static @NotNull Grammar unhideAll(final @NotNull Grammar grammar) {
         final @NotNull LinkedHashMap<Sym, Rule> res = new LinkedHashMap<>();
-        for (final @NotNull var symRuleEntry : grammar.sequencedEntrySet()) {
+        for (final @NotNull var symRuleEntry : grammar.entrySet()) {
             final @NotNull var key = symRuleEntry.getKey();
             final @NotNull var reduction = ReductionType.nonTerminalReduction(key);
             final @NotNull var p = symRuleEntry.getValue().unhideContent().withReduction(reduction);

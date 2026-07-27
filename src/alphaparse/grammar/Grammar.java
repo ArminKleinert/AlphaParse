@@ -22,9 +22,9 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
      * Create a new instance.
      *
      * @param startSym Starting production key.
-     * @param m        Map of productions. This should be an ordered {@link SequencedMap}.
+     * @param m        Map of productions.
      */
-    public Grammar(final @NotNull Sym startSym, final @NotNull Map<? extends Sym, ? extends Rule> m) {
+    public Grammar(final @NotNull Sym startSym, final @NotNull LinkedHashMap<? extends Sym, ? extends Rule> m) {
         super(m);
 
         if (m.isEmpty())
@@ -49,7 +49,7 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
         if (g.size() != size())
             return false;
 
-        for (Map.Entry<@NotNull Sym, Rule> symRuleEntry : sequencedEntrySet()) {
+        for (Map.Entry<@NotNull Sym, Rule> symRuleEntry : entrySet()) {
             if (!Objects.equals(
                     g.getProduction(symRuleEntry.getKey()),
                     symRuleEntry.getValue())) {
@@ -142,17 +142,16 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
             @NotNull Rule rule;
 
             while (!ruleStack.isEmpty()) {
-                rule = ruleStack.removeLast();
+                rule = ruleStack.remove(ruleStack.size() - 1);
                 if (analyzedRules.contains(rule)) {
                     continue;
                 }
                 analyzedRules.add(rule);
 
-                switch (rule) {
-                    case RuleWithManyChildren ruleWithManyChildren -> ruleStack.addAll(ruleWithManyChildren.getRules());
-                    case RuleWithChild ruleWithChild -> ruleStack.add(ruleWithChild.getRule());
-                    default -> {
-                    }
+                if (rule instanceof RuleWithManyChildren) {
+                    ruleStack.addAll(((RuleWithManyChildren) rule).getRules());
+                } else if (rule instanceof RuleWithChild) {
+                    ruleStack.add(((RuleWithChild) rule).getRule());
                 }
 
                 if (collector.test(rule)) {
@@ -241,24 +240,23 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
             reachable.add(start);
 
             while (!stack.isEmpty()) {
-                var rule = stack.removeLast();
+                var rule = stack.remove(stack.size() - 1);
 
                 // If already in set -> Ignore
                 if (!visited.add(rule))
                     continue;
 
-                switch (rule) {
-                    case RuleWithManyChildren ruleWithManyChildren -> stack.addAll(ruleWithManyChildren.getRules());
-                    case RuleWithChild ruleWithChild -> stack.add(ruleWithChild.getRule());
-                    case NonTerminal nonTerminal -> {
-                        var prod = grammar.getProduction(nonTerminal.getKeyword());
-                        if (prod == null)
-                            throw new IllegalArgumentException("Symbol not in grammar: " + start);
-                        stack.add(Objects.requireNonNull(prod));
-                        reachable.add(nonTerminal.getKeyword());
-                    }
-                    default -> {
-                    }
+                if (rule instanceof RuleWithManyChildren) {
+                    stack.addAll(((RuleWithManyChildren) rule).getRules());
+                } else if (rule instanceof RuleWithChild) {
+                    stack.add(((RuleWithChild) rule).getRule());
+                } else if (rule instanceof NonTerminal) {
+                    var key = ((NonTerminal) rule).getKeyword();
+                    var prod = grammar.getProduction(key);
+                    if (prod == null)
+                        throw new IllegalArgumentException("Symbol not in grammar: " + start);
+                    stack.add(Objects.requireNonNull(prod));
+                    reachable.add(key);
                 }
             }
 
@@ -320,25 +318,41 @@ public final class Grammar extends LinkedHashMap<@NotNull Sym, Rule> {
         }
 
         private boolean productiveRule(final @NotNull Rule rule, final @NotNull Map<Sym, Boolean> productive) {
-            return switch (rule) {
-                case Terminal ignored -> true;
-                case NonTerminal nt -> productive.getOrDefault(nt.getKeyword(), false);
-                case ConcatRule concatRule ->
-                        concatRule.getRules().stream().allMatch(it -> productiveRule(it, productive));
-                case AlternationRule alt -> alt.getRules().stream().anyMatch(it -> productiveRule(it, productive));
-                case OrderedChoiceRule orderedChoiceRule ->
-                        orderedChoiceRule.getRules().stream().anyMatch(it -> productiveRule(it, productive));
-                case OptionalRule ignored -> true;
-                case ZeroOrMoreRule ignored -> true;
-                case OnceOrMoreRule rep -> productiveRule(rep.getRule(), productive);
-                case LookaheadRule look -> productiveRule(look.getRule(), productive);
-                case NegativeLookaheadRule look -> productiveRule(look.getRule(), productive);
-                case ExclusionRule look -> productiveRule(look.getParserExpected(), productive)
-                        && productiveRule(look.getParserExcluded(), productive);
-                case SpecialSequenceRule ignored -> true; // Assumption
-                case VariableRepetitionRule variableRepetitionRule ->
-                        variableRepetitionRule.getMin() == 0 || productiveRule(rule, productive);
-            };
+            if (rule instanceof Terminal || rule instanceof OptionalRule || rule instanceof ZeroOrMoreRule) {
+                return true;
+            }
+
+            if (rule instanceof SpecialSequenceRule) {
+                return true;
+            }
+
+            if (rule instanceof NonTerminal) {
+                return productive.getOrDefault(((NonTerminal) rule).getKeyword(), false);
+            }
+
+            if (rule instanceof ConcatRule) {
+                return ((ConcatRule) rule).getRules().stream().allMatch(it -> productiveRule(it, productive));
+            }
+
+            if (rule instanceof AlternationRule || rule instanceof OrderedChoiceRule) {
+                return ((RuleWithManyChildren) rule).getRules().stream().anyMatch(it -> productiveRule(it, productive));
+            }
+
+            if (rule instanceof OnceOrMoreRule || rule instanceof LookaheadRule || rule instanceof NegativeLookaheadRule) {
+                return productiveRule(((RuleWithChild) rule).getRule(), productive);
+            }
+
+            if (rule instanceof ExclusionRule) {
+                return productiveRule(((ExclusionRule) rule).getParserExpected(), productive)
+                        && productiveRule(((ExclusionRule) rule).getParserExcluded(), productive);
+            }
+
+            if (rule instanceof VariableRepetitionRule) {
+                var variableRepetitionRule = (VariableRepetitionRule) rule;
+                return variableRepetitionRule.getMin() == 0 || productiveRule(rule, productive);
+            }
+
+            throw new IllegalArgumentException("Can not handle value " + rule + " of type " + rule.getClass() + ".");
         }
 
         /**

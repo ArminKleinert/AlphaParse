@@ -17,13 +17,11 @@ public final class Conversions {
     }
 
     private static @NotNull List<Object> toParseTreeHelper(final @NotNull List<?> o) {
-        return o.stream().map(it -> switch (it) {
-            case String ignored -> it;
-            case ParseFailureNode ignored -> it;
-            case ParseTree ignored -> it;
-            case List<?> l -> toParseTree(l);
-            case Map<?, ?> m -> toParseTree(m);
-            default -> throw new IllegalArgumentException();
+        return o.stream().map(it -> {
+            if (it instanceof String || it instanceof ParseFailureNode || it instanceof ParseTree) return it;
+            else if (it instanceof List<?>) return toParseTree((List<?>)it);
+            else if (it instanceof Map<?, ?>) return toParseTree((Map<?, ?>)it);
+            else throw new IllegalArgumentException();
         }).toList();
     }
 
@@ -41,9 +39,9 @@ public final class Conversions {
     public static @NotNull ParseTree toParseTree(final @NotNull List<?> l) {
         if (l.isEmpty())
             return ParseTree.create(ParseTree.NULL_TAG.content(), List.of());
-        if (!(l.getFirst() instanceof Sym))
+        if (!(l.get(0) instanceof Sym))
             return ParseTree.create(ParseTree.NULL_TAG.content(), toParseTreeHelper(l));
-        return ParseTree.create((Sym) l.getFirst(), toParseTreeHelper(l.subList(1, l.size())));
+        return ParseTree.create((Sym) l.get(0), toParseTreeHelper(l.subList(1, l.size())));
     }
 
     /**

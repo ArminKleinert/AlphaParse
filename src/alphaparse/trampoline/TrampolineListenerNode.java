@@ -17,8 +17,8 @@ import java.util.*;
  */
 public record TrampolineListenerNode(@NotNull List<Listener> listeners,
                                      @NotNull List<Listener> fullListeners,
-                                     @NotNull SequencedSet<AlphaParseMessage> results,
-                                     @NotNull SequencedSet<AlphaParseMessage> fullResults) {
+                                     @NotNull LinkedHashSet<AlphaParseMessage> results,
+                                     @NotNull LinkedHashSet<AlphaParseMessage> fullResults) {
     /**
      * Creates a new instance.
      */

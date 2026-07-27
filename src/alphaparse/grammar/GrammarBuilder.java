@@ -78,13 +78,13 @@ public abstract class GrammarBuilder {
      * @return The grammar.
      */
     public final @NotNull Grammar buildWithWhitespace(
-            final @Nullable SequencedMap<Sym, Rule> initialProductions,
+            final @Nullable LinkedHashMap<Sym, Rule> initialProductions,
             final @Nullable Parser wsParser) {
         final @NotNull Sym start;
 
         synchronized (this) {
             if (initialProductions != null) {
-                for (final @NotNull var entry : initialProductions.sequencedEntrySet()) {
+                for (final @NotNull var entry : initialProductions.entrySet()) {
                     addProduction(entry.getKey(), entry.getValue());
                 }
             }
@@ -93,7 +93,7 @@ public abstract class GrammarBuilder {
 
             start = options.startProduction() != null
                     ? options.startProduction()
-                    : productions.sequencedKeySet().getFirst();
+                    : productions.keySet().iterator().next();
 
             compress();
 
@@ -187,17 +187,25 @@ public abstract class GrammarBuilder {
      * @return A rule depending on the input's type.
      */
     public final @NotNull Rule of(final @Nullable Object c) {
-        return switch (c) {
-            case null -> EpsilonTerm.getDefault();
-            case Rule r -> r;
-            case String s -> string(s);
-            case Pattern p -> regex(p);
-            case Sym s -> nt(s);
-            case List<?> l -> concat(l.stream().map(this::of).toList());
-            case Set<?> s -> alternationC(s.stream().distinct().map(this::of).toList());
-            default -> throw new IllegalArgumentException(
-                    String.valueOf(c.getClass()));
-        };
+if (c == null) {return EpsilonTerm.getDefault();}
+        if (c instanceof Rule){return (Rule) c;}
+        if (c instanceof String){return string((String) c);}
+        if (c instanceof Pattern){return regex((Pattern)c);}
+        if (c instanceof Sym){return nt((Sym)c);}
+        if (c instanceof List<?>){return concat(((List<?>)c).stream().map(this::of).toList());}
+        if (c instanceof Set<?>){return alternationC(((Set<?>)c).stream().distinct().map(this::of).toList());}
+        throw new IllegalArgumentException(c.getClass().getName());
+//        return switch (c) {
+//            case null -> EpsilonTerm.getDefault();
+//            case Rule r -> r;
+//            case String s -> string(s);
+//            case Pattern p -> regex(p);
+//            case Sym s -> nt(s);
+//            case List<?> l -> concat(l.stream().map(this::of).toList());
+//            case Set<?> s -> alternationC(s.stream().distinct().map(this::of).toList());
+//            default -> throw new IllegalArgumentException(
+//                    String.valueOf(c.getClass()));
+//        };
     }
 
     /**
@@ -612,76 +620,117 @@ public abstract class GrammarBuilder {
     }
 
     private @NotNull Rule compressRule(final @NotNull Rule originalRule) {
-        return switch (originalRule) {
-            case VariableRepetitionRule variableRepetitionRule -> {
-                final var min = variableRepetitionRule.getMin();
-                final var max = variableRepetitionRule.getMax();
-                final @NotNull var rule = compressRule(variableRepetitionRule.getRule());
+        if (originalRule instanceof VariableRepetitionRule) {
+            final var variableRepetitionRule = (VariableRepetitionRule) originalRule;
+            final var min = variableRepetitionRule.getMin();
+            final var max = variableRepetitionRule.getMax();
+            final @NotNull var rule = compressRule(variableRepetitionRule.getRule());
 
-                Rule newRule = null;
-                if (max == Integer.MAX_VALUE) {
-                    if (min == 0) newRule = ZeroOrMoreRule.create(rule);
-                    else if (min == 1) newRule = OnceOrMoreRule.create(rule);
-                } else if (min == 0 && max == 1) {
-                    newRule = OptionalRule.create(rule);
-                }
-                if (newRule == null) {
-                    newRule = variableRepetitionRule;
-                }
-
-                yield newRule
-                        .withHideTag(variableRepetitionRule.isHidden())
-                        .withReduction(variableRepetitionRule.getReduction());
+            Rule newRule = null;
+            if (max == Integer.MAX_VALUE) {
+                if (min == 0) newRule = ZeroOrMoreRule.create(rule);
+                else if (min == 1) newRule = OnceOrMoreRule.create(rule);
+            } else if (min == 0 && max == 1) {
+                newRule = OptionalRule.create(rule);
             }
-            case RuleWithManyChildren ruleWithManyChildren -> ruleWithManyChildren
+            if (newRule == null) {
+                newRule = variableRepetitionRule;
+            }
+
+            return newRule
+                    .withHideTag(variableRepetitionRule.isHidden())
+                    .withReduction(variableRepetitionRule.getReduction());
+        }
+        if (originalRule instanceof RuleWithManyChildren) {
+            var ruleWithManyChildren = (RuleWithManyChildren)originalRule;
+            return ruleWithManyChildren
                     .withRules(ruleWithManyChildren
                             .getRules()
                             .stream()
                             .map(this::compressRule)
                             .toList());
-            case RuleWithChild ruleWithChild -> ruleWithChild
-                    .withRule(compressRule(ruleWithChild.getRule()));
-            case NonTerminal nonTerminal -> nonTerminal;
-            case Terminal terminal -> terminal;
-            case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
-        };
+        }
+        if (originalRule instanceof RuleWithChild) {
+            var ruleWithChild = (RuleWithChild)originalRule;
+            return ruleWithChild.withRule(compressRule(ruleWithChild.getRule()));
+        }
+        return originalRule;
     }
 
     private @NotNull Rule autoWhitespaceHelper(
             final @NotNull Rule originalRule,
             final @NotNull Rule whitespaceRule) {
-        return switch (originalRule) {
-            case NonTerminal ignored -> originalRule;
-            case EpsilonTerm ignored2 -> originalRule;
-            case RuleWithChild rule -> (rule.withRule(
-                    autoWhitespaceHelper(rule.getRule(), whitespaceRule)));
-            case RuleWithManyChildren combWithParsers -> {
-                final @NotNull List<@NotNull Rule> rules = combWithParsers
-                        .getRules()
-                        .stream()
-                        .map(p -> autoWhitespaceHelper(p, whitespaceRule))
-                        .toList();
-                yield (combWithParsers.withRules(rules));
+        if (originalRule instanceof NonTerminal) {
+            return originalRule;
+        }
+        if (originalRule instanceof EpsilonTerm) {
+            return originalRule;
+        }
+        if (originalRule instanceof RuleWithChild) {
+            var rule = (RuleWithChild)originalRule;
+            return rule.withRule(
+                    autoWhitespaceHelper(rule.getRule(), whitespaceRule));
+        }
+        if (originalRule instanceof RuleWithManyChildren) {
+            var combWithParsers = (RuleWithManyChildren)originalRule;
+            final @NotNull List<@NotNull Rule> rules = combWithParsers
+                    .getRules()
+                    .stream()
+                    .map(p -> autoWhitespaceHelper(p, whitespaceRule))
+                    .toList();
+            return  combWithParsers.withRules(rules);
+        }
+        if (originalRule instanceof Terminal) {
+            final @NotNull List<Rule> rules = new ArrayList<>();
+            rules.add(whitespaceRule);
+            final @NotNull Rule result;
+            if (!originalRule.getReduction().isHiddenOrRaw()) {
+                // Hide the terminal in the output.
+                // It still appears in the tree, but is flattened into the concatenation.
+                rules.add(originalRule.withReduction(ReductionType.
+                        standardIntermediateReduction()));
+                result = concat(rules).withReduction(
+                        originalRule.getReduction());
+            } else {
+                rules.add(originalRule);
+                result = concat(rules);
             }
-            case Terminal ignored -> {
-                final @NotNull List<Rule> rules = new ArrayList<>();
-                rules.add(whitespaceRule);
-                final @NotNull Rule result;
-                if (!originalRule.getReduction().isHiddenOrRaw()) {
-                    // Hide the terminal in the output.
-                    // It still appears in the tree, but is flattened into the concatenation.
-                    rules.add(originalRule.withReduction(ReductionType.
-                            standardIntermediateReduction()));
-                    result = concat(rules).withReduction(
-                            originalRule.getReduction());
-                } else {
-                    rules.add(originalRule);
-                    result = concat(rules);
-                }
-                yield result;
-            }
-            case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
-        };
+            return result;
+        }
+        if (originalRule instanceof SpecialSequenceRule) {return originalRule;}
+        throw new IllegalArgumentException(originalRule.getClass().getName());
+//        return switch (originalRule) {
+//            case NonTerminal ignored -> originalRule;
+//            case EpsilonTerm ignored2 -> originalRule;
+//            case RuleWithChild rule -> (rule.withRule(
+//                    autoWhitespaceHelper(rule.getRule(), whitespaceRule)));
+//            case RuleWithManyChildren combWithParsers -> {
+//                final @NotNull List<@NotNull Rule> rules = combWithParsers
+//                        .getRules()
+//                        .stream()
+//                        .map(p -> autoWhitespaceHelper(p, whitespaceRule))
+//                        .toList();
+//                yield (combWithParsers.withRules(rules));
+//            }
+//            case Terminal ignored -> {
+//                final @NotNull List<Rule> rules = new ArrayList<>();
+//                rules.add(whitespaceRule);
+//                final @NotNull Rule result;
+//                if (!originalRule.getReduction().isHiddenOrRaw()) {
+//                    // Hide the terminal in the output.
+//                    // It still appears in the tree, but is flattened into the concatenation.
+//                    rules.add(originalRule.withReduction(ReductionType.
+//                            standardIntermediateReduction()));
+//                    result = concat(rules).withReduction(
+//                            originalRule.getReduction());
+//                } else {
+//                    rules.add(originalRule);
+//                    result = concat(rules);
+//                }
+//                yield result;
+//            }
+//            case SpecialSequenceRule specialSequenceRule -> specialSequenceRule;
+//        };
     }
 
     private void autoWhitespace(final @NotNull Sym start,
@@ -692,7 +741,7 @@ public abstract class GrammarBuilder {
 
         final @NotNull LinkedHashMap<@NotNull Sym, @NotNull Rule> finalGrammar =
                 new LinkedHashMap<>(productions);
-        for (final @NotNull var symRuleEntry : finalGrammar.sequencedEntrySet()) {
+        for (final @NotNull var symRuleEntry : finalGrammar.entrySet()) {
             symRuleEntry.setValue(autoWhitespaceHelper(
                     symRuleEntry.getValue(), wsParser));
         }
@@ -713,12 +762,16 @@ public abstract class GrammarBuilder {
     }
 
     protected <T extends Rule> T buffer(T rule) {
-        //noinspection unchecked
-        return (T) switch (rule) {
-            case StringTerm stringTerm -> buffer.getOrAdd(stringTerm);
-            case RegexTerm regexTerm -> buffer.getOrAdd(regexTerm);
-            case NonTerminal nonTerminal -> buffer.getOrAdd(nonTerminal);
-            default -> rule;
-        };
+        if (rule instanceof StringTerm) {buffer.getOrAdd((StringTerm)rule);}
+        if (rule instanceof RegexTerm) {buffer.getOrAdd((RegexTerm)rule);}
+        if (rule instanceof NonTerminal) {buffer.getOrAdd((NonTerminal)rule);}
+        return (T) rule;
+//        //noinspection unchecked
+//        return (T) switch (rule) {
+//            case StringTerm stringTerm -> buffer.getOrAdd(stringTerm);
+//            case RegexTerm regexTerm -> buffer.getOrAdd(regexTerm);
+//            case NonTerminal nonTerminal -> buffer.getOrAdd(nonTerminal);
+//            default -> rule;
+//        };
     }
 }

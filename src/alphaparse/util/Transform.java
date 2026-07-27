@@ -21,12 +21,11 @@ public final class Transform {
             final @NotNull Node node,
             final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<@NotNull Object>, Object>> transformMap
     ) {
-        return switch (node) {
-            case Node.NodeTreeTag nodeTreeTag -> nodeTreeTag.content();
-            case Node.NodeString nodeString -> nodeString.content();
-            case Node.NodeFail nodeFail -> nodeFail.content();
-            case Node.NodeParseTree nodeParseTree -> transform(nodeParseTree.content(), transformMap);
-        };
+        if    (node instanceof Node.NodeTreeTag) return ((Node.NodeTreeTag)node).content();
+        if    (node instanceof Node.NodeString)  return ((Node.NodeString)node).content();
+        if    (node instanceof Node.NodeFail)  return ((Node.NodeFail)node).content();
+        if    (node instanceof Node.NodeParseTree)  return transform(((Node.NodeParseTree)node).content(), transformMap);
+        throw new IllegalArgumentException("Invalid node: " + node + " of type " + node.getClass());
     }
 
     private static Object transform(

@@ -50,7 +50,7 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
             return new OrderedChoiceRule(parsers.get(0), parsers.get(1));
 
         var restParsers = parsers.subList(1, parsers.size());
-        return new OrderedChoiceRule(parsers.getFirst(), setupParsers(restParsers));
+        return new OrderedChoiceRule(parsers.get(0), setupParsers(restParsers));
     }
 
     /**
@@ -66,7 +66,7 @@ public final class OrderedChoiceRule extends RuleWithManyChildren {
         var distinctRules = rules.stream().distinct().toList();
 
         if (distinctRules.size() == 1)
-            return distinctRules.getFirst();
+            return distinctRules.get(0);
         var setup = setupParsers(distinctRules);
 
         return new OrderedChoiceRule(
