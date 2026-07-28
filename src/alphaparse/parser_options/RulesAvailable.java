@@ -71,10 +71,17 @@ public enum RulesAvailable {
     EXPLICIT_EOF,
 
     /**
-     * EBNF and ABNF identifiers normally must have the following form: {@code letter (letter|digit|_)+}.
+     * EBNF identifiers normally must have the following form: {@code letter (letter|digit|_)+}. ABNF and BNF use the "-" character in place of the "_".
+     * <p>
+     * Possible replacements through other rule types: N.A.
+     */
+    ABNF_IDENTIFIERS,
+
+    /**
+     * EBNF identifiers normally must have the following form: {@code letter (letter|digit|_)+}. ABNF and BNF also allow the "-" character.
      * <p>
      * With this option, any character can be used except those which are used for other purposes:
-     * {@code " ' ! ? + * [ ] ( ) { } < > : = / | # & }
+     * {@code " ' ! ? + * [ ] ( ) { } < > : = / | # & } and whitespace characters.
      * <p>
      * This means that the production {@code 🎁 = "a"} becomes legal.
      * <p>

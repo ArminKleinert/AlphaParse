@@ -99,7 +99,7 @@ public final class Gll {
     }
 
     private void step() {
-        final Procedure top = tramp.getStack().get(tramp.getStack().size()-1);
+        final Procedure top = tramp.getStack().get(tramp.getStack().size() - 1);
         tramp.popStack();
         top.execute();
     }
@@ -334,7 +334,7 @@ public final class Gll {
             final boolean errorIfEmpty) {
         final @NotNull var tramp = new Tramp(grammar, text);
         final @NotNull var parser = NonTerminal.create(start);
-        var gll = new Gll(tramp, iterativeDeepening);
+        final @NotNull var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run();
         if (errorIfEmpty && allParses.isEmpty()) {
@@ -365,7 +365,7 @@ public final class Gll {
             final boolean partial,
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text);
-        var gll = new Gll(tramp, iterativeDeepening);
+        final @NotNull var gll = new Gll(tramp, iterativeDeepening);
         final @NotNull var parser = NonTerminal.create(start);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
@@ -409,7 +409,7 @@ public final class Gll {
             final boolean iterativeDeepening) {
         final @NotNull var tramp = new Tramp(grammar, text, failIndex);
         final @NotNull var parser = NonTerminal.create(start);
-        var gll = new Gll(tramp, iterativeDeepening);
+        final @NotNull var gll = new Gll(tramp, iterativeDeepening);
         gll.startParser(tramp, parser, partial);
         final @NotNull var allParses = gll.run(1);
         if (!allParses.isEmpty())
@@ -440,7 +440,8 @@ public final class Gll {
         return parseEmbedFailureAfterFail(grammar, start, text, ((AlphaParseFailure) result).index(), partial, iterativeDeepening);
     }
 
-    String getInstanceIdForDebug() {//noinspection RedundantCast
+    private String getInstanceIdForDebug() {
+        //noinspection RedundantCast
         return ((Object) this).toString();
     }
 }

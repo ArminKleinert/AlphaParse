@@ -17,7 +17,7 @@ import java.util.Set;
 class TestGrammarYail {
     private @NotNull Parser parser() {
         try {
-            var opts = ParserCreationOptions.pureEbnf()
+            var opts = ParserCreationOptions.getDefault()
                     .addAvailableRule(RulesAvailable.NEGATIVE_LOOKAHEAD)
                     .addAvailableRule(RulesAvailable.VARIABLE_REPEAT)
                     .addAvailableRule(RulesAvailable.EXPLICIT_EOF)

@@ -42,7 +42,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * @return List of strings.
      */
     public static @NotNull @Unmodifiable List<String> defaultRuleDefinitionOps() {
-        return List.of(":=", "::=", "=", ":");
+        return List.of(":=", "::=", "=", ":", "←", "<-");
     }
 
     /**
@@ -368,6 +368,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
      * Available rules:
      * <ul>
      *     <li>{@link RulesAvailable#ABNF_CORE}</li>
+     *     <li>{@link RulesAvailable#ABNF_IDENTIFIERS}</li>
      *     <li>{@link RulesAvailable#OPTIONAL}</li>
      *     <li>{@link RulesAvailable#ORDERED_CHOICE}</li>
      *     <li>{@link RulesAvailable#REGEX}</li>
@@ -381,6 +382,7 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
     public static @NotNull ParserCreationOptions abnf() {
         var rules = EnumSet.of(
                 RulesAvailable.ABNF_CORE,
+                RulesAvailable.ABNF_IDENTIFIERS,
                 RulesAvailable.OPTIONAL,
                 RulesAvailable.ORDERED_CHOICE,
                 RulesAvailable.REGEX,
@@ -440,6 +442,49 @@ public record ParserCreationOptions(@Nullable Parser whitespaceParser,
                 null, null, GlobalCaseInsensitivity.FALSE,
                 RedefinitionOption.defaultOption, rules, defaultCheckCorrectness,
                 List.of("="),
+                List.of("ε")
+        );
+    }
+
+    /**
+     * PEG settings.
+     * <p>
+     * Characteristics:
+     * <ul>
+     *     <li>Rule definition operators: {@code "←", "<-"}</li>
+     *     <li>Case insensitivity: {@code false}</li>
+     *     <li>Redefinition option: {@link RedefinitionOption#defaultOption}</li>
+     *     <li>Epsilon equivalents: {@code "ε"}</li>
+     * </ul>
+     * <p>
+     * Available rules:
+     * <ul>
+     *     <li>{@link RulesAvailable#LOOKAHEAD}</li>
+     *     <li>{@link RulesAvailable#NEGATIVE_LOOKAHEAD}</li>
+     *     <li>{@link RulesAvailable#OPTIONAL_QUERY},
+     *     <li>{@link RulesAvailable#OPTIONAL_REPETITION_STAR}</li>
+     *     <li>{@link RulesAvailable#ORDERED_CHOICE}</li>
+     *     <li>{@link RulesAvailable#PLUS}</li>
+     *     <li>{@link RulesAvailable#REGEX}</li>
+     *     <li>{@link RulesAvailable#SINGLY_QUOTED}</li>
+     * </ul>
+     *
+     * @return Options for PEG parsers.
+     */
+    public static @NotNull ParserCreationOptions peg() {
+        var rules = EnumSet.of(
+                RulesAvailable.LOOKAHEAD,
+                RulesAvailable.NEGATIVE_LOOKAHEAD,
+                RulesAvailable.OPTIONAL_QUERY,
+                RulesAvailable.OPTIONAL_REPETITION_STAR,
+                RulesAvailable.ORDERED_CHOICE,
+                RulesAvailable.PLUS,
+                RulesAvailable.REGEX,
+                RulesAvailable.SINGLY_QUOTED);
+        return ParserCreationOptions.create(
+                null, null, GlobalCaseInsensitivity.FALSE,
+                RedefinitionOption.defaultOption, rules, defaultCheckCorrectness,
+                List.of("←", "<-"),
                 List.of("ε")
         );
     }

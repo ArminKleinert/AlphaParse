@@ -5,10 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A class for string-alternatives that are slightly slower to create than strings, but provide interning and O(1) comparisons via the build-in {@code ==} operator.
+ * A class for string-alternatives that are slightly slower to create than strings, but provide guaranteed
+ * interning and O(1) comparisons via the build-in {@code ==} operator.
  * <p>
  * {@code
  * Sym k1 = Sym.sym(str);
@@ -17,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * }
  */
 public final class Sym {
-    private static final @NotNull ConcurrentHashMap<@NotNull String, Reference<Sym>> table =
+    private static final @NotNull Map<@NotNull String, Reference<Sym>> table =
             new ConcurrentHashMap<>();
     private static final @NotNull ReferenceQueue<@NotNull Sym> rq =
             new ReferenceQueue<>();
@@ -32,7 +34,7 @@ public final class Sym {
      */
     public static @NotNull Sym sym(final @NotNull String sym) {
         Sym k = null;
-        Reference<Sym> existingRef = table.get(sym);
+        var existingRef = table.get(sym);
         if (existingRef == null) {
             if (rq.poll() != null) {
                 Object o = rq.poll();
@@ -41,7 +43,7 @@ public final class Sym {
                 }
 
                 for (final @NotNull var e : table.entrySet()) {
-                    final @NotNull Reference<Sym> val = e.getValue();
+                    final @NotNull var val = e.getValue();
                     if (val.get() == null) {
                         table.remove(e.getKey(), val);
                     }
@@ -55,7 +57,7 @@ public final class Sym {
         if (existingRef == null) {
             return k;
         } else {
-            Sym existing = existingRef.get();
+            var existing = existingRef.get();
             if (existing != null) {
                 return existing;
             }

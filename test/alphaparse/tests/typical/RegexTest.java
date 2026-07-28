@@ -13,7 +13,7 @@ class RegexTest {
     @Test
     void testNum() {
         var ruleTypes = Set.of(RulesAvailable.REGEX);
-        var opts = ParserCreationOptions.pureEbnf().withRulesAvailable(ruleTypes);
+        var opts = ParserCreationOptions.getDefault().withRulesAvailable(ruleTypes);
         var p = Alpha.parser("S = #\"[a-fA-F0-9]+\"", opts);
         Assertions.assertEquals(
                 PT.create("S", "7F"),
@@ -24,7 +24,7 @@ class RegexTest {
     @Test
     void testInvalid() {
         var ruleTypes = Set.<RulesAvailable>of();
-        var opts = ParserCreationOptions.pureEbnf().withRulesAvailable(ruleTypes);
+        var opts = ParserCreationOptions.getDefault().withRulesAvailable(ruleTypes);
         Assertions.assertThrows(
                 ParserCreationFailure.class,
                 () -> Alpha.parser("S = #\"[a-fA-F0-9]+\"", opts));

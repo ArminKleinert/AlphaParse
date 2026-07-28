@@ -18,6 +18,16 @@ import java.util.List;
 
 class NewFeaturesTest {
     @Test
+    void test1() {
+        var grammar = """
+                S = 'a' A
+                A = epsilon A | epsilon
+                """;
+        var p = Alpha.parser(grammar);
+        System.out.println(p.parse("a"));
+        System.out.println(p.parses("a").stream().limit(5).toList());
+    }
+    @Test
     void testExampleFromWikipedia() {
         var grammar = """
                 S = digit digit-excluding-zero*

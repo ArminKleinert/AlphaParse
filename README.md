@@ -33,7 +33,7 @@ class MyFirstParser {
     // Using multiline strings can be helpful. This grammar defines  arithmetic expressions
     var grammar = """
             sum          = product ('+'|'-') sum   | product
-            product      = power ('*'|'/') product | power4
+            product      = power ('*'|'/') product | power
             power        = paren-or-val '^' power  | paren-or-val
             paren-or-val = '(' sum ')'             | number
             number       = ('+'|'-')? ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9')+

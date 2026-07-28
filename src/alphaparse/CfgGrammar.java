@@ -273,7 +273,10 @@ final class CfgGrammar extends GrammarBuilder {
     private @NotNull Rule makeCfgNtRhs() {
         final var regex = rulesAvailable.contains(RulesAvailable.EXTENDED_IDENTIFIERS)
                 ? Pattern.compile("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*")
-                : Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*");
+                : (rulesAvailable.contains(RulesAvailable.ABNF_IDENTIFIERS)
+                ? Pattern.compile("[a-zA-Z][a-zA-Z0-9\\-]*")
+                : Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*"));
+        final boolean eofPossible = options.usableRules().contains(RulesAvailable.EXPLICIT_EOF);
 
         return specialSequence(
                 "matches " + regex + " but is not reserved for other purposes",
@@ -286,7 +289,7 @@ final class CfgGrammar extends GrammarBuilder {
                     if (options.epsilonNames().contains(matched)) {
                         return Optional.empty();
                     }
-                    if (options.usableRules().contains(RulesAvailable.EXPLICIT_EOF) && EOFTerm.text().equals(matched)) {
+                    if (eofPossible && EOFTerm.text().equals(matched)) {
                         return Optional.empty();
                     }
                     return Optional.of(matched);
