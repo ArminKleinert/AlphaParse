@@ -22,7 +22,7 @@ public class Arithmetic {
                 Expression = Term , { ( "+" | "-" ) , Term } ;
                 Term       = Factor , { ( "*" | "/" ) , Factor } ;
                 Factor     = Number | "(", Expression, ")" ;
-                Number     = ["+" | "-" ] Digit , { Digit } ;
+                Number     = [ "+" | "-" ] Digit , { Digit } ;
                 Digit      = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
                 """;
         var p = Alpha.parser(g);
@@ -40,7 +40,7 @@ public class Arithmetic {
                 Expression = Term , { ( '+' | '-' ) , Term } ;
                 Term       = Factor , { ( '*' | '/' ) , Factor } ;
                 Factor     = Number | '(', Expression, ')' ;
-                Number     = ['+' | '-' ] Digit , { Digit } ;
+                Number     = [ '+' | '-' ] Digit , { Digit } ;
                 Digit      = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
                 """;
         var p = Alpha.parser(g);
@@ -58,7 +58,7 @@ public class Arithmetic {
                 Expression = Term { ( '+' | '-' ) Term }
                 Term       = Factor { ( '*' | '/' ) Factor }
                 Factor     = Number | '(' Expression ')'
-                Number     = ['+' | '-' ] Digit { Digit }
+                Number     = [ '+' | '-' ] Digit { Digit }
                 Digit      = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
                 """;
         var p = Alpha.parser(g);
@@ -92,7 +92,7 @@ public class Arithmetic {
                 Expression = Term { ( '+' | '-' ) Term }
                 Term       = Factor { ( '*' | '/' ) Factor }
                 Factor     = Number | '(' Expression ')'
-                Number     = ['+' | '-' ] Digit { Digit }
+                Number     = [ '+' | '-' ] Digit { Digit }
                 Digit      = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
                 """;
         var options = ParserCreationOptions.newWithStandardWhitespace();
@@ -113,7 +113,7 @@ public class Arithmetic {
                 Expression = Term { ( '+' | '-' ) Term }
                 Term       = Factor { ( '*' | '/' ) Factor }
                 Factor     = Number | '(' Expression ')'
-                Number     = ['+' | '-' ] Digit { Digit }
+                Number     = [ '+' | '-' ] Digit { Digit }
                 Digit      = #'[0-9]'
                 """;
         var options = ParserCreationOptions.newWithStandardWhitespace();

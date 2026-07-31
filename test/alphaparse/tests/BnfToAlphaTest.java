@@ -1,11 +1,16 @@
 package alphaparse.tests;
 
 import alphaparse.Alpha;
+import alphaparse.Sym;
 import alphaparse.grammar.Grammar;
+import alphaparse.grammar.GrammarBuilder;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
+import alphaparse.parsing.*;
+import alphaparse.result.AlphaParseResult;
 import alphaparse.result.ParseTree;
+import alphaparse.util.Transform;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -13,31 +18,167 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BnfToAlphaTest {
-private @NotNull Parser parser() {
-    try {
-        var opts = ParserCreationOptions.getDefault()
-                .addAvailableRule(RulesAvailable.EXPLICIT_EOF)
-                .addAvailableRule(RulesAvailable.ABNF_IDENTIFIERS)
-                .withRuleDefinitionOps(Set.of("::="));
-        return Alpha.parser(
-                Files.readString(Path.of("testres/grammars/bnf.g")),
-                opts
-        );
-    } catch (IOException e) {
-        throw new RuntimeException(e);
+    private @NotNull Parser parser() {
+        try {
+            var opts = ParserCreationOptions.getDefault()
+                    .addAvailableRule(RulesAvailable.EXPLICIT_EOF)
+                    .addAvailableRule(RulesAvailable.ABNF_IDENTIFIERS)
+                    .withRuleDefinitionOps(Set.of("::="));
+            return Alpha.parser(
+                    Files.readString(Path.of("testres/grammars/bnf.g")),
+                    opts
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void testTransform() {
+        final @NotNull Map<@NotNull Sym, @NotNull Function<List<Object>, Object>> transform;
+
+        transform = new IdentityHashMap<>();
+        transform.put(Sym.sym("syntax"), this::syntax);
+        transform.put(Sym.sym("rule"), this::rule);
+        transform.put(Sym.sym("opt-whitespace"), this::optWhitespace);
+        transform.put(Sym.sym("expression"), this::expression);
+        transform.put(Sym.sym("line-end"), this::lineEnd);
+        transform.put(Sym.sym("list"), this::list);
+        transform.put(Sym.sym("term"), this::term);
+        transform.put(Sym.sym("literal"), this::literal);
+        transform.put(Sym.sym("text1"), this::text1);
+        transform.put(Sym.sym("text2"), this::text2);
+        transform.put(Sym.sym("character"), this::character);
+        transform.put(Sym.sym("letter"), this::letter);
+        transform.put(Sym.sym("digit"), this::digit);
+        transform.put(Sym.sym("symbol"), this::symbol);
+        transform.put(Sym.sym("character1"), this::character1);
+        transform.put(Sym.sym("character2"), this::character2);
+        transform.put(Sym.sym("rule-name"), this::ruleName);
+        transform.put(Sym.sym("rule-char"), this::ruleChar);
+
+        var parse = parser().parse("<S> ::= '+' <number>\n<number> ::= <digit> <number> | <digit>\n<digit> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'\n");
+        System.out.println(parse);
+        var res = Transform.transform(parse, transform,
+                prodList -> {
+                    var prods = ((List<Map.Entry<Sym,Rule>>)prodList).stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+                    return new Grammar(Sym.sym("S"), prods);
+                });
+        System.out.println(res);
+        System.out.println(Alpha.parser(res, ParserCreationOptions.getDefault()).parse("+99"));
+    }
+
+    // syntax         ::= rule | rule syntax
+    private Object syntax(List<Object> pt) {
+        if (pt.size()==1) return List.of(pt.get(0));
+        var arr = new ArrayList<>();
+        arr.add(pt.get(0)); arr.addAll((Collection<?>) pt.get(1));
+return arr;
+    }
+
+    // rule           ::= opt-whitespace "<" rule-name ">" opt-whitespace "::=" opt-whitespace expression line-end
+    private Object rule(final List<Object> pt) {
+        var ruleName = pt.get(2);
+        var expression = pt.get(7);
+        return Map.entry(Sym.sym(ruleName.toString()), expression);
+    }
+
+    // opt-whitespace ::= " " opt-whitespace | ""
+    private Object optWhitespace(final List<Object> pt) {
+        // Do nothing
+        return null;
+    }
+
+    // expression     ::= list | list opt-whitespace "|" opt-whitespace expression
+    private Object expression(final List<Object> pt) {
+        if (pt.size() == 1)
+            return pt.get(0);
+        var list = (Rule)pt.get(0);
+        var expr = pt.get(4);
+        if (expr instanceof List)
+            return AlternationRule.create(Stream.concat(Stream.of(list), ((List<Rule>) expr).stream()).toList());
+        return AlternationRule.create(List.of(list, (Rule)expr));
+    }
+
+    // line-end       ::= opt-whitespace "\n" | opt-whitespace "\n" line-end
+    private Object lineEnd(final List<Object> pt) {
+        // Do nothing
+        return null;
+    }
+
+    // list           ::= term | term opt-whitespace list
+    private Object list(final List<Object> pt) {
+        if (pt.size() > 1)
+            return ConcatRule.create(List.of((Rule)pt.get(0), (Rule)pt.get(2)));
+        return pt.get(0);
+    }
+
+    // term           ::= literal | "<" rule-name ">"
+    private Object term(final List<Object> pt) {
+        if (pt.size()==1) return pt.get(0);
+        return pt.get(1);
+    }
+
+    // literal        ::= '"' text1 '"' | "'" text2 "'"
+    private Object literal(final List<Object> pt) {
+        return StringTerm.create(pt.get(1).toString(), false);
+    }
+
+    // text1          ::= "" | character1 text1
+    private Object text1(final List<Object> pt) {
+        return pt.stream().map(Object::toString).collect(Collectors.joining());
+    }
+
+    // text2          ::= "" | character2 text2
+    private Object text2(final List<Object> pt) {
+        return pt.stream().map(Object::toString).collect(Collectors.joining());
+    }
+
+    // character      ::= letter | digit | symbol
+    private Object character(final List<Object> pt) {
+        return pt.get(0);
+    }
+
+    // letter         ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+    private Object letter(final List<Object> pt) {
+        return pt.get(0);
+    }
+
+    // digit          ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+    private Object digit(final List<Object> pt) {
+        return pt.get(0);
+    }
+
+    // symbol         ::= "|" | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
+    private Object symbol(final List<Object> pt) {
+        return pt.get(0);
+    }
+
+    // character1     ::= character | "'"
+    private Object character1(final List<Object> pt) {
+        return pt.get(0);
+    }
+
+    // character2     ::= character | '"'
+    private Object character2(final List<Object> pt) {
+        return pt.get(0);
+    }
+
+    // rule-name      ::= letter | rule-name rule-char
+    private Object ruleName(final List<Object> pt) {
+        return NonTerminal.create(Sym.sym(pt.stream().map(Object::toString).collect(Collectors.joining())));
+    }
+
+    // rule-char      ::= letter | digit | "-"
+    private Object ruleChar(final List<Object> pt) {
+        return pt.get(0).toString();
     }
 }
-
-@Test
-void test() {
-    System.out.println(parser().show());
-    System.out.println(parser().parse("<digit> ::= <a>\n"));
-}
-
-public @NotNull Grammar bnfToParser(ParseTree pt) {
-    throw new UnsupportedOperationException();
-}
-}
+    

@@ -19,7 +19,7 @@ public final class Transform {
 
     private static Object transform(
             final @NotNull Node node,
-            final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<@NotNull Object>, Object>> transformMap
+            final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<Object>, Object>> transformMap
     ) {
         if    (node instanceof Node.NodeTreeTag) return ((Node.NodeTreeTag)node).content();
         if    (node instanceof Node.NodeString)  return ((Node.NodeString)node).content();
@@ -125,7 +125,7 @@ public final class Transform {
      */
     public static <T> T transform(
             final @NotNull AlphaParseResult parseResult,
-            final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<@NotNull Object>, Object>> transformMap,
+            final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<Object>, Object>> transformMap,
             final @NotNull Function<Object, T> finalizer
     ) {
         return finalizer.apply(transform(parseResult, transformMap));
@@ -141,7 +141,7 @@ public final class Transform {
      */
     public static Object transform(
             final @NotNull AlphaParseResult parseResult,
-            final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<@NotNull Object>, Object>> transformMap
+            final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<Object>, Object>> transformMap
     ) {
         if (!(parseResult instanceof ParseTree parseTree))
             throw new IllegalArgumentException();
