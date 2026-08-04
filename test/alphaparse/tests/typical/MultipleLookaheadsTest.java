@@ -5,7 +5,7 @@ import alphaparse.Sym;
 import alphaparse.grammar.Grammar;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

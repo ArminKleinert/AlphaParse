@@ -1,4 +1,4 @@
-package alphaparse.util;
+package alphaparse.testutil;
 
 import alphaparse.functions.Procedure;
 import org.jetbrains.annotations.NotNull;

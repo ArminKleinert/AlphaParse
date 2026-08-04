@@ -6,13 +6,12 @@ import alphaparse.grammar.Grammar;
 import alphaparse.grammar.GrammarBuilder;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parsing.*;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;

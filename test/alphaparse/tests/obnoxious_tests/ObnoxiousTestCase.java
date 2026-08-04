@@ -1,8 +1,6 @@
 package alphaparse.tests.obnoxious_tests;
 
 import alphaparse.Alpha;
-import alphaparse.result.PT;
-import alphaparse.result.ParseTree;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

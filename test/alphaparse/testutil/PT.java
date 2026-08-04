@@ -1,7 +1,8 @@
-package alphaparse.result;
+package alphaparse.testutil;
 
 import alphaparse.Sym;
 import alphaparse.collections.FlatResultSeq;
+import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

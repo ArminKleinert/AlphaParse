@@ -3,7 +3,7 @@ package alphaparse.tests.typical;
 import alphaparse.Alpha;
 import alphaparse.error.ParserCreationFailure;
 import alphaparse.parser_options.*;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -2,7 +2,7 @@ package alphaparse.tests.typical;
 
 import alphaparse.Alpha;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

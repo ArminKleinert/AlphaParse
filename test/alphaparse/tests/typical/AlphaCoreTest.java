@@ -4,7 +4,7 @@ import alphaparse.Alpha;
 import alphaparse.Sym;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.*;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import alphaparse.result.ParseFailureNode;
 import alphaparse.result.ParseTree;
 import org.jetbrains.annotations.NotNull;

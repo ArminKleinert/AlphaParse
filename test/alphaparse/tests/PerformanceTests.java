@@ -1,16 +1,8 @@
 package alphaparse.tests;
 
 import alphaparse.Alpha;
-import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
-import alphaparse.util.TimeUtil;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 
 class PerformanceTests {
 //    @Test

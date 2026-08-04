@@ -144,7 +144,7 @@ public final class Transform {
             final @NotNull Map<@NotNull Sym, @NotNull Function<@NotNull List<Object>, Object>> transformMap
     ) {
         if (!(parseResult instanceof ParseTree parseTree))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(parseResult.toString());
         final @NotNull var tagSym = parseTree.getTag().content();
         final @NotNull var transformedNodes = parseTree
                 .getContent().stream()

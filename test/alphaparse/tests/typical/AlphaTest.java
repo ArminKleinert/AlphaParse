@@ -7,7 +7,7 @@ import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.ParsingOptions;
 import alphaparse.parser_options.Unhide;
 import alphaparse.result.Node;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import alphaparse.result.ParseTree;
 
 import java.util.HashSet;

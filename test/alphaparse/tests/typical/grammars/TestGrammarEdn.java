@@ -4,7 +4,7 @@ import alphaparse.Alpha;
 import alphaparse.parser.Parser;
 import alphaparse.parser_options.ParserCreationOptions;
 import alphaparse.parser_options.RulesAvailable;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

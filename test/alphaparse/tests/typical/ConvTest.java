@@ -1,7 +1,7 @@
 package alphaparse.tests.typical;
 
 import alphaparse.Sym;
-import alphaparse.result.PT;
+import alphaparse.testutil.PT;
 import alphaparse.util.Conversions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
